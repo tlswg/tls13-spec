@@ -1,5 +1,6 @@
-xml2rfc ?= /usr/local/bin/xml2rfc
+xml2rfc ?= xml2rfc
 kramdown-rfc2629 ?= kramdown-rfc2629
+idnits ?= idnits
 
 draft := draft-ietf-tls-tls13
 current_ver := $(shell git tag | grep "$(draft)" | tail -1 | sed -e"s/.*-//")
@@ -17,7 +18,7 @@ latest: $(draft).txt $(draft).html
 submit: $(next).txt
 
 idnits: $(next).txt
-	idnits $<
+	$(idnits) $<
 
 clean:
 	-rm -f $(draft).txt $(draft).html
