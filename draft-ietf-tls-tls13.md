@@ -3232,7 +3232,7 @@ This section describes protocol types and constants.
         certificate(11), server_key_exchange (12),
         certificate_request(13), server_hello_done(14),
         certificate_verify(15), client_key_exchange(16),
-        finished(20)
+        finished(20),
         (255)
     } HandshakeType;
 
