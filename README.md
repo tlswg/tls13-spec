@@ -7,8 +7,7 @@ Group](http://trac.tools.ietf.org/wg/tls/trac/wiki) draft of [TLS 1.3]
 
 TLS 1.3 specification:
 * [Editor's copy](https://github.com/tlswg/tls13-spec/blob/master/draft-ietf-tls-tls13.txt)
-* [Working Group Draft]
-
+* [Working Group Draft] (http://tools.ietf.org/html/draft-ietf-tls-tls13-00)
 
 
 Contributing
