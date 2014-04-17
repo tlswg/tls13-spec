@@ -1,13 +1,13 @@
 ---
 title: The Transport Layer Security (TLS) Protocol Version 1.3
 abbrev: TLS
-docname: draft-ietf-tls-tls13-00
+docname: draft-ietf-tls-tls13-01
 date: 2014
 category: std
 updates: 4492
 obsoletes: 3268, 4346, 4366, 5246
 
-ipr: trust200902
+ipr: pre5378Trust200902
 area: General
 workgroup:
 keyword: Internet-Draft

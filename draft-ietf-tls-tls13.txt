@@ -11,7 +11,7 @@ Expires: October 19, 2014
 
 
         The Transport Layer Security (TLS) Protocol Version 1.3
-                        draft-ietf-tls-tls13-00
+                        draft-ietf-tls-tls13-01
 
 Abstract
 
@@ -61,50 +61,50 @@ Internet-Draft                     TLS                        April 2014
    the Trust Legal Provisions and are provided without warranty as
    described in the Simplified BSD License.
 
+   This document may contain material from IETF Documents or IETF
+   Contributions published or made publicly available before November
+   10, 2008.  The person(s) controlling the copyright in some of this
+   material may not have granted the IETF Trust the right to allow
+   modifications of such material outside the IETF Standards Process.
+   Without obtaining an adequate license from the person(s) controlling
+   the copyright in such materials, this document may not be modified
+   outside the IETF Standards Process, and derivative works of it may
+   not be created outside the IETF Standards Process, except to format
+   it for publication as an RFC or to translate it into languages other
+   than English.
+
 Table of Contents
 
-   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   4
-     1.1.  Requirements Terminology  . . . . . . . . . . . . . . . .   5
-     1.2.  Major Differences from TLS 1.1  . . . . . . . . . . . . .   5
-   2.  Goals . . . . . . . . . . . . . . . . . . . . . . . . . . . .   6
-   3.  Goals of This Document  . . . . . . . . . . . . . . . . . . .   7
-   4.  Presentation Language . . . . . . . . . . . . . . . . . . . .   7
-     4.1.  Basic Block Size  . . . . . . . . . . . . . . . . . . . .   7
-     4.2.  Miscellaneous . . . . . . . . . . . . . . . . . . . . . .   8
-     4.3.  Vectors . . . . . . . . . . . . . . . . . . . . . . . . .   8
-     4.4.  Numbers . . . . . . . . . . . . . . . . . . . . . . . . .   9
-     4.5.  Enumerateds . . . . . . . . . . . . . . . . . . . . . . .   9
-     4.6.  Constructed Types . . . . . . . . . . . . . . . . . . . .  10
-       4.6.1.  Variants  . . . . . . . . . . . . . . . . . . . . . .  11
-     4.7.  Cryptographic Attributes  . . . . . . . . . . . . . . . .  12
-     4.8.  Constants . . . . . . . . . . . . . . . . . . . . . . . .  14
-   5.  HMAC and the Pseudorandom Function  . . . . . . . . . . . . .  14
-   6.  The TLS Record Protocol . . . . . . . . . . . . . . . . . . .  16
-     6.1.  Connection States . . . . . . . . . . . . . . . . . . . .  16
-     6.2.  Record Layer  . . . . . . . . . . . . . . . . . . . . . .  19
-       6.2.1.  Fragmentation . . . . . . . . . . . . . . . . . . . .  19
-       6.2.2.  Record Compression and Decompression  . . . . . . . .  21
-       6.2.3.  Record Payload Protection . . . . . . . . . . . . . .  21
-     6.3.  Key Calculation . . . . . . . . . . . . . . . . . . . . .  26
-   7.  The TLS Handshaking Protocols . . . . . . . . . . . . . . . .  27
-     7.1.  Change Cipher Spec Protocol . . . . . . . . . . . . . . .  28
-     7.2.  Alert Protocol  . . . . . . . . . . . . . . . . . . . . .  28
-       7.2.1.  Closure Alerts  . . . . . . . . . . . . . . . . . . .  29
-       7.2.2.  Error Alerts  . . . . . . . . . . . . . . . . . . . .  30
-     7.3.  Handshake Protocol Overview . . . . . . . . . . . . . . .  34
-     7.4.  Handshake Protocol  . . . . . . . . . . . . . . . . . . .  37
-       7.4.1.  Hello Messages  . . . . . . . . . . . . . . . . . . .  38
-       7.4.2.  Server Certificate  . . . . . . . . . . . . . . . . .  48
-       7.4.3.  Server Key Exchange Message . . . . . . . . . . . . .  50
-       7.4.4.  Certificate Request . . . . . . . . . . . . . . . . .  53
-       7.4.5.  Server Hello Done . . . . . . . . . . . . . . . . . .  55
-       7.4.6.  Client Certificate  . . . . . . . . . . . . . . . . .  56
-       7.4.7.  Client Key Exchange Message . . . . . . . . . . . . .  57
-       7.4.8.  Certificate Verify  . . . . . . . . . . . . . . . . .  62
-       7.4.9.  Finished  . . . . . . . . . . . . . . . . . . . . . .  63
-   8.  Cryptographic Computations  . . . . . . . . . . . . . . . . .  65
-     8.1.  Computing the Master Secret . . . . . . . . . . . . . . .  65
-       8.1.1.  RSA . . . . . . . . . . . . . . . . . . . . . . . . .  65
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   5
+     1.1.  Requirements Terminology  . . . . . . . . . . . . . . . .   6
+     1.2.  Major Differences from TLS 1.1  . . . . . . . . . . . . .   6
+   2.  Goals . . . . . . . . . . . . . . . . . . . . . . . . . . . .   7
+   3.  Goals of This Document  . . . . . . . . . . . . . . . . . . .   8
+   4.  Presentation Language . . . . . . . . . . . . . . . . . . . .   8
+     4.1.  Basic Block Size  . . . . . . . . . . . . . . . . . . . .   8
+     4.2.  Miscellaneous . . . . . . . . . . . . . . . . . . . . . .   9
+     4.3.  Vectors . . . . . . . . . . . . . . . . . . . . . . . . .   9
+     4.4.  Numbers . . . . . . . . . . . . . . . . . . . . . . . . .  10
+     4.5.  Enumerateds . . . . . . . . . . . . . . . . . . . . . . .  10
+     4.6.  Constructed Types . . . . . . . . . . . . . . . . . . . .  11
+       4.6.1.  Variants  . . . . . . . . . . . . . . . . . . . . . .  12
+     4.7.  Cryptographic Attributes  . . . . . . . . . . . . . . . .  13
+     4.8.  Constants . . . . . . . . . . . . . . . . . . . . . . . .  15
+   5.  HMAC and the Pseudorandom Function  . . . . . . . . . . . . .  15
+   6.  The TLS Record Protocol . . . . . . . . . . . . . . . . . . .  17
+     6.1.  Connection States . . . . . . . . . . . . . . . . . . . .  17
+     6.2.  Record Layer  . . . . . . . . . . . . . . . . . . . . . .  20
+       6.2.1.  Fragmentation . . . . . . . . . . . . . . . . . . . .  20
+       6.2.2.  Record Compression and Decompression  . . . . . . . .  22
+       6.2.3.  Record Payload Protection . . . . . . . . . . . . . .  22
+     6.3.  Key Calculation . . . . . . . . . . . . . . . . . . . . .  27
+   7.  The TLS Handshaking Protocols . . . . . . . . . . . . . . . .  28
+     7.1.  Change Cipher Spec Protocol . . . . . . . . . . . . . . .  29
+     7.2.  Alert Protocol  . . . . . . . . . . . . . . . . . . . . .  29
+       7.2.1.  Closure Alerts  . . . . . . . . . . . . . . . . . . .  30
+       7.2.2.  Error Alerts  . . . . . . . . . . . . . . . . . . . .  31
+     7.3.  Handshake Protocol Overview . . . . . . . . . . . . . . .  35
+     7.4.  Handshake Protocol  . . . . . . . . . . . . . . . . . . .  38
 
 
 
@@ -113,58 +113,114 @@ Dierks & Rescorla       Expires October 19, 2014                [Page 2]
 Internet-Draft                     TLS                        April 2014
 
 
-       8.1.2.  Diffie-Hellman  . . . . . . . . . . . . . . . . . . .  66
-   9.  Mandatory Cipher Suites . . . . . . . . . . . . . . . . . . .  66
-   10. Application Data Protocol . . . . . . . . . . . . . . . . . .  66
-   11. Security Considerations . . . . . . . . . . . . . . . . . . .  66
-   12. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  66
-   13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  68
-     13.1. Normative References  . . . . . . . . . . . . . . . . . .  68
-     13.2. Informative References  . . . . . . . . . . . . . . . . .  69
-   Appendix A.  Protocol Data Structures and Constant Values . . . .  72
-     A.1.  Record Layer  . . . . . . . . . . . . . . . . . . . . . .  72
-     A.2.  Change Cipher Specs Message . . . . . . . . . . . . . . .  73
-     A.3.  Alert Messages  . . . . . . . . . . . . . . . . . . . . .  74
-     A.4.  Handshake Protocol  . . . . . . . . . . . . . . . . . . .  75
-       A.4.1.  Hello Messages  . . . . . . . . . . . . . . . . . . .  75
-       A.4.2.  Server Authentication and Key Exchange Messages . . .  77
-       A.4.3.  Client Authentication and Key Exchange Messages . . .  78
-       A.4.4.  Handshake Finalization Message  . . . . . . . . . . .  79
-     A.5.  The Cipher Suite  . . . . . . . . . . . . . . . . . . . .  79
-     A.6.  The Security Parameters . . . . . . . . . . . . . . . . .  81
-     A.7.  Changes to RFC 4492 . . . . . . . . . . . . . . . . . . .  82
-   Appendix B.  Glossary . . . . . . . . . . . . . . . . . . . . . .  82
-   Appendix C.  Cipher Suite Definitions . . . . . . . . . . . . . .  86
-   Appendix D.  Implementation Notes . . . . . . . . . . . . . . . .  88
-     D.1.  Random Number Generation and Seeding  . . . . . . . . . .  88
-     D.2.  Certificates and Authentication . . . . . . . . . . . . .  88
-     D.3.  Cipher Suites . . . . . . . . . . . . . . . . . . . . . .  89
-     D.4.  Implementation Pitfalls . . . . . . . . . . . . . . . . .  89
-   Appendix E.  Backward Compatibility . . . . . . . . . . . . . . .  90
-     E.1.  Compatibility with TLS 1.0/1.1 and SSL 3.0  . . . . . . .  90
-     E.2.  Compatibility with SSL 2.0  . . . . . . . . . . . . . . .  92
-     E.3.  Avoiding Man-in-the-Middle Version Rollback . . . . . . .  93
-   Appendix F.  Security Analysis  . . . . . . . . . . . . . . . . .  94
-     F.1.  Handshake Protocol  . . . . . . . . . . . . . . . . . . .  94
-       F.1.1.  Authentication and Key Exchange . . . . . . . . . . .  94
-       F.1.2.  Version Rollback Attacks  . . . . . . . . . . . . . .  97
-       F.1.3.  Detecting Attacks Against the Handshake Protocol  . .  97
-       F.1.4.  Resuming Sessions . . . . . . . . . . . . . . . . . .  97
-     F.2.  Protecting Application Data . . . . . . . . . . . . . . .  98
-     F.3.  Explicit IVs  . . . . . . . . . . . . . . . . . . . . . .  98
-     F.4.  Security of Composite Cipher Modes  . . . . . . . . . . .  98
-     F.5.  Denial of Service . . . . . . . . . . . . . . . . . . . .  99
-     F.6.  Final Notes . . . . . . . . . . . . . . . . . . . . . . . 100
-   Appendix G.  Working Group Information  . . . . . . . . . . . . . 100
-   Appendix H.  Contributors . . . . . . . . . . . . . . . . . . . . 100
-
-
-
-
+       7.4.1.  Hello Messages  . . . . . . . . . . . . . . . . . . .  39
+       7.4.2.  Server Certificate  . . . . . . . . . . . . . . . . .  49
+       7.4.3.  Server Key Exchange Message . . . . . . . . . . . . .  51
+       7.4.4.  Certificate Request . . . . . . . . . . . . . . . . .  54
+       7.4.5.  Server Hello Done . . . . . . . . . . . . . . . . . .  56
+       7.4.6.  Client Certificate  . . . . . . . . . . . . . . . . .  57
+       7.4.7.  Client Key Exchange Message . . . . . . . . . . . . .  58
+       7.4.8.  Certificate Verify  . . . . . . . . . . . . . . . . .  63
+       7.4.9.  Finished  . . . . . . . . . . . . . . . . . . . . . .  64
+   8.  Cryptographic Computations  . . . . . . . . . . . . . . . . .  66
+     8.1.  Computing the Master Secret . . . . . . . . . . . . . . .  66
+       8.1.1.  RSA . . . . . . . . . . . . . . . . . . . . . . . . .  66
+       8.1.2.  Diffie-Hellman  . . . . . . . . . . . . . . . . . . .  67
+   9.  Mandatory Cipher Suites . . . . . . . . . . . . . . . . . . .  67
+   10. Application Data Protocol . . . . . . . . . . . . . . . . . .  67
+   11. Security Considerations . . . . . . . . . . . . . . . . . . .  67
+   12. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  67
+   13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  69
+     13.1. Normative References  . . . . . . . . . . . . . . . . . .  69
+     13.2. Informative References  . . . . . . . . . . . . . . . . .  70
+   Appendix A.  Protocol Data Structures and Constant Values . . . .  73
+     A.1.  Record Layer  . . . . . . . . . . . . . . . . . . . . . .  73
+     A.2.  Change Cipher Specs Message . . . . . . . . . . . . . . .  74
+     A.3.  Alert Messages  . . . . . . . . . . . . . . . . . . . . .  75
+     A.4.  Handshake Protocol  . . . . . . . . . . . . . . . . . . .  76
+       A.4.1.  Hello Messages  . . . . . . . . . . . . . . . . . . .  76
+       A.4.2.  Server Authentication and Key Exchange Messages . . .  78
+       A.4.3.  Client Authentication and Key Exchange Messages . . .  79
+       A.4.4.  Handshake Finalization Message  . . . . . . . . . . .  80
+     A.5.  The Cipher Suite  . . . . . . . . . . . . . . . . . . . .  80
+     A.6.  The Security Parameters . . . . . . . . . . . . . . . . .  82
+     A.7.  Changes to RFC 4492 . . . . . . . . . . . . . . . . . . .  83
+   Appendix B.  Glossary . . . . . . . . . . . . . . . . . . . . . .  83
+   Appendix C.  Cipher Suite Definitions . . . . . . . . . . . . . .  87
+   Appendix D.  Implementation Notes . . . . . . . . . . . . . . . .  89
+     D.1.  Random Number Generation and Seeding  . . . . . . . . . .  89
+     D.2.  Certificates and Authentication . . . . . . . . . . . . .  89
+     D.3.  Cipher Suites . . . . . . . . . . . . . . . . . . . . . .  90
+     D.4.  Implementation Pitfalls . . . . . . . . . . . . . . . . .  90
+   Appendix E.  Backward Compatibility . . . . . . . . . . . . . . .  91
+     E.1.  Compatibility with TLS 1.0/1.1 and SSL 3.0  . . . . . . .  91
+     E.2.  Compatibility with SSL 2.0  . . . . . . . . . . . . . . .  93
+     E.3.  Avoiding Man-in-the-Middle Version Rollback . . . . . . .  94
+   Appendix F.  Security Analysis  . . . . . . . . . . . . . . . . .  95
+     F.1.  Handshake Protocol  . . . . . . . . . . . . . . . . . . .  95
+       F.1.1.  Authentication and Key Exchange . . . . . . . . . . .  95
+       F.1.2.  Version Rollback Attacks  . . . . . . . . . . . . . .  98
+       F.1.3.  Detecting Attacks Against the Handshake Protocol  . .  98
 
 
 
 Dierks & Rescorla       Expires October 19, 2014                [Page 3]
+
+Internet-Draft                     TLS                        April 2014
+
+
+       F.1.4.  Resuming Sessions . . . . . . . . . . . . . . . . . .  98
+     F.2.  Protecting Application Data . . . . . . . . . . . . . . .  99
+     F.3.  Explicit IVs  . . . . . . . . . . . . . . . . . . . . . .  99
+     F.4.  Security of Composite Cipher Modes  . . . . . . . . . . .  99
+     F.5.  Denial of Service . . . . . . . . . . . . . . . . . . . . 100
+     F.6.  Final Notes . . . . . . . . . . . . . . . . . . . . . . . 101
+   Appendix G.  Working Group Information  . . . . . . . . . . . . . 101
+   Appendix H.  Contributors . . . . . . . . . . . . . . . . . . . . 101
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Dierks & Rescorla       Expires October 19, 2014                [Page 4]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -220,7 +276,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014                [Page 4]
+Dierks & Rescorla       Expires October 19, 2014                [Page 5]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -276,7 +332,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014                [Page 5]
+Dierks & Rescorla       Expires October 19, 2014                [Page 6]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -332,7 +388,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014                [Page 6]
+Dierks & Rescorla       Expires October 19, 2014                [Page 7]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -388,7 +444,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014                [Page 7]
+Dierks & Rescorla       Expires October 19, 2014                [Page 8]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -444,7 +500,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014                [Page 8]
+Dierks & Rescorla       Expires October 19, 2014                [Page 9]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -500,7 +556,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014                [Page 9]
+Dierks & Rescorla       Expires October 19, 2014               [Page 10]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -556,7 +612,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 10]
+Dierks & Rescorla       Expires October 19, 2014               [Page 11]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -612,7 +668,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 11]
+Dierks & Rescorla       Expires October 19, 2014               [Page 12]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -668,7 +724,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 12]
+Dierks & Rescorla       Expires October 19, 2014               [Page 13]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -724,7 +780,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 13]
+Dierks & Rescorla       Expires October 19, 2014               [Page 14]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -780,7 +836,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 14]
+Dierks & Rescorla       Expires October 19, 2014               [Page 15]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -836,7 +892,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 15]
+Dierks & Rescorla       Expires October 19, 2014               [Page 16]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -892,7 +948,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 16]
+Dierks & Rescorla       Expires October 19, 2014               [Page 17]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -948,7 +1004,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 17]
+Dierks & Rescorla       Expires October 19, 2014               [Page 18]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -1004,7 +1060,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 18]
+Dierks & Rescorla       Expires October 19, 2014               [Page 19]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -1060,7 +1116,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 19]
+Dierks & Rescorla       Expires October 19, 2014               [Page 20]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -1116,7 +1172,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 20]
+Dierks & Rescorla       Expires October 19, 2014               [Page 21]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -1172,7 +1228,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 21]
+Dierks & Rescorla       Expires October 19, 2014               [Page 22]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -1228,7 +1284,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 22]
+Dierks & Rescorla       Expires October 19, 2014               [Page 23]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -1284,7 +1340,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 23]
+Dierks & Rescorla       Expires October 19, 2014               [Page 24]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -1340,7 +1396,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 24]
+Dierks & Rescorla       Expires October 19, 2014               [Page 25]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -1396,7 +1452,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 25]
+Dierks & Rescorla       Expires October 19, 2014               [Page 26]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -1452,7 +1508,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 26]
+Dierks & Rescorla       Expires October 19, 2014               [Page 27]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -1508,7 +1564,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 27]
+Dierks & Rescorla       Expires October 19, 2014               [Page 28]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -1564,7 +1620,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 28]
+Dierks & Rescorla       Expires October 19, 2014               [Page 29]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -1620,7 +1676,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 29]
+Dierks & Rescorla       Expires October 19, 2014               [Page 30]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -1676,7 +1732,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 30]
+Dierks & Rescorla       Expires October 19, 2014               [Page 31]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -1732,7 +1788,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 31]
+Dierks & Rescorla       Expires October 19, 2014               [Page 32]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -1788,7 +1844,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 32]
+Dierks & Rescorla       Expires October 19, 2014               [Page 33]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -1844,7 +1900,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 33]
+Dierks & Rescorla       Expires October 19, 2014               [Page 34]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -1900,7 +1956,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 34]
+Dierks & Rescorla       Expires October 19, 2014               [Page 35]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -1956,7 +2012,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 35]
+Dierks & Rescorla       Expires October 19, 2014               [Page 36]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -2012,7 +2068,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 36]
+Dierks & Rescorla       Expires October 19, 2014               [Page 37]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -2068,7 +2124,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 37]
+Dierks & Rescorla       Expires October 19, 2014               [Page 38]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -2124,7 +2180,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 38]
+Dierks & Rescorla       Expires October 19, 2014               [Page 39]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -2180,7 +2236,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 39]
+Dierks & Rescorla       Expires October 19, 2014               [Page 40]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -2236,7 +2292,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 40]
+Dierks & Rescorla       Expires October 19, 2014               [Page 41]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -2292,7 +2348,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 41]
+Dierks & Rescorla       Expires October 19, 2014               [Page 42]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -2348,7 +2404,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 42]
+Dierks & Rescorla       Expires October 19, 2014               [Page 43]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -2404,7 +2460,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 43]
+Dierks & Rescorla       Expires October 19, 2014               [Page 44]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -2460,7 +2516,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 44]
+Dierks & Rescorla       Expires October 19, 2014               [Page 45]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -2516,7 +2572,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 45]
+Dierks & Rescorla       Expires October 19, 2014               [Page 46]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -2572,7 +2628,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 46]
+Dierks & Rescorla       Expires October 19, 2014               [Page 47]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -2628,7 +2684,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 47]
+Dierks & Rescorla       Expires October 19, 2014               [Page 48]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -2684,7 +2740,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 48]
+Dierks & Rescorla       Expires October 19, 2014               [Page 49]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -2740,7 +2796,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 49]
+Dierks & Rescorla       Expires October 19, 2014               [Page 50]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -2796,7 +2852,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 50]
+Dierks & Rescorla       Expires October 19, 2014               [Page 51]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -2852,7 +2908,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 51]
+Dierks & Rescorla       Expires October 19, 2014               [Page 52]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -2908,7 +2964,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 52]
+Dierks & Rescorla       Expires October 19, 2014               [Page 53]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -2964,7 +3020,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 53]
+Dierks & Rescorla       Expires October 19, 2014               [Page 54]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -3020,7 +3076,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 54]
+Dierks & Rescorla       Expires October 19, 2014               [Page 55]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -3076,7 +3132,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 55]
+Dierks & Rescorla       Expires October 19, 2014               [Page 56]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -3132,7 +3188,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 56]
+Dierks & Rescorla       Expires October 19, 2014               [Page 57]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -3188,7 +3244,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 57]
+Dierks & Rescorla       Expires October 19, 2014               [Page 58]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -3244,7 +3300,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 58]
+Dierks & Rescorla       Expires October 19, 2014               [Page 59]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -3300,7 +3356,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 59]
+Dierks & Rescorla       Expires October 19, 2014               [Page 60]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -3356,7 +3412,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 60]
+Dierks & Rescorla       Expires October 19, 2014               [Page 61]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -3412,7 +3468,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 61]
+Dierks & Rescorla       Expires October 19, 2014               [Page 62]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -3468,7 +3524,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 62]
+Dierks & Rescorla       Expires October 19, 2014               [Page 63]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -3524,7 +3580,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 63]
+Dierks & Rescorla       Expires October 19, 2014               [Page 64]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -3580,7 +3636,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 64]
+Dierks & Rescorla       Expires October 19, 2014               [Page 65]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -3636,7 +3692,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 65]
+Dierks & Rescorla       Expires October 19, 2014               [Page 66]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -3692,7 +3748,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 66]
+Dierks & Rescorla       Expires October 19, 2014               [Page 67]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -3748,7 +3804,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 67]
+Dierks & Rescorla       Expires October 19, 2014               [Page 68]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -3804,7 +3860,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 68]
+Dierks & Rescorla       Expires October 19, 2014               [Page 69]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -3860,7 +3916,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 69]
+Dierks & Rescorla       Expires October 19, 2014               [Page 70]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -3916,7 +3972,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 70]
+Dierks & Rescorla       Expires October 19, 2014               [Page 71]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -3972,7 +4028,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 71]
+Dierks & Rescorla       Expires October 19, 2014               [Page 72]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -4028,7 +4084,7 @@ A.1.  Record Layer
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 72]
+Dierks & Rescorla       Expires October 19, 2014               [Page 73]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -4084,7 +4140,7 @@ A.2.  Change Cipher Specs Message
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 73]
+Dierks & Rescorla       Expires October 19, 2014               [Page 74]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -4140,7 +4196,7 @@ A.3.  Alert Messages
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 74]
+Dierks & Rescorla       Expires October 19, 2014               [Page 75]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -4196,7 +4252,7 @@ A.4.1.  Hello Messages
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 75]
+Dierks & Rescorla       Expires October 19, 2014               [Page 76]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -4252,7 +4308,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 76]
+Dierks & Rescorla       Expires October 19, 2014               [Page 77]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -4308,7 +4364,7 @@ A.4.2.  Server Authentication and Key Exchange Messages
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 77]
+Dierks & Rescorla       Expires October 19, 2014               [Page 78]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -4364,7 +4420,7 @@ A.4.3.  Client Authentication and Key Exchange Messages
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 78]
+Dierks & Rescorla       Expires October 19, 2014               [Page 79]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -4420,7 +4476,7 @@ A.5.  The Cipher Suite
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 79]
+Dierks & Rescorla       Expires October 19, 2014               [Page 80]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -4476,7 +4532,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 80]
+Dierks & Rescorla       Expires October 19, 2014               [Page 81]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -4532,7 +4588,7 @@ A.6.  The Security Parameters
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 81]
+Dierks & Rescorla       Expires October 19, 2014               [Page 82]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -4588,7 +4644,7 @@ Appendix B.  Glossary
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 82]
+Dierks & Rescorla       Expires October 19, 2014               [Page 83]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -4644,7 +4700,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 83]
+Dierks & Rescorla       Expires October 19, 2014               [Page 84]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -4700,7 +4756,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 84]
+Dierks & Rescorla       Expires October 19, 2014               [Page 85]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -4756,7 +4812,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 85]
+Dierks & Rescorla       Expires October 19, 2014               [Page 86]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -4812,7 +4868,7 @@ TLS_DH_RSA_WITH_3DES_EDE_CBC_SHA        DH_RSA       3DES_EDE_CBC SHA
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 86]
+Dierks & Rescorla       Expires October 19, 2014               [Page 87]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -4868,7 +4924,7 @@ SHA256    HMAC-SHA256     32            32
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 87]
+Dierks & Rescorla       Expires October 19, 2014               [Page 88]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -4924,7 +4980,7 @@ D.2.  Certificates and Authentication
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 88]
+Dierks & Rescorla       Expires October 19, 2014               [Page 89]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -4980,7 +5036,7 @@ D.4.  Implementation Pitfalls
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 89]
+Dierks & Rescorla       Expires October 19, 2014               [Page 90]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -5036,7 +5092,7 @@ E.1.  Compatibility with TLS 1.0/1.1 and SSL 3.0
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 90]
+Dierks & Rescorla       Expires October 19, 2014               [Page 91]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -5092,7 +5148,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 91]
+Dierks & Rescorla       Expires October 19, 2014               [Page 92]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -5148,7 +5204,7 @@ E.2.  Compatibility with SSL 2.0
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 92]
+Dierks & Rescorla       Expires October 19, 2014               [Page 93]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -5204,7 +5260,7 @@ E.3.  Avoiding Man-in-the-Middle Version Rollback
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 93]
+Dierks & Rescorla       Expires October 19, 2014               [Page 94]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -5260,7 +5316,7 @@ F.1.1.  Authentication and Key Exchange
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 94]
+Dierks & Rescorla       Expires October 19, 2014               [Page 95]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -5316,7 +5372,7 @@ F.1.1.2.  RSA Key Exchange and Authentication
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 95]
+Dierks & Rescorla       Expires October 19, 2014               [Page 96]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -5372,7 +5428,7 @@ F.1.1.3.  Diffie-Hellman Key Exchange with Authentication
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 96]
+Dierks & Rescorla       Expires October 19, 2014               [Page 97]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -5428,7 +5484,7 @@ F.1.4.  Resuming Sessions
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 97]
+Dierks & Rescorla       Expires October 19, 2014               [Page 98]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -5484,7 +5540,7 @@ F.4.  Security of Composite Cipher Modes
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 98]
+Dierks & Rescorla       Expires October 19, 2014               [Page 99]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -5540,7 +5596,7 @@ F.5.  Denial of Service
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 99]
+Dierks & Rescorla       Expires October 19, 2014              [Page 100]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -5596,7 +5652,7 @@ Appendix H.  Contributors
 
 
 
-Dierks & Rescorla       Expires October 19, 2014              [Page 100]
+Dierks & Rescorla       Expires October 19, 2014              [Page 101]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -5652,7 +5708,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014              [Page 101]
+Dierks & Rescorla       Expires October 19, 2014              [Page 102]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -5708,5 +5764,5 @@ Authors' Addresses
 
 
 
-Dierks & Rescorla       Expires October 19, 2014              [Page 102]
+Dierks & Rescorla       Expires October 19, 2014              [Page 103]
 
