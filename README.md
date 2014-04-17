@@ -3,11 +3,13 @@ TLS 1.3 Draft Specifications
 =============================
 
 This is the working area for the [IETF TLS Working
-Group](http://trac.tools.ietf.org/wg/tls/trac/wiki) draft of
-[TLS 1.3]
+Group](http://trac.tools.ietf.org/wg/tls/trac/wiki) draft of [TLS 1.3]
 
 TLS 1.3 specification:
-[Links coming soon]
+* [Editor's copy](https://github.com/tlswg/tls13-spec/blob/master/draft-ietf-tls-rfc5246-bis.txt)
+* [Working Group Draft](Coming soon)
+
+
 
 Contributing
 ------------
