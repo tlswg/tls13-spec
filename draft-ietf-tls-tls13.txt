@@ -11,7 +11,7 @@ Expires: October 19, 2014
 
 
         The Transport Layer Security (TLS) Protocol Version 1.3
-                        draft-ietf-tls-tls13-01
+                      draft-ietf-tls-tls13-latest
 
 Abstract
 
