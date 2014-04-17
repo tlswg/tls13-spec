@@ -4108,8 +4108,8 @@ ENCRYPTED-KEY-DATA field of the CLIENT-MASTER-KEY to 0x03 (the other padding
 bytes are random).
 
 When a TLS-capable server negotiates SSL 2.0 it SHOULD, after decrypting the
-ENCRYPTED-KEY-DATA field, check that these 8 padding bytes are 0x03. If they
-are not, the server SHOULD generate a random value for SECRET-KEY-DATA, and
+ENCRYPTED-KEY-DATA field, check that these 8 padding bytes are not all 0x03. If
+they are not, the server SHOULD generate a random value for SECRET-KEY-DATA, and
 continue the handshake (which will eventually fail since the keys will not
 match). Note that reporting the error situation to the client could make the
 server vulnerable to attacks described in {{BLEI}}.
