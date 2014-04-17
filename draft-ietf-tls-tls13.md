@@ -1,7 +1,7 @@
 ---
 title: The Transport Layer Security (TLS) Protocol Version 1.3
 abbrev: TLS
-docname: draft-ietf-tls-rfc5246-bis-00
+docname: draft-ietf-tls-tls13-00
 date: 2014
 category: std
 updates: 4492
