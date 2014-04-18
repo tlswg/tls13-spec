@@ -81,7 +81,7 @@ Table of Contents
    2.  Goals . . . . . . . . . . . . . . . . . . . . . . . . . . . .   7
    3.  Goals of This Document  . . . . . . . . . . . . . . . . . . .   8
    4.  Presentation Language . . . . . . . . . . . . . . . . . . . .   8
-     4.1.  Basic Block Size  . . . . . . . . . . . . . . . . . . . .   8
+     4.1.  Basic Block Size  . . . . . . . . . . . . . . . . . . . .   9
      4.2.  Miscellaneous . . . . . . . . . . . . . . . . . . . . . .   9
      4.3.  Vectors . . . . . . . . . . . . . . . . . . . . . . . . .   9
      4.4.  Numbers . . . . . . . . . . . . . . . . . . . . . . . . .  10
@@ -235,6 +235,13 @@ Internet-Draft                     TLS                        April 2014
    1.2 remain in this version.  Thanks to Mark Nottingham for doing the
    markdown translation.
 
+   [RFC EDITOR: PLEASE REMOVE THE FOLLOWING PARAGRAPH] The source for
+   this draft is maintained in GitHub.  Suggested changes should be
+   submitted as pull requests at https://github.com/tlswg/tls13-spec.
+   Instructions are on that page as well.  Editorial changes can be
+   managed in GitHub, but any substantive change should be discussed on
+   the TLS mailing list.
+
    The primary goal of the TLS protocol is to provide privacy and data
    integrity between two communicating applications.  The protocol is
    composed of two layers: the TLS Record Protocol and the TLS Handshake
@@ -265,14 +272,7 @@ Internet-Draft                     TLS                        April 2014
    data.  The TLS Handshake Protocol provides connection security that
    has three basic properties:
 
-   -  The peer's identity can be authenticated using asymmetric, or
-      public key, cryptography (e.g., RSA [RSA], DSA [DSS], etc.).  This
-      authentication can be made optional, but is generally required for
-      at least one of the peers.
 
-   -  The negotiation of a shared secret is secure: the negotiated
-      secret is unavailable to eavesdroppers, and for any authenticated
-      connection the secret cannot be obtained, even by an attacker who
 
 
 
@@ -281,6 +281,14 @@ Dierks & Rescorla       Expires October 19, 2014                [Page 5]
 Internet-Draft                     TLS                        April 2014
 
 
+   -  The peer's identity can be authenticated using asymmetric, or
+      public key, cryptography (e.g., RSA [RSA], DSA [DSS], etc.).  This
+      authentication can be made optional, but is generally required for
+      at least one of the peers.
+
+   -  The negotiation of a shared secret is secure: the negotiated
+      secret is unavailable to eavesdroppers, and for any authenticated
+      connection the secret cannot be obtained, even by an attacker who
       can place himself in the middle of the connection.
 
    -  The negotiation is reliable: no attacker can modify the
@@ -320,14 +328,6 @@ Internet-Draft                     TLS                        April 2014
       Note that this also relaxes some of the constraints on signature
       and hash algorithms from previous versions of TLS.
 
-   -  Addition of support for authenticated encryption with additional
-      data modes.
-
-   -  TLS Extensions definition and AES Cipher Suites were merged in
-      from external [TLSEXT] and [RFC3268].
-
-   -  Tighter checking of EncryptedPreMasterSecret version numbers.
-
 
 
 
@@ -336,6 +336,14 @@ Dierks & Rescorla       Expires October 19, 2014                [Page 6]
 
 Internet-Draft                     TLS                        April 2014
 
+
+   -  Addition of support for authenticated encryption with additional
+      data modes.
+
+   -  TLS Extensions definition and AES Cipher Suites were merged in
+      from external [TLSEXT] and [RFC3268].
+
+   -  Tighter checking of EncryptedPreMasterSecret version numbers.
 
    -  Tightened up a number of requirements.
 
@@ -377,6 +385,14 @@ Internet-Draft                     TLS                        April 2014
 
    2.  Interoperability: Independent programmers should be able to
        develop applications utilizing TLS that can successfully exchange
+
+
+
+Dierks & Rescorla       Expires October 19, 2014                [Page 7]
+
+Internet-Draft                     TLS                        April 2014
+
+
        cryptographic parameters without knowledge of one another's code.
 
    3.  Extensibility: TLS seeks to provide a framework into which new
@@ -385,13 +401,6 @@ Internet-Draft                     TLS                        April 2014
        the need to create a new protocol (and risking the introduction
        of possible new weaknesses) and avoiding the need to implement an
        entire new security library.
-
-
-
-Dierks & Rescorla       Expires October 19, 2014                [Page 7]
-
-Internet-Draft                     TLS                        April 2014
-
 
    4.  Relative efficiency: Cryptographic operations tend to be highly
        CPU intensive, particularly public key operations.  For this
@@ -432,6 +441,14 @@ Internet-Draft                     TLS                        April 2014
    purpose of this presentation language is to document TLS only; it has
    no general application beyond that particular goal.
 
+
+
+
+Dierks & Rescorla       Expires October 19, 2014                [Page 8]
+
+Internet-Draft                     TLS                        April 2014
+
+
 4.1.  Basic Block Size
 
    The representation of all data items is explicitly specified.  The
@@ -441,14 +458,6 @@ Internet-Draft                     TLS                        April 2014
    example) is formed (using C notation) by:
 
       value = (byte[0] << 8*(n-1)) | (byte[1] << 8*(n-2)) |
-
-
-
-Dierks & Rescorla       Expires October 19, 2014                [Page 8]
-
-Internet-Draft                     TLS                        April 2014
-
-
               ... | byte[n-1];
 
    This byte ordering for multi-byte values is the commonplace network
@@ -488,6 +497,14 @@ Internet-Draft                     TLS                        April 2014
 
    Variable-length vectors are defined by specifying a subrange of legal
    lengths, inclusively, using the notation <floor..ceiling>.  When
+
+
+
+Dierks & Rescorla       Expires October 19, 2014                [Page 9]
+
+Internet-Draft                     TLS                        April 2014
+
+
    these are encoded, the actual length precedes the vector's contents
    in the byte stream.  The length will be in the form of a number
    consuming as many bytes as required to hold the vector's specified
@@ -497,14 +514,6 @@ Internet-Draft                     TLS                        April 2014
       T T'<floor..ceiling>;
 
    In the following example, mandatory is a vector that must contain
-
-
-
-Dierks & Rescorla       Expires October 19, 2014                [Page 9]
-
-Internet-Draft                     TLS                        April 2014
-
-
    between 300 and 400 bytes of type opaque.  It can never be empty.
    The actual length field consumes two bytes, a uint16, which is
    sufficient to represent the value 400 (see Section 4.4).  On the
@@ -544,6 +553,14 @@ Internet-Draft                     TLS                        April 2014
 
    An additional sparse data type is available called enum.  A field of
    type enum can only assume the values declared in the definition.
+
+
+
+Dierks & Rescorla       Expires October 19, 2014               [Page 10]
+
+Internet-Draft                     TLS                        April 2014
+
+
    Each definition is a different type.  Only enumerateds of the same
    type may be assigned or compared.  Every element of an enumerated
    must be assigned a value, as demonstrated in the following example.
@@ -553,14 +570,6 @@ Internet-Draft                     TLS                        April 2014
       enum { e1(v1), e2(v2), ... , en(vn) [[, (n)]] } Te;
 
    An enumerated occupies as much space in the byte stream as would its
-
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 10]
-
-Internet-Draft                     TLS                        April 2014
-
-
    maximal defined ordinal value.  The following definition would cause
    one byte to be used to carry fields of type Color.
 
@@ -601,21 +610,17 @@ Internet-Draft                     TLS                        April 2014
           Tn fn;
       } [[T]];
 
-   The fields within a structure may be qualified using the type's name,
-   with a syntax much like that available for enumerateds.  For example,
-   T.f2 refers to the second field of the previous declaration.
-   Structure definitions may be embedded.
-
-
-
-
-
 
 
 Dierks & Rescorla       Expires October 19, 2014               [Page 11]
 
 Internet-Draft                     TLS                        April 2014
 
+
+   The fields within a structure may be qualified using the type's name,
+   with a syntax much like that available for enumerateds.  For example,
+   T.f2 refers to the second field of the previous declaration.
+   Structure definitions may be embedded.
 
 4.6.1.  Variants
 
@@ -648,11 +653,6 @@ Internet-Draft                     TLS                        April 2014
       } [[Tv]];
 
    For example:
-
-
-
-
-
 
 
 
