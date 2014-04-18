@@ -274,6 +274,9 @@ as-is to create a clearer revision history for future versions.
 Any errata in TLS 1.2 remain in this version. Thanks to Mark
 Nottingham for doing the markdown translation.
 
+[RFC EDITOR: PLEASE REMOVE THE FOLLOWING PARAGRAPH]
+The source for this draft is maintained in GitHub. Suggested changes should be submitted as pull requests at https://github.com/tlswg/tls13-spec . Instructions are on that page as well. Editorial changes can be managed in GitHub, but any substantive change should be discussed on the TLS mailing list.
+
 The primary goal of the TLS protocol is to provide privacy and data integrity
 between two communicating applications. The protocol is composed of two layers:
 the TLS Record Protocol and the TLS Handshake Protocol. At the lowest level,
