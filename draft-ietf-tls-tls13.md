@@ -257,7 +257,7 @@ informative:
 
 This document specifies Version 1.3 of the Transport Layer Security
 (TLS) protocol.  The TLS protocol provides communications security
-over the Internet.  The protocol allows client/server applications to
+over the Internet. The protocol allows client/server applications to
 communicate in a way that is designed to prevent eavesdropping,
 tampering, or message forgery.
 --- middle
