@@ -337,6 +337,12 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
 "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be
 interpreted as described in RFC 2119 {{RFC2119}}.
 
+##  Major Differences from TLS 1.2
+
+draft-01
+-  Removed support for compression.
+
+
 ##  Major Differences from TLS 1.1
 
 This document is a revision of the TLS 1.1 {{RFC4346}} protocol which contains
