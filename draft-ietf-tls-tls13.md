@@ -1487,8 +1487,8 @@ decryption_failed_RESERVED
 
 record_overflow
 : A TLSCiphertext record was received that had a length more than
-  2^14+2048 bytes, or a record decrypted to a TLSCompressed record
-  with more than 2^14+1024 bytes.  This message is always fatal and
+  2^14+2048 bytes, or a record decrypted to a TLSPlaintext record
+  with more than 2^14 bytes.  This message is always fatal and
   should never be observed in communication between proper
   implementations (except when messages were corrupted in the
   network).
@@ -2994,7 +2994,7 @@ TLS_RSA_WITH_AES_128_CBC_SHA (see {{the-cipher-suite}} for the definition).
 
 #  Application Data Protocol
 
-Application data messages are carried by the record layer and are fragmented,
+Application data messages are carried by the record layer and are fragmented
 and encrypted based on the current connection state. The messages
 are treated as transparent data to the record layer.
 
@@ -3093,13 +3093,6 @@ This section describes protocol types and constants.
         ContentType type;
         ProtocolVersion version;
         uint16 length;
-        opaque fragment[TLSCompressed.length];
-    } TLSCompressed;
-
-    struct {
-        ContentType type;
-        ProtocolVersion version;
-        uint16 length;
         select (SecurityParameters.cipher_type) {
             case stream: GenericStreamCipher;
             case block:  GenericBlockCipher;
@@ -3108,14 +3101,14 @@ This section describes protocol types and constants.
     } TLSCiphertext;
 
     stream-ciphered struct {
-        opaque content[TLSCompressed.length];
+        opaque content[TLSPlaintext.length];
         opaque MAC[SecurityParameters.mac_length];
     } GenericStreamCipher;
 
     struct {
         opaque IV[SecurityParameters.record_iv_length];
         block-ciphered struct {
-            opaque content[TLSCompressed.length];
+            opaque content[TLSPlaintext.length];
             opaque MAC[SecurityParameters.mac_length];
             uint8 padding[GenericBlockCipher.padding_length];
             uint8 padding_length;
@@ -3125,7 +3118,7 @@ This section describes protocol types and constants.
     struct {
        opaque nonce_explicit[SecurityParameters.record_iv_length];
        aead-ciphered struct {
-           opaque content[TLSCompressed.length];
+           opaque content[TLSPlaintext.length];
        };
     } GenericAEADCipher;
 
