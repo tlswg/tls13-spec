@@ -337,6 +337,12 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
 "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be
 interpreted as described in RFC 2119 {{RFC2119}}.
 
+##  Major Differences from TLS 1.2
+
+draft-01
+-  Removed support for compression.
+
+
 ##  Major Differences from TLS 1.1
 
 This document is a revision of the TLS 1.1 {{RFC4346}} protocol which contains
@@ -806,12 +812,12 @@ the following bytes:
 
 #  The TLS Record Protocol
 
-The TLS Record Protocol is a layered protocol. At each layer, messages may
-include fields for length, description, and content. The Record Protocol takes
-messages to be transmitted, fragments the data into manageable blocks,
-optionally compresses the data, applies a MAC, encrypts, and transmits the
-result. Received data is decrypted, verified, decompressed, reassembled, and
-then delivered to higher-level clients.
+The TLS Record Protocol is a layered protocol. At each layer, messages
+may include fields for length, description, and content. The Record
+Protocol takes messages to be transmitted, fragments the data into
+manageable blocks, applies a MAC, encrypts, and transmits the
+result. Received data is decrypted, verified, reassembled, and then
+delivered to higher-level clients.
 
 Four protocols that use the record protocol are described in this document: the
 handshake protocol, the alert protocol, the change cipher spec protocol, and
@@ -835,9 +841,10 @@ wish to take steps (padding, cover traffic) to minimize information leakage.
 
 ##  Connection States
 
-A TLS connection state is the operating environment of the TLS Record Protocol.
-It specifies a compression algorithm, an encryption algorithm, and a MAC
-algorithm. In addition, the parameters for these algorithms are known: the MAC
+A TLS connection state is the operating environment of the TLS Record
+Protocol.  It specifies an encryption algorithm and a MAC
+algorithm. In addition, the parameters for these algorithms are known:
+the MAC
 key and the bulk encryption keys for the connection in both the read and the
 write directions. Logically, there are always four connection states
 outstanding: the current read and write states, and the pending read and write
@@ -848,7 +855,7 @@ states current, in which case the appropriate current state is disposed of and
 replaced with the pending state; the pending state is then reinitialized to an
 empty state. It is illegal to make a state that has not been initialized with
 security parameters a current state. The initial current state always specifies
-that no encryption, compression, or MAC will be used.
+that no encryption or MAC will be used.
 
 The security parameters for a TLS Connection read and write state are set by
 providing the following values:
@@ -879,12 +886,6 @@ MAC algorithm
   specification includes the size of the value returned by the MAC
   algorithm.
 
-compression algorithm
-
-: An algorithm to be used for data compression.  This specification
-  must include all information the algorithm requires to do
-  compression.
-
 master secret
 
 : A 48-byte secret shared between the two peers in the connection.
@@ -913,9 +914,7 @@ These parameters are defined in the presentation language as:
        enum { null, hmac_md5, hmac_sha1, hmac_sha256,
             hmac_sha384, hmac_sha512} MACAlgorithm;
 
-       enum { null(0), (255) } CompressionMethod;
-
-       /* The algorithms specified in CompressionMethod, PRFAlgorithm,
+       /* The algorithms specified in PRFAlgorithm,
           BulkCipherAlgorithm, and MACAlgorithm may be added to. */
 
        struct {
@@ -930,7 +929,6 @@ These parameters are defined in the presentation language as:
            MACAlgorithm           mac_algorithm;
            uint8                  mac_length;
            uint8                  mac_key_length;
-           CompressionMethod      compression_algorithm;
            opaque                 master_secret[48];
            opaque                 client_random[32];
            opaque                 server_random[32];
@@ -954,9 +952,6 @@ Once the security parameters have been set and the keys have been generated,
 the connection states can be instantiated by making them the current states.
 These current states MUST be updated for each record processed. Each connection
 state includes the following elements:
-
-compression state
-: The current state of the compression algorithm.
 
 cipher state
 : The current state of the encryption algorithm.  This will consist
@@ -1043,45 +1038,10 @@ order as they are protected by the record layer. Recipients MUST receive and
 process interleaved application layer traffic during handshakes subsequent to
 the first one on a connection.
 
-###  Record Compression and Decompression
-
-All records are compressed using the compression algorithm defined in the
-current session state. There is always an active compression algorithm;
-however, initially it is defined as CompressionMethod.null. The compression
-algorithm translates a TLSPlaintext structure into a TLSCompressed structure.
-Compression functions are initialized with default state information whenever a
-connection state is made active. {{RFC3749}} describes compression algorithms
-for TLS.
-
-Compression must be lossless and may not increase the content length by more
-than 1024 bytes. If the decompression function encounters a
-TLSCompressed.fragment that would decompress to a length in excess of 2^14
-bytes, it MUST report a fatal decompression failure error.
-
-       struct {
-           ContentType type;       /* same as TLSPlaintext.type */
-           ProtocolVersion version;/* same as TLSPlaintext.version */
-           uint16 length;
-           opaque fragment[TLSCompressed.length];
-       } TLSCompressed;
-
-length
-: The length (in bytes) of the following TLSCompressed.fragment.
-  The length MUST NOT exceed 2^14 + 1024.
-
-fragment
-: The compressed form of TLSPlaintext.fragment.
-{:br }
-
-Note: A CompressionMethod.null operation is an identity operation; no fields
-are altered.
-
-Implementation note: Decompression functions are responsible for ensuring that
-messages cannot cause internal buffer overflows.
 
 ###  Record Payload Protection
 
-The encryption and MAC functions translate a TLSCompressed structure into a
+The encryption and MAC functions translate a TLSPlaintext structure into a
 TLSCiphertext. The decryption functions reverse the process. The MAC of the
 record also includes a sequence number so that missing, extra, or repeated
 messages are detectable.
@@ -1098,37 +1058,37 @@ messages are detectable.
        } TLSCiphertext;
 
 type
-: The type field is identical to TLSCompressed.type.
+: The type field is identical to TLSPlaintext.type.
 
 version
-: The version field is identical to TLSCompressed.version.
+: The version field is identical to TLSPlaintext.version.
 
 length
 : The length (in bytes) of the following TLSCiphertext.fragment.
   The length MUST NOT exceed 2^14 + 2048.
 
 fragment
-: The encrypted form of TLSCompressed.fragment, with the MAC.
+: The encrypted form of TLSPlaintext.fragment, with the MAC.
 {:br }
 
 ####  Null or Standard Stream Cipher
 
 Stream ciphers (including BulkCipherAlgorithm.null; see
-{{the-security-parameters}}) convert TLSCompressed.fragment structures to and
+{{the-security-parameters}}) convert TLSPlaintext.fragment structures to and
 from stream TLSCiphertext.fragment structures.
 
        stream-ciphered struct {
-           opaque content[TLSCompressed.length];
+           opaque content[TLSPlaintext.length];
            opaque MAC[SecurityParameters.mac_length];
        } GenericStreamCipher;
 
 The MAC is generated as:
 
        MAC(MAC_write_key, seq_num +
-                             TLSCompressed.type +
-                             TLSCompressed.version +
-                             TLSCompressed.length +
-                             TLSCompressed.fragment);
+                             TLSPlaintext.type +
+                             TLSPlaintext.version +
+                             TLSPlaintext.length +
+                             TLSPlaintext.fragment);
 
 where "+" denotes concatenation.
 
@@ -1146,18 +1106,18 @@ one record is simply used on the subsequent packet. If the cipher suite is
 TLS_NULL_WITH_NULL_NULL, encryption consists of the identity operation (i.e.,
 the data is not encrypted, and the MAC size is zero, implying that no MAC is
 used). For both null and stream ciphers, TLSCiphertext.length is
-TLSCompressed.length plus SecurityParameters.mac_length.
+TLSPlaintext.length plus SecurityParameters.mac_length.
 
 ####  CBC Block Cipher
 
 For block ciphers (such as 3DES or AES), the encryption and MAC functions
-convert TLSCompressed.fragment structures to and from block
+convert TLSPlaintext.fragment structures to and from block
 TLSCiphertext.fragment structures.
 
        struct {
            opaque IV[SecurityParameters.record_iv_length];
            block-ciphered struct {
-               opaque content[TLSCompressed.length];
+               opaque content[TLSPlaintext.length];
                opaque MAC[SecurityParameters.mac_length];
                uint8 padding[GenericBlockCipher.padding_length];
                uint8 padding_length;
@@ -1197,11 +1157,11 @@ padding_length
 {:br }
 
 The encrypted data length (TLSCiphertext.length) is one more than the sum of
-SecurityParameters.block_length, TLSCompressed.length,
+SecurityParameters.block_length, TLSPlaintext.length,
 SecurityParameters.mac_length, and padding_length.
 
 Example: If the block length is 8 bytes, the content length
-(TLSCompressed.length) is 61 bytes, and the MAC length is 20 bytes, then the
+(TLSPlaintext.length) is 61 bytes, and the MAC length is 20 bytes, then the
 length before padding is 82 bytes (this does not include the IV. Thus, the
 padding length modulo 8 must be equal to 6 in order to make the total length an
 even multiple of 8 bytes (the block length). The padding length can be 6, 14,
@@ -1230,13 +1190,13 @@ MACs and the small size of the timing signal.
 ####  AEAD Ciphers
 
 For AEAD {{RFC5116}} ciphers (such as {{CCM}} or {{GCM}}), the AEAD function
-converts TLSCompressed.fragment structures to and from AEAD
+converts TLSPlaintext.fragment structures to and from AEAD
 TLSCiphertext.fragment structures.
 
        struct {
           opaque nonce_explicit[SecurityParameters.record_iv_length];
           aead-ciphered struct {
-              opaque content[TLSCompressed.length];
+              opaque content[TLSPlaintext.length];
           };
        } GenericAEADCipher;
 
@@ -1254,21 +1214,21 @@ this case, the implicit part SHOULD be derived from key_block as
 client_write_iv and server_write_iv (as described in {{key-calculation}}), and
 the explicit part is included in GenericAEAEDCipher.nonce_explicit.
 
-The plaintext is the TLSCompressed.fragment.
+The plaintext is the TLSPlaintext.fragment.
 
 The additional authenticated data, which we denote as additional_data, is
 defined as follows:
 
-       additional_data = seq_num + TLSCompressed.type +
-                         TLSCompressed.version + TLSCompressed.length;
+       additional_data = seq_num + TLSPlaintext.type +
+                         TLSPlaintext.version + TLSPlaintext.length;
 
 where "+" denotes concatenation.
 
 The aead_output consists of the ciphertext output by the AEAD encryption
-operation. The length will generally be larger than TLSCompressed.length, but
+operation. The length will generally be larger than TLSPlaintext.length, but
 by an amount that varies with the AEAD cipher. Since the ciphers might
 incorporate padding, the amount of overhead could vary with different
-TLSCompressed.length values. Each AEAD cipher MUST NOT produce an expansion of
+TLSPlaintext.length values. Each AEAD cipher MUST NOT produce an expansion of
 greater than 1024 bytes. Symbolically,
 
        AEADEncrypted = AEAD-Encrypt(write_key, nonce, plaintext,
@@ -1279,9 +1239,9 @@ In order to decrypt and verify, the cipher takes as input the key, nonce, the
 plaintext or an error indicating that the decryption failed. There is no
 separate integrity check. That is:
 
-       TLSCompressed.fragment = AEAD-Decrypt(write_key, nonce,
-                                             AEADEncrypted,
-                                             additional_data)
+       TLSPlaintext.fragment = AEAD-Decrypt(write_key, nonce,
+                                            AEADEncrypted,
+                                            additional_data)
 
 If the decryption fails, a fatal bad_record_mac alert MUST be generated.
 
@@ -1342,9 +1302,6 @@ peer certificate
 : X509v3 {{RFC3280}} certificate of the peer.  This element of the state
   may be null.
 
-compression method
-: The algorithm used to compress data prior to encryption.
-
 cipher spec
 : Specifies the pseudorandom function (PRF) used to generate keying
   material, the bulk data encryption algorithm (such as null, AES,
@@ -1368,8 +1325,8 @@ Protocol.
 ##  Change Cipher Spec Protocol
 
 The change cipher spec protocol exists to signal transitions in ciphering
-strategies. The protocol consists of a single message, which is encrypted and
-compressed under the current (not the pending) connection state. The message
+strategies. The protocol consists of a single message, which is encrypted
+under the current (not the pending) connection state. The message
 consists of a single byte of value 1.
 
        struct {
@@ -1403,7 +1360,7 @@ description of the alert. Alert messages with a level of fatal result in the
 immediate termination of the connection. In this case, other connections
 corresponding to the session may continue, but the session identifier MUST be
 invalidated, preventing the failed session from being used to establish new
-connections. Like other messages, alert messages are encrypted and compressed,
+connections. Like other messages, alert messages are encrypted 
 as specified by the current connection state.
 
        enum { warning(1), fatal(2), (255) } AlertLevel;
@@ -1414,7 +1371,7 @@ as specified by the current connection state.
            bad_record_mac(20),
            decryption_failed_RESERVED(21),
            record_overflow(22),
-           decompression_failure(30),
+           decompression_failure_RESERVED(30),
            handshake_failure(40),
            no_certificate_RESERVED(41),
            bad_certificate(42),
@@ -1530,17 +1487,16 @@ decryption_failed_RESERVED
 
 record_overflow
 : A TLSCiphertext record was received that had a length more than
-  2^14+2048 bytes, or a record decrypted to a TLSCompressed record
-  with more than 2^14+1024 bytes.  This message is always fatal and
+  2^14+2048 bytes, or a record decrypted to a TLSPlaintext record
+  with more than 2^14 bytes.  This message is always fatal and
   should never be observed in communication between proper
   implementations (except when messages were corrupted in the
   network).
 
 decompression_failure
-: The decompression function received improper input (e.g., data
-  that would expand to excessive length).  This message is always
-  fatal and should never be observed in communication between proper
-  implementations.
+: This alert was used in previous versions of TLS. TLS 1.3 does not
+  include compression and TLS 1.3 implementations MUST NOT send this
+  alert when in TLS 1.3 mode.
 
 handshake_failure
 : Reception of a handshake_failure alert message indicates that the
@@ -1692,7 +1648,7 @@ respond with a ServerHello message, or else a fatal error will occur and the
 connection will fail. The ClientHello and ServerHello are used to establish
 security enhancement capabilities between client and server. The ClientHello
 and ServerHello establish the following attributes: Protocol Version, Session
-ID, Cipher Suite, and Compression Method. Additionally, two random values are
+ID and  Cipher Suite. Additionally, two random values are
 generated and exchanged: ClientHello.random and ServerHello.random.
 
 The actual key exchange uses up to four messages: the server Certificate, the
@@ -1831,7 +1787,7 @@ New handshake message types are assigned by IANA as described in
 
 The hello phase messages are used to exchange security enhancement capabilities
 between the client and server. When a new session begins, the record layer's
-connection state encryption, hash, and compression algorithms are initialized
+connection state encryption and hash algorithms are initialized
 to null. The current connection state is used for renegotiation messages.
 
 ####  Hello Request
@@ -1937,9 +1893,6 @@ cipher suites, and process the remaining ones as usual.
 
        uint8 CipherSuite[2];    /* Cryptographic suite selector */
 
-The ClientHello includes a list of compression algorithms supported by the
-client, ordered according to the client's preference.
-
        enum { null(0), (255) } CompressionMethod;
 
        struct {
@@ -1986,13 +1939,15 @@ cipher_suites
   that session.  Values are defined in {{the-cipher-suite}}.
 
 compression_methods
-: This is a list of the compression methods supported by the client,
-  sorted by client preference.  If the session_id field is not empty
-  (implying a session resumption request), it MUST include the
-  compression_method from that session.  This vector MUST contain,
-  and all implementations MUST support, CompressionMethod.null.
-  Thus, a client and server will always be able to agree on a
-  compression method.
+: Previous versions of TLS supported compression and the list of
+  compression methods was supplied in this field. For any TLS 1.3
+  ClientHello, this field MUST contain only the "null" compression
+  method with the code point of 0. If a TLS 1.3 ClientHello is
+  received with any other value in this field, the server MUST
+  generate a fatal "illegal_parameter" alert. Note that TLS 1.3
+  servers may receive TLS 1.2 or prior ClientHellos which contain
+  other compression methods and MUST follow the procedures for
+  the appropriate prior version of TLS.
 
 extensions
 : Clients MAY request extended functionality from servers by sending
@@ -2026,7 +1981,6 @@ Structure of this message:
            Random random;
            SessionID session_id;
            CipherSuite cipher_suite;
-           CompressionMethod compression_method;
            select (extensions_present) {
                case false:
                    struct {};
@@ -2036,7 +1990,7 @@ Structure of this message:
        } ServerHello;
 
 The presence of extensions can be detected by determining whether there are
-bytes following the compression_method field at the end of the ServerHello.
+bytes following the cipher_suite field at the end of the ServerHello.
 
 server_version
 : This field will contain the lower of that suggested by the client
@@ -2071,11 +2025,6 @@ cipher_suite
 : The single cipher suite selected by the server from the list in
   ClientHello.cipher_suites.  For resumed sessions, this field is
   the value from the state of the session being resumed.
-
-compression_method
-: The single compression algorithm selected by the server from the
-  list in ClientHello.compression_methods.  For resumed sessions,
-  this field is the value from the resumed session state.
 
 extensions
 : A list of extensions.  Note that only extensions offered by the
@@ -3003,8 +2952,7 @@ In order to begin connection protection, the TLS Record Protocol requires
 specification of a suite of algorithms, a master secret, and the client and
 server random values. The authentication, encryption, and MAC algorithms are
 determined by the cipher_suite selected by the server and revealed in the
-ServerHello message. The compression algorithm is negotiated in the hello
-messages, and the random values are exchanged in the hello messages. All that
+ServerHello message. The random values are exchanged in the hello messages. All that
 remains is to calculate the master secret.
 
 ##  Computing the Master Secret
@@ -3046,8 +2994,8 @@ TLS_RSA_WITH_AES_128_CBC_SHA (see {{the-cipher-suite}} for the definition).
 
 #  Application Data Protocol
 
-Application data messages are carried by the record layer and are fragmented,
-compressed, and encrypted based on the current connection state. The messages
+Application data messages are carried by the record layer and are fragmented
+and encrypted based on the current connection state. The messages
 are treated as transparent data to the record layer.
 
 #  Security Considerations
@@ -3114,13 +3062,6 @@ In addition, this document defines two new registries to be maintained by IANA:
   inclusive are assigned via Specification Required {{RFC2434}}.
   Values from 224-255 (decimal) inclusive are reserved for Private
   Use {{RFC2434}}.
-
-This document also uses the TLS Compression Method Identifiers Registry,
-defined in {{RFC3749}}. IANA has allocated value 0 for the "null" compression
-method.
-
-
-
 --- back
 
 # Protocol Data Structures and Constant Values
@@ -3152,13 +3093,6 @@ This section describes protocol types and constants.
         ContentType type;
         ProtocolVersion version;
         uint16 length;
-        opaque fragment[TLSCompressed.length];
-    } TLSCompressed;
-
-    struct {
-        ContentType type;
-        ProtocolVersion version;
-        uint16 length;
         select (SecurityParameters.cipher_type) {
             case stream: GenericStreamCipher;
             case block:  GenericBlockCipher;
@@ -3167,14 +3101,14 @@ This section describes protocol types and constants.
     } TLSCiphertext;
 
     stream-ciphered struct {
-        opaque content[TLSCompressed.length];
+        opaque content[TLSPlaintext.length];
         opaque MAC[SecurityParameters.mac_length];
     } GenericStreamCipher;
 
     struct {
         opaque IV[SecurityParameters.record_iv_length];
         block-ciphered struct {
-            opaque content[TLSCompressed.length];
+            opaque content[TLSPlaintext.length];
             opaque MAC[SecurityParameters.mac_length];
             uint8 padding[GenericBlockCipher.padding_length];
             uint8 padding_length;
@@ -3184,7 +3118,7 @@ This section describes protocol types and constants.
     struct {
        opaque nonce_explicit[SecurityParameters.record_iv_length];
        aead-ciphered struct {
-           opaque content[TLSCompressed.length];
+           opaque content[TLSPlaintext.length];
        };
     } GenericAEADCipher;
 
@@ -3204,7 +3138,7 @@ This section describes protocol types and constants.
         bad_record_mac(20),
         decryption_failed_RESERVED(21),
         record_overflow(22),
-        decompression_failure(30),
+        decompression_failure_RESERVED(30),
         handshake_failure(40),
         no_certificate_RESERVED(41),
         bad_certificate(42),
@@ -3295,7 +3229,6 @@ This section describes protocol types and constants.
         Random random;
         SessionID session_id;
         CipherSuite cipher_suite;
-        CompressionMethod compression_method;
         select (extensions_present) {
             case false:
                 struct {};
@@ -3542,8 +3475,7 @@ connection state. SecurityParameters includes:
       hmac_sha512} MACAlgorithm;
 
     /* Other values may be added to the algorithms specified in
-    CompressionMethod, PRFAlgorithm, BulkCipherAlgorithm, and
-    MACAlgorithm. */
+    PRFAlgorithm, BulkCipherAlgorithm, and MACAlgorithm. */
 
     struct {
         ConnectionEnd          entity;
@@ -3557,7 +3489,6 @@ connection state. SecurityParameters includes:
         MACAlgorithm           mac_algorithm;
         uint8                  mac_length;
         uint8                  mac_key_length;
-        CompressionMethod      compression_algorithm;
         opaque                 master_secret[48];
         opaque                 client_random[32];
         opaque                 server_random[32];

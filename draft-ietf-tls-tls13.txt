@@ -5,9 +5,9 @@ Network Working Group                                          T. Dierks
 Internet-Draft                                               Independent
 Obsoletes: 3268, 4346, 4366, 5246                            E. Rescorla
 (if approved)                                                 RTFM, Inc.
-Updates: 4492 (if approved)                               April 17, 2014
+Updates: 4492 (if approved)                               April 25, 2014
 Intended status: Standards Track
-Expires: October 19, 2014
+Expires: October 27, 2014
 
 
         The Transport Layer Security (TLS) Protocol Version 1.3
@@ -36,7 +36,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on October 19, 2014.
+   This Internet-Draft will expire on October 27, 2014.
 
 Copyright Notice
 
@@ -52,7 +52,7 @@ Copyright Notice
 
 
 
-Dierks & Rescorla       Expires October 19, 2014                [Page 1]
+Dierks & Rescorla       Expires October 27, 2014                [Page 1]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -95,88 +95,87 @@ Table of Contents
      6.1.  Connection States . . . . . . . . . . . . . . . . . . . .  17
      6.2.  Record Layer  . . . . . . . . . . . . . . . . . . . . . .  20
        6.2.1.  Fragmentation . . . . . . . . . . . . . . . . . . . .  20
-       6.2.2.  Record Compression and Decompression  . . . . . . . .  22
-       6.2.3.  Record Payload Protection . . . . . . . . . . . . . .  22
-     6.3.  Key Calculation . . . . . . . . . . . . . . . . . . . . .  27
-   7.  The TLS Handshaking Protocols . . . . . . . . . . . . . . . .  28
-     7.1.  Change Cipher Spec Protocol . . . . . . . . . . . . . . .  29
-     7.2.  Alert Protocol  . . . . . . . . . . . . . . . . . . . . .  29
-       7.2.1.  Closure Alerts  . . . . . . . . . . . . . . . . . . .  30
-       7.2.2.  Error Alerts  . . . . . . . . . . . . . . . . . . . .  31
-     7.3.  Handshake Protocol Overview . . . . . . . . . . . . . . .  35
-     7.4.  Handshake Protocol  . . . . . . . . . . . . . . . . . . .  38
+       6.2.2.  Record Payload Protection . . . . . . . . . . . . . .  22
+     6.3.  Key Calculation . . . . . . . . . . . . . . . . . . . . .  26
+   7.  The TLS Handshaking Protocols . . . . . . . . . . . . . . . .  27
+     7.1.  Change Cipher Spec Protocol . . . . . . . . . . . . . . .  28
+     7.2.  Alert Protocol  . . . . . . . . . . . . . . . . . . . . .  28
+       7.2.1.  Closure Alerts  . . . . . . . . . . . . . . . . . . .  29
+       7.2.2.  Error Alerts  . . . . . . . . . . . . . . . . . . . .  30
+     7.3.  Handshake Protocol Overview . . . . . . . . . . . . . . .  34
+     7.4.  Handshake Protocol  . . . . . . . . . . . . . . . . . . .  37
+       7.4.1.  Hello Messages  . . . . . . . . . . . . . . . . . . .  38
 
 
 
-Dierks & Rescorla       Expires October 19, 2014                [Page 2]
+Dierks & Rescorla       Expires October 27, 2014                [Page 2]
 
 Internet-Draft                     TLS                        April 2014
 
 
-       7.4.1.  Hello Messages  . . . . . . . . . . . . . . . . . . .  39
-       7.4.2.  Server Certificate  . . . . . . . . . . . . . . . . .  49
-       7.4.3.  Server Key Exchange Message . . . . . . . . . . . . .  51
-       7.4.4.  Certificate Request . . . . . . . . . . . . . . . . .  54
-       7.4.5.  Server Hello Done . . . . . . . . . . . . . . . . . .  56
-       7.4.6.  Client Certificate  . . . . . . . . . . . . . . . . .  57
-       7.4.7.  Client Key Exchange Message . . . . . . . . . . . . .  58
-       7.4.8.  Certificate Verify  . . . . . . . . . . . . . . . . .  63
-       7.4.9.  Finished  . . . . . . . . . . . . . . . . . . . . . .  64
-   8.  Cryptographic Computations  . . . . . . . . . . . . . . . . .  66
-     8.1.  Computing the Master Secret . . . . . . . . . . . . . . .  66
-       8.1.1.  RSA . . . . . . . . . . . . . . . . . . . . . . . . .  66
-       8.1.2.  Diffie-Hellman  . . . . . . . . . . . . . . . . . . .  67
-   9.  Mandatory Cipher Suites . . . . . . . . . . . . . . . . . . .  67
-   10. Application Data Protocol . . . . . . . . . . . . . . . . . .  67
-   11. Security Considerations . . . . . . . . . . . . . . . . . . .  67
-   12. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  67
-   13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  69
-     13.1. Normative References  . . . . . . . . . . . . . . . . . .  69
-     13.2. Informative References  . . . . . . . . . . . . . . . . .  70
-   Appendix A.  Protocol Data Structures and Constant Values . . . .  73
-     A.1.  Record Layer  . . . . . . . . . . . . . . . . . . . . . .  73
-     A.2.  Change Cipher Specs Message . . . . . . . . . . . . . . .  74
-     A.3.  Alert Messages  . . . . . . . . . . . . . . . . . . . . .  75
-     A.4.  Handshake Protocol  . . . . . . . . . . . . . . . . . . .  76
-       A.4.1.  Hello Messages  . . . . . . . . . . . . . . . . . . .  76
-       A.4.2.  Server Authentication and Key Exchange Messages . . .  78
-       A.4.3.  Client Authentication and Key Exchange Messages . . .  79
-       A.4.4.  Handshake Finalization Message  . . . . . . . . . . .  80
-     A.5.  The Cipher Suite  . . . . . . . . . . . . . . . . . . . .  80
-     A.6.  The Security Parameters . . . . . . . . . . . . . . . . .  82
-     A.7.  Changes to RFC 4492 . . . . . . . . . . . . . . . . . . .  83
-   Appendix B.  Glossary . . . . . . . . . . . . . . . . . . . . . .  83
-   Appendix C.  Cipher Suite Definitions . . . . . . . . . . . . . .  87
-   Appendix D.  Implementation Notes . . . . . . . . . . . . . . . .  89
-     D.1.  Random Number Generation and Seeding  . . . . . . . . . .  89
-     D.2.  Certificates and Authentication . . . . . . . . . . . . .  89
-     D.3.  Cipher Suites . . . . . . . . . . . . . . . . . . . . . .  90
-     D.4.  Implementation Pitfalls . . . . . . . . . . . . . . . . .  90
-   Appendix E.  Backward Compatibility . . . . . . . . . . . . . . .  91
-     E.1.  Compatibility with TLS 1.0/1.1 and SSL 3.0  . . . . . . .  91
-     E.2.  Compatibility with SSL 2.0  . . . . . . . . . . . . . . .  93
-     E.3.  Avoiding Man-in-the-Middle Version Rollback . . . . . . .  94
-   Appendix F.  Security Analysis  . . . . . . . . . . . . . . . . .  95
-     F.1.  Handshake Protocol  . . . . . . . . . . . . . . . . . . .  95
-       F.1.1.  Authentication and Key Exchange . . . . . . . . . . .  95
-       F.1.2.  Version Rollback Attacks  . . . . . . . . . . . . . .  98
-       F.1.3.  Detecting Attacks Against the Handshake Protocol  . .  98
+       7.4.2.  Server Certificate  . . . . . . . . . . . . . . . . .  48
+       7.4.3.  Server Key Exchange Message . . . . . . . . . . . . .  50
+       7.4.4.  Certificate Request . . . . . . . . . . . . . . . . .  53
+       7.4.5.  Server Hello Done . . . . . . . . . . . . . . . . . .  55
+       7.4.6.  Client Certificate  . . . . . . . . . . . . . . . . .  56
+       7.4.7.  Client Key Exchange Message . . . . . . . . . . . . .  57
+       7.4.8.  Certificate Verify  . . . . . . . . . . . . . . . . .  62
+       7.4.9.  Finished  . . . . . . . . . . . . . . . . . . . . . .  63
+   8.  Cryptographic Computations  . . . . . . . . . . . . . . . . .  65
+     8.1.  Computing the Master Secret . . . . . . . . . . . . . . .  65
+       8.1.1.  RSA . . . . . . . . . . . . . . . . . . . . . . . . .  65
+       8.1.2.  Diffie-Hellman  . . . . . . . . . . . . . . . . . . .  66
+   9.  Mandatory Cipher Suites . . . . . . . . . . . . . . . . . . .  66
+   10. Application Data Protocol . . . . . . . . . . . . . . . . . .  66
+   11. Security Considerations . . . . . . . . . . . . . . . . . . .  66
+   12. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  66
+   13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  68
+     13.1. Normative References  . . . . . . . . . . . . . . . . . .  68
+     13.2. Informative References  . . . . . . . . . . . . . . . . .  69
+   Appendix A.  Protocol Data Structures and Constant Values . . . .  72
+     A.1.  Record Layer  . . . . . . . . . . . . . . . . . . . . . .  72
+     A.2.  Change Cipher Specs Message . . . . . . . . . . . . . . .  73
+     A.3.  Alert Messages  . . . . . . . . . . . . . . . . . . . . .  74
+     A.4.  Handshake Protocol  . . . . . . . . . . . . . . . . . . .  75
+       A.4.1.  Hello Messages  . . . . . . . . . . . . . . . . . . .  75
+       A.4.2.  Server Authentication and Key Exchange Messages . . .  77
+       A.4.3.  Client Authentication and Key Exchange Messages . . .  78
+       A.4.4.  Handshake Finalization Message  . . . . . . . . . . .  79
+     A.5.  The Cipher Suite  . . . . . . . . . . . . . . . . . . . .  79
+     A.6.  The Security Parameters . . . . . . . . . . . . . . . . .  81
+     A.7.  Changes to RFC 4492 . . . . . . . . . . . . . . . . . . .  82
+   Appendix B.  Glossary . . . . . . . . . . . . . . . . . . . . . .  82
+   Appendix C.  Cipher Suite Definitions . . . . . . . . . . . . . .  86
+   Appendix D.  Implementation Notes . . . . . . . . . . . . . . . .  88
+     D.1.  Random Number Generation and Seeding  . . . . . . . . . .  88
+     D.2.  Certificates and Authentication . . . . . . . . . . . . .  88
+     D.3.  Cipher Suites . . . . . . . . . . . . . . . . . . . . . .  88
+     D.4.  Implementation Pitfalls . . . . . . . . . . . . . . . . .  89
+   Appendix E.  Backward Compatibility . . . . . . . . . . . . . . .  90
+     E.1.  Compatibility with TLS 1.0/1.1 and SSL 3.0  . . . . . . .  90
+     E.2.  Compatibility with SSL 2.0  . . . . . . . . . . . . . . .  91
+     E.3.  Avoiding Man-in-the-Middle Version Rollback . . . . . . .  93
+   Appendix F.  Security Analysis  . . . . . . . . . . . . . . . . .  94
+     F.1.  Handshake Protocol  . . . . . . . . . . . . . . . . . . .  94
+       F.1.1.  Authentication and Key Exchange . . . . . . . . . . .  94
+       F.1.2.  Version Rollback Attacks  . . . . . . . . . . . . . .  96
+       F.1.3.  Detecting Attacks Against the Handshake Protocol  . .  97
+       F.1.4.  Resuming Sessions . . . . . . . . . . . . . . . . . .  97
 
 
 
-Dierks & Rescorla       Expires October 19, 2014                [Page 3]
+Dierks & Rescorla       Expires October 27, 2014                [Page 3]
 
 Internet-Draft                     TLS                        April 2014
 
 
-       F.1.4.  Resuming Sessions . . . . . . . . . . . . . . . . . .  98
-     F.2.  Protecting Application Data . . . . . . . . . . . . . . .  99
-     F.3.  Explicit IVs  . . . . . . . . . . . . . . . . . . . . . .  99
-     F.4.  Security of Composite Cipher Modes  . . . . . . . . . . .  99
-     F.5.  Denial of Service . . . . . . . . . . . . . . . . . . . . 100
-     F.6.  Final Notes . . . . . . . . . . . . . . . . . . . . . . . 101
-   Appendix G.  Working Group Information  . . . . . . . . . . . . . 101
-   Appendix H.  Contributors . . . . . . . . . . . . . . . . . . . . 101
+     F.2.  Protecting Application Data . . . . . . . . . . . . . . .  97
+     F.3.  Explicit IVs  . . . . . . . . . . . . . . . . . . . . . .  98
+     F.4.  Security of Composite Cipher Modes  . . . . . . . . . . .  98
+     F.5.  Denial of Service . . . . . . . . . . . . . . . . . . . .  99
+     F.6.  Final Notes . . . . . . . . . . . . . . . . . . . . . . .  99
+   Appendix G.  Working Group Information  . . . . . . . . . . . . . 100
+   Appendix H.  Contributors . . . . . . . . . . . . . . . . . . . . 100
 
 
 
@@ -220,7 +219,8 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014                [Page 4]
+
+Dierks & Rescorla       Expires October 27, 2014                [Page 4]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -276,7 +276,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014                [Page 5]
+Dierks & Rescorla       Expires October 27, 2014                [Page 5]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -332,7 +332,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014                [Page 6]
+Dierks & Rescorla       Expires October 27, 2014                [Page 6]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -388,7 +388,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014                [Page 7]
+Dierks & Rescorla       Expires October 27, 2014                [Page 7]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -444,7 +444,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014                [Page 8]
+Dierks & Rescorla       Expires October 27, 2014                [Page 8]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -500,7 +500,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014                [Page 9]
+Dierks & Rescorla       Expires October 27, 2014                [Page 9]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -556,7 +556,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 10]
+Dierks & Rescorla       Expires October 27, 2014               [Page 10]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -612,7 +612,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 11]
+Dierks & Rescorla       Expires October 27, 2014               [Page 11]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -668,7 +668,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 12]
+Dierks & Rescorla       Expires October 27, 2014               [Page 12]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -724,7 +724,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 13]
+Dierks & Rescorla       Expires October 27, 2014               [Page 13]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -780,7 +780,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 14]
+Dierks & Rescorla       Expires October 27, 2014               [Page 14]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -836,7 +836,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 15]
+Dierks & Rescorla       Expires October 27, 2014               [Page 15]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -892,7 +892,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 16]
+Dierks & Rescorla       Expires October 27, 2014               [Page 16]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -902,10 +902,9 @@ Internet-Draft                     TLS                        April 2014
    The TLS Record Protocol is a layered protocol.  At each layer,
    messages may include fields for length, description, and content.
    The Record Protocol takes messages to be transmitted, fragments the
-   data into manageable blocks, optionally compresses the data, applies
-   a MAC, encrypts, and transmits the result.  Received data is
-   decrypted, verified, decompressed, reassembled, and then delivered to
-   higher-level clients.
+   data into manageable blocks, applies a MAC, encrypts, and transmits
+   the result.  Received data is decrypted, verified, reassembled, and
+   then delivered to higher-level clients.
 
    Four protocols that use the record protocol are described in this
    document: the handshake protocol, the alert protocol, the change
@@ -934,29 +933,29 @@ Internet-Draft                     TLS                        April 2014
 6.1.  Connection States
 
    A TLS connection state is the operating environment of the TLS Record
-   Protocol.  It specifies a compression algorithm, an encryption
-   algorithm, and a MAC algorithm.  In addition, the parameters for
-   these algorithms are known: the MAC key and the bulk encryption keys
-   for the connection in both the read and the write directions.
-   Logically, there are always four connection states outstanding: the
-   current read and write states, and the pending read and write states.
-   All records are processed under the current read and write states.
-   The security parameters for the pending states can be set by the TLS
-   Handshake Protocol, and the ChangeCipherSpec can selectively make
-   either of the pending states current, in which case the appropriate
-   current state is disposed of and replaced with the pending state; the
+   Protocol.  It specifies an encryption algorithm, and a MAC algorithm.
+   In addition, the parameters for these algorithms are known: the MAC
+   key and the bulk encryption keys for the connection in both the read
+   and the write directions.  Logically, there are always four
+   connection states outstanding: the current read and write states, and
+   the pending read and write states.  All records are processed under
+   the current read and write states.  The security parameters for the
+   pending states can be set by the TLS Handshake Protocol, and the
+   ChangeCipherSpec can selectively make either of the pending states
+   current, in which case the appropriate current state is disposed of
+   and replaced with the pending state; the pending state is then
+   reinitialized to an empty state.  It is illegal to make a state that
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 17]
+Dierks & Rescorla       Expires October 27, 2014               [Page 17]
 
 Internet-Draft                     TLS                        April 2014
 
 
-   pending state is then reinitialized to an empty state.  It is illegal
-   to make a state that has not been initialized with security
-   parameters a current state.  The initial current state always
-   specifies that no encryption, compression, or MAC will be used.
+   has not been initialized with security parameters a current state.
+   The initial current state always specifies that no encryption or MAC
+   will be used.
 
    The security parameters for a TLS Connection read and write state are
    set by providing the following values:
@@ -981,11 +980,6 @@ Internet-Draft                     TLS                        April 2014
       specification includes the size of the value returned by the MAC
       algorithm.
 
-   compression algorithm
-      An algorithm to be used for data compression.  This specification
-      must include all information the algorithm requires to do
-      compression.
-
    master secret
       A 48-byte secret shared between the two peers in the connection.
 
@@ -1004,7 +998,13 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 18]
+
+
+
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 18]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -1021,9 +1021,7 @@ Internet-Draft                     TLS                        April 2014
       enum { null, hmac_md5, hmac_sha1, hmac_sha256,
            hmac_sha384, hmac_sha512} MACAlgorithm;
 
-      enum { null(0), (255) } CompressionMethod;
-
-      /* The algorithms specified in CompressionMethod, PRFAlgorithm,
+      /* The algorithms specified in PRFAlgorithm,
          BulkCipherAlgorithm, and MACAlgorithm may be added to. */
 
       struct {
@@ -1038,7 +1036,6 @@ Internet-Draft                     TLS                        April 2014
           MACAlgorithm           mac_algorithm;
           uint8                  mac_length;
           uint8                  mac_key_length;
-          CompressionMethod      compression_algorithm;
           opaque                 master_secret[48];
           opaque                 client_random[32];
           opaque                 server_random[32];
@@ -1057,24 +1054,21 @@ Internet-Draft                     TLS                        April 2014
 
    The client write parameters are used by the server when receiving and
    processing records and vice versa.  The algorithm used for generating
+   these items from the security parameters is described in Section 6.3
+
+   Once the security parameters have been set and the keys have been
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 19]
+Dierks & Rescorla       Expires October 27, 2014               [Page 19]
 
 Internet-Draft                     TLS                        April 2014
 
 
-   these items from the security parameters is described in Section 6.3
-
-   Once the security parameters have been set and the keys have been
    generated, the connection states can be instantiated by making them
    the current states.  These current states MUST be updated for each
    record processed.  Each connection state includes the following
    elements:
-
-   compression state
-      The current state of the compression algorithm.
 
    cipher state
       The current state of the encryption algorithm.  This will consist
@@ -1116,7 +1110,13 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 20]
+
+
+
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 20]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -1172,7 +1172,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 21]
+Dierks & Rescorla       Expires October 27, 2014               [Page 21]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -1181,57 +1181,12 @@ Internet-Draft                     TLS                        April 2014
    application layer traffic during handshakes subsequent to the first
    one on a connection.
 
-6.2.2.  Record Compression and Decompression
+6.2.2.  Record Payload Protection
 
-   All records are compressed using the compression algorithm defined in
-   the current session state.  There is always an active compression
-   algorithm; however, initially it is defined as
-   CompressionMethod.null.  The compression algorithm translates a
-   TLSPlaintext structure into a TLSCompressed structure.  Compression
-   functions are initialized with default state information whenever a
-   connection state is made active.  [RFC3749] describes compression
-   algorithms for TLS.
-
-   Compression must be lossless and may not increase the content length
-   by more than 1024 bytes.  If the decompression function encounters a
-   TLSCompressed.fragment that would decompress to a length in excess of
-   2^14 bytes, it MUST report a fatal decompression failure error.
-
-      struct {
-          ContentType type;       /* same as TLSPlaintext.type */
-          ProtocolVersion version;/* same as TLSPlaintext.version */
-          uint16 length;
-          opaque fragment[TLSCompressed.length];
-      } TLSCompressed;
-
-   length
-      The length (in bytes) of the following TLSCompressed.fragment.
-      The length MUST NOT exceed 2^14 + 1024.
-
-   fragment
-      The compressed form of TLSPlaintext.fragment.
-
-   Note: A CompressionMethod.null operation is an identity operation; no
-   fields are altered.
-
-   Implementation note: Decompression functions are responsible for
-   ensuring that messages cannot cause internal buffer overflows.
-
-6.2.3.  Record Payload Protection
-
-   The encryption and MAC functions translate a TLSCompressed structure
+   The encryption and MAC functions translate a TLSPlaintext structure
    into a TLSCiphertext.  The decryption functions reverse the process.
    The MAC of the record also includes a sequence number so that
    missing, extra, or repeated messages are detectable.
-
-
-
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 22]
-
-Internet-Draft                     TLS                        April 2014
-
 
       struct {
           ContentType type;
@@ -1245,49 +1200,46 @@ Internet-Draft                     TLS                        April 2014
       } TLSCiphertext;
 
    type
-      The type field is identical to TLSCompressed.type.
+      The type field is identical to TLSPlaintex.type.
 
    version
-      The version field is identical to TLSCompressed.version.
+      The version field is identical to TLSPlaintext.version.
 
    length
       The length (in bytes) of the following TLSCiphertext.fragment.
       The length MUST NOT exceed 2^14 + 2048.
 
    fragment
-      The encrypted form of TLSCompressed.fragment, with the MAC.
+      The encrypted form of TLSPlaintext.fragment, with the MAC.
 
-6.2.3.1.  Null or Standard Stream Cipher
+6.2.2.1.  Null or Standard Stream Cipher
 
    Stream ciphers (including BulkCipherAlgorithm.null; see Appendix A.6)
-   convert TLSCompressed.fragment structures to and from stream
+   convert TLSPlaintext.fragment structures to and from stream
    TLSCiphertext.fragment structures.
 
       stream-ciphered struct {
-          opaque content[TLSCompressed.length];
+          opaque content[TLSPlaintext.length];
           opaque MAC[SecurityParameters.mac_length];
       } GenericStreamCipher;
 
    The MAC is generated as:
 
-      MAC(MAC_write_key, seq_num +
-                            TLSCompressed.type +
-                            TLSCompressed.version +
-                            TLSCompressed.length +
-                            TLSCompressed.fragment);
-
-   where "+" denotes concatenation.
 
 
 
-
-
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 23]
+Dierks & Rescorla       Expires October 27, 2014               [Page 22]
 
 Internet-Draft                     TLS                        April 2014
 
+
+      MAC(MAC_write_key, seq_num +
+                            TLSPlaintext.type +
+                            TLSPlaintext.version +
+                            TLSPlaintext.length +
+                            TLSPlaintext.fragment);
+
+   where "+" denotes concatenation.
 
    seq_num
       The sequence number for this record.
@@ -1303,25 +1255,25 @@ Internet-Draft                     TLS                        April 2014
    encryption consists of the identity operation (i.e., the data is not
    encrypted, and the MAC size is zero, implying that no MAC is used).
    For both null and stream ciphers, TLSCiphertext.length is
-   TLSCompressed.length plus SecurityParameters.mac_length.
+   TLSPlaintext.length plus SecurityParameters.mac_length.
 
-6.2.3.2.  CBC Block Cipher
+6.2.2.2.  CBC Block Cipher
 
    For block ciphers (such as 3DES or AES), the encryption and MAC
-   functions convert TLSCompressed.fragment structures to and from block
+   functions convert TLSPlaintext.fragment structures to and from block
    TLSCiphertext.fragment structures.
 
       struct {
           opaque IV[SecurityParameters.record_iv_length];
           block-ciphered struct {
-              opaque content[TLSCompressed.length];
+              opaque content[TLSPlaintext.length];
               opaque MAC[SecurityParameters.mac_length];
               uint8 padding[GenericBlockCipher.padding_length];
               uint8 padding_length;
           };
       } GenericBlockCipher;
 
-   The MAC is generated as described in Section 6.2.3.1.
+   The MAC is generated as described in Section 6.2.2.1.
 
    IV
       The Initialization Vector (IV) SHOULD be chosen at random, and
@@ -1329,6 +1281,14 @@ Internet-Draft                     TLS                        April 2014
       there was no IV field, and the last ciphertext block of the
       previous record (the "CBC residue") was used as the IV.  This was
       changed to prevent the attacks described in [CBCATT].  For block
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 23]
+
+Internet-Draft                     TLS                        April 2014
+
+
       ciphers, the IV length is of length
       SecurityParameters.record_iv_length, which is equal to the
       SecurityParameters.block_size.
@@ -1337,14 +1297,6 @@ Internet-Draft                     TLS                        April 2014
       Padding that is added to force the length of the plaintext to be
       an integral multiple of the block cipher's block length.  The
       padding MAY be any length up to 255 bytes, as long as it results
-
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 24]
-
-Internet-Draft                     TLS                        April 2014
-
-
       in the TLSCiphertext.length being an integral multiple of the
       block length.  Lengths longer than necessary might be desirable to
       frustrate attacks on a protocol that are based on analysis of the
@@ -1361,11 +1313,11 @@ Internet-Draft                     TLS                        April 2014
       padding_length field itself.
 
    The encrypted data length (TLSCiphertext.length) is one more than the
-   sum of SecurityParameters.block_length, TLSCompressed.length,
+   sum of SecurityParameters.block_length, TLSPlaintext.length,
    SecurityParameters.mac_length, and padding_length.
 
    Example: If the block length is 8 bytes, the content length
-   (TLSCompressed.length) is 61 bytes, and the MAC length is 20 bytes,
+   (TLSPlaintext.length) is 61 bytes, and the MAC length is 20 bytes,
    then the length before padding is 82 bytes (this does not include the
    IV.  Thus, the padding length modulo 8 must be equal to 6 in order to
    make the total length an even multiple of 8 bytes (the block length).
@@ -1385,6 +1337,14 @@ Internet-Draft                     TLS                        April 2014
    the MAC.  In order to defend against this attack, implementations
    MUST ensure that record processing time is essentially the same
    whether or not the padding is correct.  In general, the best way to
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 24]
+
+Internet-Draft                     TLS                        April 2014
+
+
    do this is to compute the MAC even if the padding is incorrect, and
    only then reject the packet.  For instance, if the pad appears to be
    incorrect, the implementation might assume a zero-length pad and then
@@ -1394,23 +1354,16 @@ Internet-Draft                     TLS                        April 2014
    the large block size of existing MACs and the small size of the
    timing signal.
 
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 25]
-
-Internet-Draft                     TLS                        April 2014
-
-
-6.2.3.3.  AEAD Ciphers
+6.2.2.3.  AEAD Ciphers
 
    For AEAD [RFC5116] ciphers (such as [CCM] or [GCM]), the AEAD
-   function converts TLSCompressed.fragment structures to and from AEAD
+   function converts TLSPlaintext.fragment structures to and from AEAD
    TLSCiphertext.fragment structures.
 
       struct {
          opaque nonce_explicit[SecurityParameters.record_iv_length];
          aead-ciphered struct {
-             opaque content[TLSCompressed.length];
+             opaque content[TLSPlaintext.length];
          };
       } GenericAEADCipher;
 
@@ -1429,42 +1382,43 @@ Internet-Draft                     TLS                        April 2014
    described in Section 6.3), and the explicit part is included in
    GenericAEAEDCipher.nonce_explicit.
 
-   The plaintext is the TLSCompressed.fragment.
+   The plaintext is the TLSPlaintext.fragment.
 
    The additional authenticated data, which we denote as
    additional_data, is defined as follows:
 
-      additional_data = seq_num + TLSCompressed.type +
-                        TLSCompressed.version + TLSCompressed.length;
+      additional_data = seq_num + TLSPlaintext.type +
+                        TLSPlaintext.version + TLSPlaintext.length;
 
    where "+" denotes concatenation.
 
    The aead_output consists of the ciphertext output by the AEAD
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 25]
+
+Internet-Draft                     TLS                        April 2014
+
+
    encryption operation.  The length will generally be larger than
-   TLSCompressed.length, but by an amount that varies with the AEAD
+   TLSPlaintext.length, but by an amount that varies with the AEAD
    cipher.  Since the ciphers might incorporate padding, the amount of
-   overhead could vary with different TLSCompressed.length values.  Each
+   overhead could vary with different TLSPlaintext.length values.  Each
    AEAD cipher MUST NOT produce an expansion of greater than 1024 bytes.
    Symbolically,
 
       AEADEncrypted = AEAD-Encrypt(write_key, nonce, plaintext,
                                    additional_data)
 
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 26]
-
-Internet-Draft                     TLS                        April 2014
-
-
    In order to decrypt and verify, the cipher takes as input the key,
    nonce, the "additional_data", and the AEADEncrypted value.  The
    output is either the plaintext or an error indicating that the
    decryption failed.  There is no separate integrity check.  That is:
 
-      TLSCompressed.fragment = AEAD-Decrypt(write_key, nonce,
-                                            AEADEncrypted,
-                                            additional_data)
+      TLSPlaintext.fragment = AEAD-Decrypt(write_key, nonce,
+                                           AEADEncrypted,
+                                           additional_data)
 
    If the decryption fails, a fatal bad_record_mac alert MUST be
    generated.
@@ -1480,7 +1434,7 @@ Internet-Draft                     TLS                        April 2014
    client write encryption key, and a server write encryption key.  Each
    of these is generated from the byte sequence in that order.  Unused
    values are empty.  Some AEAD ciphers may additionally require a
-   client write IV and a server write IV (see Section 6.2.3.3).
+   client write IV and a server write IV (see Section 6.2.2.3).
 
    When keys and MAC keys are generated, the master secret is used as an
    entropy source.
@@ -1495,6 +1449,14 @@ Internet-Draft                     TLS                        April 2014
    until enough output has been generated.  Then, the key_block is
    partitioned as follows:
 
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 26]
+
+Internet-Draft                     TLS                        April 2014
+
+
       client_write_MAC_key[SecurityParameters.mac_key_length]
       server_write_MAC_key[SecurityParameters.mac_key_length]
       client_write_key[SecurityParameters.enc_key_length]
@@ -1505,13 +1467,6 @@ Internet-Draft                     TLS                        April 2014
    Currently, the client_write_IV and server_write_IV are only generated
    for implicit nonce techniques as described in Section 3.2.1 of
    [RFC5116].
-
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 27]
-
-Internet-Draft                     TLS                        April 2014
-
 
    Implementation note: The currently defined cipher suite which
    requires the most material is AES_256_CBC_SHA256.  It requires 2 x 32
@@ -1536,9 +1491,6 @@ Internet-Draft                     TLS                        April 2014
       X509v3 [RFC3280] certificate of the peer.  This element of the
       state may be null.
 
-   compression method
-      The algorithm used to compress data prior to encryption.
-
    cipher spec
       Specifies the pseudorandom function (PRF) used to generate keying
       material, the bulk data encryption algorithm (such as null, AES,
@@ -1553,28 +1505,25 @@ Internet-Draft                     TLS                        April 2014
       A flag indicating whether the session can be used to initiate new
       connections.
 
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 27]
+
+Internet-Draft                     TLS                        April 2014
+
+
    These items are then used to create security parameters for use by
    the record layer when protecting application data.  Many connections
    can be instantiated using the same session through the resumption
    feature of the TLS Handshake Protocol.
 
-
-
-
-
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 28]
-
-Internet-Draft                     TLS                        April 2014
-
-
 7.1.  Change Cipher Spec Protocol
 
    The change cipher spec protocol exists to signal transitions in
    ciphering strategies.  The protocol consists of a single message,
-   which is encrypted and compressed under the current (not the pending)
-   connection state.  The message consists of a single byte of value 1.
+   which is encrypted and under the current (not the pending) connection
+   state.  The message consists of a single byte of value 1.
 
       struct {
           enum { change_cipher_spec(1), (255) } type;
@@ -1611,19 +1560,16 @@ Internet-Draft                     TLS                        April 2014
    connection.  In this case, other connections corresponding to the
    session may continue, but the session identifier MUST be invalidated,
    preventing the failed session from being used to establish new
-   connections.  Like other messages, alert messages are encrypted and
-   compressed, as specified by the current connection state.
+   connections.  Like other messages, alert messages are encrypted as
 
 
 
-
-
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 29]
+Dierks & Rescorla       Expires October 27, 2014               [Page 28]
 
 Internet-Draft                     TLS                        April 2014
 
+
+   specified by the current connection state.
 
       enum { warning(1), fatal(2), (255) } AlertLevel;
 
@@ -1633,7 +1579,7 @@ Internet-Draft                     TLS                        April 2014
           bad_record_mac(20),
           decryption_failed_RESERVED(21),
           record_overflow(22),
-          decompression_failure(30),
+          decompression_failure_RESERVED(30),
           handshake_failure(40),
           no_certificate_RESERVED(41),
           bad_certificate(42),
@@ -1667,19 +1613,24 @@ Internet-Draft                     TLS                        April 2014
    ending in order to avoid a truncation attack.  Either party may
    initiate the exchange of closing messages.
 
+
+
+
+
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 29]
+
+Internet-Draft                     TLS                        April 2014
+
+
    close_notify
       This message notifies the recipient that the sender will not send
       any more messages on this connection.  Note that as of TLS 1.1,
       failure to properly close a connection no longer requires that a
       session not be resumed.  This is a change from TLS 1.0 to conform
       with widespread implementation practice.
-
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 30]
-
-Internet-Draft                     TLS                        April 2014
-
 
    Either party may initiate a close by sending a close_notify alert.
    Any data received after a closure alert is ignored.
@@ -1722,6 +1673,14 @@ Internet-Draft                     TLS                        April 2014
    the connection.  For all errors where an alert level is not
    explicitly specified, the sending party MAY determine at its
    discretion whether to treat this as a fatal error or not.  If the
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 30]
+
+Internet-Draft                     TLS                        April 2014
+
+
    implementation chooses to send an alert but intends to close the
    connection immediately afterwards, it MUST send that alert at the
    fatal alert level.
@@ -1729,14 +1688,6 @@ Internet-Draft                     TLS                        April 2014
    If an alert with a level of warning is sent and received, generally
    the connection can continue normally.  If the receiving party decides
    not to proceed with the connection (e.g., after having received a
-
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 31]
-
-Internet-Draft                     TLS                        April 2014
-
-
    no_renegotiation alert that it is not willing to accept), it SHOULD
    send a fatal alert to terminate the connection.  Given this, the
    sending party cannot, in general, know how the receiving party will
@@ -1776,22 +1727,20 @@ Internet-Draft                     TLS                        April 2014
       implementations (except when messages were corrupted in the
       network).
 
-   decompression_failure
-      The decompression function received improper input (e.g., data
-      that would expand to excessive length).  This message is always
-      fatal and should never be observed in communication between proper
-      implementations.
 
 
 
 
 
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 32]
+Dierks & Rescorla       Expires October 27, 2014               [Page 31]
 
 Internet-Draft                     TLS                        April 2014
 
+
+   decompression_failure
+      This alert was used in previous versions of TLS.  TLS 1.3 does not
+      include compression and TLS 1.3 implementations MUST NOT send this
+      alert when in TLS 1.3 mode.
 
    handshake_failure
       Reception of a handshake_failure alert message indicates that the
@@ -1834,20 +1783,22 @@ Internet-Draft                     TLS                        April 2014
       applied, the sender decided not to proceed with negotiation.  This
       message is always fatal.
 
+
+
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 32]
+
+Internet-Draft                     TLS                        April 2014
+
+
    decode_error
       A message could not be decoded because some field was out of the
       specified range or the length of the message was incorrect.  This
       message is always fatal and should never be observed in
       communication between proper implementations (except when messages
       were corrupted in the network).
-
-
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 33]
-
-Internet-Draft                     TLS                        April 2014
-
 
    decrypt_error
       A handshake cryptographic operation failed, including being unable
@@ -1890,20 +1841,18 @@ Internet-Draft                     TLS                        April 2014
       that point, the original requester can decide whether to proceed
       with the connection.  One case where this would be appropriate is
       where a server has spawned a process to satisfy a request; the
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 33]
+
+Internet-Draft                     TLS                        April 2014
+
+
       process might receive security parameters (key length,
       authentication, etc.) at startup, and it might be difficult to
       communicate changes to these parameters after that point.  This
       message is always a warning.
-
-
-
-
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 34]
-
-Internet-Draft                     TLS                        April 2014
-
 
    unsupported_extension
       sent by clients that receive an extended server hello containing
@@ -1948,19 +1897,19 @@ Internet-Draft                     TLS                        April 2014
    secure method they support.  The protocol has been designed to
    minimize this risk, but there are still attacks available: for
    example, an attacker could block access to the port a secure service
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 34]
+
+Internet-Draft                     TLS                        April 2014
+
+
    runs on, or attempt to get the peers to negotiate an unauthenticated
    connection.  The fundamental rule is that higher levels must be
    cognizant of what their security requirements are and never transmit
    information over a channel less secure than what they require.  The
    TLS protocol is secure in that any cipher suite offers its promised
-
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 35]
-
-Internet-Draft                     TLS                        April 2014
-
-
    level of security: if you negotiate 3DES with a 1024-bit RSA key
    exchange with a host whose certificate you have verified, you can
    expect to be that secure.
@@ -1972,9 +1921,8 @@ Internet-Draft                     TLS                        April 2014
    and ServerHello are used to establish security enhancement
    capabilities between client and server.  The ClientHello and
    ServerHello establish the following attributes: Protocol Version,
-   Session ID, Cipher Suite, and Compression Method.  Additionally, two
-   random values are generated and exchanged: ClientHello.random and
-   ServerHello.random.
+   Session ID and Cipher Suite.  Additionally, two random values are
+   generated and exchanged: ClientHello.random and ServerHello.random.
 
    The actual key exchange uses up to four messages: the server
    Certificate, the ServerKeyExchange, the client Certificate, and the
@@ -2005,18 +1953,18 @@ Internet-Draft                     TLS                        April 2014
    the client copies the pending Cipher Spec into the current Cipher
    Spec.  The client then immediately sends the Finished message under
    the new algorithms, keys, and secrets.  In response, the server will
-   send its own ChangeCipherSpec message, transfer the pending to the
-   current Cipher Spec, and send its Finished message under the new
-   Cipher Spec.  At this point, the handshake is complete, and the
-   client and server may begin to exchange application layer data.  (See
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 36]
+Dierks & Rescorla       Expires October 27, 2014               [Page 35]
 
 Internet-Draft                     TLS                        April 2014
 
 
+   send its own ChangeCipherSpec message, transfer the pending to the
+   current Cipher Spec, and send its Finished message under the new
+   Cipher Spec.  At this point, the handshake is complete, and the
+   client and server may begin to exchange application layer data.  (See
    flow chart below.)  Application data MUST NOT be sent prior to the
    completion of the first handshake (before a cipher suite other than
    TLS_NULL_WITH_NULL_NULL is established).
@@ -2061,17 +2009,15 @@ Internet-Draft                     TLS                        April 2014
    complete, the client and server MAY begin to exchange application
    layer data.  (See flow chart below.)  If a Session ID match is not
    found, the server generates a new session ID, and the TLS client and
-   server perform a full handshake.
 
 
 
-
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 37]
+Dierks & Rescorla       Expires October 27, 2014               [Page 36]
 
 Internet-Draft                     TLS                        April 2014
 
+
+   server perform a full handshake.
 
       Client                                                Server
 
@@ -2096,6 +2042,36 @@ Internet-Draft                     TLS                        April 2014
    the TLS record layer, where they are encapsulated within one or more
    TLSPlaintext structures, which are processed and transmitted as
    specified by the current active session state.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 37]
+
+Internet-Draft                     TLS                        April 2014
+
 
       enum {
           hello_request(0), client_hello(1), server_hello(2),
@@ -2122,13 +2098,6 @@ Internet-Draft                     TLS                        April 2014
           } body;
       } Handshake;
 
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 38]
-
-Internet-Draft                     TLS                        April 2014
-
-
    The handshake protocol messages are presented below in the order they
    MUST be sent; sending handshake messages in an unexpected order
    results in a fatal error.  Unneeded handshake messages can be
@@ -2147,9 +2116,18 @@ Internet-Draft                     TLS                        April 2014
 
    The hello phase messages are used to exchange security enhancement
    capabilities between the client and server.  When a new session
-   begins, the record layer's connection state encryption, hash, and
-   compression algorithms are initialized to null.  The current
-   connection state is used for renegotiation messages.
+   begins, the record layer's connection state encryption and hash
+   algorithms are initialized to null.  The current connection state is
+   used for renegotiation messages.
+
+
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 38]
+
+Internet-Draft                     TLS                        April 2014
+
 
 7.4.1.1.  Hello Request
 
@@ -2178,13 +2156,6 @@ Internet-Draft                     TLS                        April 2014
       does not receive a ClientHello in response, it may close the
       connection with a fatal alert.
 
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 39]
-
-Internet-Draft                     TLS                        April 2014
-
-
       After sending a HelloRequest, servers SHOULD NOT repeat the
       request until the subsequent handshake negotiation is complete.
 
@@ -2205,6 +2176,14 @@ Internet-Draft                     TLS                        April 2014
       ClientHello in response to a HelloRequest or on its own initiative
       in order to renegotiate the security parameters in an existing
       connection.
+
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 39]
+
+Internet-Draft                     TLS                        April 2014
+
 
    Structure of this message:
 
@@ -2233,14 +2212,6 @@ Internet-Draft                     TLS                        April 2014
    identifier.  If not empty, the value identifies a session between the
    same client and server whose security parameters the client wishes to
    reuse.  The session identifier MAY be from an earlier connection,
-
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 40]
-
-Internet-Draft                     TLS                        April 2014
-
-
    this connection, or from another currently active connection.  The
    second option is useful if the client only wishes to update the
    random structures and derived values of a connection, and the third
@@ -2263,6 +2234,13 @@ Internet-Draft                     TLS                        April 2014
    protected by the Finished messages exchanged at the end of the
    handshake.)
 
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 40]
+
+Internet-Draft                     TLS                        April 2014
+
+
    The cipher suite list, passed from the client to the server in the
    ClientHello message, contains the combinations of cryptographic
    algorithms supported by the client in order of the client's
@@ -2276,26 +2254,6 @@ Internet-Draft                     TLS                        April 2014
    ones as usual.
 
       uint8 CipherSuite[2];    /* Cryptographic suite selector */
-
-   The ClientHello includes a list of compression algorithms supported
-   by the client, ordered according to the client's preference.
-
-
-
-
-
-
-
-
-
-
-
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 41]
-
-Internet-Draft                     TLS                        April 2014
-
 
       enum { null(0), (255) } CompressionMethod;
 
@@ -2328,6 +2286,17 @@ Internet-Draft                     TLS                        April 2014
       version of the specification, the version will be 3.3 (see
       Appendix E for details about backward compatibility).
 
+
+
+
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 41]
+
+Internet-Draft                     TLS                        April 2014
+
+
    random
       A client-generated random structure.
 
@@ -2343,24 +2312,16 @@ Internet-Draft                     TLS                        April 2014
       request), this vector MUST include at least the cipher_suite from
       that session.  Values are defined in Appendix A.5.
 
-
-
-
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 42]
-
-Internet-Draft                     TLS                        April 2014
-
-
    compression_methods
-      This is a list of the compression methods supported by the client,
-      sorted by client preference.  If the session_id field is not empty
-      (implying a session resumption request), it MUST include the
-      compression_method from that session.  This vector MUST contain,
-      and all implementations MUST support, CompressionMethod.null.
-      Thus, a client and server will always be able to agree on a
-      compression method.
+      Previous versions of TLS supported compression and the list of
+      compression methods was supplied in this field.  For any TLS 1.3
+      ClientHello, this field MUST contain only the "null" compression
+      method with the code point of 0.  If a TLS 1.3 ClientHello is
+      received with any other value in this field, the server MUST
+      generate a fatal "illegal_parameter" alert.  Note that: TLS 1.3
+      servers may receive TLS 1.2 or prior ClientHellos which contain
+      other compression methods and MUST follow the procedures for the
+      appropriate prior version of TLS.
 
    extensions
       Clients MAY request extended functionality from servers by sending
@@ -2383,6 +2344,15 @@ Internet-Draft                     TLS                        April 2014
 
    When this message will be sent:
 
+
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 42]
+
+Internet-Draft                     TLS                        April 2014
+
+
       The server will send this message in response to a ClientHello
       message when it was able to find an acceptable set of algorithms.
       If it cannot find such a match, it will respond with a handshake
@@ -2390,31 +2360,11 @@ Internet-Draft                     TLS                        April 2014
 
    Structure of this message:
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 43]
-
-Internet-Draft                     TLS                        April 2014
-
-
       struct {
           ProtocolVersion server_version;
           Random random;
           SessionID session_id;
           CipherSuite cipher_suite;
-          CompressionMethod compression_method;
           select (extensions_present) {
               case false:
                   struct {};
@@ -2424,8 +2374,8 @@ Internet-Draft                     TLS                        April 2014
       } ServerHello;
 
    The presence of extensions can be detected by determining whether
-   there are bytes following the compression_method field at the end of
-   the ServerHello.
+   there are bytes following the cipher_suite field at the end of the
+   ServerHello.
 
    server_version
       This field will contain the lower of that suggested by the client
@@ -2451,29 +2401,23 @@ Internet-Draft                     TLS                        April 2014
       not be cached and therefore cannot be resumed.  If a session is
       resumed, it must be resumed using the same cipher suite it was
       originally negotiated with.  Note that there is no requirement
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 43]
+
+Internet-Draft                     TLS                        April 2014
+
+
       that the server resume any session even if it had formerly
       provided a session_id.  Clients MUST be prepared to do a full
       negotiation -- including negotiating new cipher suites -- during
       any handshake.
 
-
-
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 44]
-
-Internet-Draft                     TLS                        April 2014
-
-
    cipher_suite
       The single cipher suite selected by the server from the list in
       ClientHello.cipher_suites.  For resumed sessions, this field is
       the value from the state of the session being resumed.
-
-   compression_method
-      The single compression algorithm selected by the server from the
-      list in ClientHello.compression_methods.  For resumed sessions,
-      this field is the value from the resumed session state.
 
    extensions
       A list of extensions.  Note that only extensions offered by the
@@ -2516,7 +2460,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 45]
+Dierks & Rescorla       Expires October 27, 2014               [Page 44]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -2572,7 +2516,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 46]
+Dierks & Rescorla       Expires October 27, 2014               [Page 45]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -2628,7 +2572,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 47]
+Dierks & Rescorla       Expires October 27, 2014               [Page 46]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -2684,7 +2628,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 48]
+Dierks & Rescorla       Expires October 27, 2014               [Page 47]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -2740,7 +2684,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 49]
+Dierks & Rescorla       Expires October 27, 2014               [Page 48]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -2796,7 +2740,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 50]
+Dierks & Rescorla       Expires October 27, 2014               [Page 49]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -2852,7 +2796,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 51]
+Dierks & Rescorla       Expires October 27, 2014               [Page 50]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -2908,7 +2852,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 52]
+Dierks & Rescorla       Expires October 27, 2014               [Page 51]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -2964,7 +2908,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 53]
+Dierks & Rescorla       Expires October 27, 2014               [Page 52]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -3020,7 +2964,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 54]
+Dierks & Rescorla       Expires October 27, 2014               [Page 53]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -3076,7 +3020,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 55]
+Dierks & Rescorla       Expires October 27, 2014               [Page 54]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -3132,7 +3076,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 56]
+Dierks & Rescorla       Expires October 27, 2014               [Page 55]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -3188,7 +3132,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 57]
+Dierks & Rescorla       Expires October 27, 2014               [Page 56]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -3244,7 +3188,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 58]
+Dierks & Rescorla       Expires October 27, 2014               [Page 57]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -3300,7 +3244,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 59]
+Dierks & Rescorla       Expires October 27, 2014               [Page 58]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -3356,7 +3300,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 60]
+Dierks & Rescorla       Expires October 27, 2014               [Page 59]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -3412,7 +3356,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 61]
+Dierks & Rescorla       Expires October 27, 2014               [Page 60]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -3468,7 +3412,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 62]
+Dierks & Rescorla       Expires October 27, 2014               [Page 61]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -3524,7 +3468,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 63]
+Dierks & Rescorla       Expires October 27, 2014               [Page 62]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -3580,7 +3524,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 64]
+Dierks & Rescorla       Expires October 27, 2014               [Page 63]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -3636,7 +3580,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 65]
+Dierks & Rescorla       Expires October 27, 2014               [Page 64]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -3663,8 +3607,7 @@ Internet-Draft                     TLS                        April 2014
    requires specification of a suite of algorithms, a master secret, and
    the client and server random values.  The authentication, encryption,
    and MAC algorithms are determined by the cipher_suite selected by the
-   server and revealed in the ServerHello message.  The compression
-   algorithm is negotiated in the hello messages, and the random values
+   server and revealed in the ServerHello message.  The random values
    are exchanged in the hello messages.  All that remains is to
    calculate the master secret.
 
@@ -3689,15 +3632,14 @@ Internet-Draft                     TLS                        April 2014
    the server's public key, and sent to the server.  The server uses its
    private key to decrypt the pre_master_secret.  Both parties then
    convert the pre_master_secret into the master_secret, as specified
+   above.
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 66]
+Dierks & Rescorla       Expires October 27, 2014               [Page 65]
 
 Internet-Draft                     TLS                        April 2014
 
-
-   above.
 
 8.1.2.  Diffie-Hellman
 
@@ -3720,9 +3662,8 @@ Internet-Draft                     TLS                        April 2014
 10.  Application Data Protocol
 
    Application data messages are carried by the record layer and are
-   fragmented, compressed, and encrypted based on the current connection
-   state.  The messages are treated as transparent data to the record
-   layer.
+   fragmented, and encrypted based on the current connection state.  The
+   messages are treated as transparent data to the record layer.
 
 11.  Security Considerations
 
@@ -3745,17 +3686,17 @@ Internet-Draft                     TLS                        April 2014
 
    -  TLS Cipher Suite Registry: Future values with the first byte in
       the range 0-191 (decimal) inclusive are assigned via Standards
+      Action [RFC2434].  Values with the first byte in the range 192-254
+      (decimal) are assigned via Specification Required [RFC2434].
+      Values with the first byte 255 (decimal) are reserved for Private
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 67]
+Dierks & Rescorla       Expires October 27, 2014               [Page 66]
 
 Internet-Draft                     TLS                        April 2014
 
 
-      Action [RFC2434].  Values with the first byte in the range 192-254
-      (decimal) are assigned via Specification Required [RFC2434].
-      Values with the first byte 255 (decimal) are reserved for Private
       Use [RFC2434].
 
    -  This document defines several new HMAC-SHA256-based cipher suites,
@@ -3799,19 +3740,18 @@ Internet-Draft                     TLS                        April 2014
       Values from 224-255 (decimal) inclusive are reserved for Private
       Use [RFC2434].
 
-   This document also uses the TLS Compression Method Identifiers
-   Registry, defined in [RFC3749].  IANA has allocated value 0 for the
+13.  References
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 68]
+
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 67]
 
 Internet-Draft                     TLS                        April 2014
 
-
-   "null" compression method.
-
-13.  References
 
 13.1.  Normative References
 
@@ -3858,16 +3798,16 @@ Internet-Draft                     TLS                        April 2014
                 (TDEA) Block Cipher", NIST Special Publication 800-67,
                 May 2004.
 
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 69]
-
-Internet-Draft                     TLS                        April 2014
-
-
    [X680]       ITU-T, "Information technology - Abstract Syntax
                 Notation One (ASN.1): Specification of basic notation",
                 ISO/IEC 8824-1:2002, 2002.
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 68]
+
+Internet-Draft                     TLS                        April 2014
+
 
    [X690]       ITU-T, "Information technology - ASN.1 encoding Rules:
                 Specification of Basic Encoding Rules (BER), Canonical
@@ -3914,16 +3854,16 @@ Internet-Draft                     TLS                        April 2014
                 implementation error", August 2006, <http://www.imc.org/
                 ietf-openpgp/mail-archive/msg14307.html>.
 
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 70]
-
-Internet-Draft                     TLS                        April 2014
-
-
    [GCM]        Dworkin, M., "Recommendation for Block Cipher Modes of
                 Operation: Galois/Counter Mode (GCM) and GMAC",
                 NIST Special Publication 800-38D, November 2007.
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 69]
+
+Internet-Draft                     TLS                        April 2014
+
 
    [KPR03]      Klima, V., Pokorny, O., and T. Rosa, "Attacking RSA-
                 based Sessions in SSL/TLS", March 2003,
@@ -3969,18 +3909,17 @@ Internet-Draft                     TLS                        April 2014
 
    [RFC4279]    Eronen, P. and H. Tschofenig, "Pre-Shared Key
                 Ciphersuites for Transport Layer Security (TLS)",
-
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 71]
-
-Internet-Draft                     TLS                        April 2014
-
-
                 RFC 4279, December 2005.
 
    [RFC4302]    Kent, S., "IP Authentication Header", RFC 4302,
                 December 2005.
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 70]
+
+Internet-Draft                     TLS                        April 2014
+
 
    [RFC4303]    Kent, S., "IP Encapsulating Security Payload (ESP)",
                 RFC 4303, December 2005.
@@ -4026,17 +3965,18 @@ Internet-Draft                     TLS                        April 2014
    [TIMING]     Boneh, D. and D. Brumley, "Remote timing attacks are
                 practical", USENIX Security Symposium, 2003.
 
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 72]
-
-Internet-Draft                     TLS                        April 2014
-
-
    [TLSEXT]     Eastlake 3rd, D., "Transport Layer Security (TLS)
                 Extensions:  Extension Definitions", February 2008.
 
    [X501]       "Information Technology - Open Systems Interconnection -
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 71]
+
+Internet-Draft                     TLS                        April 2014
+
+
                 The Directory: Models", ITU-T X.501, 1993.
 
 URIs
@@ -4081,18 +4021,17 @@ A.1.  Record Layer
        uint16 length;
        select (SecurityParameters.cipher_type) {
            case stream: GenericStreamCipher;
-
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 73]
-
-Internet-Draft                     TLS                        April 2014
-
-
            case block:  GenericBlockCipher;
            case aead:   GenericAEADCipher;
        } fragment;
    } TLSCiphertext;
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 72]
+
+Internet-Draft                     TLS                        April 2014
+
 
    stream-ciphered struct {
        opaque content[TLSCompressed.length];
@@ -4140,7 +4079,12 @@ A.2.  Change Cipher Specs Message
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 74]
+
+
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 73]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -4155,7 +4099,7 @@ A.3.  Alert Messages
        bad_record_mac(20),
        decryption_failed_RESERVED(21),
        record_overflow(22),
-       decompression_failure(30),
+       decompression_failure_RESERVED(30),
        handshake_failure(40),
        no_certificate_RESERVED(41),
        bad_certificate(42),
@@ -4196,7 +4140,7 @@ A.3.  Alert Messages
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 75]
+Dierks & Rescorla       Expires October 27, 2014               [Page 74]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -4252,7 +4196,7 @@ A.4.1.  Hello Messages
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 76]
+Dierks & Rescorla       Expires October 27, 2014               [Page 75]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -4271,7 +4215,6 @@ Internet-Draft                     TLS                        April 2014
        Random random;
        SessionID session_id;
        CipherSuite cipher_suite;
-       CompressionMethod compression_method;
        select (extensions_present) {
            case false:
                struct {};
@@ -4305,15 +4248,14 @@ Internet-Draft                     TLS                        April 2014
    SignatureAndHashAlgorithm
     supported_signature_algorithms<2..2^16-1>;
 
+A.4.2.  Server Authentication and Key Exchange Messages
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 77]
+Dierks & Rescorla       Expires October 27, 2014               [Page 76]
 
 Internet-Draft                     TLS                        April 2014
 
-
-A.4.2.  Server Authentication and Key Exchange Messages
 
    opaque ASN.1Cert<2^24-1>;
 
@@ -4361,16 +4303,16 @@ A.4.2.  Server Authentication and Key Exchange Messages
    opaque DistinguishedName<1..2^16-1>;
 
    struct {
+       ClientCertificateType certificate_types<1..2^8-1>;
+       DistinguishedName certificate_authorities<0..2^16-1>;
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 78]
+Dierks & Rescorla       Expires October 27, 2014               [Page 77]
 
 Internet-Draft                     TLS                        April 2014
 
 
-       ClientCertificateType certificate_types<1..2^8-1>;
-       DistinguishedName certificate_authorities<0..2^16-1>;
    } CertificateRequest;
 
    struct { } ServerHelloDone;
@@ -4420,7 +4362,9 @@ A.4.3.  Client Authentication and Key Exchange Messages
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 79]
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 78]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -4476,7 +4420,7 @@ A.5.  The Cipher Suite
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 80]
+Dierks & Rescorla       Expires October 27, 2014               [Page 79]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -4532,7 +4476,7 @@ Internet-Draft                     TLS                        April 2014
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 81]
+Dierks & Rescorla       Expires October 27, 2014               [Page 80]
 
 Internet-Draft                     TLS                        April 2014
 
@@ -4566,8 +4510,7 @@ A.6.  The Security Parameters
      hmac_sha512} MACAlgorithm;
 
    /* Other values may be added to the algorithms specified in
-   CompressionMethod, PRFAlgorithm, BulkCipherAlgorithm, and
-   MACAlgorithm. */
+   PRFAlgorithm, BulkCipherAlgorithm, and MACAlgorithm. */
 
    struct {
        ConnectionEnd          entity;
@@ -4581,19 +4524,18 @@ A.6.  The Security Parameters
        MACAlgorithm           mac_algorithm;
        uint8                  mac_length;
        uint8                  mac_key_length;
-       CompressionMethod      compression_algorithm;
        opaque                 master_secret[48];
        opaque                 client_random[32];
        opaque                 server_random[32];
+     } SecurityParameters;
 
 
 
-Dierks & Rescorla       Expires October 19, 2014               [Page 82]
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 81]
 
 Internet-Draft                     TLS                        April 2014
 
-
-     } SecurityParameters;
 
 A.7.  Changes to RFC 4492
 
@@ -4639,19 +4581,17 @@ Appendix B.  Glossary
       A symmetric encryption algorithm that simultaneously provides
       confidentiality and message integrity.
 
-
-
-
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 83]
-
-Internet-Draft                     TLS                        April 2014
-
-
    authentication
       Authentication is the ability of one entity to determine the
       identity of another entity.
+
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 82]
+
+Internet-Draft                     TLS                        April 2014
+
 
    block cipher
       A block cipher is an algorithm that operates on plaintext in
@@ -4695,22 +4635,20 @@ Internet-Draft                     TLS                        April 2014
       connections are peer-to-peer relationships.  The connections are
       transient.  Every connection is associated with one session.
 
-
-
-
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 84]
-
-Internet-Draft                     TLS                        April 2014
-
-
    Data Encryption Standard
       DES [DES] still is a very widely used symmetric encryption
       algorithm although it is considered as rather weak now.  DES is a
       block cipher with a 56-bit key and an 8-byte block size.  Note
       that in TLS, for key generation purposes, DES is treated as having
       an 8-byte key length (64 bits), but it still only provides 56 bits
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 83]
+
+Internet-Draft                     TLS                        April 2014
+
+
       of protection.  (The low bit of each key byte is presumed to be
       set to produce odd parity in that key byte.)  DES can also be
       operated in a mode [TRIPLEDES] where three independent keys and
@@ -4750,23 +4688,22 @@ Internet-Draft                     TLS                        April 2014
       Secure secret data used for generating encryption keys, MAC
       secrets, and IVs.
 
-
-
-
-
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 85]
-
-Internet-Draft                     TLS                        April 2014
-
-
    MD5
       MD5 [RFC1321] is a hashing function that converts an arbitrarily
       long data stream into a hash of fixed size (16 bytes).  Due to
       significant progress in cryptanalysis, at the time of publication
       of this document, MD5 no longer can be considered a 'secure'
       hashing function.
+
+
+
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 84]
+
+Internet-Draft                     TLS                        April 2014
+
 
    public key cryptography
       A class of cryptographic techniques employing two-key ciphers.
@@ -4806,17 +4743,6 @@ Internet-Draft                     TLS                        April 2014
    server write key
       The key used to encrypt data written by the server.
 
-
-
-
-
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 86]
-
-Internet-Draft                     TLS                        April 2014
-
-
    server write MAC key
       The secret data used to authenticate data written by the server.
 
@@ -4825,6 +4751,15 @@ Internet-Draft                     TLS                        April 2014
       produces a 20-byte output.  Note that all references to SHA
       (without a numerical suffix) actually use the modified SHA-1
       algorithm.
+
+
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 85]
+
+Internet-Draft                     TLS                        April 2014
+
 
    SHA-256
       The 256-bit Secure Hash Algorithm is defined in FIPS PUB 180-2.
@@ -4865,14 +4800,6 @@ TLS_RSA_WITH_AES_128_CBC_SHA256         RSA          AES_128_CBC  SHA256
 TLS_RSA_WITH_AES_256_CBC_SHA256         RSA          AES_256_CBC  SHA256
 TLS_DH_DSS_WITH_3DES_EDE_CBC_SHA        DH_DSS       3DES_EDE_CBC SHA
 TLS_DH_RSA_WITH_3DES_EDE_CBC_SHA        DH_RSA       3DES_EDE_CBC SHA
-
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 87]
-
-Internet-Draft                     TLS                        April 2014
-
-
 TLS_DHE_DSS_WITH_3DES_EDE_CBC_SHA       DHE_DSS      3DES_EDE_CBC SHA
 TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA       DHE_RSA      3DES_EDE_CBC SHA
 TLS_DH_anon_WITH_RC4_128_MD5            DH_anon      RC4_128      MD5
@@ -4882,6 +4809,14 @@ TLS_DH_RSA_WITH_AES_128_CBC_SHA         DH_RSA       AES_128_CBC  SHA
 TLS_DHE_DSS_WITH_AES_128_CBC_SHA        DHE_DSS      AES_128_CBC  SHA
 TLS_DHE_RSA_WITH_AES_128_CBC_SHA        DHE_RSA      AES_128_CBC  SHA
 TLS_DH_anon_WITH_AES_128_CBC_SHA        DH_anon      AES_128_CBC  SHA
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 86]
+
+Internet-Draft                     TLS                        April 2014
+
+
 TLS_DH_DSS_WITH_AES_256_CBC_SHA         DH_DSS       AES_256_CBC  SHA
 TLS_DH_RSA_WITH_AES_256_CBC_SHA         DH_RSA       AES_256_CBC  SHA
 TLS_DHE_DSS_WITH_AES_256_CBC_SHA        DHE_DSS      AES_256_CBC  SHA
@@ -4919,16 +4854,6 @@ SHA256    HMAC-SHA256     32            32
       Indicates whether this is a stream cipher or a block cipher
       running in CBC mode.
 
-
-
-
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 88]
-
-Internet-Draft                     TLS                        April 2014
-
-
    Key Material
       The number of bytes from the key_block that are used for
       generating the write keys.
@@ -4938,6 +4863,15 @@ Internet-Draft                     TLS                        April 2014
       vector.  Zero for stream ciphers; equal to the block size for
       block ciphers (this is equal to
       SecurityParameters.record_iv_length).
+
+
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 87]
+
+Internet-Draft                     TLS                        April 2014
+
 
    Block Size
       The amount of data a block cipher enciphers in one chunk; a block
@@ -4975,16 +4909,6 @@ D.2.  Certificates and Authentication
    addition of trusted CAs should be done very carefully.  Users should
    be able to view information about the certificate and root CA.
 
-
-
-
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 89]
-
-Internet-Draft                     TLS                        April 2014
-
-
 D.3.  Cipher Suites
 
    TLS supports a range of key sizes and security levels, including some
@@ -4995,6 +4919,15 @@ D.3.  Cipher Suites
    maximum key sizes.  For example, certificate chains containing 512-
    bit RSA keys or signatures are not appropriate for high-security
    applications.
+
+
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 88]
+
+Internet-Draft                     TLS                        April 2014
+
 
 D.4.  Implementation Pitfalls
 
@@ -5031,16 +4964,6 @@ D.4.  Implementation Pitfalls
 
    Cryptographic details:
 
-
-
-
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 90]
-
-Internet-Draft                     TLS                        April 2014
-
-
    -  In the RSA-encrypted Premaster Secret, do you correctly send and
       verify the version number?  When an error is encountered, do you
       continue the handshake to avoid the Bleichenbacher attack (see
@@ -5053,6 +4976,15 @@ Internet-Draft                     TLS                        April 2014
       parameters (see Section 4.7)?  Do you verify that the RSA padding
       doesn't have additional data after the hash value?  [FI06]
 
+
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 89]
+
+Internet-Draft                     TLS                        April 2014
+
+
    -  When using Diffie-Hellman key exchange, do you correctly strip
       leading zero bytes from the negotiated key (see Section 8.1.2)?
 
@@ -5060,12 +4992,12 @@ Internet-Draft                     TLS                        April 2014
       by the server are acceptable (see Appendix F.1.1.3)?
 
    -  How do you generate unpredictable IVs for CBC mode ciphers (see
-      Section 6.2.3.2)?
+      Section 6.2.2.2)?
 
    -  Do you accept long CBC mode padding (up to 255 bytes; see
-      Section 6.2.3.2?
+      Section 6.2.2.2?
 
-   -  How do you address CBC mode timing attacks (Section 6.2.3.2)?
+   -  How do you address CBC mode timing attacks (Section 6.2.2.2)?
 
    -  Do you use a strong and, most importantly, properly seeded random
       number generator (see Appendix D.1) for generating the premaster
@@ -5089,14 +5021,6 @@ E.1.  Compatibility with TLS 1.0/1.1 and SSL 3.0
    remains compatible, and the client supports the highest protocol
    version available in the server.
 
-
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 91]
-
-Internet-Draft                     TLS                        April 2014
-
-
    A TLS 1.2 client who wishes to negotiate with such older servers will
    send a normal TLS 1.2 ClientHello, containing { 3, 3 } (TLS 1.2) in
    ClientHello.client_version.  If the server does not support this
@@ -5109,6 +5033,14 @@ Internet-Draft                     TLS                        April 2014
    message and close the connection.
 
    If a TLS server receives a ClientHello containing a version number
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 90]
+
+Internet-Draft                     TLS                        April 2014
+
+
    greater than the highest version supported by the server, it MUST
    reply according to the highest version supported by the server.
 
@@ -5145,14 +5077,6 @@ Internet-Draft                     TLS                        April 2014
    TLS clients that wish to negotiate with older servers MAY send any
    value {03,XX} as the record layer version number.  Typical values
    would be {03,00}, the lowest version number supported by the client,
-
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 92]
-
-Internet-Draft                     TLS                        April 2014
-
-
    and the value of ClientHello.client_version.  No single value will
    guarantee interoperability with all old servers, but this is a
    complex topic beyond the scope of this document.
@@ -5164,6 +5088,14 @@ E.2.  Compatibility with SSL 2.0
    MUST contain the same version number as would be used for ordinary
    ClientHello, and MUST encode the supported TLS cipher suites in the
    CIPHER-SPECS-DATA field as described below.
+
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 91]
+
+Internet-Draft                     TLS                        April 2014
+
 
    Warning: The ability to send version 2.0 CLIENT-HELLO messages will
    be phased out with all due haste, since the newer ClientHello format
@@ -5199,16 +5131,6 @@ E.2.  Compatibility with SSL 2.0
       The highest bit MUST be 1; the remaining bits contain the length
       of the following data in bytes.
 
-
-
-
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 93]
-
-Internet-Draft                     TLS                        April 2014
-
-
    msg_type
       This field, in conjunction with the version field, identifies a
       version 2 ClientHello message.  The value MUST be 1.
@@ -5220,6 +5142,16 @@ Internet-Draft                     TLS                        April 2014
       This field is the total length of the field cipher_specs.  It
       cannot be zero and MUST be a multiple of the V2CipherSpec length
       (3).
+
+
+
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 92]
+
+Internet-Draft                     TLS                        April 2014
+
 
    session_id_length
       This field MUST have a value of zero for a client that claims to
@@ -5257,14 +5189,6 @@ E.3.  Avoiding Man-in-the-Middle Version Rollback
 
    When a client negotiates SSL 2.0 but also supports TLS, it MUST set
    the right-hand (least-significant) 8 random bytes of the PKCS padding
-
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 94]
-
-Internet-Draft                     TLS                        April 2014
-
-
    (not including the terminal null of the padding) for the RSA
    encryption of the ENCRYPTED-KEY-DATA field of the CLIENT-MASTER-KEY
    to 0x03 (the other padding bytes are random).
@@ -5276,6 +5200,14 @@ Internet-Draft                     TLS                        April 2014
    eventually fail since the keys will not match).  Note that reporting
    the error situation to the client could make the server vulnerable to
    attacks described in [BLEI].
+
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 93]
+
+Internet-Draft                     TLS                        April 2014
+
 
 Appendix F.  Security Analysis
 
@@ -5313,14 +5245,6 @@ F.1.1.  Authentication and Key Exchange
 
    The general goal of the key exchange process is to create a
    pre_master_secret known to the communicating parties and not to
-
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 95]
-
-Internet-Draft                     TLS                        April 2014
-
-
    attackers.  The pre_master_secret will be used to generate the
    master_secret (see Section 8.1).  The master_secret is required to
    generate the Finished messages, encryption keys, and MAC keys (see
@@ -5333,6 +5257,14 @@ F.1.1.1.  Anonymous Key Exchange
    Completely anonymous sessions can be established using Diffie-Hellman
    for key exchange.  The server's public parameters are contained in
    the server key exchange message, and the client's are sent in the
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 94]
+
+Internet-Draft                     TLS                        April 2014
+
+
    client key exchange message.  Eavesdroppers who do not know the
    private values should not be able to find the Diffie-Hellman result
    (i.e., the pre_master_secret).
@@ -5366,17 +5298,6 @@ F.1.1.2.  RSA Key Exchange and Authentication
    signature to the server, and ServerHello.random, which binds the
    signature to the current handshake process.
 
-
-
-
-
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 96]
-
-Internet-Draft                     TLS                        April 2014
-
-
 F.1.1.3.  Diffie-Hellman Key Exchange with Authentication
 
    When Diffie-Hellman key exchange is used, the server can either
@@ -5392,6 +5313,14 @@ F.1.1.3.  Diffie-Hellman Key Exchange with Authentication
    parameters, its certificate contains the information required to
    complete the key exchange.  Note that in this case the client and
    server will generate the same Diffie-Hellman result (i.e.,
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 95]
+
+Internet-Draft                     TLS                        April 2014
+
+
    pre_master_secret) every time they communicate.  To prevent the
    pre_master_secret from staying in memory any longer than necessary,
    it should be converted into the master_secret as soon as possible.
@@ -5426,13 +5355,6 @@ F.1.1.3.  Diffie-Hellman Key Exchange with Authentication
    defined in [RFC4307] or [RFC3526].  These can be verified by simple
    comparison.
 
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 97]
-
-Internet-Draft                     TLS                        April 2014
-
-
 F.1.2.  Version Rollback Attacks
 
    Because TLS includes substantial improvements over SSL Version 2.0,
@@ -5447,6 +5369,14 @@ F.1.2.  Version Rollback Attacks
    ENCRYPTED-KEY-DATA message containing the same key (but with normal
    padding) before the application-specified wait threshold has expired.
    Altering the padding of the least-significant 8 bytes of the PKCS
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 96]
+
+Internet-Draft                     TLS                        April 2014
+
+
    padding does not impact security for the size of the signed hashes
    and RSA key lengths used in the protocol, since this is essentially
    equivalent to increasing the input block size by 8 bytes.
@@ -5481,14 +5411,6 @@ F.1.4.  Resuming Sessions
    or that certificates may have expired or been revoked, it should
    force a full handshake.  An upper limit of 24 hours is suggested for
    session ID lifetimes, since an attacker who obtains a master_secret
-
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 98]
-
-Internet-Draft                     TLS                        April 2014
-
-
    may be able to impersonate the compromised party until the
    corresponding session ID is retired.  Applications that may be run in
    relatively insecure environments should not write session IDs to
@@ -5503,6 +5425,14 @@ F.2.  Protecting Application Data
    Outgoing data is protected with a MAC before transmission.  To
    prevent message replay or modification attacks, the MAC is computed
    from the MAC key, the sequence number, the message length, the
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 97]
+
+Internet-Draft                     TLS                        April 2014
+
+
    message contents, and two fixed character strings.  The message type
    field is necessary to ensure that messages intended for one TLS
    record layer client are not redirected to another.  The sequence
@@ -5537,14 +5467,6 @@ F.4.  Security of Composite Cipher Modes
    cipher suite.  The objective is to protect both the integrity and
    confidentiality of the transmitted data from malicious actions by
    active attackers in the network.  It turns out that the order in
-
-
-
-Dierks & Rescorla       Expires October 19, 2014               [Page 99]
-
-Internet-Draft                     TLS                        April 2014
-
-
    which encryption and authentication functions are applied to the data
    plays an important role for achieving this goal [ENCAUTH].
 
@@ -5559,6 +5481,14 @@ Internet-Draft                     TLS                        April 2014
    concatenation of plaintext and MAC is encrypted.  This method has
    been proven secure for CERTAIN combinations of encryption functions
    and MAC functions, but it is not guaranteed to be secure in general.
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 98]
+
+Internet-Draft                     TLS                        April 2014
+
+
    In particular, it has been shown that there exist perfectly secure
    encryption functions (secure even in the information-theoretic sense)
    that combined with any secure MAC function, fail to provide the
@@ -5593,14 +5523,6 @@ F.5.  Denial of Service
    proper TCP SYN randomization is used [RFC1948] by the TCP stack.
 
    Because TLS runs over TCP, it is also susceptible to a number of DoS
-
-
-
-Dierks & Rescorla       Expires October 19, 2014              [Page 100]
-
-Internet-Draft                     TLS                        April 2014
-
-
    attacks on individual connections.  In particular, attackers can
    forge RSTs, thereby terminating connections, or forge partial TLS
    records, thereby causing the connection to stall.  These attacks
@@ -5615,6 +5537,14 @@ F.6.  Final Notes
    addition, the implementation must be free of security errors.
 
    The system is only as strong as the weakest key exchange and
+
+
+
+Dierks & Rescorla       Expires October 27, 2014               [Page 99]
+
+Internet-Draft                     TLS                        April 2014
+
+
    authentication algorithm supported, and only trustworthy
    cryptographic functions should be used.  Short public keys and
    anonymous servers should be used with great caution.  Implementations
@@ -5650,13 +5580,6 @@ Appendix H.  Contributors
    BCI
    sblakewilson@bcisse.com
 
-
-
-Dierks & Rescorla       Expires October 19, 2014              [Page 101]
-
-Internet-Draft                     TLS                        April 2014
-
-
    Ran Canetti
    IBM
    canetti@watson.ibm.com
@@ -5670,6 +5593,14 @@ Internet-Draft                     TLS                        April 2014
    Securify
 
    Pasi Eronen
+
+
+
+Dierks & Rescorla       Expires October 27, 2014              [Page 100]
+
+Internet-Draft                     TLS                        April 2014
+
+
    pasi.eronen@nokia.com
    Nokia
 
@@ -5706,13 +5637,6 @@ Internet-Draft                     TLS                        April 2014
    Netscape Communications
    relyea@netscape.com
 
-
-
-Dierks & Rescorla       Expires October 19, 2014              [Page 102]
-
-Internet-Draft                     TLS                        April 2014
-
-
    Jim Roskind
    Netscape Communications
    jar@netscape.com
@@ -5724,6 +5648,14 @@ Internet-Draft                     TLS                        April 2014
    dansimon@microsoft.com
 
    Tom Weinstein
+
+
+
+
+Dierks & Rescorla       Expires October 27, 2014              [Page 101]
+
+Internet-Draft                     TLS                        April 2014
+
 
    Tim Wright
    Vodafone
@@ -5764,5 +5696,17 @@ Authors' Addresses
 
 
 
-Dierks & Rescorla       Expires October 19, 2014              [Page 103]
+
+
+
+
+
+
+
+
+
+
+
+
+Dierks & Rescorla       Expires October 27, 2014              [Page 102]
 
