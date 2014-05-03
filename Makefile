@@ -20,6 +20,7 @@ submit: $(next).txt
 idnits: $(next).txt
 	$(idnits) $<
 
+all:
 clean:
 	-rm -f $(draft).txt $(draft).html
 	-rm -f $(next).txt $(next).html
@@ -35,4 +36,4 @@ $(next).md: $(draft).md
 	$(xml2rfc) $< $@
 
 %.html: %.xml
-	$(xml2rfc) $< $@
+	$(xml2rfc) --html $< $@
