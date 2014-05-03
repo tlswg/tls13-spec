@@ -31,7 +31,7 @@ $(draft)-orig.md:
 	git show origin/master:$(draft).md > $@
 
 diff: $(draft).txt $(draft)-orig.txt
-	rfcdiff $(draft)-orig.txt $(draft).txt
+	$(rfcdiff) $(draft)-orig.txt $(draft).txt
 	-rm -rf $(draft)-orig.*
 
 $(next).md: $(draft).md
