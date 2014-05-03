@@ -328,7 +328,7 @@ interpreted as described in RFC 2119 {{RFC2119}}.
 
 draft-01
 -  Removed support for compression.
-
+-  Removed support for static RSA key exchange.
 
 ##  Major Differences from TLS 1.1
 
@@ -2804,9 +2804,7 @@ ephemeral or contained within the server's certificate.
 #  Mandatory Cipher Suites
 
 In the absence of an application profile standard specifying otherwise, a
-TLS-compliant application MUST implement the cipher suite
-TLS_DHE_RSA_WITH_AES_128_GCM_SHA256 (see {{the-cipher-suite}} for the definition).
-[[OPEN ISSUE: should this be ECDHE?]]
+TLS-compliant application MUST implement the cipher suite [TODO:Needs to be selected](https://github.com/tlswg/tls13-spec/issues/32). (See {{the-cipher-suite}} for the definition).
 
 #  Application Data Protocol
 
