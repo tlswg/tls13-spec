@@ -11,16 +11,15 @@ next_ver ?= $(shell printf "%.2d" $$((1$(current_ver)-99)))
 endif
 next := $(draft)-$(next_ver)
 
-.PHONY: latest submit clean
+.PHONY: all latest submit clean
 
-latest: $(draft).txt $(draft).html
+all latest: $(draft).txt $(draft).html
 
 submit: $(next).txt
 
 idnits: $(next).txt
 	$(idnits) $<
 
-all:
 clean:
 	-rm -f $(draft).txt $(draft).html
 	-rm -f $(next).txt $(next).html
