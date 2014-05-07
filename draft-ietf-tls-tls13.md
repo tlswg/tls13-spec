@@ -98,10 +98,8 @@ informative:
   RFC2785:
   RFC3268:
   RFC3526:
-  RFC3749:
   RFC3766:
   RFC4086:
-  RFC4279:
   RFC4302:
   RFC4303:
   RFC4307:
@@ -179,17 +177,6 @@ informative:
          ins: M. Dworkin
        seriesinfo:
          NIST: Special Publication 800-38D
-  KPR03:
-       title: "Attacking RSA-based Sessions in SSL/TLS"
-       target: http://eprint.iacr.org/2003/052/
-       date: 2003-03
-       author:
-         -
-           ins: V. Klima
-         -
-           ins: O. Pokorny
-         -
-           ins: T. Rosa
   PKCS6:
        title: "PKCS #6: RSA Extended Certificate Syntax Standard, version 1.5"
        author:
@@ -341,7 +328,7 @@ interpreted as described in RFC 2119 {{RFC2119}}.
 
 draft-01
 -  Removed support for compression.
-
+-  Removed support for static RSA key exchange.
 
 ##  Major Differences from TLS 1.1
 
@@ -713,14 +700,6 @@ In AEAD encryption, the plaintext is simultaneously encrypted and integrity
 protected. The input may be of any length, and aead- ciphered output is
 generally larger than the input in order to accommodate the integrity check
 value.
-
-In public key encryption, a public key algorithm is used to encrypt data in
-such a way that it can be decrypted only with the matching private key. A
-public-key-encrypted element is encoded as an opaque vector <0..2^16-1>, where
-the length is specified by the encryption algorithm and key.
-
-RSA encryption is done using the RSAES-PKCS1-v1_5 encryption scheme defined in
-{{RFC3447}}.
 
 In the following example
 
@@ -1638,7 +1617,7 @@ or attempt to get the peers to negotiate an unauthenticated connection. The
 fundamental rule is that higher levels must be cognizant of what their security
 requirements are and never transmit information over a channel less secure than
 what they require. The TLS protocol is secure in that any cipher suite offers
-its promised level of security: if you negotiate 3DES with a 1024-bit RSA key
+its promised level of security: if you negotiate AES with a 1024-bit DHE key
 exchange with a host whose certificate you have verified, you can expect to be
 that secure.
 
@@ -2177,8 +2156,8 @@ signature_algorithms extension, listing the algorithms it is willing to accept.
 If the client does not send the signature_algorithms extension, the server MUST
 do the following:
 
-- If the negotiated key exchange algorithm is one of (RSA, DHE_RSA, DH_RSA,
-RSA_PSK, ECDH_RSA, ECDHE_RSA), behave as if client had sent the value
+- If the negotiated key exchange algorithm is one of (DHE_RSA, DH_RSA,
+ECDH_RSA, ECDHE_RSA), behave as if client had sent the value
 {sha1,rsa}.
 
 - If the negotiated key exchange algorithm is one of (DHE_DSS, DH_DSS), behave
@@ -2260,12 +2239,6 @@ The following rules apply to the certificates sent by the server:
 ~~~~
     Key Exchange Alg.  Certificate Key Type
 
-    RSA                RSA public key; the certificate MUST allow the
-    RSA_PSK            key to be used for encryption (the
-                       keyEncipherment bit MUST be set if the key
-                       usage extension is present).
-                       Note: RSA_PSK is defined in [RFC4279].
-
     DHE_RSA            RSA public key; the certificate MUST allow the
     ECDHE_RSA          key to be used for signing (the
                        digitalSignature bit MUST be set if the key
@@ -2343,7 +2316,6 @@ methods:
 > It is not legal to send the ServerKeyExchange message for the following key
 exchange methods:
 
-          RSA
           DH_DSS
           DH_RSA
 
@@ -2625,8 +2597,7 @@ message sent by the client after it receives the ServerHelloDone message.
 
 Meaning of this message:
 
-> With this message, the premaster secret is set, either by direct transmission
-of the RSA-encrypted secret or by the transmission of Diffie-Hellman parameters
+> This message contains the client's Diffie-Hellman parameters
 that will allow each side to agree upon the same premaster secret.
 
 > When the client is using an ephemeral Diffie-Hellman exponent, then this
@@ -2643,8 +2614,6 @@ definition.
 
        struct {
            select (KeyExchangeAlgorithm) {
-               case rsa:
-                   EncryptedPreMasterSecret;
                case dhe_dss:
                case dhe_rsa:
                case dh_dss:
@@ -2653,152 +2622,6 @@ definition.
                    ClientDiffieHellmanPublic;
            } exchange_keys;
        } ClientKeyExchange;
-
-####  RSA-Encrypted Premaster Secret Message
-
-Meaning of this message:
-
-> If RSA is being used for key agreement and authentication, the client
-generates a 48-byte premaster secret, encrypts it using the public key from the
-server's certificate, and sends the result in an encrypted premaster secret
-message. This structure is a variant of the ClientKeyExchange message and is
-not a message in itself.
-
-Structure of this message:
-
-       struct {
-           ProtocolVersion client_version;
-           opaque random[46];
-       } PreMasterSecret;
-
-       client_version
-          The latest (newest) version supported by the client.  This is
-          used to detect version rollback attacks.
-
-       random
-          46 securely-generated random bytes.
-
-       struct {
-           public-key-encrypted PreMasterSecret pre_master_secret;
-       } EncryptedPreMasterSecret;
-
-       pre_master_secret
-          This random value is generated by the client and is used to
-          generate the master secret, as specified in
-          [Section 8.1].
-
-Note: The version number in the PreMasterSecret is the version offered by the
-client in the ClientHello.client_version, not the version negotiated for the
-connection. This feature is designed to prevent rollback attacks.
-Unfortunately, some old implementations use the negotiated version instead, and
-therefore checking the version number may lead to failure to interoperate with
-such incorrect client implementations.
-
-Client implementations MUST always send the correct version number in
-PreMasterSecret. If ClientHello.client_version is TLS 1.1 or higher, server
-implementations MUST check the version number as described in the note below.
-If the version number is TLS 1.0 or earlier, server implementations SHOULD
-check the version number, but MAY have a configuration option to disable the
-check. Note that if the check fails, the PreMasterSecret SHOULD be randomized
-as described below.
-
-Note: Attacks discovered by Bleichenbacher {{BLEI}} and Klima et al. {{KPR03}}
-can be used to attack a TLS server that reveals whether a particular message,
-when decrypted, is properly PKCS#1 formatted, contains a valid PreMasterSecret
-structure, or has the correct version number.
-
-As described by Klima {{KPR03}}, these vulnerabilities can be avoided by
-treating incorrectly formatted message blocks and/or mismatched version numbers
-in a manner indistinguishable from correctly formatted RSA blocks. In other
-words:
-
-1. Generate a string R of 46 random bytes
-
-2. Decrypt the message to recover the plaintext M
-
-3. If the PKCS#1 padding is not correct, or the length of message
-   M is not exactly 48 bytes:
-
-         pre_master_secret = ClientHello.client_version || R
-
-   else If ClientHello.client_version <= TLS 1.0, and version
-   number check is explicitly disabled:
-
-         pre_master_secret = M
-
-   else:
-
-         pre_master_secret = ClientHello.client_version || M[2..47]
-
-
-Note that explicitly constructing the pre_master_secret with the
-ClientHello.client_version produces an invalid master_secret if the client has
-sent the wrong version in the original pre_master_secret.
-
-An alternative approach is to treat a version number mismatch as a PKCS-1
-formatting error and randomize the premaster secret completely:
-
-1. Generate a string R of 48 random bytes
-
-2. Decrypt the message to recover the plaintext M
-
-3. If the PKCS#1 padding is not correct, or the length of message
-   M is not exactly 48 bytes:
-
-         pre_master_secret = R
-
-   else If ClientHello.client_version <= TLS 1.0, and version
-   number check is explicitly disabled:
-
-         premaster secret = M
-
-   else If M\[0..1\] != ClientHello.client_version:
-
-         premaster secret = R
-
-   else:
-
-         premaster secret = M
-
-Although no practical attacks against this construction are known, Klima et al.
-{{KPR03}} describe some theoretical attacks, and therefore the first
-construction described is RECOMMENDED.
-
-In any case, a TLS server MUST NOT generate an alert if processing an
-RSA-encrypted premaster secret message fails, or the version number is not as
-expected. Instead, it MUST continue the handshake with a randomly generated
-premaster secret. It may be useful to log the real cause of failure for
-troubleshooting purposes; however, care must be taken to avoid leaking the
-information to an attacker (through, e.g., timing, log files, or other
-channels.)
-
-The RSAES-OAEP encryption scheme defined in {{RFC3447}} is more secure against
-the Bleichenbacher attack. However, for maximal compatibility with earlier
-versions of TLS, this specification uses the RSAES-PKCS1-v1_5 scheme. No
-variants of the Bleichenbacher attack are known to exist provided that the
-above recommendations are followed.
-
-Implementation note: Public-key-encrypted data is represented as an opaque
-vector <0..2^16-1> (see {{cryptographic-attributes}}). Thus, the RSA-encrypted
-PreMasterSecret in a ClientKeyExchange is preceded by two length bytes. These
-bytes are redundant in the case of RSA because the EncryptedPreMasterSecret is
-the only data in the ClientKeyExchange and its length can therefore be
-unambiguously determined. The SSLv3 specification was not clear about the
-encoding of public-key- encrypted data, and therefore many SSLv3
-implementations do not include the length bytes --- they encode the
-RSA-encrypted data directly in the ClientKeyExchange message.
-
-This specification requires correct encoding of the EncryptedPreMasterSecret
-complete with length bytes. The resulting PDU is incompatible with many SSLv3
-implementations. Implementors upgrading from SSLv3 MUST modify their
-implementations to generate and accept the correct encoding. Implementors who
-wish to be compatible with both SSLv3 and TLS should make their
-implementation's behavior dependent on the protocol version.
-
-Implementation note: It is now known that remote timing-based attacks on TLS
-are possible, at least when the client and server are on the same LAN.
-Accordingly, implementations that use static RSA keys MUST use RSA blinding or
-some other anti-timing technique, as described in {{TIMING}}.
 
 ####  Client Diffie-Hellman Public Value
 
@@ -2968,14 +2791,6 @@ deleted from memory once the master_secret has been computed.
 The master secret is always exactly 48 bytes in length. The length of the
 premaster secret will vary depending on key exchange method.
 
-###  RSA
-
-When RSA is used for server authentication and key exchange, a 48- byte
-pre_master_secret is generated by the client, encrypted under the server's
-public key, and sent to the server. The server uses its private key to decrypt
-the pre_master_secret. Both parties then convert the pre_master_secret into the
-master_secret, as specified above.
-
 ###  Diffie-Hellman
 
 A conventional Diffie-Hellman computation is performed. The negotiated key (Z)
@@ -2989,8 +2804,7 @@ ephemeral or contained within the server's certificate.
 #  Mandatory Cipher Suites
 
 In the absence of an application profile standard specifying otherwise, a
-TLS-compliant application MUST implement the cipher suite
-TLS_RSA_WITH_AES_128_CBC_SHA (see {{the-cipher-suite}} for the definition).
+TLS-compliant application MUST implement the cipher suite [TODO:Needs to be selected](https://github.com/tlswg/tls13-spec/issues/32). (See {{the-cipher-suite}} for the definition).
 
 #  Application Data Protocol
 
@@ -3376,21 +3190,6 @@ negotiated, as it provides no more protection than an unsecured connection.
 
        CipherSuite TLS_NULL_WITH_NULL_NULL               = { 0x00,0x00 };
 
-The following CipherSuite definitions require that the server provide an RSA
-certificate that can be used for key exchange. The server may request any
-signature-capable certificate in the certificate request message.
-
-       CipherSuite TLS_RSA_WITH_NULL_MD5                 = { 0x00,0x01 };
-       CipherSuite TLS_RSA_WITH_NULL_SHA                 = { 0x00,0x02 };
-       CipherSuite TLS_RSA_WITH_NULL_SHA256              = { 0x00,0x3B };
-       CipherSuite TLS_RSA_WITH_RC4_128_MD5              = { 0x00,0x04 };
-       CipherSuite TLS_RSA_WITH_RC4_128_SHA              = { 0x00,0x05 };
-       CipherSuite TLS_RSA_WITH_3DES_EDE_CBC_SHA         = { 0x00,0x0A };
-       CipherSuite TLS_RSA_WITH_AES_128_CBC_SHA          = { 0x00,0x2F };
-       CipherSuite TLS_RSA_WITH_AES_256_CBC_SHA          = { 0x00,0x35 };
-       CipherSuite TLS_RSA_WITH_AES_128_CBC_SHA256       = { 0x00,0x3C };
-       CipherSuite TLS_RSA_WITH_AES_256_CBC_SHA256       = { 0x00,0x3D };
-
 The following cipher suite definitions are used for server- authenticated (and
 optionally client-authenticated) Diffie-Hellman. DH denotes cipher suites in
 which the server's certificate contains the Diffie-Hellman parameters signed by
@@ -3709,16 +3508,6 @@ Transport Layer Security (TLS)
                                            Exchange
 
     TLS_NULL_WITH_NULL_NULL                 NULL         NULL         NULL
-    TLS_RSA_WITH_NULL_MD5                   RSA          NULL         MD5
-    TLS_RSA_WITH_NULL_SHA                   RSA          NULL         SHA
-    TLS_RSA_WITH_NULL_SHA256                RSA          NULL         SHA256
-    TLS_RSA_WITH_RC4_128_MD5                RSA          RC4_128      MD5
-    TLS_RSA_WITH_RC4_128_SHA                RSA          RC4_128      SHA
-    TLS_RSA_WITH_3DES_EDE_CBC_SHA           RSA          3DES_EDE_CBC SHA
-    TLS_RSA_WITH_AES_128_CBC_SHA            RSA          AES_128_CBC  SHA
-    TLS_RSA_WITH_AES_256_CBC_SHA            RSA          AES_256_CBC  SHA
-    TLS_RSA_WITH_AES_128_CBC_SHA256         RSA          AES_128_CBC  SHA256
-    TLS_RSA_WITH_AES_256_CBC_SHA256         RSA          AES_256_CBC  SHA256
     TLS_DH_DSS_WITH_3DES_EDE_CBC_SHA        DH_DSS       3DES_EDE_CBC SHA
     TLS_DH_RSA_WITH_3DES_EDE_CBC_SHA        DH_RSA       3DES_EDE_CBC SHA
     TLS_DHE_DSS_WITH_3DES_EDE_CBC_SHA       DHE_DSS      3DES_EDE_CBC SHA
@@ -3855,14 +3644,8 @@ TLS protocol issues:
 
 Cryptographic details:
 
--  In the RSA-encrypted Premaster Secret, do you correctly send and
-  verify the version number? When an error is encountered, do you
-  continue the handshake to avoid the Bleichenbacher attack (see
-  {{rsa-encrypted-premaster-secret-message}})?
-
 -  What countermeasures do you use to prevent timing attacks against
-  RSA decryption and signing operations (see
-  {{rsa-encrypted-premaster-secret-message}})?
+  RSA signing operations {{TIMING}}.
 
 - When verifying RSA signatures, do you accept both NULL and missing parameters
   (see {{cryptographic-attributes}})? Do you verify that the RSA padding
@@ -3884,8 +3667,7 @@ Cryptographic details:
 -  How do you address CBC mode timing attacks ({{cbc-block-cipher}})?
 
 - Do you use a strong and, most importantly, properly seeded random number
-  generator (see {{random-number-generation-and-seeding}}) for generating the
-  premaster secret (for RSA key exchange), Diffie-Hellman private values, the
+  generator (see {{random-number-generation-and-seeding}}) Diffie-Hellman private values, the
   DSA "k" parameter, and other security-critical values?
 
 # Backward Compatibility
@@ -4106,27 +3888,6 @@ verify that the Finished messages were not replaced by an attacker, server
 authentication is required in environments where active man-in-the-middle
 attacks are a concern.
 
-####  RSA Key Exchange and Authentication
-
-With RSA, key exchange and server authentication are combined. The public key
-is contained in the server's certificate. Note that compromise of the server's
-static RSA key results in a loss of confidentiality for all sessions protected
-under that static key. TLS users desiring Perfect Forward Secrecy should use
-DHE cipher suites. The damage done by exposure of a private key can be limited
-by changing one's private key (and certificate) frequently.
-
-After verifying the server's certificate, the client encrypts a
-pre_master_secret with the server's public key. By successfully decoding the
-pre_master_secret and producing a correct Finished message, the server
-demonstrates that it knows the private key corresponding to the server
-certificate.
-
-When RSA is used for key exchange, clients are authenticated using the
-certificate verify message (see {{certificate-verify}}). The client signs a
-value derived from all preceding handshake messages. These handshake messages
-include the server certificate, which binds the signature to the server, and
-ServerHello.random, which binds the signature to the current handshake process.
-
 ####  Diffie-Hellman Key Exchange with Authentication
 
 When Diffie-Hellman key exchange is used, the server can either supply a
@@ -4292,8 +4053,8 @@ encryption modes proven secure, see {{ENCAUTH}}.
 
 TLS is susceptible to a number of denial-of-service (DoS) attacks. In
 particular, an attacker who initiates a large number of TCP connections can
-cause a server to consume large amounts of CPU for doing RSA decryption.
-However, because TLS is generally used over TCP, it is difficult for the
+cause a server to consume large amounts of CPU doing asymmetric crypto
+operations. However, because TLS is generally used over TCP, it is difficult for the
 attacker to hide his point of origin if proper TCP SYN randomization is used
 {{RFC1948}} by the TCP stack.
 
