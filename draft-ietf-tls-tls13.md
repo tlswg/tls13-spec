@@ -98,7 +98,6 @@ informative:
   RFC2785:
   RFC3268:
   RFC3526:
-  RFC3749:
   RFC3766:
   RFC4086:
   RFC4279:
@@ -1497,7 +1496,7 @@ record_overflow
   implementations (except when messages were corrupted in the
   network).
 
-decompression_failure
+decompression_failure_RESERVED
 : This alert was used in previous versions of TLS. TLS 1.3 does not
   include compression and TLS 1.3 implementations MUST NOT send this
   alert when in TLS 1.3 mode.
@@ -2183,7 +2182,7 @@ If the client does not send the signature_algorithms extension, the server MUST
 do the following:
 
 - If the negotiated key exchange algorithm is one of (RSA, DHE_RSA, DH_RSA,
-RSA_PSK, ECDH_RSA, ECDHE_RSA), behave as if client had sent the value
+RSA_PSK {{RFC4279}}, ECDH_RSA, ECDHE_RSA), behave as if client had sent the value
 {sha1,rsa}.
 
 - If the negotiated key exchange algorithm is one of (DHE_DSS, DH_DSS), behave
