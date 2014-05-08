@@ -587,12 +587,16 @@ embedded.
 
 Defined structures may have variants based on some knowledge that is available
 within the environment. The selector must be an enumerated type that defines
-the possible variants the structure defines. There must be a case arm for every
-element of the enumeration declared in the select. Case arms have limited
-fall-through: if two case arms follow in immediate succession with no fields in
+the possible variants the structure defines.
+It may be the name of a field appearing earlier in the structure,
+or an enumerated type which means the value of the selector is implicit.
+There must be a case arm for every
+element of the enumeration declared in the select. Case arms may
+fall-through: if two or more case arms follow in immediate succession with
+no fields in
 between, then they both contain the same fields. Thus, in the example below,
-"orange" and "banana" both contain V2. Note that this is a new piece of syntax
-in TLS 1.2.
+"orange" and "banana" both contain V2. If a selector has no data, a
+single semi-colon is used.
 
 The body of the variant structure may be given a label for reference. The
 mechanism by which the variant is selected at runtime is not prescribed by the
@@ -603,13 +607,13 @@ presentation language.
            T2 f2;
            ....
            Tn fn;
-            select (E) {
-                case e1: Te1;
-                case e2: Te2;
-                case e3: case e4: Te3;
-                ....
-                case en: Ten;
-            } [[fv]];
+           select (E) {
+               case e1: Te1;
+               case e2: Te2;
+               case e3: case e4: Te3;
+               ....
+               case en: Ten;
+           } [[fv]];
        } [[Tv]];
 
 For example:
@@ -627,7 +631,7 @@ For example:
        } V2;
 
        struct {
-           select (VariantTag) { /* value of selector is implicit */
+           select (VariantTag) {
                case apple:
                  V1;   /* VariantBody, tag = apple */
                case orange:
@@ -706,7 +710,7 @@ In the following example
        stream-ciphered struct {
            uint8 field1;
            uint8 field2;
-           digitally-signed opaque {
+           digitally-signed struct {
              uint8 field3<0..255>;
              uint8 field4;
            };
@@ -1029,7 +1033,7 @@ messages are detectable.
            ContentType type;
            ProtocolVersion version;
            uint16 length;
-           select (SecurityParameters.cipher_type) {
+           select (CipherType) {
                case stream: GenericStreamCipher;
                case block:  GenericBlockCipher;
                case aead:   GenericAEADCipher;
@@ -1472,7 +1476,7 @@ record_overflow
   implementations (except when messages were corrupted in the
   network).
 
-decompression_failure
+decompression_failure_RESERVED
 : This alert was used in previous versions of TLS. TLS 1.3 does not
   include compression and TLS 1.3 implementations MUST NOT send this
   alert when in TLS 1.3 mode.
@@ -1730,13 +1734,14 @@ processed and transmitted as specified by the current active session state.
            certificate(11), server_key_exchange (12),
            certificate_request(13), server_hello_done(14),
            certificate_verify(15), client_key_exchange(16),
-           finished(20), (255)
+           finished(20),
+           (255)
        } HandshakeType;
 
        struct {
            HandshakeType msg_type;    /* handshake type */
            uint24 length;             /* bytes in message */
-           select (HandshakeType) {
+           select (msg_type) {
                case hello_request:       HelloRequest;
                case client_hello:        ClientHello;
                case server_hello:        ServerHello;
@@ -1874,17 +1879,17 @@ cipher suites, and process the remaining ones as usual.
 
        enum { null(0), (255) } CompressionMethod;
 
+       enum { false, true } extensions_present;
+
        struct {
            ProtocolVersion client_version;
            Random random;
            SessionID session_id;
-           CipherSuite cipher_suites<2..2^16-2>;
+           CipherSuite cipher_suites<2..2^16-1>;
            CompressionMethod compression_methods<1..2^8-1>;
            select (extensions_present) {
-               case false:
-                   struct {};
-               case true:
-                   Extension extensions<0..2^16-1>;
+               case false: ;
+               case true:  Extension extensions<0..2^16-1>;
            };
        } ClientHello;
 
@@ -1955,16 +1960,16 @@ match, it will respond with a handshake failure alert.
 
 Structure of this message:
 
+       enum { false, true } extensions_present;
+
        struct {
            ProtocolVersion server_version;
            Random random;
            SessionID session_id;
            CipherSuite cipher_suite;
            select (extensions_present) {
-               case false:
-                   struct {};
-               case true:
-                   Extension extensions<0..2^16-1>;
+               case false: ;
+               case true:  Extension extensions<0..2^16-1>;
            };
        } ServerHello;
 
@@ -2351,6 +2356,12 @@ Structure of this message:
        dh_Ys
           The server's Diffie-Hellman public value (g^X mod p).
 
+       digitally-signed struct {
+           opaque client_random[32];
+           opaque server_random[32];
+           ServerDHParams params;
+       } SignedDHParams;
+
        struct {
            select (KeyExchangeAlgorithm) {
                case dh_anon:
@@ -2358,16 +2369,12 @@ Structure of this message:
                case dhe_dss:
                case dhe_rsa:
                    ServerDHParams params;
-                   digitally-signed struct {
-                       opaque client_random[32];
-                       opaque server_random[32];
-                       ServerDHParams params;
-                   } signed_params;
+                   SignedDHParams signed_params;
                case rsa:
                case dh_dss:
                case dh_rsa:
-                   struct {} ;
-                  /* message is omitted for rsa, dh_dss, and dh_rsa */
+                   /* message is omitted for rsa, dh_dss, and dh_rsa */
+                   ;
                /* may be extended, e.g., for ECDH -- see [RFC4492] */
            };
        } ServerKeyExchange;
@@ -2430,7 +2437,7 @@ Structure of this message:
        struct {
            ClientCertificateType certificate_types<1..2^8-1>;
            SignatureAndHashAlgorithm
-             supported_signature_algorithms<2^16-1>;
+             supported_signature_algorithms<2..2^16-2>;
            DistinguishedName certificate_authorities<0..2^16-1>;
        } CertificateRequest;
 
@@ -2646,10 +2653,11 @@ Structure of this message:
        explicit
           Yc needs to be sent.
 
+       opaque dh_Yc<1..2^16-1>;
        struct {
            select (PublicValueEncoding) {
-               case implicit: struct { };
-               case explicit: opaque dh_Yc<1..2^16-1>;
+               case implicit: ;
+               case explicit: dh_Yc;
            } dh_public;
        } ClientDiffieHellmanPublic;
 
@@ -2672,7 +2680,7 @@ Structure of this message:
        struct {
             digitally-signed struct {
                 opaque handshake_messages[handshake_messages_length];
-            }
+            };
        } CertificateVerify;
 
 > Here handshake_messages refers to all handshake messages sent or received,
@@ -2907,7 +2915,7 @@ This section describes protocol types and constants.
         ContentType type;
         ProtocolVersion version;
         uint16 length;
-        select (SecurityParameters.cipher_type) {
+        select (CipherType) {
             case stream: GenericStreamCipher;
             case block:  GenericBlockCipher;
             case aead:   GenericAEADCipher;
@@ -2987,14 +2995,14 @@ This section describes protocol types and constants.
         certificate(11), server_key_exchange (12),
         certificate_request(13), server_hello_done(14),
         certificate_verify(15), client_key_exchange(16),
-        finished(20)
+        finished(20),
         (255)
     } HandshakeType;
 
     struct {
         HandshakeType msg_type;
         uint24 length;
-        select (HandshakeType) {
+        select (msg_type) {
             case hello_request:       HelloRequest;
             case client_hello:        ClientHello;
             case server_hello:        ServerHello;
@@ -3024,17 +3032,17 @@ This section describes protocol types and constants.
 
     enum { null(0), (255) } CompressionMethod;
 
+    enum { false, true } extensions_present;
+
     struct {
         ProtocolVersion client_version;
         Random random;
         SessionID session_id;
-        CipherSuite cipher_suites<2..2^16-2>;
+        CipherSuite cipher_suites<2..2^16-1>;
         CompressionMethod compression_methods<1..2^8-1>;
         select (extensions_present) {
-            case false:
-                struct {};
-            case true:
-                Extension extensions<0..2^16-1>;
+            case false: ;
+            case true:  Extension extensions<0..2^16-1>;
         };
     } ClientHello;
 
@@ -3044,10 +3052,8 @@ This section describes protocol types and constants.
         SessionID session_id;
         CipherSuite cipher_suite;
         select (extensions_present) {
-            case false:
-                struct {};
-            case true:
-                Extension extensions<0..2^16-1>;
+            case false: ;
+            case true:  Extension extensions<0..2^16-1>;
         };
     } ServerHello;
 
@@ -3074,7 +3080,7 @@ This section describes protocol types and constants.
     } SignatureAndHashAlgorithm;
 
     SignatureAndHashAlgorithm
-     supported_signature_algorithms<2..2^16-1>;
+     supported_signature_algorithms<2..2^16-2>;
 
 ### Server Authentication and Key Exchange Messages
 
@@ -3094,6 +3100,11 @@ This section describes protocol types and constants.
         opaque dh_Ys<1..2^16-1>;
     } ServerDHParams;     /* Ephemeral DH parameters */
 
+    digitally-signed struct {
+        opaque client_random[32];
+        opaque server_random[32];
+        ServerDHParams params;
+    } SignedDHParams;
     struct {
         select (KeyExchangeAlgorithm) {
             case dh_anon:
@@ -3101,16 +3112,12 @@ This section describes protocol types and constants.
             case dhe_dss:
             case dhe_rsa:
                 ServerDHParams params;
-                digitally-signed struct {
-                    opaque client_random[32];
-                    opaque server_random[32];
-                    ServerDHParams params;
-                } signed_params;
+                SignedDHParams signed_params;
             case rsa:
             case dh_dss:
             case dh_rsa:
-                struct {} ;
-               /* message is omitted for rsa, dh_dss, and dh_rsa */
+                /* message is omitted for rsa, dh_dss, and dh_rsa */
+                ;
             /* may be extended, e.g., for ECDH --- see [RFC4492] */
     } ServerKeyExchange;
 
@@ -3157,17 +3164,18 @@ This section describes protocol types and constants.
 
     enum { implicit, explicit } PublicValueEncoding;
 
+    opaque dh_Yc<1..2^16-1>;
     struct {
         select (PublicValueEncoding) {
-            case implicit: struct {};
-            case explicit: opaque DH_Yc<1..2^16-1>;
+            case implicit: ;
+            case explicit: dh_Yc;
         } dh_public;
     } ClientDiffieHellmanPublic;
 
     struct {
          digitally-signed struct {
              opaque handshake_messages[handshake_messages_length];
-         }
+         };
     } CertificateVerify;
 
 ### Handshake Finalization Message
