@@ -918,7 +918,8 @@ sequence number
   active state.  Sequence numbers are of type uint64 and may not
   exceed 2^64-1.  Sequence numbers do not wrap.  If a TLS
   implementation would need to wrap a sequence number, it must
-  renegotiate instead.  A sequence number is incremented after each
+  advance the master secret by sending a ChangeCipherSpec message instead.
+  A sequence number is incremented after each
   record: specifically, the first record transmitted under a
   particular connection state MUST use sequence number 0.
 {:br }
@@ -1227,7 +1228,7 @@ as specified by the current connection state.
            insufficient_security(71),
            internal_error(80),
            user_canceled(90),
-           no_renegotiation(100),
+           no_renegotiation_RESERVED(100),
            unsupported_extension(110),
            (255)
        } AlertDescription;
@@ -1293,8 +1294,7 @@ level.
 
 If an alert with a level of warning is sent and received, generally the
 connection can continue normally. If the receiving party decides not to proceed
-with the connection (e.g., after having received a no_renegotiation alert that
-it is not willing to accept), it SHOULD send a fatal alert to terminate the
+with the connection, it SHOULD send a fatal alert to terminate the
 connection. Given this, the sending party cannot, in general, know how the
 receiving party will behave. Therefore, warning alerts are not very useful when
 the sending party wants to continue the connection, and thus are sometimes
@@ -1416,18 +1416,9 @@ user_canceled
   close_notify is more appropriate.  This alert should be followed
   by a close_notify.  This message is generally a warning.
 
-no_renegotiation
-: Sent by the client in response to a hello request or by the server
-  in response to a client hello after initial handshaking.  Either
-  of these would normally lead to renegotiation; when that is not
-  appropriate, the recipient should respond with this alert.  At
-  that point, the original requester can decide whether to proceed
-  with the connection.  One case where this would be appropriate is
-  where a server has spawned a process to satisfy a request; the
-  process might receive security parameters (key length,
-  authentication, etc.) at startup, and it might be difficult to
-  communicate changes to these parameters after that point.  This
-  message is always a warning.
+no_renegotiation_RESERVED
+: This alert was used in some earlier versions of TLS.  It MUST NOT
+  be sent by compliant implementations.
 
 unsupported_extension
 : sent by clients that receive an extended server hello containing
@@ -1642,7 +1633,7 @@ they are encapsulated within one or more TLSPlaintext structures, which are
 processed and transmitted as specified by the current active session state.
 
        enum {
-           hello_request(0), client_hello(1), server_hello(2),
+           hello_request_RESERVED(0), client_hello(1), server_hello(2),
            certificate(11), server_key_exchange (12),
            certificate_request(13), certificate_verify(15),
            client_key_exchange(16), finished(20), (255)
@@ -1652,7 +1643,6 @@ processed and transmitted as specified by the current active session state.
            HandshakeType msg_type;    /* handshake type */
            uint24 length;             /* bytes in message */
            select (HandshakeType) {
-               case hello_request:       HelloRequest;
                case client_hello:        ClientHello;
                case client_key_exchange: ClientKeyExchange;
                case server_hello:        ServerHello;
@@ -1667,10 +1657,7 @@ processed and transmitted as specified by the current active session state.
 The handshake protocol messages are presented below in the order they
 MUST be sent; sending handshake messages in an unexpected order
 results in a fatal error. Unneeded handshake messages can be omitted,
-however. The one message that is not bound by these
-ordering rules is the HelloRequest message, which can be sent at any
-time, but which SHOULD be ignored by the client if it arrives in the
-middle of a handshake.
+however.
 
 New handshake message types are assigned by IANA as described in
 {{iana-considerations}}.
@@ -1679,56 +1666,19 @@ New handshake message types are assigned by IANA as described in
 
 The hello phase messages are used to exchange security enhancement capabilities
 between the client and server. When a new session begins, the record layer's
-connection state AEAD algorithm is initialized to NULL_NULL.
-The current connection state is used for renegotiation messages.
-
-####  Hello Request
-
-When this message will be sent:
-
-> The HelloRequest message MAY be sent by the server at any time.
-
-Meaning of this message:
-
-> HelloRequest is a simple notification that the client should begin the
-negotiation process anew. In response, the client should send a ClientHello
-message when convenient. This message is not intended to establish which side
-is the client or server but merely to initiate a new negotiation. Servers
-SHOULD NOT send a HelloRequest immediately upon the client's initial
-connection. It is the client's job to send a ClientHello at that time.
-
-> This message will be ignored by the client if the client is currently
-negotiating a session. This message MAY be ignored by the client if it does not
-wish to renegotiate a session, or the client may, if it wishes, respond with a
-no_renegotiation alert. Since handshake messages are intended to have
-transmission precedence over application data, it is expected that the
-negotiation will begin before no more than a few records are received from the
-client. If the server sends a HelloRequest but does not receive a ClientHello
-in response, it may close the connection with a fatal alert.
-
-> After sending a HelloRequest, servers SHOULD NOT repeat the request until the
-subsequent handshake negotiation is complete.
-
-Structure of this message:
-
-       struct { } HelloRequest;
-
-This message MUST NOT be included in the message hashes that are maintained
-throughout the handshake and used in the Finished messages and the certificate
-verify message.
+connection state AEAD algorithm is initialized to NULL_NULL.  The current
+connection state is used for handshake messages.
 
 ####  Client Hello
 
 When this message will be sent:
 
 > When a client first connects to a server, it is required to send the
-ClientHello as its first message. The client can also send a ClientHello in
-response to a HelloRequest or on its own initiative in order to renegotiate the
-security parameters in an existing connection. Finally, the client will
-send a ClientHello when the server has responded to its ClientHello
-with a ServerHello that selects cryptographic parameters that don't
-match the client's ClientKeyExchange. In that case, the client MUST
-send the same ClientHello (without modification) along with the new ClientKeyExchange.
+ClientHello as its first message.  The client will also send a ClientHello when
+the server has responded to its ClientHello with a ServerHello that selects
+cryptographic parameters that don't match the client's ClientKeyExchange. In
+that case, the client MUST send the same ClientHello (without modification)
+along with the new ClientKeyExchange.
 
 Structure of this message:
 
@@ -1857,8 +1807,8 @@ of data in the message precisely matches one of these formats; if not, then it
 MUST send a fatal "decode_error" alert.
 
 After sending the ClientHello message, the client waits for a ServerHello
-message. Any handshake message returned by the server, except for a
-HelloRequest, is treated as a fatal error.
+message. Any handshake message returned by the server other than ServerHello is
+treated as a fatal error.
 
 
 ###  Client Key Exchange Message
@@ -2725,7 +2675,6 @@ be used with each key size. In addition, future revisions of {{RFC3280}} may
 specify mechanisms for certificates to indicate which digest algorithms are to
 be used with DSA.
 
-
 #  Cryptographic Computations
 
 In order to begin connection protection, the TLS Record Protocol
@@ -2918,7 +2867,7 @@ This section describes protocol types and constants.
         insufficient_security(71),
         internal_error(80),
         user_canceled(90),
-        no_renegotiation(100),
+        no_renegotiation_RESERVED(100),
         unsupported_extension(110),           /* new */
         (255)
     } AlertDescription;
@@ -2931,8 +2880,8 @@ This section describes protocol types and constants.
 ##  Handshake Protocol
 
     enum {
-        hello_request(0), client_hello(1), server_hello(2),
-        certificate(11), server_key_exchange (12),
+        hello_request_RESERVED(0), client_hello(1), server_hello(2),
+        certificate(11), server_key_exchange(12),
         certificate_request(13), server_hello_done(14),
         certificate_verify(15), client_key_exchange(16),
         finished(20),
@@ -2943,7 +2892,6 @@ This section describes protocol types and constants.
         HandshakeType msg_type;
         uint24 length;
         select (HandshakeType) {
-            case hello_request:       HelloRequest;
             case client_hello:        ClientHello;
             case server_hello:        ServerHello;
             case certificate:         Certificate;
@@ -2958,8 +2906,6 @@ This section describes protocol types and constants.
 
 
 ### Hello Messages
-
-    struct { } HelloRequest;
 
     struct {
         opaque random_bytes[32];
@@ -3459,10 +3405,6 @@ TLS protocol issues:
 
 -  Do you handle TLS extensions in ClientHello correctly, including
   omitting the extensions field completely?
-
--  Do you support renegotiation, both client and server initiated?
-  While renegotiation is an optional feature, supporting it is
-  highly recommended.
 
 -  When the server has requested a client certificate, but no
   suitable certificate is available, do you correctly send an empty
