@@ -241,7 +241,7 @@ tampering, or message forgery.
 
 #  Introduction
 
-DISCLAIMER: This is a WIP draft of TLS 1.3 and has not yet seen significant security analysis. 
+DISCLAIMER: This is a WIP draft of TLS 1.3 and has not yet seen significant security analysis.
 
 RFC EDITOR: PLEASE REMOVE THE FOLLOWING PARAGRAPH
 The source for this draft is maintained in GitHub. Suggested changes
@@ -803,21 +803,22 @@ wish to take steps (padding, cover traffic) to minimize information leakage.
 
 ##  Connection States
 
-A TLS connection state is the operating environment of the TLS Record
-Protocol.  It specifies a record protection algorithm and its
-parameters as well as the record protection keys and IVs for the
-connection in both the read and the write directions. Logically, there
-are always four connection states outstanding: the current read and
-write states, and the pending read and write states. All records are
-processed under the current read and write states. The security
-parameters for the pending states can be set by the TLS Handshake
-Protocol, and the ChangeCipherSpec can selectively make either of the
-pending states current, in which case the appropriate current state is
-disposed of and replaced with the pending state; the pending state is
-then reinitialized to an empty state. It is illegal to make a state
-that has not been initialized with security parameters a current
-state. The initial current state always specifies that records are
-not protected.
+A TLS connection state is the operating environment of the TLS Record Protocol.
+It specifies a record protection algorithm and its parameters as well as the
+record protection keys and IVs for the connection in both the read and write
+directions.
+
+Logically, there are always four connection states outstanding: the current read
+and write states, and the pending read and write states. All records are
+processed under the current read and write states. The security parameters for
+the pending states can be set by the TLS Handshake Protocol, and the
+ChangeCipherSpec can selectively make either of the pending states current, in
+which case the appropriate current state is disposed of and replaced with the
+pending state; the pending state is then reinitialized to an empty state.
+
+It is illegal to make a state that has not been initialized with security
+parameters a current state. The initial current state always specifies that no
+encryption or MAC will be used.
 
 The security parameters for a TLS Connection read and write state are set by
 providing the following values:
@@ -1482,7 +1483,7 @@ share of the parameters for the key agreement. The server can now
 compute the shared secret. At this point, a ChangeCipherSpec message
 is sent by the server, and the server copies the pending Cipher Spec
 into the current Cipher Spec. The remainder of the server's handshake
-messages will be encrypted under that Cipher Spec. 
+messages will be encrypted under that Cipher Spec.
 
 Following these messages, the server will send an EncryptedExtensions
 message which contains a response to any client's extensions which are
@@ -1570,7 +1571,7 @@ Figure 2:
        CertificateVerify*
        Finished                     -------->
        Application Data             <------->     Application Data
-       
+
    Figure 2.  Message flow for a full handshake with mismatched parameters
 
 [[OPEN ISSUE: Do we restart the handshake hash?]]
@@ -1598,7 +1599,7 @@ handshake.
 
        Client                                                Server
 
-       ClientHello                   
+       ClientHello
        ClientKeyExhange              -------->
                                                         ServerHello
                                                  [ChangeCipherSpec]
@@ -1910,7 +1911,7 @@ Structure of this message:
        dh_Yc
           The client's Diffie-Hellman public value (g^X mod p).
 
-          
+
 ####  Server Hello
 
 When this message will be sent:
@@ -2158,7 +2159,7 @@ permit additional messages to follow the ClientHello. The EarlyData
 extension allows TLS messages which would otherwise be sent as
 separate records to be instead inserted in the ClientHello. The
 extension simply contains the TLS records which would otherwise have
-been included in the client's first flight. 
+been included in the client's first flight.
 
           struct {
             TLSCipherText messages<5 .. 2^24-1>;
