@@ -309,6 +309,9 @@ interpreted as described in RFC 2119 {{RFC2119}}.
 
 ##  Major Differences from TLS 1.2
 
+draft-03
+
+-  Remove renegotiation; add rekeying.
 
 draft-03
 
@@ -809,19 +812,25 @@ record protection keys and IVs for the connection in both the read and write
 directions.
 
 Logically, there are always four connection states outstanding: the current read
-and write states, and the pending read and write states. All records are
-processed under the current read and write states. The security parameters for
-the pending states can be set by the TLS Handshake Protocol, and the
-ChangeCipherSpec can selectively make either of the pending states current, in
-which case the appropriate current state is disposed of and replaced with the
-pending state; the pending state is then reinitialized to an empty state.
+and write states, and pending read and write states. All records are processed
+under the current read and write states. During the initial handshake, the
+security parameters for the pending states are set by the TLS Handshake
+Protocol.  After the initial handshake is complete, the pending states are
+derived from the current state (see {{ms-advance}}).
+
+The ChangeCipherSpec message is used to make either of the pending states
+current, in which case the corresponding current state is disposed of and
+replaced with the pending state; the pending state is then reinitialized to an
+empty state.
 
 It is illegal to make a state that has not been initialized with security
 parameters a current state. The initial current state always specifies that no
 encryption or MAC will be used.
 
-The security parameters for a TLS Connection read and write state are set by
-providing the following values:
+The security parameters for a TLS Connection read and write state are set by the
+master secret, a 48-byte secret shared between the two peers in the connection.
+
+The following properties for a TLS Connection do not vary over time:
 
 {:br: vspace="0"}
 
@@ -846,10 +855,6 @@ record protection algorithm
   algorithm for use in the initial handshake). This specification
   includes the key size of this algorithm and the lengths of explicit
   and implicit initialization vectors (or nonces).
-
-master secret
-
-: A 48-byte secret shared between the two peers in the connection.
 
 client random
 
@@ -1145,33 +1150,45 @@ Protocol.
 ##  Change Cipher Spec Protocol
 
 The change cipher spec protocol exists to signal transitions in ciphering
-strategies. The protocol consists of a single message, which is encrypted
-under the current (not the pending) connection state. The message
-consists of a single byte of value 1.
+strategies. The protocol consists of a single message, which is encrypted under
+the current or previous connection state. That is, the first ChangeCipherSpec
+sent is not encrypted. The message consists of a single byte of value 1.
 
        struct {
            enum { change_cipher_spec(1), (255) } type;
        } ChangeCipherSpec;
 
-The ChangeCipherSpec message is sent by both the client and the server to
-notify the receiving party that subsequent records will be protected under the
-newly negotiated CipherSpec and keys. Reception of this message causes the
-receiver to instruct the record layer to immediately copy the read pending
-state into the read current state. Immediately after sending this message, the
-sender MUST instruct the record layer to make the write pending state the write
-current state. (See {{connection-states}}.) The ChangeCipherSpec message is sent
-during the handshake after the security parameters have been agreed upon,
-but before the first message protected with a new CipherSpec is sent.
+The ChangeCipherSpec message is sent by both the client and the server to notify
+the receiving party that subsequent records will be protected under a new
+CipherSpec.
 
-Note: If a rehandshake occurs while data is flowing on a connection, the
-communicating parties may continue to send data using the old CipherSpec.
-However, once the ChangeCipherSpec has been sent, the new CipherSpec MUST be
-used. The first side to send the ChangeCipherSpec does not know that the other
-side has finished computing the new keying material (e.g., if it has to perform
-a time-consuming public key operation). Thus, a small window of time, during
-which the recipient must buffer the data, MAY exist. In practice, with modern
-machines this interval is likely to be fairly short.
-[[TODO: This text seems confusing.]]
+During the initial handshake, ChangeCipherSpec is used to switch from the
+initial connection state to the negotiated state (see {{connection-states}}).
+Subsequent uses update the master secret and ensure that keying material can be
+refreshed.
+
+Immediately after receiving a ChangeCipherSpec message, the receiver MUST
+instruct the record layer to start using a new read state.  On the initial
+handshake, the new state is the negotiated read state; after subsequent
+ChangeCipherSpec messages, a new read state is generated by advancing the master
+secret (see {{ms-advance}}) and generating a new read state.
+
+If the received ChangeCipherSpec causes the master secret to be advanced such
+that the connection write state uses a different master secret to the one used
+for the read state, a ChangeCipherSpec message MUST be enqueued for sending.
+
+Immediately after sending a ChangeCipherSpec message, the sender MUST instruct
+the record layer to start using a new write state.  On the initial handshake,
+the new state is the negotiated write state; the ChangeCipherSpec message is
+sent during the handshake after the security parameters have been agreed upon,
+but before the verifying Finished message is sent.  After subsequent
+ChangeCipherSpec messages, a new write state is generated by advancing the
+master secret (see {{ms-advance}}).
+
+Note: Sending a ChangeCipherSpec message while data is flowing on a connection
+causes two master secrets to be in use until the remote party generates a
+corresponding ChangeCipherSpec.  Once matching ChangeCipherSpec messages are
+sent and received, the previous master secret can be discarded.
 
 ##  Alert Protocol
 
@@ -1491,6 +1508,7 @@ not necessary to establish the Cipher Suite. The server will then send
 its certificate in a Certificate message if it is to be authenticated.
 The server may optionally request a certificate from the client by
 sending a CertificateRequest message at this point.
+
 Finally, if the server is authenticated, it will send a CertificateVerify
 message which provides a signature over the entire handshake up to
 this point. This serves both to authenticate the server and to establish
@@ -1511,12 +1529,14 @@ message, the client MUST send the Certificate message, though it may
 contain zero certificates.  If the client has sent a certificate,
 a digitally-signed CertificateVerify message is sent to
 explicitly verify possession of the private key in the certificate.
+
 Finally, the client sends the Finished message.
 At this point, the handshake is complete, and the
 client and server may exchange application layer data. (See flow chart
 below.) Application data MUST NOT be sent prior to the Finished message.
 [[TODO: can we make this clearer and more clearly match the text above
 about server-side False Start.]]
+
        Client                                               Server
 
        ClientHello
@@ -2728,6 +2748,19 @@ deleted from memory once the master_secret has been computed.
 
 The master secret is always exactly 48 bytes in length. The length of the
 premaster secret will vary depending on key exchange method.
+
+### Advancing the Master Secret {#ms-advance}
+
+In order to avoid provide for long-lived connections without risk of key
+exhaustion or sequence number reuse, either party MAY create a new master secret
+at any time by sending a ChangeCipherSpec message.
+
+       master_secret = PRF(old_master_secret, "master secret",
+                           ClientHello.random + ServerHello.random)
+                           [0..47];
+
+This is the same computation that is used for generating the master secret, with
+the previous master secret as input in place of the pre_master_secret.
 
 ###  Diffie-Hellman
 
