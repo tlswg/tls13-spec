@@ -252,16 +252,7 @@ tampering, or message forgery.
 
 #  Introduction
 
-DISCLAIMER:
-This document is simply a copy of RFC 5246 translated
-into markdown format with no intentional technical or editorial
-changes beyond updating the references and minor reformatting introduced
-by the translation. It is being submitted
-as-is to create a clearer revision history for future versions.
-Any errata in TLS 1.2 remain in this version. Thanks to Mark
-Nottingham for doing the markdown translation.
-
-[RFC EDITOR: PLEASE REMOVE THE FOLLOWING PARAGRAPH]
+RFC EDITOR: PLEASE REMOVE THE FOLLOWING PARAGRAPH
 The source for this draft is maintained in GitHub. Suggested changes
 should be submitted as pull requests at
 https://github.com/tlswg/tls13-spec. Instructions are on that page as
