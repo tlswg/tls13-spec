@@ -311,7 +311,7 @@ interpreted as described in RFC 2119 {{RFC2119}}.
 
 draft-03
 
--  Remove renegotiation; add rekeying.
+-  Remove renegotiation; add rekeying using ChangeCipherSpec.
 
 draft-03
 
