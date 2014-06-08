@@ -1,0 +1,13 @@
+language: python
+python:
+  - "2.7"
+# command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
+install: pip install xml2rfc
+# command to run tests, e.g. python setup.py test
+#script: make upload
+script: make
+
+env:
+ global:
+ - GH_REF: github.com/tlswg/tls13-spec.git
+
