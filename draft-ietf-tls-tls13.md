@@ -42,6 +42,7 @@ normative:
   RFC1321:
   RFC3447:
   RFC3280:
+  RFC5288:
   AES:
        title: Specification for the Advanced Encryption Standard (AES)
        date: 2001-11-26
@@ -122,20 +123,6 @@ informative:
        author:
          - ins: B. Moeller
        date: 2004-05-20
-  CBCTIME:
-       title: Password Interception in a SSL/TLS Channel
-       author:
-         -
-           ins: B. Canvel
-         -
-           ins: A. Hiltgen
-         -
-           ins: S. Vaudenay
-         -
-           ins: M. Vuagnoux
-       seriesinfo:
-         CRYPTO 2003: LNCS vol. 2729
-       date: 2003
   CCM:
        title: "NIST Special Publication 800-38C: The CCM Mode for Authentication and Confidentiality"
        target: http://csrc.nist.gov/publications/nistpubs/800-38C/SP800-38C.pdf
@@ -267,18 +254,19 @@ the TLS Record Protocol. The TLS Record Protocol provides connection security
 that has two basic properties:
 
 - The connection is private.  Symmetric cryptography is used for
-  data encryption (e.g., AES {{AES}}, RC4 {{SCH}}, etc.).  The keys for
+  data encryption (e.g., AES {{AES}}, etc.).  The keys for
   this symmetric encryption are generated uniquely for each
   connection and are based on a secret negotiated by another
   protocol (such as the TLS Handshake Protocol).  The Record
-  Protocol can also be used without encryption.
+  Protocol can also be used without encryption, i.e., in integrity-only
+  modes.
 
-- The connection is reliable.  Message transport includes a message
-  integrity check using a keyed MAC.  Secure hash functions (e.g.,
-  SHA-1, etc.) are used for MAC computations.  The Record Protocol
-  can operate without a MAC, but is generally only used in this mode
-  while another protocol is using the Record Protocol as a transport
-  for negotiating security parameters.
+- The connection is reliable.  Messages include an authentication
+  tag which protects them against modification.
+
+- The Record Protocol can operate in an insecure mode but is generally
+  only used in this mode while another protocol is using the Record
+  Protocol as a transport for negotiating security parameters.
 
 The TLS Record Protocol is used for encapsulation of various higher- level
 protocols. One such encapsulated protocol, the TLS Handshake Protocol, allows
@@ -320,6 +308,7 @@ interpreted as described in RFC 2119 {{RFC2119}}.
 draft-01
 -  Removed support for compression.
 -  Removed support for static RSA key exchange.
+-  Removed support for non-AEAD ciphers
 
 ##  Major Differences from TLS 1.1
 
@@ -391,7 +380,7 @@ applications utilizing TLS that can successfully exchange cryptographic
 parameters without knowledge of one another's code.
 
 3. Extensibility: TLS seeks to provide a framework into which new public key
-and bulk encryption methods can be incorporated as necessary. This will also
+and record protection methods can be incorporated as necessary. This will also
 accomplish two sub-goals\: preventing the need to create a new protocol (and
 risking the introduction of possible new weaknesses) and avoiding the need to
 implement an entire new security library.
@@ -630,14 +619,13 @@ For example:
 
 ##  Cryptographic Attributes
 
-The five cryptographic operations --- digital signing, stream cipher encryption,
-block cipher encryption, authenticated encryption with additional data (AEAD)
-encryption, and public key encryption --- are designated digitally-signed,
-stream-ciphered, block-ciphered, aead- ciphered, and public-key-encrypted,
-respectively. A field's cryptographic processing is specified by prepending an
-appropriate key word designation before the field's type specification.
-Cryptographic keys are implied by the current session state (see
-{{connection-states}}).
+The three cryptographic operations --- digital signing, authenticated
+encryption with additional data (AEAD) and public key encryption ---
+are designated digitally-signed, aead-ciphered, and
+public-key-encrypted, respectively. A field's cryptographic processing
+is specified by prepending an appropriate key word designation before
+the field's type specification.  Cryptographic keys are implied by the
+current session state (see {{connection-states}}).
 
 A digitally-signed element is encoded as a struct DigitallySigned:
 
@@ -678,23 +666,14 @@ used universally. This document uses "DSA" to refer to the algorithm, "DSS" to
 refer to the standard, and it uses "DSS" in the code point definitions for
 historical continuity.
 
-In stream cipher encryption, the plaintext is exclusive-ORed with an identical
-amount of output generated from a cryptographically secure keyed pseudorandom
-number generator.
-
-In block cipher encryption, every block of plaintext encrypts to a block of
-ciphertext. All block cipher encryption is done in CBC (Cipher Block Chaining)
-mode, and all items that are block-ciphered will be an exact multiple of the
-cipher block length.
-
 In AEAD encryption, the plaintext is simultaneously encrypted and integrity
-protected. The input may be of any length, and aead- ciphered output is
+protected. The input may be of any length, and aead-ciphered output is
 generally larger than the input in order to accommodate the integrity check
 value.
 
 In the following example
 
-       stream-ciphered struct {
+       aead-ciphered struct {
            uint8 field1;
            uint8 field2;
            digitally-signed opaque {
@@ -704,8 +683,8 @@ In the following example
        } UserType;
 
 The contents of the inner struct (field3 and field4) are used as input for the
-signature/hash algorithm, and then the entire structure is encrypted with a
-stream cipher. The length of this structure, in bytes, would be equal to two
+signature/hash algorithm, and then the entire structure is encrypted with an
+AEAD cipher. The length of this structure, in bytes, would be equal to two
 bytes for field1 and field2, plus two bytes for the signature and hash
 algorithm, plus two bytes for the length of the signature, plus the length of
 the output of the signing algorithm. The length of the signature is known
@@ -730,19 +709,15 @@ For example:
 
        Example1 ex1 = {1, 4};  /* assigns f1 = 1, f2 = 4 */
 
-# HMAC and the Pseudorandom Function {#HMAC}
 
-The TLS record layer uses a keyed Message Authentication Code (MAC) to protect
-message integrity. The cipher suites defined in this document use a
-construction known as HMAC, described in {{RFC2104}}, which is based on a hash
-function. Other cipher suites MAY define their own MAC constructions, if needed.
+# The Pseudorandom Function {#HMAC}
 
-In addition, a construction is required to do expansion of secrets into blocks
+A construction is required to do expansion of secrets into blocks
 of data for the purposes of key generation or validation. This pseudorandom
 function (PRF) takes as input a secret, a seed, and an identifying label and
 produces an output of arbitrary length.
 
-In this section, we define one PRF, based on HMAC. This PRF with the SHA-256
+In this section, we define one PRF, based on HMAC {{RFC2104}}. This PRF with the SHA-256
 hash function is used for all cipher suites defined in this document and in TLS
 documents published prior to this document when TLS 1.2 is negotiated. New
 cipher suites MUST explicitly specify a PRF and, in general, SHOULD use the TLS
@@ -785,8 +760,8 @@ the following bytes:
 The TLS Record Protocol is a layered protocol. At each layer, messages
 may include fields for length, description, and content. The Record
 Protocol takes messages to be transmitted, fragments the data into
-manageable blocks, applies a MAC, encrypts, and transmits the
-result. Received data is decrypted, verified, reassembled, and then
+manageable blocks, protects the records, and transmits the
+result. Received data is decrypted and verified, reassembled, and then
 delivered to higher-level clients.
 
 Four protocols that use the record protocol are described in this document: the
@@ -812,20 +787,20 @@ wish to take steps (padding, cover traffic) to minimize information leakage.
 ##  Connection States
 
 A TLS connection state is the operating environment of the TLS Record
-Protocol.  It specifies an encryption algorithm and a MAC
-algorithm. In addition, the parameters for these algorithms are known:
-the MAC
-key and the bulk encryption keys for the connection in both the read and the
-write directions. Logically, there are always four connection states
-outstanding: the current read and write states, and the pending read and write
-states. All records are processed under the current read and write states. The
-security parameters for the pending states can be set by the TLS Handshake
-Protocol, and the ChangeCipherSpec can selectively make either of the pending
-states current, in which case the appropriate current state is disposed of and
-replaced with the pending state; the pending state is then reinitialized to an
-empty state. It is illegal to make a state that has not been initialized with
-security parameters a current state. The initial current state always specifies
-that no encryption or MAC will be used.
+Protocol.  It specifies a record protection algorithm and its
+parameters as well as the record protection keys and IVs for the
+connection in both the read and the write directions. Logically, there
+are always four connection states outstanding: the current read and
+write states, and the pending read and write states. All records are
+processed under the current read and write states. The security
+parameters for the pending states can be set by the TLS Handshake
+Protocol, and the ChangeCipherSpec can selectively make either of the
+pending states current, in which case the appropriate current state is
+disposed of and replaced with the pending state; the pending state is
+then reinitialized to an empty state. It is illegal to make a state
+that has not been initialized with security parameters a current
+state. The initial current state always specifies that record are
+unprotected.
 
 The security parameters for a TLS Connection read and write state are set by
 providing the following values:
@@ -842,19 +817,17 @@ PRF algorithm
 : An algorithm used to generate keys from the master secret (see
   {{HMAC}} and {{key-calculation}}).
 
-bulk encryption algorithm
 
-: An algorithm to be used for bulk encryption.  This specification
-  includes the key size of this algorithm, whether it is a block,
-  stream, or AEAD cipher, the block size of the cipher (if
-  appropriate), and the lengths of explicit and implicit
-  initialization vectors (or nonces).
+record protection algorithm
 
-MAC algorithm
-
-: An algorithm to be used for message authentication.  This
-  specification includes the size of the value returned by the MAC
-  algorithm.
+: The algorithm to be used for record protection. This algorithm must
+  be of the AEAD type and thus provides integrity and confidentiality
+  as a single primitive. It is possible to have AEAD algorithms which
+  do not provide any confidentiality and section
+  {{record-payload-protection}} defines a special NULL_NULL AEAD
+  algorithm for use in the initial handshake). This specification
+  includes the key size of this algorithm and the lengths of explicit
+  and implicit initialization vectors (or nonces).
 
 master secret
 
@@ -876,29 +849,19 @@ These parameters are defined in the presentation language as:
 
        enum { tls_prf_sha256 } PRFAlgorithm;
 
-       enum { null, rc4, 3des, aes }
-         BulkCipherAlgorithm;
+       enum { aes_gcm } RecordProtAlgorithm;
 
-       enum { stream, block, aead } CipherType;
-
-       enum { null, hmac_md5, hmac_sha1, hmac_sha256,
-            hmac_sha384, hmac_sha512} MACAlgorithm;
-
-       /* The algorithms specified in PRFAlgorithm,
-          BulkCipherAlgorithm, and MACAlgorithm may be added to. */
+       /* The algorithms specified in PRFAlgorithm and
+          RecordProtAlgorithm may be added to. */
 
        struct {
            ConnectionEnd          entity;
            PRFAlgorithm           prf_algorithm;
-           BulkCipherAlgorithm    bulk_cipher_algorithm;
-           CipherType             cipher_type;
+           RecordProtAlgorithm    record_prot_algorithm;
            uint8                  enc_key_length;
            uint8                  block_length;
            uint8                  fixed_iv_length;
            uint8                  record_iv_length;
-           MACAlgorithm           mac_algorithm;
-           uint8                  mac_length;
-           uint8                  mac_key_length;
            opaque                 master_secret[48];
            opaque                 client_random[32];
            opaque                 server_random[32];
@@ -907,10 +870,8 @@ These parameters are defined in the presentation language as:
 The record layer will use the security parameters to generate the following six
 items (some of which are not required by all ciphers, and are thus empty):
 
-       client write MAC key
-       server write MAC key
-       client write encryption key
-       server write encryption key
+       client write key
+       server write key
        client write IV
        server write IV
 
@@ -925,12 +886,7 @@ state includes the following elements:
 
 cipher state
 : The current state of the encryption algorithm.  This will consist
-  of the scheduled key for that connection.  For stream ciphers,
-  this will also contain whatever state information is necessary to
-  allow the stream to continue to encrypt or decrypt data.
-
-MAC key
-: The MAC key for this connection, as generated above.
+  of the scheduled key for that connection.
 
 sequence number
 : Each connection state contains a sequence number, which is
@@ -1011,20 +967,26 @@ the first one on a connection.
 
 ###  Record Payload Protection
 
-The encryption and MAC functions translate a TLSPlaintext structure into a
-TLSCiphertext. The decryption functions reverse the process. The MAC of the
-record also includes a sequence number so that missing, extra, or repeated
-messages are detectable.
+The record protection functions translate a TLSPlaintext structure into a
+TLSCiphertext. The unprotection functions reverse the process. In TLS 1.3
+as opposed to previous versions of TLS, all ciphers are modelled as
+"Authenticated Encryption with Additional Data" (AEAD) {{RFC5116}}.
+AEAD functions provide a unified encryption and authentication
+operation which turns plaintext into authenticated ciphertext and
+back again.
+
+AEAD ciphers take as input a single key, a nonce, a plaintext, and "additional
+data" to be included in the authentication check, as described in Section 2.1
+of {{RFC5116}}. The key is either the client_write_key or the server_write_key.
 
        struct {
            ContentType type;
            ProtocolVersion version;
            uint16 length;
-           select (SecurityParameters.cipher_type) {
-               case stream: GenericStreamCipher;
-               case block:  GenericBlockCipher;
-               case aead:   GenericAEADCipher;
-           } fragment;
+           opaque nonce_explicit[SecurityParameters.record_iv_length];
+           aead-ciphered struct {
+              opaque content[TLSPlaintext.length];
+          };
        } TLSCiphertext;
 
 type
@@ -1038,130 +1000,8 @@ length
   The length MUST NOT exceed 2^14 + 2048.
 
 fragment
-: The encrypted form of TLSPlaintext.fragment, with the MAC.
+: The AEAD encrypted form of TLSPlaintext.fragment.
 {:br }
-
-####  Null or Standard Stream Cipher
-
-Stream ciphers (including BulkCipherAlgorithm.null; see
-{{the-security-parameters}}) convert TLSPlaintext.fragment structures to and
-from stream TLSCiphertext.fragment structures.
-
-       stream-ciphered struct {
-           opaque content[TLSPlaintext.length];
-           opaque MAC[SecurityParameters.mac_length];
-       } GenericStreamCipher;
-
-The MAC is generated as:
-
-       MAC(MAC_write_key, seq_num +
-                             TLSPlaintext.type +
-                             TLSPlaintext.version +
-                             TLSPlaintext.length +
-                             TLSPlaintext.fragment);
-
-where "+" denotes concatenation.
-
-seq_num
-: The sequence number for this record.
-
-MAC
-: The MAC algorithm specified by SecurityParameters.mac_algorithm.
-{:br }
-
-Note that the MAC is computed before encryption. The stream cipher encrypts the
-entire block, including the MAC. For stream ciphers that do not use a
-synchronization vector (such as RC4), the stream cipher state from the end of
-one record is simply used on the subsequent packet. If the cipher suite is
-TLS_NULL_WITH_NULL_NULL, encryption consists of the identity operation (i.e.,
-the data is not encrypted, and the MAC size is zero, implying that no MAC is
-used). For both null and stream ciphers, TLSCiphertext.length is
-TLSPlaintext.length plus SecurityParameters.mac_length.
-
-####  CBC Block Cipher
-
-For block ciphers (such as 3DES or AES), the encryption and MAC functions
-convert TLSPlaintext.fragment structures to and from block
-TLSCiphertext.fragment structures.
-
-       struct {
-           opaque IV[SecurityParameters.record_iv_length];
-           block-ciphered struct {
-               opaque content[TLSPlaintext.length];
-               opaque MAC[SecurityParameters.mac_length];
-               uint8 padding[GenericBlockCipher.padding_length];
-               uint8 padding_length;
-           };
-       } GenericBlockCipher;
-
-The MAC is generated as described in {{null-or-standard-stream-cipher}}.
-
-IV
-: The Initialization Vector (IV) SHOULD be chosen at random, and
-  MUST be unpredictable.  Note that in versions of TLS prior to 1.1,
-  there was no IV field, and the last ciphertext block of the
-  previous record (the "CBC residue") was used as the IV.  This was
-  changed to prevent the attacks described in {{CBCATT}}.  For block
-  ciphers, the IV length is of length
-  SecurityParameters.record_iv_length, which is equal to the
-  SecurityParameters.block_size.
-
-padding
-: Padding that is added to force the length of the plaintext to be
-  an integral multiple of the block cipher's block length.  The
-  padding MAY be any length up to 255 bytes, as long as it results
-  in the TLSCiphertext.length being an integral multiple of the
-  block length.  Lengths longer than necessary might be desirable to
-  frustrate attacks on a protocol that are based on analysis of the
-  lengths of exchanged messages.  Each uint8 in the padding data
-  vector MUST be filled with the padding length value.  The receiver
-  MUST check this padding and MUST use the bad_record_mac alert to
-  indicate padding errors.
-
-padding_length
-: The padding length MUST be such that the total size of the
-  GenericBlockCipher structure is a multiple of the cipher's block
-  length.  Legal values range from zero to 255, inclusive.  This
-  length specifies the length of the padding field exclusive of the
-  padding_length field itself.
-{:br }
-
-The encrypted data length (TLSCiphertext.length) is one more than the sum of
-SecurityParameters.block_length, TLSPlaintext.length,
-SecurityParameters.mac_length, and padding_length.
-
-Example: If the block length is 8 bytes, the content length
-(TLSPlaintext.length) is 61 bytes, and the MAC length is 20 bytes, then the
-length before padding is 82 bytes (this does not include the IV. Thus, the
-padding length modulo 8 must be equal to 6 in order to make the total length an
-even multiple of 8 bytes (the block length). The padding length can be 6, 14,
-22, and so on, through 254. If the padding length were the minimum necessary,
-6, the padding would be 6 bytes, each containing the value 6. Thus, the last 8
-octets of the GenericBlockCipher before block encryption would be xx 06 06 06
-06 06 06 06, where xx is the last octet of the MAC.
-
-Note: With block ciphers in CBC mode (Cipher Block Chaining), it is critical
-that the entire plaintext of the record be known before any ciphertext is
-transmitted. Otherwise, it is possible for the attacker to mount the attack
-described in {{CBCATT}}.
-
-Implementation note: Canvel et al. {{CBCTIME}} have demonstrated a timing
-attack on CBC padding based on the time required to compute the MAC. In order
-to defend against this attack, implementations MUST ensure that record
-processing time is essentially the same whether or not the padding is correct.
-In general, the best way to do this is to compute the MAC even if the padding
-is incorrect, and only then reject the packet. For instance, if the pad appears
-to be incorrect, the implementation might assume a zero-length pad and then
-compute the MAC. This leaves a small timing channel, since MAC performance
-depends to some extent on the size of the data fragment, but it is not believed
-to be large enough to be exploitable, due to the large block size of existing
-MACs and the small size of the timing signal.
-
-####  AEAD Ciphers
-
-For AEAD {{RFC5116}} ciphers (such as {{CCM}} or {{GCM}}), the AEAD function
-converts TLSPlaintext.fragment structures to and from AEAD
-TLSCiphertext.fragment structures.
 
        struct {
           opaque nonce_explicit[SecurityParameters.record_iv_length];
@@ -1170,10 +1010,6 @@ TLSCiphertext.fragment structures.
           };
        } GenericAEADCipher;
 
-AEAD ciphers take as input a single key, a nonce, a plaintext, and "additional
-data" to be included in the authentication check, as described in Section 2.1
-of {{RFC5116}}. The key is either the client_write_key or the server_write_key.
-No MAC key is used.
 
 Each AEAD cipher suite MUST specify how the nonce supplied to the AEAD
 operation is constructed, and what is the length of the
@@ -1215,20 +1051,24 @@ separate integrity check. That is:
 
 If the decryption fails, a fatal bad_record_mac alert MUST be generated.
 
+As a special case, we define the NULL_NULL AEAD cipher which is simply
+the identity operation and thus provides no security. This cipher
+MUST ONLY be used with the initial TLS_NULL_WITH_NULL_NULL cipher suite.
+
 ##  Key Calculation
 
+[[OPEN ISSUE: This may be revised. See https://github.com/tlswg/tls13-spec/issues/5]]
 The Record Protocol requires an algorithm to generate keys required by the
 current connection state (see {{the-security-parameters}}) from the security
 parameters provided by the handshake protocol.
 
-The master secret is expanded into a sequence of secure bytes, which is then
-split to a client write MAC key, a server write MAC key, a client write
-encryption key, and a server write encryption key. Each of these is generated
-from the byte sequence in that order. Unused values are empty. Some AEAD
-ciphers may additionally require a client write IV and a server write IV (see
-{{aead-ciphers}}).
+The master secret is expanded into a sequence of secure bytes, which
+is then split to a client write encryption key and a server write
+encryption key. Each of these is generated from the byte sequence in
+that order. Unused values are empty. Some ciphers may additionally
+require a client write IV and a server write IV.
 
-When keys and MAC keys are generated, the master secret is used as an entropy
+When keys are generated, the master secret is used as an entropy
 source.
 
 To generate the key material, compute
@@ -1241,8 +1081,6 @@ To generate the key material, compute
 until enough output has been generated. Then, the key_block is partitioned as
 follows:
 
-       client_write_MAC_key[SecurityParameters.mac_key_length]
-       server_write_MAC_key[SecurityParameters.mac_key_length]
        client_write_key[SecurityParameters.enc_key_length]
        server_write_key[SecurityParameters.enc_key_length]
        client_write_IV[SecurityParameters.fixed_iv_length]
@@ -1253,7 +1091,10 @@ implicit nonce techniques as described in Section 3.2.1 of {{RFC5116}}.
 
 Implementation note: The currently defined cipher suite which requires the most
 material is AES_256_CBC_SHA256. It requires 2 x 32 byte keys and 2 x 32 byte
-MAC keys, for a total 128 bytes of key material.
+MAC keys, for a total 128 bytes of key material. [[OPEN ISSUE: we need to adjust
+to deal with CBC removal, but we probably will also change the KDF
+per issue https://github.com/tlswg/tls13-spec/issues/5, so defer changing
+this till ehtn.]] ]]
 
 #  The TLS Handshaking Protocols
 
@@ -1273,10 +1114,9 @@ peer certificate
   may be null.
 
 cipher spec
-: Specifies the pseudorandom function (PRF) used to generate keying
-  material, the bulk data encryption algorithm (such as null, AES,
-  etc.) and the MAC algorithm (such as HMAC-SHA1).  It also defines
-  cryptographic attributes such as the mac_length.  (See
+: Specifies the authentication and key establishment algorithms,
+  the pseudorandom function (PRF) used to generate keying
+  material, and the record protection algorithm (See
   {{the-security-parameters}} for formal definition.)
 
 master secret
@@ -1442,13 +1282,12 @@ unexpected_message
   implementations.
 
 bad_record_mac
-: This alert is returned if a record is received with an incorrect
-  MAC.  This alert also MUST be returned if an alert is sent because
-  a TLSCiphertext decrypted in an invalid way: either it wasn't an
-  even multiple of the block length, or its padding values, when
-  checked, weren't correct.  This message is always fatal and should
-  never be observed in communication between proper implementations
-  (except when messages were corrupted in the network).
+: This alert is returned if a record is received which cannot be
+  unprotected. Because AEAD algorithms combine decryption and
+  verification, this message is used for all unprotection failures.
+  This message is always fatal and should never be observed in
+  communication between proper implementations (except when messages
+  were corrupted in the network).
 
 decryption_failed_RESERVED
 : This alert was used in some earlier versions of TLS, and may have
@@ -1608,9 +1447,9 @@ or attempt to get the peers to negotiate an unauthenticated connection. The
 fundamental rule is that higher levels must be cognizant of what their security
 requirements are and never transmit information over a channel less secure than
 what they require. The TLS protocol is secure in that any cipher suite offers
-its promised level of security: if you negotiate AES with a 1024-bit DHE key
-exchange with a host whose certificate you have verified, you can expect to be
-that secure.
+its promised level of security: if you negotiate AES-GCM {{GCM}} with
+a 1024-bit DHE key exchange with a host whose certificate you have
+verified, you can expect to be that secure.
 
 These goals are achieved by the handshake protocol, which can be summarized as
 follows: The client sends a ClientHello message to which the server must
@@ -1844,8 +1683,8 @@ are defined by the server.
 
        opaque SessionID<0..32>;
 
-Warning: Because the SessionID is transmitted without encryption or immediate
-MAC protection, servers MUST NOT place confidential information in session
+Warning: Because the SessionID is transmitted without confidentiality or
+integrity protection, servers MUST NOT place confidential information in session
 identifiers or let the contents of fake session identifiers cause any breach of
 security. (Note that the content of the handshake as a whole, including the
 SessionID, is protected by the Finished messages exchanged at the end of the
@@ -1854,8 +1693,8 @@ handshake.)
 The cipher suite list, passed from the client to the server in the ClientHello
 message, contains the combinations of cryptographic algorithms supported by the
 client in order of the client's preference (favorite choice first). Each cipher
-suite defines a key exchange algorithm, a bulk encryption algorithm (including
-secret key length), a MAC algorithm, and a PRF. The server will select a cipher
+suite defines a key exchange algorithm, a record encryption algorithm (including
+secret key length) and a PRF. The server will select a cipher
 suite or, if no acceptable choices are presented, return a handshake failure
 alert and close the connection. If the list contains cipher suites the server
 does not recognize, support, or wish to use, the server MUST ignore those
@@ -2762,12 +2601,13 @@ HelloRequest messages are omitted from handshake hashes.
 
 #  Cryptographic Computations
 
-In order to begin connection protection, the TLS Record Protocol requires
-specification of a suite of algorithms, a master secret, and the client and
-server random values. The authentication, encryption, and MAC algorithms are
-determined by the cipher_suite selected by the server and revealed in the
-ServerHello message. The random values are exchanged in the hello messages. All that
-remains is to calculate the master secret.
+In order to begin connection protection, the TLS Record Protocol
+requires specification of a suite of algorithms, a master secret, and
+the client and server random values. The authentication, key
+agreement, and record protection algorithms are determined by the
+cipher_suite selected by the server and revealed in the ServerHello
+message. The random values are exchanged in the hello messages. All
+that remains is to calculate the master secret.
 
 ##  Computing the Master Secret
 
@@ -2899,26 +2739,9 @@ This section describes protocol types and constants.
         ProtocolVersion version;
         uint16 length;
         select (SecurityParameters.cipher_type) {
-            case stream: GenericStreamCipher;
-            case block:  GenericBlockCipher;
             case aead:   GenericAEADCipher;
         } fragment;
     } TLSCiphertext;
-
-    stream-ciphered struct {
-        opaque content[TLSPlaintext.length];
-        opaque MAC[SecurityParameters.mac_length];
-    } GenericStreamCipher;
-
-    struct {
-        opaque IV[SecurityParameters.record_iv_length];
-        block-ciphered struct {
-            opaque content[TLSPlaintext.length];
-            opaque MAC[SecurityParameters.mac_length];
-            uint8 padding[GenericBlockCipher.padding_length];
-            uint8 padding_length;
-        };
-    } GenericBlockCipher;
 
     struct {
        opaque nonce_explicit[SecurityParameters.record_iv_length];
@@ -3179,9 +3002,10 @@ TLS_NULL_WITH_NULL_NULL is specified and is the initial state of a TLS
 connection during the first handshake on that channel, but MUST NOT be
 negotiated, as it provides no more protection than an unsecured connection.
 
-       CipherSuite TLS_NULL_WITH_NULL_NULL               = { 0x00,0x00 };
+       CipherSuite TLS_NULL_WITH_NULL_NULL             = { 0x00,0x00 };
 
-The following cipher suite definitions are used for server- authenticated (and
+The following cipher suite definitions, defined in {{RFC5288},
+are used for server-authenticated (and
 optionally client-authenticated) Diffie-Hellman. DH denotes cipher suites in
 which the server's certificate contains the Diffie-Hellman parameters signed by
 the certificate authority (CA). DHE denotes ephemeral Diffie-Hellman, where the
@@ -3193,30 +3017,21 @@ authentication, or it may request a Diffie-Hellman certificate. Any
 Diffie-Hellman certificate provided by the client must use the parameters
 (group and generator) described by the server.
 
-       CipherSuite TLS_DH_DSS_WITH_3DES_EDE_CBC_SHA      = { 0x00,0x0D };
-       CipherSuite TLS_DH_RSA_WITH_3DES_EDE_CBC_SHA      = { 0x00,0x10 };
-       CipherSuite TLS_DHE_DSS_WITH_3DES_EDE_CBC_SHA     = { 0x00,0x13 };
-       CipherSuite TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA     = { 0x00,0x16 };
-       CipherSuite TLS_DH_DSS_WITH_AES_128_CBC_SHA       = { 0x00,0x30 };
-       CipherSuite TLS_DH_RSA_WITH_AES_128_CBC_SHA       = { 0x00,0x31 };
-       CipherSuite TLS_DHE_DSS_WITH_AES_128_CBC_SHA      = { 0x00,0x32 };
-       CipherSuite TLS_DHE_RSA_WITH_AES_128_CBC_SHA      = { 0x00,0x33 };
-       CipherSuite TLS_DH_DSS_WITH_AES_256_CBC_SHA       = { 0x00,0x36 };
-       CipherSuite TLS_DH_RSA_WITH_AES_256_CBC_SHA       = { 0x00,0x37 };
-       CipherSuite TLS_DHE_DSS_WITH_AES_256_CBC_SHA      = { 0x00,0x38 };
-       CipherSuite TLS_DHE_RSA_WITH_AES_256_CBC_SHA      = { 0x00,0x39 };
-       CipherSuite TLS_DH_DSS_WITH_AES_128_CBC_SHA256    = { 0x00,0x3E };
-       CipherSuite TLS_DH_RSA_WITH_AES_128_CBC_SHA256    = { 0x00,0x3F };
-       CipherSuite TLS_DHE_DSS_WITH_AES_128_CBC_SHA256   = { 0x00,0x40 };
-       CipherSuite TLS_DHE_RSA_WITH_AES_128_CBC_SHA256   = { 0x00,0x67 };
-       CipherSuite TLS_DH_DSS_WITH_AES_256_CBC_SHA256    = { 0x00,0x68 };
-       CipherSuite TLS_DH_RSA_WITH_AES_256_CBC_SHA256    = { 0x00,0x69 };
-       CipherSuite TLS_DHE_DSS_WITH_AES_256_CBC_SHA256   = { 0x00,0x6A };
-       CipherSuite TLS_DHE_RSA_WITH_AES_256_CBC_SHA256   = { 0x00,0x6B };
+      CipherSuite TLS_RSA_WITH_AES_128_GCM_SHA256 = {0x00,0x9C}
+      CipherSuite TLS_RSA_WITH_AES_256_GCM_SHA384 = {0x00,0x9D}
+      CipherSuite TLS_DHE_RSA_WITH_AES_128_GCM_SHA256 = {0x00,0x9E}
+      CipherSuite TLS_DHE_RSA_WITH_AES_256_GCM_SHA384 = {0x00,0x9F}
+      CipherSuite TLS_DH_RSA_WITH_AES_128_GCM_SHA256 = {0x00,0xA0}
+      CipherSuite TLS_DH_RSA_WITH_AES_256_GCM_SHA384 = {0x00,0xA1}
+      CipherSuite TLS_DHE_DSS_WITH_AES_128_GCM_SHA256 = {0x00,0xA2}
+      CipherSuite TLS_DHE_DSS_WITH_AES_256_GCM_SHA384 = {0x00,0xA3}
+      CipherSuite TLS_DH_DSS_WITH_AES_128_GCM_SHA256 = {0x00,0xA4}
+      CipherSuite TLS_DH_DSS_WITH_AES_256_GCM_SHA384 = {0x00,0xA5}
 
-The following cipher suites are used for completely anonymous Diffie-Hellman
+The following cipher suites, defined in {{RFC5288},
+are used for completely anonymous Diffie-Hellman
 communications in which neither party is authenticated. Note that this mode is
-vulnerable to man-in-the- middle attacks. Using this mode therefore is of
+vulnerable to man-in-the-middle attacks. Using this mode therefore is of
 limited use: These cipher suites MUST NOT be used by TLS 1.2 implementations
 unless the application layer has specifically requested to allow anonymous key
 exchange. (Anonymous key exchange may sometimes be acceptable, for example, to
@@ -3224,13 +3039,11 @@ support opportunistic encryption when no set-up for authentication is in place,
 or when TLS is used as part of more complex security protocols that have other
 means to ensure authentication.)
 
-       CipherSuite TLS_DH_anon_WITH_RC4_128_MD5          = { 0x00,0x18 };
-       CipherSuite TLS_DH_anon_WITH_3DES_EDE_CBC_SHA     = { 0x00,0x1B };
-       CipherSuite TLS_DH_anon_WITH_AES_128_CBC_SHA      = { 0x00,0x34 };
-       CipherSuite TLS_DH_anon_WITH_AES_256_CBC_SHA      = { 0x00,0x3A };
-       CipherSuite TLS_DH_anon_WITH_AES_128_CBC_SHA256   = { 0x00,0x6C };
-       CipherSuite TLS_DH_anon_WITH_AES_256_CBC_SHA256   = { 0x00,0x6D };
+      CipherSuite TLS_DH_anon_WITH_AES_128_GCM_SHA256 = {0x00,0xA6}
+      CipherSuite TLS_DH_anon_WITH_AES_256_GCM_SHA384 = {0x00,0xA7}
 
+[[TODO: Add all the defined AEAD ciphers. This currently only lists
+GCM.]]
 Note that using non-anonymous key exchange without actually verifying the key
 exchange is essentially equivalent to anonymous key exchange, and the same
 precautions apply. While non-anonymous key exchange will generally involve a
@@ -3257,28 +3070,19 @@ connection state. SecurityParameters includes:
 
     enum { tls_prf_sha256 } PRFAlgorithm;
 
-    enum { null, rc4, 3des, aes } BulkCipherAlgorithm;
-
-    enum { stream, block, aead } CipherType;
-
-    enum { null, hmac_md5, hmac_sha1, hmac_sha256, hmac_sha384,
-      hmac_sha512} MACAlgorithm;
+    enum { aes_gcm } RecordProtAlgorithm;
 
     /* Other values may be added to the algorithms specified in
-    PRFAlgorithm, BulkCipherAlgorithm, and MACAlgorithm. */
+    PRFAlgorithm and RecordProtAlgorithm */
 
     struct {
         ConnectionEnd          entity;
         PRFAlgorithm           prf_algorithm;
-        BulkCipherAlgorithm    bulk_cipher_algorithm;
-        CipherType             cipher_type;
+        RecordProtAlgorithm    record_prot_algorithm;
         uint8                  enc_key_length;
         uint8                  block_length;
         uint8                  fixed_iv_length;
         uint8                  record_iv_length;
-        MACAlgorithm           mac_algorithm;
-        uint8                  mac_length;
-        uint8                  mac_key_length;
         opaque                 master_secret[48];
         opaque                 client_random[32];
         opaque                 server_random[32];
@@ -3330,22 +3134,6 @@ authentication
 : Authentication is the ability of one entity to determine the
   identity of another entity.
 
-block cipher
-: A block cipher is an algorithm that operates on plaintext in
-  groups of bits, called blocks.  64 bits was, and 128 bits is, a
-  common block size.
-
-bulk cipher
-: A symmetric encryption algorithm used to encrypt large quantities
-  of data.
-
-cipher block chaining (CBC)
-: CBC is a mode in which every plaintext block encrypted with a
-  block cipher is first exclusive-ORed with the previous ciphertext
-  block (or, in the case of the first block, with the initialization
-  vector).  For decryption, every block is first decrypted, then
-  exclusive-ORed with the previous ciphertext block (or IV).
-
 certificate
 : As part of the X.509 protocol (a.k.a. ISO Authentication
   framework), certificates are assigned by a trusted Certificate
@@ -3361,29 +3149,13 @@ client
   authenticated.
 
 client write key
-: The key used to encrypt data written by the client.
-
-client write MAC key
-: The secret data used to authenticate data written by the client.
+: The key used to protect data written by the client.
 
 connection
 : A connection is a transport (in the OSI layering model definition)
   that provides a suitable type of service.  For TLS, such
   connections are peer-to-peer relationships.  The connections are
   transient.  Every connection is associated with one session.
-
-Data Encryption Standard
-: DES {{DES}} still is a very widely used symmetric encryption
-  algorithm although it is considered as rather weak now.  DES is a
-  block cipher with a 56-bit key and an 8-byte block size.  Note
-  that in TLS, for key generation purposes, DES is treated as having
-  an 8-byte key length (64 bits), but it still only provides 56 bits
-  of protection.  (The low bit of each key byte is presumed to be
-  set to produce odd parity in that key byte.)  DES can also be
-  operated in a mode {{TRIPLEDES}} where three independent keys and three
-  encryptions are used for each block of data; this uses 168 bits of
-  key (24 bytes in the TLS key generation method) and provides the
-  equivalent of 112 bits of security.
 
 Digital Signature Standard (DSS)
 : A standard for digital signing, including the Digital Signing
@@ -3403,9 +3175,10 @@ handshake
   establishes the parameters of their transactions.
 
 Initialization Vector (IV)
-: When a block cipher is used in CBC mode, the initialization vector
-  is exclusive-ORed with the first plaintext block prior to
-  encryption.
+: Some AEAD ciphers require an initialization vector to allow
+  the cipher to safely protect multiple chunks of data with the
+  same keying material. The size of the IV depends on the cipher
+  suite.
 
 Message Authentication Code (MAC)
 : A Message Authentication Code is a one-way hash computed from a
@@ -3414,8 +3187,7 @@ Message Authentication Code (MAC)
   has been altered.
 
 master secret
-: Secure secret data used for generating encryption keys, MAC
-  secrets, and IVs.
+: Secure secret data used for generating keys and IVs.
 
 MD5
 : MD5 {{RFC1321}} is a hashing function that converts an arbitrarily long
@@ -3435,10 +3207,6 @@ one-way hash function
   into a fixed-length hash.  It is computationally hard to reverse
   the transformation or to find collisions.  MD5 and SHA are
   examples of one-way hash functions.
-
-RC4
-: A stream cipher invented by Ron Rivest.  A compatible cipher is
-  described in {{SCH}}.
 
 RSA
 : A very widely used public key algorithm that can be used for
@@ -3460,10 +3228,7 @@ session identifier
   identifies a particular session.
 
 server write key
-: The key used to encrypt data written by the server.
-
-server write MAC key
-: The secret data used to authenticate data written by the server.
+: The key used to protect data written by the server.
 
 SHA
 : The Secure Hash Algorithm {{SHS}} is defined in FIPS PUB 180-2.  It
@@ -3479,14 +3244,6 @@ SSL
 : Netscape's Secure Socket Layer protocol {{SSL3}}.  TLS is based on
   SSL Version 3.0.
 
-stream cipher
-: An encryption algorithm that converts a key into a
-  cryptographically strong keystream, which is then exclusive-ORed
-  with the plaintext.
-
-symmetric cipher
-: See bulk cipher.
-
 Transport Layer Security (TLS)
 : This protocol; also, the Transport Layer Security working group of
   the Internet Engineering Task Force (IETF).  See "Working Group
@@ -3495,72 +3252,39 @@ Transport Layer Security (TLS)
 
 # Cipher Suite Definitions
 
-    Cipher Suite                            Key        Cipher         Mac
-                                           Exchange
+    Cipher Suite                          Key        Record
+                                          Exchange   Protection   PRF
 
-    TLS_NULL_WITH_NULL_NULL                 NULL         NULL         NULL
-    TLS_DH_DSS_WITH_3DES_EDE_CBC_SHA        DH_DSS       3DES_EDE_CBC SHA
-    TLS_DH_RSA_WITH_3DES_EDE_CBC_SHA        DH_RSA       3DES_EDE_CBC SHA
-    TLS_DHE_DSS_WITH_3DES_EDE_CBC_SHA       DHE_DSS      3DES_EDE_CBC SHA
-    TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA       DHE_RSA      3DES_EDE_CBC SHA
-    TLS_DH_anon_WITH_RC4_128_MD5            DH_anon      RC4_128      MD5
-    TLS_DH_anon_WITH_3DES_EDE_CBC_SHA       DH_anon      3DES_EDE_CBC SHA
-    TLS_DH_DSS_WITH_AES_128_CBC_SHA         DH_DSS       AES_128_CBC  SHA
-    TLS_DH_RSA_WITH_AES_128_CBC_SHA         DH_RSA       AES_128_CBC  SHA
-    TLS_DHE_DSS_WITH_AES_128_CBC_SHA        DHE_DSS      AES_128_CBC  SHA
-    TLS_DHE_RSA_WITH_AES_128_CBC_SHA        DHE_RSA      AES_128_CBC  SHA
-    TLS_DH_anon_WITH_AES_128_CBC_SHA        DH_anon      AES_128_CBC  SHA
-    TLS_DH_DSS_WITH_AES_256_CBC_SHA         DH_DSS       AES_256_CBC  SHA
-    TLS_DH_RSA_WITH_AES_256_CBC_SHA         DH_RSA       AES_256_CBC  SHA
-    TLS_DHE_DSS_WITH_AES_256_CBC_SHA        DHE_DSS      AES_256_CBC  SHA
-    TLS_DHE_RSA_WITH_AES_256_CBC_SHA        DHE_RSA      AES_256_CBC  SHA
-    TLS_DH_anon_WITH_AES_256_CBC_SHA        DH_anon      AES_256_CBC  SHA
-    TLS_DH_DSS_WITH_AES_128_CBC_SHA256      DH_DSS       AES_128_CBC  SHA256
-    TLS_DH_RSA_WITH_AES_128_CBC_SHA256      DH_RSA       AES_128_CBC  SHA256
-    TLS_DHE_DSS_WITH_AES_128_CBC_SHA256     DHE_DSS      AES_128_CBC  SHA256
-    TLS_DHE_RSA_WITH_AES_128_CBC_SHA256     DHE_RSA      AES_128_CBC  SHA256
-    TLS_DH_anon_WITH_AES_128_CBC_SHA256     DH_anon      AES_128_CBC  SHA256
-    TLS_DH_DSS_WITH_AES_256_CBC_SHA256      DH_DSS       AES_256_CBC  SHA256
-    TLS_DH_RSA_WITH_AES_256_CBC_SHA256      DH_RSA       AES_256_CBC  SHA256
-    TLS_DHE_DSS_WITH_AES_256_CBC_SHA256     DHE_DSS      AES_256_CBC  SHA256
-    TLS_DHE_RSA_WITH_AES_256_CBC_SHA256     DHE_RSA      AES_256_CBC  SHA256
-    TLS_DH_anon_WITH_AES_256_CBC_SHA256     DH_anon      AES_256_CBC  SHA256
+    TLS_NULL_WITH_NULL_NULL               NULL       NULL_NULL    N/A
+    TLS_DHE_RSA_WITH_AES_128_GCM_SHA256   DHE_RSA    AES_128_GCM  SHA256
+    TLS_DHE_RSA_WITH_AES_256_GCM_SHA384   DHE_RSA    AES_256_GCM  SHA384
+    TLS_DH_RSA_WITH_AES_128_GCM_SHA256    DH_RSA     AES_128_GCM  SHA256
+    TLS_DH_RSA_WITH_AES_256_GCM_SHA384    DH_RSA     AES_256_GCM  SHA384
+    TLS_DHE_DSS_WITH_AES_128_GCM_SHA256   DHE_DSS    AES_128_GCM  SHA256
+    TLS_DHE_DSS_WITH_AES_256_GCM_SHA384   DHE_DSS    AES_256_GCM  SHA384
+    TLS_DH_DSS_WITH_AES_128_GCM_SHA256    DH_DSS     AES_128_GCM  SHA256
+    TLS_DH_DSS_WITH_AES_256_GCM_SHA384    DH_DSS     AES_256_GCM  SHA384
+    TLS_DH_anon_WITH_AES_128_GCM_SHA256   DH_anon    AES_128_GCM  SHA256
+    TLS_DH_anon_WITH_AES_256_GCM_SHA384   DH_anon    AES_128_GCM  SHA384
 
-                           Key      IV   Block
-    Cipher        Type    Material  Size  Size
-    ------------  ------  --------  ----  -----
-    NULL          Stream      0       0    N/A
-    RC4_128       Stream     16       0    N/A
-    3DES_EDE_CBC  Block      24       8      8
-    AES_128_CBC   Block      16      16     16
-    AES_256_CBC   Block      32      16     16
-
-
-    MAC       Algorithm    mac_length  mac_key_length
-    --------  -----------  ----------  --------------
-    NULL      N/A              0             0
-    MD5       HMAC-MD5        16            16
-    SHA       HMAC-SHA1       20            20
-    SHA256    HMAC-SHA256     32            32
-
-Type
-: Indicates whether this is a stream cipher or a block cipher
-  running in CBC mode.
+                    Key      Implicit IV   Explicit IV
+    Cipher         Material  Size          Size
+    ------------   --------  ----------    -----------
+    NULL               0          0             0
+    AES_128_GCM       16          4             8
+    AES_256_GCM       32          4             8
 
 Key Material
 : The number of bytes from the key_block that are used for
   generating the write keys.
 
-IV Size
-: The amount of data needed to be generated for the initialization
-  vector.  Zero for stream ciphers; equal to the block size for
-  block ciphers (this is equal to
-  SecurityParameters.record_iv_length).
+Implicit IV Size
+: The amount of data to be generated for the per-connection part of the
+  initialization vector. This is equal to SecurityParameters.fixed_iv_length).
 
-Block Size
-: The amount of data a block cipher enciphers in one chunk; a block
-  cipher running in CBC mode can only encrypt an even multiple of
-  its block size.
+Explicit IV Size
+: The amount of data needed to be generated for the per-record part of the
+  initialization vector. This is equal to SecurityParameters.record_iv_length).
 {:br }
 
 # Implementation Notes
@@ -3648,14 +3372,6 @@ Cryptographic details:
 -  Does your TLS client check that the Diffie-Hellman parameters sent
   by the server are acceptable (see
   {{diffie-hellman-key-exchange-with-authentication}})?
-
--  How do you generate unpredictable IVs for CBC mode ciphers (see
-  {{cbc-block-cipher}})?
-
-- Do you accept long CBC mode padding (up to 255 bytes; see
-  {{cbc-block-cipher}}?
-
--  How do you address CBC mode timing attacks ({{cbc-block-cipher}})?
 
 - Do you use a strong and, most importantly, properly seeded random number
   generator (see {{random-number-generation-and-seeding}}) Diffie-Hellman private values, the
@@ -3861,7 +3577,7 @@ The general goal of the key exchange process is to create a pre_master_secret
 known to the communicating parties and not to attackers. The pre_master_secret
 will be used to generate the master_secret (see
 {{computing-the-master-secret}}). The master_secret is required to generate the
-Finished messages, encryption keys, and MAC keys (see {{finished}} and
+Finished messages and record protection keys (see {{finished}} and
 {{key-calculation}}). By sending a correct Finished message, parties thus prove
 that they know the correct pre_master_secret.
 
@@ -3956,9 +3672,9 @@ repair the Finished messages, so the attack will be discovered.
 When a connection is established by resuming a session, new ClientHello.random
 and ServerHello.random values are hashed with the session's master_secret.
 Provided that the master_secret has not been compromised and that the secure
-hash operations used to produce the encryption keys and MAC keys are secure,
+hash operations used to produce the record protection kayes are secure,
 the connection should be secure and effectively independent from previous
-connections. Attackers cannot use known encryption keys or MAC secrets to
+connections. Attackers cannot use known keys to
 compromise the master_secret without breaking the secure hash operations.
 
 Sessions cannot be resumed unless both the client and server agree. If either
@@ -3972,73 +3688,16 @@ relatively insecure environments should not write session IDs to stable storage.
 ## Protecting Application Data
 
 The master_secret is hashed with the ClientHello.random and ServerHello.random
-to produce unique data encryption keys and MAC secrets for each connection.
+to produce unique record protection secrets for each connection.
 
-Outgoing data is protected with a MAC before transmission. To prevent message
-replay or modification attacks, the MAC is computed from the MAC key, the
-sequence number, the message length, the message contents, and two fixed
-character strings. The message type field is necessary to ensure that messages
+Outgoing data is protected using an AEAD algorithm before transmission. The
+authentication data includes the sequence number, message type, message length,
+and the message contents. The message type field is necessary to ensure that messages
 intended for one TLS record layer client are not redirected to another. The
 sequence number ensures that attempts to delete or reorder messages will be
 detected. Since sequence numbers are 64 bits long, they should never overflow.
 Messages from one party cannot be inserted into the other's output, since they
-use independent MAC keys. Similarly, the server write and client write keys are
-independent, so stream cipher keys are used only once.
-
-If an attacker does break an encryption key, all messages encrypted with it can
-be read. Similarly, compromise of a MAC key can make message-modification
-attacks possible. Because MACs are also encrypted, message-alteration attacks
-generally require breaking the encryption algorithm as well as the MAC.
-
-Note: MAC keys may be larger than encryption keys, so messages can remain
-tamper resistant even if encryption keys are broken.
-
-## Explicit IVs
-
-{{CBCATT}} describes a chosen plaintext attack on TLS that depends on knowing
-the IV for a record. Previous versions of TLS {{RFC2246}} used the CBC residue
-of the previous record as the IV and therefore enabled this attack. This
-version uses an explicit IV in order to protect against this attack.
-
-## Security of Composite Cipher Modes
-
-TLS secures transmitted application data via the use of symmetric encryption
-and authentication functions defined in the negotiated cipher suite. The
-objective is to protect both the integrity and confidentiality of the
-transmitted data from malicious actions by active attackers in the network. It
-turns out that the order in which encryption and authentication functions are
-applied to the data plays an important role for achieving this goal {{ENCAUTH}}.
-
-The most robust method, called encrypt-then-authenticate, first applies
-encryption to the data and then applies a MAC to the ciphertext. This method
-ensures that the integrity and confidentiality goals are obtained with ANY pair
-of encryption and MAC functions, provided that the former is secure against
-chosen plaintext attacks and that the MAC is secure against chosen-message
-attacks. TLS uses another method, called authenticate-then-encrypt, in which
-first a MAC is computed on the plaintext and then the concatenation of
-plaintext and MAC is encrypted. This method has been proven secure for CERTAIN
-combinations of encryption functions and MAC functions, but it is not
-guaranteed to be secure in general. In particular, it has been shown that there
-exist perfectly secure encryption functions (secure even in the
-information-theoretic sense) that combined with any secure MAC function, fail
-to provide the confidentiality goal against an active attack. Therefore, new
-cipher suites and operation modes adopted into TLS need to be analyzed under
-the authenticate-then-encrypt method to verify that they achieve the stated
-integrity and confidentiality goals.
-
-Currently, the security of the authenticate-then-encrypt method has been proven
-for some important cases. One is the case of stream ciphers in which a
-computationally unpredictable pad of the length of the message, plus the length
-of the MAC tag, is produced using a pseudorandom generator and this pad is
-exclusive-ORed with the concatenation of plaintext and MAC tag. The other is
-the case of CBC mode using a secure block cipher. In this case, security can be
-shown if one applies one CBC encryption pass to the concatenation of plaintext
-and MAC and uses a new, independent, and unpredictable IV for each new pair of
-plaintext and MAC. In versions of TLS prior to 1.1, CBC mode was used properly
-EXCEPT that it used a predictable IV in the form of the last block of the
-previous ciphertext. This made TLS open to chosen plaintext attacks. This
-version of the protocol is immune to those attacks. For exact details in the
-encryption modes proven secure, see {{ENCAUTH}}.
+use independent keys.
 
 ## Denial of Service
 
