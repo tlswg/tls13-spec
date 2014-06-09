@@ -673,7 +673,7 @@ value.
 
 In the following example
 
-       aead-ciphered struct {
+       struct {
            uint8 field1;
            uint8 field2;
            digitally-signed opaque {
@@ -683,8 +683,7 @@ In the following example
        } UserType;
 
 The contents of the inner struct (field3 and field4) are used as input for the
-signature/hash algorithm, and then the entire structure is encrypted with an
-AEAD cipher. The length of this structure, in bytes, would be equal to two
+signature/hash algorithm. The length of t structure, in bytes, would be equal to two
 bytes for field1 and field2, plus two bytes for the signature and hash
 algorithm, plus two bytes for the length of the signature, plus the length of
 the output of the signing algorithm. The length of the signature is known
@@ -799,8 +798,8 @@ pending states current, in which case the appropriate current state is
 disposed of and replaced with the pending state; the pending state is
 then reinitialized to an empty state. It is illegal to make a state
 that has not been initialized with security parameters a current
-state. The initial current state always specifies that record are
-unprotected.
+state. The initial current state always specifies that records are
+not protected.
 
 The security parameters for a TLS Connection read and write state are set by
 providing the following values:
@@ -968,7 +967,7 @@ the first one on a connection.
 ###  Record Payload Protection
 
 The record protection functions translate a TLSPlaintext structure into a
-TLSCiphertext. The unprotection functions reverse the process. In TLS 1.3
+TLSCiphertext. The deprotection functions reverse the process. In TLS 1.3
 as opposed to previous versions of TLS, all ciphers are modelled as
 "Authenticated Encryption with Additional Data" (AEAD) {{RFC5116}}.
 AEAD functions provide a unified encryption and authentication
@@ -1089,12 +1088,6 @@ follows:
 Currently, the client_write_IV and server_write_IV are only generated for
 implicit nonce techniques as described in Section 3.2.1 of {{RFC5116}}.
 
-Implementation note: The currently defined cipher suite which requires the most
-material is AES_256_CBC_SHA256. It requires 2 x 32 byte keys and 2 x 32 byte
-MAC keys, for a total 128 bytes of key material. [[OPEN ISSUE: we need to adjust
-to deal with CBC removal, but we probably will also change the KDF
-per issue https://github.com/tlswg/tls13-spec/issues/5, so defer changing
-this till ehtn.]] ]]
 
 #  The TLS Handshaking Protocols
 
@@ -1283,8 +1276,8 @@ unexpected_message
 
 bad_record_mac
 : This alert is returned if a record is received which cannot be
-  unprotected. Because AEAD algorithms combine decryption and
-  verification, this message is used for all unprotection failures.
+  deprotected. Because AEAD algorithms combine decryption and
+  verification, this message is used for all deprotection failures.
   This message is always fatal and should never be observed in
   communication between proper implementations (except when messages
   were corrupted in the network).
