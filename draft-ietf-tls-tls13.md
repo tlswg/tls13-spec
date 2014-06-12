@@ -985,7 +985,7 @@ of {{RFC5116}}. The key is either the client_write_key or the server_write_key.
            opaque nonce_explicit[SecurityParameters.record_iv_length];
            aead-ciphered struct {
               opaque content[TLSPlaintext.length];
-          };
+           } fragment;
        } TLSCiphertext;
 
 type
@@ -1000,19 +1000,10 @@ length
 
 fragment
 : The AEAD encrypted form of TLSPlaintext.fragment.
-{:br }
-
-       struct {
-          opaque nonce_explicit[SecurityParameters.record_iv_length];
-          aead-ciphered struct {
-              opaque content[TLSPlaintext.length];
-          };
-       } GenericAEADCipher;
-
 
 Each AEAD cipher suite MUST specify how the nonce supplied to the AEAD
 operation is constructed, and what is the length of the
-GenericAEADCipher.nonce_explicit part. In many cases, it is appropriate to use
+TLSCiphertext.nonce_explicit part. In many cases, it is appropriate to use
 the partially implicit nonce technique described in Section 3.2.1 of
 {{RFC5116}}; with record_iv_length being the length of the explicit part. In
 this case, the implicit part SHOULD be derived from key_block as
@@ -2731,17 +2722,11 @@ This section describes protocol types and constants.
         ContentType type;
         ProtocolVersion version;
         uint16 length;
-        select (SecurityParameters.cipher_type) {
-            case aead:   GenericAEADCipher;
+        opaque nonce_explicit[SecurityParameters.record_iv_length];
+        aead-ciphered struct {
+            opaque content[TLSPlaintext.length];
         } fragment;
     } TLSCiphertext;
-
-    struct {
-       opaque nonce_explicit[SecurityParameters.record_iv_length];
-       aead-ciphered struct {
-           opaque content[TLSPlaintext.length];
-       };
-    } GenericAEADCipher;
 
 ##  Change Cipher Specs Message
 
