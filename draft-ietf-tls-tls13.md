@@ -683,7 +683,7 @@ In the following example
        } UserType;
 
 The contents of the inner struct (field3 and field4) are used as input for the
-signature/hash algorithm. The length of t structure, in bytes, would be equal to two
+signature/hash algorithm. The length of the structure, in bytes, would be equal to two
 bytes for field1 and field2, plus two bytes for the signature and hash
 algorithm, plus two bytes for the length of the signature, plus the length of
 the output of the signing algorithm. The length of the signature is known
