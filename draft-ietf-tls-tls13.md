@@ -619,10 +619,9 @@ For example:
 
 ##  Cryptographic Attributes
 
-The three cryptographic operations --- digital signing, authenticated
-encryption with additional data (AEAD) and public key encryption ---
-are designated digitally-signed, aead-ciphered, and
-public-key-encrypted, respectively. A field's cryptographic processing
+The two cryptographic operations --- digital signing, and authenticated
+encryption with additional data (AEAD) --- are designated digitally-signed,
+and aead-ciphered, respectively. A field's cryptographic processing
 is specified by prepending an appropriate key word designation before
 the field's type specification.  Cryptographic keys are implied by the
 current session state (see {{connection-states}}).
@@ -2146,7 +2145,7 @@ or a public key for some other algorithm.
 
 Structure of this message:
 
-       enum { dhe_dss, dhe_rsa, dh_anon, rsa, dh_dss, dh_rsa
+       enum { dhe_dss, dhe_rsa, dh_anon, dh_dss, dh_rsa
              /* may be extended, e.g., for ECDH -- see [RFC4492] */
             } KeyExchangeAlgorithm;
 
@@ -2177,11 +2176,10 @@ Structure of this message:
                        opaque server_random[32];
                        ServerDHParams params;
                    } signed_params;
-               case rsa:
                case dh_dss:
                case dh_rsa:
                    struct {} ;
-                  /* message is omitted for rsa, dh_dss, and dh_rsa */
+                  /* message is omitted for dh_dss and dh_rsa */
                /* may be extended, e.g., for ECDH -- see [RFC4492] */
            };
        } ServerKeyExchange;
@@ -2876,7 +2874,7 @@ This section describes protocol types and constants.
         ASN1Cert certificate_list<0..2^24-1>;
     } Certificate;
 
-    enum { dhe_dss, dhe_rsa, dh_anon, rsa,dh_dss, dh_rsa
+    enum { dhe_dss, dhe_rsa, dh_anon, dh_dss, dh_rsa
            /* may be extended, e.g., for ECDH -- see [TLSECC] */
          } KeyExchangeAlgorithm;
 
@@ -2898,7 +2896,6 @@ This section describes protocol types and constants.
                     opaque server_random[32];
                     ServerDHParams params;
                 } signed_params;
-            case rsa:
             case dh_dss:
             case dh_rsa:
                 struct {} ;
@@ -2927,8 +2924,6 @@ This section describes protocol types and constants.
 
     struct {
         select (KeyExchangeAlgorithm) {
-            case rsa:
-                EncryptedPreMasterSecret;
             case dhe_dss:
             case dhe_rsa:
             case dh_dss:
@@ -2942,10 +2937,6 @@ This section describes protocol types and constants.
         ProtocolVersion client_version;
         opaque random[46];
     } PreMasterSecret;
-
-    struct {
-        public-key-encrypted PreMasterSecret pre_master_secret;
-    } EncryptedPreMasterSecret;
 
     enum { implicit, explicit } PublicValueEncoding;
 
