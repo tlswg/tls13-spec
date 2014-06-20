@@ -2191,8 +2191,8 @@ params
 
 
 signed_params
-: For non-anonymous key exchanges, a signature over
-  HASH(ClientHello.random + ServerHello.random + ServerDHParams).
+: For non-anonymous key exchanges, a signature over the client and server
+  hello random data and the server's key exchange parameters.
 {:br }
 
 
