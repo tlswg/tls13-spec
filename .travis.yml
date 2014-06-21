@@ -1,8 +1,18 @@
 language: python
 python:
   - "2.7"
-# command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
-install: pip install xml2rfc && gem install kramdown-rfc2629
+
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -y python-lxml python-pip
+install:
+  # here we don't use the travis virtualenv because that
+  # causes us to install lxml again below, doubling the build time
+  # when it compiles the native modules from source
+  - deactivate
+  - sudo pip install xml2rfc
+  - gem install kramdown-rfc2629
+
 # command to run tests, e.g. python setup.py test
 script: make upload
 
