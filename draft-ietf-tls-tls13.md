@@ -619,10 +619,9 @@ For example:
 
 ##  Cryptographic Attributes
 
-The three cryptographic operations --- digital signing, authenticated
-encryption with additional data (AEAD) and public key encryption ---
-are designated digitally-signed, aead-ciphered, and
-public-key-encrypted, respectively. A field's cryptographic processing
+The two cryptographic operations --- digital signing, and authenticated
+encryption with additional data (AEAD) --- are designated digitally-signed,
+and aead-ciphered, respectively. A field's cryptographic processing
 is specified by prepending an appropriate key word designation before
 the field's type specification.  Cryptographic keys are implied by the
 current session state (see {{connection-states}}).
@@ -636,7 +635,7 @@ A digitally-signed element is encoded as a struct DigitallySigned:
 
 The algorithm field specifies the algorithm used (see {{signature-algorithms}}
 for the definition of this field). Note that the introduction of the algorithm
-field is a change from previous versions. The signature is a digital signature
+field was introduced in TLS 1.2, and is not in earlier versions. The signature is a digital signature
 using those algorithms over the contents of the element. The contents
 themselves do not appear on the wire but are simply calculated. The length of
 the signature is specified by the signing algorithm and key.
@@ -683,7 +682,7 @@ In the following example
        } UserType;
 
 The contents of the inner struct (field3 and field4) are used as input for the
-signature/hash algorithm. The length of t structure, in bytes, would be equal to two
+signature/hash algorithm. The length of the structure, in bytes, would be equal to two
 bytes for field1 and field2, plus two bytes for the signature and hash
 algorithm, plus two bytes for the length of the signature, plus the length of
 the output of the signing algorithm. The length of the signature is known
@@ -1732,7 +1731,7 @@ cipher_suites
   that session.  Values are defined in {{the-cipher-suite}}.
 
 compression_methods
-: Previous versions of TLS supported compression and the list of
+: Versions of TLS before 1.3 supported compression and the list of
   compression methods was supplied in this field. For any TLS 1.3
   ClientHello, this field MUST contain only the "null" compression
   method with the code point of 0. If a TLS 1.3 ClientHello is
@@ -2146,7 +2145,7 @@ or a public key for some other algorithm.
 
 Structure of this message:
 
-       enum { dhe_dss, dhe_rsa, dh_anon, rsa, dh_dss, dh_rsa
+       enum { dhe_dss, dhe_rsa, dh_anon, dh_dss, dh_rsa
              /* may be extended, e.g., for ECDH -- see [RFC4492] */
             } KeyExchangeAlgorithm;
 
@@ -2177,11 +2176,10 @@ Structure of this message:
                        opaque server_random[32];
                        ServerDHParams params;
                    } signed_params;
-               case rsa:
                case dh_dss:
                case dh_rsa:
                    struct {} ;
-                  /* message is omitted for rsa, dh_dss, and dh_rsa */
+                  /* message is omitted for dh_dss and dh_rsa */
                /* may be extended, e.g., for ECDH -- see [RFC4492] */
            };
        } ServerKeyExchange;
@@ -2551,11 +2549,11 @@ Structure of this message:
 suite which defines a different PRF MUST also define the Hash to use in the
 Finished computation.
 
-> In previous versions of TLS, the verify_data was always 12 octets long. In
-the current version of TLS, it depends on the cipher suite. Any cipher suite
+> In versions of TLS before TLS 1.2, the verify_data was always 12 octets long.
+In TLS 1.2 and later, it depends on the cipher suite. Any cipher suite
 which does not explicitly specify verify_data_length has a verify_data_length
 equal to 12. This includes all existing cipher suites. Note that this
-representation has the same encoding as with previous versions. Future cipher
+representation has the same encoding as with versions before TLS 1.2. Future cipher
 suites MAY specify other lengths but such length MUST be at least 12 bytes.
 
 handshake_messages
@@ -2876,7 +2874,7 @@ This section describes protocol types and constants.
         ASN1Cert certificate_list<0..2^24-1>;
     } Certificate;
 
-    enum { dhe_dss, dhe_rsa, dh_anon, rsa,dh_dss, dh_rsa
+    enum { dhe_dss, dhe_rsa, dh_anon, dh_dss, dh_rsa
            /* may be extended, e.g., for ECDH -- see [TLSECC] */
          } KeyExchangeAlgorithm;
 
@@ -2898,7 +2896,6 @@ This section describes protocol types and constants.
                     opaque server_random[32];
                     ServerDHParams params;
                 } signed_params;
-            case rsa:
             case dh_dss:
             case dh_rsa:
                 struct {} ;
@@ -2927,8 +2924,6 @@ This section describes protocol types and constants.
 
     struct {
         select (KeyExchangeAlgorithm) {
-            case rsa:
-                EncryptedPreMasterSecret;
             case dhe_dss:
             case dhe_rsa:
             case dh_dss:
@@ -2942,10 +2937,6 @@ This section describes protocol types and constants.
         ProtocolVersion client_version;
         opaque random[46];
     } PreMasterSecret;
-
-    struct {
-        public-key-encrypted PreMasterSecret pre_master_secret;
-    } EncryptedPreMasterSecret;
 
     enum { implicit, explicit } PublicValueEncoding;
 
