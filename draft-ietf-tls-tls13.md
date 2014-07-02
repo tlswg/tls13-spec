@@ -1523,7 +1523,8 @@ below.) Application data MUST NOT be sent prior to the Finished message.
 Note: To help avoid pipeline stalls, ChangeCipherSpec is an independent TLS
 protocol content type, and is not actually a TLS handshake message.
 
-If the client has not provided an appropriate ClientKeyExchange, the
+If the client has not provided an appropriate ClientKeyExchange
+(e.g. it includes only DHE or ECDHE groups unacceptable or unsupported by the server), the
 server corrects the mismatch with the ServerHello (which the client
 can detect by comparing the selected cipher suite and parameters with
 the ClientKeyExchange it offered) and the client will need to restart
