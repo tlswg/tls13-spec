@@ -1467,12 +1467,12 @@ is sent by the server, and the server copies the pending Cipher Spec
 into the current Cipher Spec. The remainder of the server's handshake
 messages will be encrypted under that Cipher Spec. 
 
-Following these, messages, the server will send an EncryptedExtensions
+Following these messages, the server will send an EncryptedExtensions
 message which contains a response to any client's extensions which are
 not necessary to establish the Cipher Suite. The server will then send
 its certificate in a Certificate message if it is to be authenticated.
-If the server is authenticated, it may request a certificate from the
-client, if that is appropriate to the cipher suite selected.
+The server may optionally request a certificate from the client by
+sending a CertificateRequest message at this point.
 Finally, if the server is authenticated, it will send a CertificateVerify
 message which provides a signature over the entire handshake up to
 this point. This serves both to authenticate the server and to establish
