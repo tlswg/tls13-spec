@@ -1494,10 +1494,8 @@ a digitally-signed CertificateVerify message is sent to
 explicitly verify possession of the private key in the certificate.
 Finally, the client sends the Finished message under the new algorithms, keys, and
 secrets. At this point, the handshake is complete, and the
-client and server may begin to exchange application layer data. (See flow chart
-below.) Application data MUST NOT be sent prior to the completion of the first
-handshake (before a cipher suite other than TLS_NULL_WITH_NULL_NULL is
-established).
+client and server may exchange application layer data. (See flow chart
+below.) Application data MUST NOT be sent prior to the Finished message.
 
        Client                                               Server
 
