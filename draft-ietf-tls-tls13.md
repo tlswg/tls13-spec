@@ -1489,7 +1489,8 @@ the shared key. At this point ChangeCipherSpec message is sent by the
 client, and the client copies the pending Cipher Spec into the current
 Cipher Spec. The remainder of the client's messages will be encrypted
 under this Cipher Spec.  If the server has sent a CertificateRequest
-message, the client MUST send the Certificate message. If the client has sent a certificate,
+message, the client MUST send the Certificate message, though it may
+contain zero certificates.  If the client has sent a certificate,
 a digitally-signed CertificateVerify message is sent to
 explicitly verify possession of the private key in the certificate.
 Finally, the client sends the Finished message under the new algorithms, keys, and
