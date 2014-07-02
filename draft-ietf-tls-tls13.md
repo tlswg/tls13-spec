@@ -312,7 +312,7 @@ draft-02
 
 -  Reworked handshake to provide 1-RTT mode.
 
--  Remove non-named DHE suites.
+-  Partially remove non-named DHE suites (more still needed here).
 
 -  Removed support for compression.
 
@@ -2183,7 +2183,9 @@ mechanism for negotiating such groups.
 If the ClientHello contains a DHE cipher suite, it MUST also
 include a "negotiated_dl_dhe_groups" extension. If the server
 selects a DHE cipher suite, it MUST respond with that extension
-to indicate the selected group.
+to indicate the selected group. If no acceptable group can be
+selected across all cipher suites, then the server MUST generate
+a fatal "handshake_failure" alert.
 [[TODO: Presumably we want to bring {{I-D.gillmor-tls-negotiated-dl-dhe}}
 into this specification.]]
 
@@ -2214,8 +2216,6 @@ Structure of this message:
           The server's Diffie-Hellman public value (g^X mod p).
 
        struct {
-           uint16 client_params_index;
-
            select (KeyExchangeAlgorithm) {
                case dhe:
                    ServerDiffieHellmanParams;
