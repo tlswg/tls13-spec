@@ -312,7 +312,7 @@ draft-02
 
 -  Reworked handshake to provide 1-RTT mode.
 
--  Remove non-named DHE suites.
+-  Remove custom DHE gorups.
 
 -  Removed support for compression.
 
@@ -2175,8 +2175,8 @@ at least until we have determined we don't need it for 0-RTT.]]
 
 #### Negotiated DL DHE Groups
 
-Previous versions of TLS before 1.3 allowed the server to specify
-is own DHE group. This version of TLS requires the use of specific
+Previous versions of TLS before 1.3 allowed the server to specify a
+custom DHE group. This version of TLS requires the use of specific
 named groups. {{I-D.gillmor-tls-negotiated-dl-dhe}} describes a
 mechanism for negotiating such groups.
 
