@@ -2399,7 +2399,7 @@ Structure of this message:
        struct {
            ClientCertificateType certificate_types<1..2^8-1>;
            SignatureAndHashAlgorithm
-             supported_signature_algorithms<2^16-1>;
+             supported_signature_algorithms<2..2^16-2>;
            DistinguishedName certificate_authorities<0..2^16-1>;
        } CertificateRequest;
 
@@ -2971,7 +2971,7 @@ This section describes protocol types and constants.
     } SignatureAndHashAlgorithm;
 
     SignatureAndHashAlgorithm
-     supported_signature_algorithms<2..2^16-1>;
+     supported_signature_algorithms<2..2^16-2>;
 
 ### Server Authentication and Key Exchange Messages
 
