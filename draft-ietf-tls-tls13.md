@@ -1689,7 +1689,7 @@ security parameters in an existing connection. Finally, the client will
 send a ClientHello when the server has responded to its ClientHello
 with a ServerHello that selects cryptographic parameters that don't
 match the client's ClientKeyExchange. In that case, the client MUST
-simply retransmit the same ClientHello along with the new ClientKeyExchange.
+send the same ClientHello (without modification) along with the new ClientKeyExchange.
 
 Structure of this message:
 
