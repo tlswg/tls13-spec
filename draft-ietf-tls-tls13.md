@@ -1688,7 +1688,8 @@ response to a HelloRequest or on its own initiative in order to renegotiate the
 security parameters in an existing connection. Finally, the client will
 send a ClientHello when the server has responded to its ClientHello
 with a ServerHello that selects cryptographic parameters that don't
-match the client's ClientKeyExchange.
+match the client's ClientKeyExchange. In that case, the client MUST
+simply retransmit the same ClientHello along with the new ClientKeyExchange.
 
 Structure of this message:
 
@@ -2228,6 +2229,10 @@ params
   indicated by the ServerHello message using the cipher suite and the
   "negotiated_dl_dhe_groups" {{I-D.gillmor-tls-negotiated-dl-dhe}}
   extension.  [[TODO: incorporate ECDHE if the WG decides to.]]
+  [[OPEN ISSUE: Note that we explicitly do not indicate the group
+  here since that's specified in the ServerHello. We could duplicate
+  it here, but that seems more confusing since there is room for
+  mismatch.]]
 {:br }
 
 
@@ -2245,9 +2250,11 @@ Meaning of this message:
 which should be protected, i.e., any which are not needed to
 establish the cryptographic context. The same extension types
 MUST NOT appear in both the ServerHello and EncryptedExtensions.
-Clients SHOULD check this and reply with a fatal illegal_parameter
-alert in case of such duplication (even if the extension contents
-differ.)
+If the same extension appears in both locations, the client
+MUST rely only on the value in the EncryptedExtensions block.
+[[OPEN ISSUE: Should we just produce a canonical list of what
+goes where and have it be an error to have it in the wrong
+place? That seems simpler.]]
 
 Structure of this message:
 
