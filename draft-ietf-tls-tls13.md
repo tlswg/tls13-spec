@@ -312,7 +312,7 @@ draft-02
 
 -  Reworked handshake to provide 1-RTT mode.
 
--  Partially remove non-named DHE suites (more still needed here).
+-  Remove custom DHE groups.
 
 -  Removed support for compression.
 
@@ -1467,12 +1467,12 @@ is sent by the server, and the server copies the pending Cipher Spec
 into the current Cipher Spec. The remainder of the server's handshake
 messages will be encrypted under that Cipher Spec. 
 
-Following these, messages, the server will send an EncryptedExtensions
+Following these messages, the server will send an EncryptedExtensions
 message which contains a response to any client's extensions which are
 not necessary to establish the Cipher Suite. The server will then send
 its certificate in a Certificate message if it is to be authenticated.
-If the server is authenticated, it may request a certificate from the
-client, if that is appropriate to the cipher suite selected.
+The server may optionally request a certificate from the client by
+sending a CertificateRequest message at this point.
 Finally, if the server is authenticated, it will send a CertificateVerify
 message which provides a signature over the entire handshake up to
 this point. This serves both to authenticate the server and to establish
@@ -1489,15 +1489,14 @@ the shared key. At this point ChangeCipherSpec message is sent by the
 client, and the client copies the pending Cipher Spec into the current
 Cipher Spec. The remainder of the client's messages will be encrypted
 under this Cipher Spec.  If the server has sent a CertificateRequest
-message, the client MUST send the Certificate message. If the client has sent a certificate,
+message, the client MUST send the Certificate message, though it may
+contain zero certificates.  If the client has sent a certificate,
 a digitally-signed CertificateVerify message is sent to
 explicitly verify possession of the private key in the certificate.
 Finally, the client sends the Finished message under the new algorithms, keys, and
 secrets. At this point, the handshake is complete, and the
-client and server may begin to exchange application layer data. (See flow chart
-below.) Application data MUST NOT be sent prior to the completion of the first
-handshake (before a cipher suite other than TLS_NULL_WITH_NULL_NULL is
-established).
+client and server may exchange application layer data. (See flow chart
+below.) Application data MUST NOT be sent prior to the Finished message.
 
        Client                                               Server
 
@@ -1524,7 +1523,8 @@ established).
 Note: To help avoid pipeline stalls, ChangeCipherSpec is an independent TLS
 protocol content type, and is not actually a TLS handshake message.
 
-If the client has not provided an appropriate ClientKeyExchange, the
+If the client has not provided an appropriate ClientKeyExchange
+(e.g. it includes only DHE or ECDHE groups unacceptable or unsupported by the server), the
 server corrects the mismatch with the ServerHello (which the client
 can detect by comparing the selected cipher suite and parameters with
 the ClientKeyExchange it offered) and the client will need to restart
@@ -2175,8 +2175,8 @@ at least until we have determined we don't need it for 0-RTT.]]
 
 #### Negotiated DL DHE Groups
 
-Previous versions of TLS before 1.3 allowed the server to specify
-is own DHE group. This version of TLS requires the use of specific
+Previous versions of TLS before 1.3 allowed the server to specify a
+custom DHE group. This version of TLS requires the use of specific
 named groups. {{I-D.gillmor-tls-negotiated-dl-dhe}} describes a
 mechanism for negotiating such groups.
 
@@ -2399,7 +2399,7 @@ Structure of this message:
        struct {
            ClientCertificateType certificate_types<1..2^8-1>;
            SignatureAndHashAlgorithm
-             supported_signature_algorithms<2^16-1>;
+             supported_signature_algorithms<2..2^16-2>;
            DistinguishedName certificate_authorities<0..2^16-1>;
        } CertificateRequest;
 
@@ -2971,7 +2971,7 @@ This section describes protocol types and constants.
     } SignatureAndHashAlgorithm;
 
     SignatureAndHashAlgorithm
-     supported_signature_algorithms<2..2^16-1>;
+     supported_signature_algorithms<2..2^16-2>;
 
 ### Server Authentication and Key Exchange Messages
 
