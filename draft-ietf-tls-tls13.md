@@ -634,7 +634,7 @@ A digitally-signed element is encoded as a struct DigitallySigned:
        } DigitallySigned;
 
 The algorithm field specifies the algorithm used (see {{signature-algorithms}}
-for the definition of this field). Note that the introduction of the algorithm
+for the definition of this field). Note that the algorithm
 field was introduced in TLS 1.2, and is not in earlier versions. The signature is a digital signature
 using those algorithms over the contents of the element. The contents
 themselves do not appear on the wire but are simply calculated. The length of
