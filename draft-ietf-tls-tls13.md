@@ -1447,10 +1447,10 @@ verified, you can expect to be that secure.
 These goals are achieved by the handshake protocol, which can be
 summarized as follows: The client sends a ClientHello message which
 contains a random nonce (ClientHello.random), its preferences for
-Protocol Version, Cipher Suite, and a variety of extensions. At the
-same time, it sends a ClientKeyExchange message which contains its
+Protocol Version, Cipher Suite, and a variety of extensions. In
+the same flight, it sends a ClientKeyExchange message which contains its
 share of the parameters for key agreement for some set of expected
-server parameters (DHE/ECDHE groups, etc.)
+server parameters (DHE/ECDHE groups, etc.).
 
 The server responds to the ClientHello with a ServerHello message, or
 else a fatal error will occur and the connection will fail. The
@@ -1860,7 +1860,8 @@ offers
 Clients may offer an arbitrary number of ClientKeyExchangeOffer
 values, each representing a single set of key agreement parameters;
 for instance a client might offer shares for several elliptic curves
-or multiple integer DH groups. Clients MUST NOT offer multiple
+or multiple integer DH groups. The shares for each ClientKeyExchangeOffer
+MUST by generated independently. Clients MUST NOT offer multiple
 ClientKeyExchangeOffers for the same parameters. It is explicitly
 permitted to send an empty ClientKeyExchange message, as this is used
 to elicit the server's parameters if the client has no useful
@@ -2150,7 +2151,9 @@ Extra messages for the client's first flight MAY either be transmitted
 standalone or sent as EarlyData. However, when a client does not know
 whether TLS 1.3 can be negotiated -- e.g., because the server may
 support a prior version of TLS or because of network intermediaries --
-it SHOULD use the EarlyData extension.
+it SHOULD use the EarlyData extension. If the EarlyData extension
+is used, then clients MUST NOT send any messages other than the
+ClientHello in their initial flight.
 
 Any data included in EarlyData is not integrated into the handshake
 hashes directly. E.g., if the ClientKeyExchange is included in
@@ -2159,8 +2162,8 @@ ServerHello, etc.  However, because the ClientKeyExchange is in a
 ClientHello extension, it is still hashed transitively. This procedure
 guarantees that the Finished message covers these messages even if
 they are ultimately ignored by the server (e.g., because it is sent to
-a TLS 1.2 server). TLS 1.3 servers MUST understand messages send in
-EarlyData and aside from hashing them differently, MUST treat them as
+a TLS 1.2 server). TLS 1.3 servers MUST understand messages sent in
+EarlyData, and aside from hashing them differently, MUST treat them as
 if they had been sent immediately after the ClientHello.
 
 Servers MUST NOT send the EarlyData extension. Negotiating TLS 1.3
@@ -2254,7 +2257,9 @@ If the same extension appears in both locations, the client
 MUST rely only on the value in the EncryptedExtensions block.
 [[OPEN ISSUE: Should we just produce a canonical list of what
 goes where and have it be an error to have it in the wrong
-place? That seems simpler.]]
+place? That seems simpler. Perhaps have a whitelist of which
+extensions can be unencrypted and everything else MUST be
+encrypted.]]
 
 Structure of this message:
 
