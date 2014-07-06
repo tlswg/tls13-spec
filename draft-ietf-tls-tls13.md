@@ -110,6 +110,8 @@ informative:
   RFC4506:
   RFC5081:
   RFC5116:
+  I-D.gillmor-tls-negotiated-dl-dhe:
+
   BLEI:
        title: Chosen Ciphertext Attacks against Protocols Based on RSA Encryption Standard PKCS #1
        author:
@@ -305,9 +307,17 @@ interpreted as described in RFC 2119 {{RFC2119}}.
 
 ##  Major Differences from TLS 1.2
 
-draft-01
+
+draft-02
+
+-  Reworked handshake to provide 1-RTT mode.
+
+-  Remove custom DHE groups.
+
 -  Removed support for compression.
+
 -  Removed support for static RSA key exchange.
+
 -  Removed support for non-AEAD ciphers
 
 ##  Major Differences from TLS 1.1
@@ -1434,63 +1444,76 @@ its promised level of security: if you negotiate AES-GCM {{GCM}} with
 a 1024-bit DHE key exchange with a host whose certificate you have
 verified, you can expect to be that secure.
 
-These goals are achieved by the handshake protocol, which can be summarized as
-follows: The client sends a ClientHello message to which the server must
-respond with a ServerHello message, or else a fatal error will occur and the
-connection will fail. The ClientHello and ServerHello are used to establish
-security enhancement capabilities between client and server. The ClientHello
-and ServerHello establish the following attributes: Protocol Version, Session
-ID and  Cipher Suite. Additionally, two random values are
-generated and exchanged: ClientHello.random and ServerHello.random.
+These goals are achieved by the handshake protocol, which can be
+summarized as follows: The client sends a ClientHello message which
+contains a random nonce (ClientHello.random), its preferences for
+Protocol Version, Cipher Suite, and a variety of extensions. In
+the same flight, it sends a ClientKeyExchange message which contains its
+share of the parameters for key agreement for some set of expected
+server parameters (DHE/ECDHE groups, etc.).
 
-The actual key exchange uses up to four messages: the server Certificate, the
-ServerKeyExchange, the client Certificate, and the ClientKeyExchange. New key
-exchange methods can be created by specifying a format for these messages and
-by defining the use of the messages to allow the client and server to agree
-upon a shared secret. This secret MUST be quite long; currently defined key
-exchange methods exchange secrets that range from 46 bytes upwards.
+The server responds to the ClientHello with a ServerHello message, or
+else a fatal error will occur and the connection will fail. The
+ServerHello contains the server's nonce (ServerHello.random), the
+server's choice of the Protocol Version, Session ID and Cipher Suite,
+and the server's response to the extensions the client offered.
 
-Following the hello messages, the server will send its certificate in a
-Certificate message if it is to be authenticated. Additionally, a
-ServerKeyExchange message may be sent, if it is required (e.g., if the server
-has no certificate, or if its certificate is for signing only). If the server
-is authenticated, it may request a certificate from the client, if that is
-appropriate to the cipher suite selected. Next, the server will send the
-ServerHelloDone message, indicating that the hello-message phase of the
-handshake is complete. The server will then wait for a client response. If the
-server has sent a CertificateRequest message, the client MUST send the
-Certificate message. The ClientKeyExchange message is now sent, and the content
-of that message will depend on the public key algorithm selected between the
-ClientHello and the ServerHello. If the client has sent a certificate with
-signing ability, a digitally-signed CertificateVerify message is sent to
+If the client has provided a ClientKeyExchange with an appropriate set
+of keying material, the server can then generate its own keying
+material share and send a ServerKeyExchange message which contains its
+share of the parameters for the key agreement. The server can now
+compute the shared secret. At this point, a ChangeCipherSpec message
+is sent by the server, and the server copies the pending Cipher Spec
+into the current Cipher Spec. The remainder of the server's handshake
+messages will be encrypted under that Cipher Spec. 
+
+Following these messages, the server will send an EncryptedExtensions
+message which contains a response to any client's extensions which are
+not necessary to establish the Cipher Suite. The server will then send
+its certificate in a Certificate message if it is to be authenticated.
+The server may optionally request a certificate from the client by
+sending a CertificateRequest message at this point.
+Finally, if the server is authenticated, it will send a CertificateVerify
+message which provides a signature over the entire handshake up to
+this point. This serves both to authenticate the server and to establish
+the integrity of the negotiation. Finally, the server sends a Finished
+message which includes an integrity check over the handshake keyed
+by the shared secret and demonstrates that the server and client have
+agreed upon the same keys.
+[[TODO: If the server is not requesting client authentication,
+it MAY start sending application data following the Finished, though
+the server has no way of knowing who will be receiving the data. Add this.]]
+
+Once the client receives the ServerKeyExchange, it can also compute
+the shared key. At this point ChangeCipherSpec message is sent by the
+client, and the client copies the pending Cipher Spec into the current
+Cipher Spec. The remainder of the client's messages will be encrypted
+under this Cipher Spec.  If the server has sent a CertificateRequest
+message, the client MUST send the Certificate message, though it may
+contain zero certificates.  If the client has sent a certificate,
+a digitally-signed CertificateVerify message is sent to
 explicitly verify possession of the private key in the certificate.
-
-At this point, a ChangeCipherSpec message is sent by the client, and the client
-copies the pending Cipher Spec into the current Cipher Spec. The client then
-immediately sends the Finished message under the new algorithms, keys, and
-secrets. In response, the server will send its own ChangeCipherSpec message,
-transfer the pending to the current Cipher Spec, and send its Finished message
-under the new Cipher Spec. At this point, the handshake is complete, and the
-client and server may begin to exchange application layer data. (See flow chart
-below.) Application data MUST NOT be sent prior to the completion of the first
-handshake (before a cipher suite other than TLS_NULL_WITH_NULL_NULL is
-established).
+Finally, the client sends the Finished message under the new algorithms, keys, and
+secrets. At this point, the handshake is complete, and the
+client and server may exchange application layer data. (See flow chart
+below.) Application data MUST NOT be sent prior to the Finished message.
 
        Client                                               Server
 
-       ClientHello                  -------->
+       ClientHello
+       ClientKeyExchange            -------->
                                                        ServerHello
-                                                      Certificate*
-                                                ServerKeyExchange*
-                                               CertificateRequest*
-                                    <--------      ServerHelloDone
-       Certificate*
-       ClientKeyExchange
-       CertificateVerify*
-       [ChangeCipherSpec]
-       Finished                     -------->
+                                                 ServerKeyExchange
                                                 [ChangeCipherSpec]
-                                    <--------             Finished
+                                              EncryptedExtensions*
+                                                      Certificate*
+                                               CertificateRequest*
+                                                CertificateVerify*
+                                     <--------            Finished
+       [ChangeCipherSpec]
+       Certificate*
+       CertificateVerify*
+       Finished                     -------->
        Application Data             <------->     Application Data
 
                 Figure 1.  Message flow for a full handshake
@@ -1499,6 +1522,46 @@ established).
 
 Note: To help avoid pipeline stalls, ChangeCipherSpec is an independent TLS
 protocol content type, and is not actually a TLS handshake message.
+
+If the client has not provided an appropriate ClientKeyExchange
+(e.g. it includes only DHE or ECDHE groups unacceptable or unsupported by the server), the
+server corrects the mismatch with the ServerHello (which the client
+can detect by comparing the selected cipher suite and parameters with
+the ClientKeyExchange it offered) and the client will need to restart
+the handshake with an appropriate ClientKeyExchange, as shown in
+Figure 2:
+
+       Client                                               Server
+
+       ClientHello
+       ClientKeyExchange            -------->
+                                    <--------          ServerHello
+
+       ClientHello
+       ClientKeyExchange            -------->
+                                                       ServerHello
+                                                 ServerKeyExchange
+                                                [ChangeCipherSpec]
+                                              EncryptedExtensions*
+                                                      Certificate*
+                                               CertificateRequest*
+                                                CertificateVerify*
+                                    <--------             Finished
+       [ChangeCipherSpec]
+       Certificate*
+       CertificateVerify*
+       Finished                     -------->
+       Application Data             <------->     Application Data
+       
+   Figure 2.  Message flow for a full handshake with mismatched parameters
+
+[[OPEN ISSUE: Do we restart the handshake hash?]]
+[[OPEN ISSUE: We need to make sure that this flow doesn't introduce
+downgrade issues. Potential options include continuing the handshake
+hashes (as long as clients don't change their opinion of the server's
+capabilities with aborted handshakes) and requiring the client to send
+the same ClientHello (as is currently done) and then checking you get
+the same negotiated parameters.]]
 
 When the client and server decide to resume a previous session or duplicate an
 existing session (instead of negotiating new security parameters), the message
@@ -1525,7 +1588,7 @@ handshake.
        Finished                      -------->
        Application Data              <------->     Application Data
 
-           Figure 2.  Message flow for an abbreviated handshake
+           Figure 3.  Message flow for an abbreviated handshake
 
 The contents and significance of each message will be presented in detail in
 the following sections.
@@ -1552,25 +1615,23 @@ processed and transmitted as specified by the current active session state.
            select (HandshakeType) {
                case hello_request:       HelloRequest;
                case client_hello:        ClientHello;
-               case server_hello:        ServerHello;
-               case certificate:         Certificate;
-               case server_key_exchange: ServerKeyExchange;
-               case certificate_request: CertificateRequest;
-               case server_hello_done:   ServerHelloDone;
-               case certificate_verify:  CertificateVerify;
                case client_key_exchange: ClientKeyExchange;
+               case server_hello:        ServerHello;
+               case server_key_exchange: ServerKeyExchange;
+               case certificate:         Certificate;
+               case certificate_request: CertificateRequest;
+               case certificate_verify:  CertificateVerify;
                case finished:            Finished;
            } body;
        } Handshake;
 
-The handshake protocol messages are presented below in the order they MUST be
-sent; sending handshake messages in an unexpected order results in a fatal
-error. Unneeded handshake messages can be omitted, however. Note one exception
-to the ordering: the Certificate message is used twice in the handshake (from
-server to client, then from client to server), but described only in its first
-position. The one message that is not bound by these ordering rules is the
-HelloRequest message, which can be sent at any time, but which SHOULD be
-ignored by the client if it arrives in the middle of a handshake.
+The handshake protocol messages are presented below in the order they
+MUST be sent; sending handshake messages in an unexpected order
+results in a fatal error. Unneeded handshake messages can be omitted,
+however. The one message that is not bound by these
+ordering rules is the HelloRequest message, which can be sent at any
+time, but which SHOULD be ignored by the client if it arrives in the
+middle of a handshake.
 
 New handshake message types are assigned by IANA as described in
 {{iana-considerations}}.
@@ -1624,7 +1685,11 @@ When this message will be sent:
 > When a client first connects to a server, it is required to send the
 ClientHello as its first message. The client can also send a ClientHello in
 response to a HelloRequest or on its own initiative in order to renegotiate the
-security parameters in an existing connection.
+security parameters in an existing connection. Finally, the client will
+send a ClientHello when the server has responded to its ClientHello
+with a ServerHello that selects cryptographic parameters that don't
+match the client's ClientKeyExchange. In that case, the client MUST
+send the same ClientHello (without modification) along with the new ClientKeyExchange.
 
 Structure of this message:
 
@@ -1758,6 +1823,76 @@ After sending the ClientHello message, the client waits for a ServerHello
 message. Any handshake message returned by the server, except for a
 HelloRequest, is treated as a fatal error.
 
+
+###  Client Key Exchange Message
+
+When this message will be sent:
+
+> This message is always sent by the client. It MUST immediately follow the
+ClientHello message. In backward compatibility mode (see Section XXX)
+it will be included in the EarlyData extension {{early-data-extension}} in the ClientHello.
+
+Meaning of this message:
+
+> This message contains the client's cryptographic parameters
+for zero or more key establishment methods.
+
+Structure of this message:
+
+       enum { dhe(1), (255) } KeyExchangeAlgorithm;
+
+       struct {
+           KeyExchangeAlgorithm algorithm;
+           select (KeyExchangeAlgorithm) {
+              dhe:
+                  ClientDiffieHellmanParams;
+           } exchange_keys;
+       } ClientKeyExchangeOffer;
+
+       struct {
+           ClientKeyExchangeOffer offers<0..2^16-1>;
+       } ClientKeyExchange;
+
+offers
+: A list of ClientKeyExchangeOffer values.
+{:br }
+
+Clients may offer an arbitrary number of ClientKeyExchangeOffer
+values, each representing a single set of key agreement parameters;
+for instance a client might offer shares for several elliptic curves
+or multiple integer DH groups. The shares for each ClientKeyExchangeOffer
+MUST by generated independently. Clients MUST NOT offer multiple
+ClientKeyExchangeOffers for the same parameters. It is explicitly
+permitted to send an empty ClientKeyExchange message, as this is used
+to elicit the server's parameters if the client has no useful
+information.
+
+[TODO: Recommendation about what the client offers. Presumably which integer
+DH groups and which curves.]
+[TODO: Work out how this interacts with PSK and SRP.]
+
+####  Client Diffie-Hellman Parameters
+
+When one of the ClientKeyExchangeOffers is a Diffie-Hellman key, the
+client SHALL encode it using ClientDiffieHellmanParams. This structure
+conveys the client's Diffie-Hellman public value (Yc) and the group
+which it is being provided for.
+
+Structure of this message:
+
+       struct {
+           DiscreteLogDHEGroup group;  // from draft-gillmor
+           opaque dh_Yc<1..2^16-1>;
+       } ClientDiffieHellmanParams;
+
+
+       group
+          The DHE group to which these parameters correspond.
+
+       dh_Yc
+          The client's Diffie-Hellman public value (g^X mod p).
+
+          
 ####  Server Hello
 
 When this message will be sent:
@@ -1820,7 +1955,12 @@ cipher_suite
 
 extensions
 : A list of extensions.  Note that only extensions offered by the
-  client can appear in the server's list.
+  client can appear in the server's list. In TLS 1.3 as opposed to
+  previous versions of TLS, the server's extensions are split between
+  the ServerHello and the EncryptedExtensions {{encrypted-extensions}}
+  message. The ServerHello
+  MUST only include extensions which are required to establish
+  the cryptographic context.
 {:br }
 
 ####  Hello Extensions
@@ -1994,14 +2134,153 @@ When performing session resumption, this extension is not included in Server
 Hello, and the server ignores the extension in Client Hello (if present).
 
 
+##### Early Data Extension
+
+TLS versions before 1.3 have a strict message ordering and do not
+permit additional messages to follow the ClientHello. The EarlyData
+extension allows TLS messages which would otherwise be sent as
+separate records to be instead inserted in the ClientHello. The
+extension simply contains the TLS records which would otherwise have
+been included in the client's first flight. 
+
+          struct {
+            TLSCipherText messages<5 .. 2^24-1>;
+          } EarlyDataExtension;
+
+Extra messages for the client's first flight MAY either be transmitted
+standalone or sent as EarlyData. However, when a client does not know
+whether TLS 1.3 can be negotiated -- e.g., because the server may
+support a prior version of TLS or because of network intermediaries --
+it SHOULD use the EarlyData extension. If the EarlyData extension
+is used, then clients MUST NOT send any messages other than the
+ClientHello in their initial flight.
+
+Any data included in EarlyData is not integrated into the handshake
+hashes directly. E.g., if the ClientKeyExchange is included in
+EarlyData, then the handshake hashes consist of ClientHello +
+ServerHello, etc.  However, because the ClientKeyExchange is in a
+ClientHello extension, it is still hashed transitively. This procedure
+guarantees that the Finished message covers these messages even if
+they are ultimately ignored by the server (e.g., because it is sent to
+a TLS 1.2 server). TLS 1.3 servers MUST understand messages sent in
+EarlyData, and aside from hashing them differently, MUST treat them as
+if they had been sent immediately after the ClientHello.
+
+Servers MUST NOT send the EarlyData extension. Negotiating TLS 1.3
+serves as acknowledgement that it was processed as described above.
+
+[[OPEN ISSUE: This is a fairly general mechanism which is possibly
+overkill in the 1-RTT case, where it would potentially be more
+attractive to just have a "ClientKeyExchange" extension. However,
+for the 0-RTT case we will want to send the Certificate, CertificateVerify,
+and application data, so a more general extension seems appropriate
+at least until we have determined we don't need it for 0-RTT.]]
+
+
+#### Negotiated DL DHE Groups
+
+Previous versions of TLS before 1.3 allowed the server to specify a
+custom DHE group. This version of TLS requires the use of specific
+named groups. {{I-D.gillmor-tls-negotiated-dl-dhe}} describes a
+mechanism for negotiating such groups.
+
+If the ClientHello contains a DHE cipher suite, it MUST also
+include a "negotiated_dl_dhe_groups" extension. If the server
+selects a DHE cipher suite, it MUST respond with that extension
+to indicate the selected group. If no acceptable group can be
+selected across all cipher suites, then the server MUST generate
+a fatal "handshake_failure" alert.
+[[TODO: Presumably we want to bring {{I-D.gillmor-tls-negotiated-dl-dhe}}
+into this specification.]]
+
+
+###  Server Key Exchange Message
+
+When this message will be sent:
+
+> This message will be sent immediately after the ServerHello message if
+the client has provided a ClientKeyExchange message which is compatible
+with the selected cipher suite and group parameters.
+
+
+Meaning of this message:
+
+> This message conveys cryptographic information to allow the client to
+communicate the premaster secret: a Diffie-Hellman public key with which the
+client can complete a key exchange (with the result being the premaster secret)
+or a public key for some other algorithm.
+
+Structure of this message:
+
+       struct {
+           opaque dh_Ys<1..2^16-1>;
+       } ServerDiffieHellmanParams;     /* Ephemeral DH parameters */
+
+       dh_Ys
+          The server's Diffie-Hellman public value (g^X mod p).
+
+       struct {
+           select (KeyExchangeAlgorithm) {
+               case dhe:
+                   ServerDiffieHellmanParams;
+               /* may be extended, e.g., for ECDH -- see [RFC4492] */
+           } params;
+       } ServerKeyExchange;
+
+params
+: The server's key exchange parameters. These correspond to the group
+  indicated by the ServerHello message using the cipher suite and the
+  "negotiated_dl_dhe_groups" {{I-D.gillmor-tls-negotiated-dl-dhe}}
+  extension.  [[TODO: incorporate ECDHE if the WG decides to.]]
+  [[OPEN ISSUE: Note that we explicitly do not indicate the group
+  here since that's specified in the ServerHello. We could duplicate
+  it here, but that seems more confusing since there is room for
+  mismatch.]]
+{:br }
+
+
+###  Encrypted Extensions
+
+When this message will be sent:
+
+> If this message is sent, it MUST be sent immediately after the server's
+ChangeCipherSpec (and hence as the first handshake message after the
+ServerKeyExchange).
+
+Meaning of this message:
+
+> The EncryptedExtensions message simply contains any extensions
+which should be protected, i.e., any which are not needed to
+establish the cryptographic context. The same extension types
+MUST NOT appear in both the ServerHello and EncryptedExtensions.
+If the same extension appears in both locations, the client
+MUST rely only on the value in the EncryptedExtensions block.
+[[OPEN ISSUE: Should we just produce a canonical list of what
+goes where and have it be an error to have it in the wrong
+place? That seems simpler. Perhaps have a whitelist of which
+extensions can be unencrypted and everything else MUST be
+encrypted.]]
+
+Structure of this message:
+
+       struct {
+           Extension extensions<0..2^16-1>;
+       } EncryptedExtensions;
+
+extensions
+: A list of extensions.
+{:br }
+
 ###  Server Certificate
 
 When this message will be sent:
 
-> The server MUST send a Certificate message whenever the agreed- upon key
+> The server MUST send a Certificate message whenever the agreed-upon key
 exchange method uses certificates for authentication (this includes all key
 exchange methods defined in this document except DH_anon). This message will
-always immediately follow the ServerHello message.
+always immediately follow the ChangeCipherSpec which follows the server's
+ServerKeyExchange message.
+
 
 Meaning of this message:
 
@@ -2110,115 +2389,6 @@ As cipher suites that specify new key exchange methods are specified for the
 TLS protocol, they will imply the certificate format and the required encoded
 keying information.
 
-###  Server Key Exchange Message
-
-When this message will be sent:
-
-> This message will be sent immediately after the server Certificate message (or
-the ServerHello message, if this is an anonymous negotiation).
-
-> The ServerKeyExchange message is sent by the server only when the server
-Certificate message (if sent) does not contain enough data to allow the client
-to exchange a premaster secret. This is true for the following key exchange
-methods:
-
-          DHE_DSS
-          DHE_RSA
-          DH_anon
-
-> It is not legal to send the ServerKeyExchange message for the following key
-exchange methods:
-
-          DH_DSS
-          DH_RSA
-
-> Other key exchange algorithms, such as those defined in {{RFC4492}}, MUST
-specify whether the ServerKeyExchange message is sent or not; and if the
-message is sent, its contents.
-
-Meaning of this message:
-
-> This message conveys cryptographic information to allow the client to
-communicate the premaster secret: a Diffie-Hellman public key with which the
-client can complete a key exchange (with the result being the premaster secret)
-or a public key for some other algorithm.
-
-Structure of this message:
-
-       enum { dhe_dss, dhe_rsa, dh_anon, dh_dss, dh_rsa
-             /* may be extended, e.g., for ECDH -- see [RFC4492] */
-            } KeyExchangeAlgorithm;
-
-       struct {
-           opaque dh_p<1..2^16-1>;
-           opaque dh_g<1..2^16-1>;
-           opaque dh_Ys<1..2^16-1>;
-       } ServerDHParams;     /* Ephemeral DH parameters */
-
-       dh_p
-          The prime modulus used for the Diffie-Hellman operation.
-
-       dh_g
-          The generator used for the Diffie-Hellman operation.
-
-       dh_Ys
-          The server's Diffie-Hellman public value (g^X mod p).
-
-       struct {
-           select (KeyExchangeAlgorithm) {
-               case dh_anon:
-                   ServerDHParams params;
-               case dhe_dss:
-               case dhe_rsa:
-                   ServerDHParams params;
-                   digitally-signed struct {
-                       opaque client_random[32];
-                       opaque server_random[32];
-                       ServerDHParams params;
-                   } signed_params;
-               case dh_dss:
-               case dh_rsa:
-                   struct {} ;
-                  /* message is omitted for dh_dss and dh_rsa */
-               /* may be extended, e.g., for ECDH -- see [RFC4492] */
-           };
-       } ServerKeyExchange;
-
-params
-: The server's key exchange parameters.
-
-
-signed_params
-: For non-anonymous key exchanges, a signature over the client and server
-  hello random data and the server's key exchange parameters.
-{:br }
-
-
-If the client has offered the "signature_algorithms" extension, the signature
-algorithm and hash algorithm MUST be a pair listed in that extension. Note that
-there is a possibility for inconsistencies here. For instance, the client might
-offer DHE_DSS key exchange but omit any DSA pairs from its
-"signature_algorithms" extension. In order to negotiate correctly, the server
-MUST check any candidate cipher suites against the "signature_algorithms"
-extension before selecting them. This is somewhat inelegant but is a compromise
-designed to minimize changes to the original cipher suite design.
-
-In addition, the hash and signature algorithms MUST be compatible with the key
-in the server's end-entity certificate. RSA keys MAY be used with any permitted
-hash algorithm, subject to restrictions in the certificate, if any.
-
-Because DSA signatures do not contain any secure indication of hash algorithm,
-there is a risk of hash substitution if multiple hashes may be used with any
-key. Currently, DSA {{DSS}} may only be used with SHA-1. Future revisions of
-DSS {{DSS-3}} are expected to allow the use of other digest algorithms with
-DSA, as well as guidance as to which digest algorithms should be used with each
-key size. In addition, future revisions of {{RFC3280}} may specify mechanisms
-for certificates to indicate which digest algorithms are to be used with DSA.
-
-As additional cipher suites are defined for TLS that include new key exchange
-algorithms, the server key exchange message will be sent if and only if the
-certificate type associated with the key exchange algorithm does not provide
-enough information for the client to exchange a premaster secret.
 
 ###  Certificate Request
 
@@ -2226,8 +2396,7 @@ When this message will be sent:
 
 > A non-anonymous server can optionally request a certificate from the client,
 if appropriate for the selected cipher suite. This message, if sent, will
-immediately follow the ServerKeyExchange message (if it is sent; otherwise,
-this message follows the server's Certificate message).
+immediately follow the server's Certificate message).
 
 Structure of this message:
 
@@ -2242,7 +2411,7 @@ Structure of this message:
        struct {
            ClientCertificateType certificate_types<1..2^8-1>;
            SignatureAndHashAlgorithm
-             supported_signature_algorithms<2^16-1>;
+             supported_signature_algorithms<2..2^16-2>;
            DistinguishedName certificate_authorities<0..2^16-1>;
        } CertificateRequest;
 
@@ -2305,33 +2474,135 @@ Note: Values listed as RESERVED may not be used. They were used in SSLv3.
 Note: It is a fatal handshake_failure alert for an anonymous server to request
 client authentication.
 
-###  Server Hello Done
+
+###  Server Certificate Verify
+
 
 When this message will be sent:
 
-> The ServerHelloDone message is sent by the server to indicate the end of the
-ServerHello and associated messages. After sending this message, the server
-will wait for a client response.
-
-Meaning of this message:
-
-> This message means that the server is done sending messages to support the
-key exchange, and the client can proceed with its phase of the key exchange.
-
-> Upon receipt of the ServerHelloDone message, the client SHOULD verify that
-the server provided a valid certificate, if required, and check that the server
-hello parameters are acceptable.
+> This message is used to provide explicit proof that the server
+possesses the private key corresponding to its certificate.
+certificate and also provides integrity for the handshake up
+to this point. This message is only sent when the server is
+authenticated via a certificate. When sent, it MUST be the
+last server handshake message prior to the Finished.
 
 Structure of this message:
 
-       struct { } ServerHelloDone;
+       struct {
+            digitally-signed struct {
+                opaque handshake_messages[handshake_messages_length];
+            }
+       } CertificateVerify;
+
+> Here handshake_messages refers to all handshake messages sent or received,
+starting at client hello and up to, but not including, this message, including
+the type and length fields of the handshake messages. This is the concatenation
+of all the Handshake structures (as defined in {{handshake-protocol}})
+exchanged thus far. Note that this requires both sides to either buffer the
+messages or compute running hashes for all potential hash algorithms up to the
+time of the CertificateVerify computation. Servers can minimize this
+computation cost by offering a restricted set of digest algorithms in the
+CertificateRequest message.
+
+>If the client has offered the "signature_algorithms" extension, the signature
+algorithm and hash algorithm MUST be a pair listed in that extension. Note that
+there is a possibility for inconsistencies here. For instance, the client might
+offer DHE_DSS key exchange but omit any DSA pairs from its
+"signature_algorithms" extension. In order to negotiate correctly, the server
+MUST check any candidate cipher suites against the "signature_algorithms"
+extension before selecting them. This is somewhat inelegant but is a compromise
+designed to minimize changes to the original cipher suite design.
+
+> In addition, the hash and signature algorithms MUST be compatible with the key
+in the server's end-entity certificate. RSA keys MAY be used with any permitted
+hash algorithm, subject to restrictions in the certificate, if any.
+
+> Because DSA signatures do not contain any secure indication of hash
+algorithm, there is a risk of hash substitution if multiple hashes may be used
+with any key. Currently, DSA {{DSS}} may only be used with SHA-1. Future
+revisions of DSS {{DSS-3}} are expected to allow the use of other digest
+algorithms with DSA, as well as guidance as to which digest algorithms should
+be used with each key size. In addition, future revisions of {{RFC3280}} may
+specify mechanisms for certificates to indicate which digest algorithms are to
+be used with DSA.
+
+
+###  Server Finished
+
+When this message will be sent:
+
+> The Server's Finished message is the final message sent by the server
+and indicates that the key exchange and authentication processes were successful.
+
+
+Meaning of this message:
+
+> Recipients of Finished messages MUST verify that the contents are
+correct. Once a side has sent its Finished message and received and
+validated the Finished message from its peer, it may begin to send and
+receive application data over the connection.
+
+Structure of this message:
+
+       struct {
+           opaque verify_data[verify_data_length];
+       } Finished;
+
+       verify_data
+          PRF(master_secret, finished_label, Hash(handshake_messages))
+             [0..verify_data_length-1];
+
+       finished_label
+          For Finished messages sent by the client, the string
+          "client finished".  For Finished messages sent by the server,
+          the string "server finished".
+
+> Hash denotes a Hash of the handshake messages. For the PRF defined in
+{{HMAC}}, the Hash MUST be the Hash used as the basis for the PRF. Any cipher
+suite which defines a different PRF MUST also define the Hash to use in the
+Finished computation.
+
+> In previous versions of TLS, the verify_data was always 12 octets long. In
+the current version of TLS, it depends on the cipher suite. Any cipher suite
+which does not explicitly specify verify_data_length has a verify_data_length
+equal to 12. This includes all existing cipher suites. Note that this
+representation has the same encoding as with previous versions. Future cipher
+suites MAY specify other lengths but such length MUST be at least 12 bytes.
+
+handshake_messages
+
+: All of the data from all messages in this handshake (not
+  including any HelloRequest messages) up to, but not including,
+  this message.  This is only data visible at the handshake layer
+  and does not include record layer headers.  This is the
+  concatenation of all the Handshake structures as defined in
+  {{handshake-protocol}}, exchanged thus far.
+{:br }
+
+It is a fatal error if a Finished message is not preceded by a ChangeCipherSpec
+message at the appropriate point in the handshake.
+
+The value handshake_messages includes all handshake messages starting at
+ClientHello up to, but not including, this Finished message. This may be
+different from handshake_messages in {{server-certificate-verify}} or
+{{client-certificate-verify}}. Also, the handshake_messages
+for the Finished message sent by the client will be different from that for the
+Finished message sent by the server, because the one that is sent second will
+include the prior one.
+
+Note: ChangeCipherSpec messages, alerts, and any other record types are not
+handshake messages and are not included in the hash computations. Also,
+HelloRequest messages are omitted from handshake hashes.
+
 
 ###  Client Certificate
 
 When this message will be sent:
 
-> This is the first message the client can send after receiving a
-ServerHelloDone message. This message is only sent if the server requests a
+> This message is the first handshake message the client can send
+after receiving the server's Finished and having sent its own
+ChangeCipherSpecs. This message is only sent if the server requests a
 certificate. If no suitable certificate is available, the client MUST send a
 certificate message containing no certificates. That is, the certificate_list
 structure has a length of zero. If the client does not send any certificates,
@@ -2399,103 +2670,17 @@ In particular:
 Note that, as with the server certificate, there are certificates that use
 algorithms/algorithm combinations that cannot be currently used with TLS.
 
-###  Client Key Exchange Message
 
-When this message will be sent:
-
-> This message is always sent by the client. It MUST immediately follow the
-client certificate message, if it is sent. Otherwise, it MUST be the first
-message sent by the client after it receives the ServerHelloDone message.
-
-Meaning of this message:
-
-> This message contains the client's Diffie-Hellman parameters
-that will allow each side to agree upon the same premaster secret.
-
-> When the client is using an ephemeral Diffie-Hellman exponent, then this
-message contains the client's Diffie-Hellman public value. If the client is
-sending a certificate containing a static DH exponent (i.e., it is doing
-fixed_dh client authentication), then this message MUST be sent but MUST be
-empty.
-
-Structure of this message:
-
-> The choice of messages depends on which key exchange method has been
-selected. See {{server-key-exchange-message}} for the KeyExchangeAlgorithm
-definition.
-
-       struct {
-           select (KeyExchangeAlgorithm) {
-               case dhe_dss:
-               case dhe_rsa:
-               case dh_dss:
-               case dh_rsa:
-               case dh_anon:
-                   ClientDiffieHellmanPublic;
-           } exchange_keys;
-       } ClientKeyExchange;
-
-####  Client Diffie-Hellman Public Value
-
-Meaning of this message:
-
-> This structure conveys the client's Diffie-Hellman public value (Yc) if it
-was not already included in the client's certificate. The encoding used for Yc
-is determined by the enumerated PublicValueEncoding. This structure is a
-variant of the client key exchange message, and not a message in itself.
-
-Structure of this message:
-
-       enum { implicit, explicit } PublicValueEncoding;
-
-       implicit
-          If the client has sent a certificate which contains a suitable
-          Diffie-Hellman key (for fixed_dh client authentication), then
-          Yc is implicit and does not need to be sent again.  In this
-          case, the client key exchange message will be sent, but it MUST
-          be empty.
-
-       explicit
-          Yc needs to be sent.
-
-       struct {
-           select (PublicValueEncoding) {
-               case implicit: struct { };
-               case explicit: opaque dh_Yc<1..2^16-1>;
-           } dh_public;
-       } ClientDiffieHellmanPublic;
-
-dh_Yc
-: The client's Diffie-Hellman public value (Yc).
-{:br }
-
-###  Certificate Verify
+###  Client Certificate Verify
 
 When this message will be sent:
 
 > This message is used to provide explicit verification of a client
 certificate. This message is only sent following a client certificate that has
 signing capability (i.e., all certificates except those containing fixed
-Diffie-Hellman parameters). When sent, it MUST immediately follow the client
-key exchange message.
-
-Structure of this message:
-
-       struct {
-            digitally-signed struct {
-                opaque handshake_messages[handshake_messages_length];
-            }
-       } CertificateVerify;
-
-> Here handshake_messages refers to all handshake messages sent or received,
-starting at client hello and up to, but not including, this message, including
-the type and length fields of the handshake messages. This is the concatenation
-of all the Handshake structures (as defined in {{handshake-protocol}})
-exchanged thus far. Note that this requires both sides to either buffer the
-messages or compute running hashes for all potential hash algorithms up to the
-time of the CertificateVerify computation. Servers can minimize this
-computation cost by offering a restricted set of digest algorithms in the
-CertificateRequest message.
+Diffie-Hellman parameters). When sent, it MUST immediately follow the client's
+Certificate message. The contents of the message are computed as described
+in {{server-certificate-verify}}.
 
 > The hash and signature algorithms used in the signature MUST be one of those
 present in the supported_signature_algorithms field of the CertificateRequest
@@ -2512,74 +2697,6 @@ be used with each key size. In addition, future revisions of {{RFC3280}} may
 specify mechanisms for certificates to indicate which digest algorithms are to
 be used with DSA.
 
-###  Finished
-
-When this message will be sent:
-
-> A Finished message is always sent immediately after a change cipher spec
-message to verify that the key exchange and authentication processes were
-successful. It is essential that a change cipher spec message be received
-between the other handshake messages and the Finished message.
-
-Meaning of this message:
-
-> The Finished message is the first one protected with the just negotiated
-algorithms, keys, and secrets. Recipients of Finished messages MUST verify that
-the contents are correct. Once a side has sent its Finished message and
-received and validated the Finished message from its peer, it may begin to send
-and receive application data over the connection.
-
-Structure of this message:
-
-       struct {
-           opaque verify_data[verify_data_length];
-       } Finished;
-
-       verify_data
-          PRF(master_secret, finished_label, Hash(handshake_messages))
-             [0..verify_data_length-1];
-
-       finished_label
-          For Finished messages sent by the client, the string
-          "client finished".  For Finished messages sent by the server,
-          the string "server finished".
-
-> Hash denotes a Hash of the handshake messages. For the PRF defined in
-{{HMAC}}, the Hash MUST be the Hash used as the basis for the PRF. Any cipher
-suite which defines a different PRF MUST also define the Hash to use in the
-Finished computation.
-
-> In versions of TLS before TLS 1.2, the verify_data was always 12 octets long.
-In TLS 1.2 and later, it depends on the cipher suite. Any cipher suite
-which does not explicitly specify verify_data_length has a verify_data_length
-equal to 12. This includes all existing cipher suites. Note that this
-representation has the same encoding as with versions before TLS 1.2. Future cipher
-suites MAY specify other lengths but such length MUST be at least 12 bytes.
-
-handshake_messages
-
-: All of the data from all messages in this handshake (not
-  including any HelloRequest messages) up to, but not including,
-  this message.  This is only data visible at the handshake layer
-  and does not include record layer headers.  This is the
-  concatenation of all the Handshake structures as defined in
-  {{handshake-protocol}}, exchanged thus far.
-{:br }
-
-It is a fatal error if a Finished message is not preceded by a ChangeCipherSpec
-message at the appropriate point in the handshake.
-
-The value handshake_messages includes all handshake messages starting at
-ClientHello up to, but not including, this Finished message. This may be
-different from handshake_messages in {{certificate-verify}} because it would
-include the CertificateVerify message (if sent). Also, the handshake_messages
-for the Finished message sent by the client will be different from that for the
-Finished message sent by the server, because the one that is sent second will
-include the prior one.
-
-Note: ChangeCipherSpec messages, alerts, and any other record types are not
-handshake messages and are not included in the hash computations. Also,
-HelloRequest messages are omitted from handshake hashes.
 
 #  Cryptographic Computations
 
@@ -2694,6 +2811,8 @@ In addition, this document defines two new registries to be maintained by IANA:
 # Protocol Data Structures and Constant Values
 
 This section describes protocol types and constants.
+
+[[TODO: Clean this up to match the in-text description.]]
 
 ##  Record Layer
 
@@ -2864,7 +2983,7 @@ This section describes protocol types and constants.
     } SignatureAndHashAlgorithm;
 
     SignatureAndHashAlgorithm
-     supported_signature_algorithms<2..2^16-1>;
+     supported_signature_algorithms<2..2^16-2>;
 
 ### Server Authentication and Key Exchange Messages
 
@@ -3546,7 +3665,7 @@ The general goal of the key exchange process is to create a pre_master_secret
 known to the communicating parties and not to attackers. The pre_master_secret
 will be used to generate the master_secret (see
 {{computing-the-master-secret}}). The master_secret is required to generate the
-Finished messages and record protection keys (see {{finished}} and
+Finished messages and record protection keys (see {{server-finished}} and
 {{key-calculation}}). By sending a correct Finished message, parties thus prove
 that they know the correct pre_master_secret.
 
