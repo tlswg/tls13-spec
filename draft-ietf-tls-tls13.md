@@ -875,7 +875,7 @@ These parameters are defined in the presentation language as:
            opaque                 server_random[32];
        } SecurityParameters;
 
-The record layer will use the security parameters to generate the following six
+The record layer will use the security parameters to generate the following four
 items (some of which are not required by all ciphers, and are thus empty):
 
        client write key
@@ -943,8 +943,8 @@ type
 
 version
 : The version of the protocol being employed.  This document
-  describes TLS Version 1.2, which uses the version { 3, 3 }.  The
-  version value 3.3 is historical, deriving from the use of {3, 1}
+  describes TLS Version 1.3, which uses the version { 3, 4 }.  The
+  version value 3.4 is historical, deriving from the use of {3, 1}
   for TLS 1.0.  (See {{record-layer-1}}.)  Note that a client that
   supports multiple versions of TLS may not know what version will
   be employed before it receives the ServerHello.  See
@@ -1027,9 +1027,12 @@ defined as follows:
        additional_data = seq_num + TLSPlaintext.type +
                          TLSPlaintext.version + TLSPlaintext.length;
 
+[[OPEN ISSUE: Fix length which gives us a problem here for algorithms which
+pad. See: https://github.com/tlswg/tls13-spec/issues/47]]
+
 where "+" denotes concatenation.
 
-The aead_output consists of the ciphertext output by the AEAD encryption
+The AEAD output consists of the ciphertext output by the AEAD encryption
 operation. The length will generally be larger than TLSPlaintext.length, but
 by an amount that varies with the AEAD cipher. Since the ciphers might
 incorporate padding, the amount of overhead could vary with different
@@ -1038,6 +1041,9 @@ greater than 1024 bytes. Symbolically,
 
        AEADEncrypted = AEAD-Encrypt(write_key, nonce, plaintext,
                                     additional_data)
+
+[[OPEN ISSUE: Reduce these values?
+https://github.com/tlswg/tls13-spec/issues/55]]
 
 In order to decrypt and verify, the cipher takes as input the key, nonce, the
 "additional_data", and the AEADEncrypted value. The output is either the
@@ -1142,9 +1148,9 @@ newly negotiated CipherSpec and keys. Reception of this message causes the
 receiver to instruct the record layer to immediately copy the read pending
 state into the read current state. Immediately after sending this message, the
 sender MUST instruct the record layer to make the write pending state the write
-active state. (See {{connection-states}}.) The ChangeCipherSpec message is sent
-during the handshake after the security parameters have been agreed upon, but
-before the verifying Finished message is sent.
+current state. (See {{connection-states}}.) The ChangeCipherSpec message is sent
+during the handshake after the security parameters have been agreed upon,
+but before the first message protected with a new CipherSpec is sent.
 
 Note: If a rehandshake occurs while data is flowing on a connection, the
 communicating parties may continue to send data using the old CipherSpec.
@@ -1154,6 +1160,7 @@ side has finished computing the new keying material (e.g., if it has to perform
 a time-consuming public key operation). Thus, a small window of time, during
 which the recipient must buffer the data, MAY exist. In practice, with modern
 machines this interval is likely to be fairly short.
+[[TODO: This text seems confusing.]]
 
 ##  Alert Protocol
 
@@ -1412,8 +1419,8 @@ public-key encryption techniques to generate shared secrets.
 
 The TLS Handshake Protocol involves the following steps:
 
--  Exchange hello messages to agree on algorithms, exchange random
-  values, and check for session resumption.
+-  Exchange hello messages to agree on a protocol version,
+   algorithms, exchange random values, and check for session resumption.
 
 -  Exchange the necessary cryptographic parameters to allow the
   client and server to agree on a premaster secret.
@@ -1493,11 +1500,12 @@ message, the client MUST send the Certificate message, though it may
 contain zero certificates.  If the client has sent a certificate,
 a digitally-signed CertificateVerify message is sent to
 explicitly verify possession of the private key in the certificate.
-Finally, the client sends the Finished message under the new algorithms, keys, and
-secrets. At this point, the handshake is complete, and the
+Finally, the client sends the Finished message.
+At this point, the handshake is complete, and the
 client and server may exchange application layer data. (See flow chart
 below.) Application data MUST NOT be sent prior to the Finished message.
-
+[[TODO: can we make this clearer and more clearly match the text above
+about server-side False Start.]]
        Client                                               Server
 
        ClientHello
@@ -1580,7 +1588,8 @@ handshake.
 
        Client                                                Server
 
-       ClientHello                   -------->
+       ClientHello                   
+       ClientKeyExhange              -------->
                                                         ServerHello
                                                  [ChangeCipherSpec]
                                      <--------             Finished
@@ -1604,9 +1613,8 @@ processed and transmitted as specified by the current active session state.
        enum {
            hello_request(0), client_hello(1), server_hello(2),
            certificate(11), server_key_exchange (12),
-           certificate_request(13), server_hello_done(14),
-           certificate_verify(15), client_key_exchange(16),
-           finished(20), (255)
+           certificate_request(13), certificate_verify(15),
+           client_key_exchange(16), finished(20), (255)
        } HandshakeType;
 
        struct {
@@ -1640,8 +1648,8 @@ New handshake message types are assigned by IANA as described in
 
 The hello phase messages are used to exchange security enhancement capabilities
 between the client and server. When a new session begins, the record layer's
-connection state encryption and hash algorithms are initialized
-to null. The current connection state is used for renegotiation messages.
+connection state AEAD algorithm is initialized to NULL_NULL.
+The current connection state is used for renegotiation messages.
 
 ####  Hello Request
 
@@ -1777,7 +1785,7 @@ client_version
 : The version of the TLS protocol by which the client wishes to
   communicate during this session.  This SHOULD be the latest
   (highest valued) version supported by the client.  For this
-  version of the specification, the version will be 3.3 (see
+  version of the specification, the version will be 3.4 (see
   {{backward-compatibility}} for details about backward compatibility).
 
 random
@@ -1830,7 +1838,8 @@ When this message will be sent:
 
 > This message is always sent by the client. It MUST immediately follow the
 ClientHello message. In backward compatibility mode (see Section XXX)
-it will be included in the EarlyData extension {{early-data-extension}} in the ClientHello.
+it will be included in the EarlyData extension ({{early-data-extension}})
+in the ClientHello.
 
 Meaning of this message:
 
@@ -1857,6 +1866,7 @@ offers
 : A list of ClientKeyExchangeOffer values.
 {:br }
 
+[[OPEN ISSUE: Should we rename CKE here?]]
 Clients may offer an arbitrary number of ClientKeyExchangeOffer
 values, each representing a single set of key agreement parameters;
 for instance a client might offer shares for several elliptic curves
@@ -1875,7 +1885,7 @@ DH groups and which curves.]
 
 When one of the ClientKeyExchangeOffers is a Diffie-Hellman key, the
 client SHALL encode it using ClientDiffieHellmanParams. This structure
-conveys the client's Diffie-Hellman public value (Yc) and the group
+conveys the client's Diffie-Hellman public value (dh_Yc) and the group
 which it is being provided for.
 
 Structure of this message:
@@ -1922,7 +1932,7 @@ bytes following the cipher_suite field at the end of the ServerHello.
 server_version
 : This field will contain the lower of that suggested by the client
   in the client hello and the highest supported by the server.  For
-  this version of the specification, the version is 3.3.  (See
+  this version of the specification, the version is 3.4.  (See
   {{backward-compatibility}} for details about backward compatibility.)
 
 random
@@ -1973,7 +1983,7 @@ The extension format is:
        } Extension;
 
        enum {
-           signature_algorithms(13), (65535)
+           signature_algorithms(13), early_data(TBD), (65535)
        } ExtensionType;
 
 Here:
@@ -2206,7 +2216,7 @@ with the selected cipher suite and group parameters.
 Meaning of this message:
 
 > This message conveys cryptographic information to allow the client to
-communicate the premaster secret: a Diffie-Hellman public key with which the
+compute the premaster secret: a Diffie-Hellman public key with which the
 client can complete a key exchange (with the result being the premaster secret)
 or a public key for some other algorithm.
 
@@ -2526,6 +2536,8 @@ algorithms with DSA, as well as guidance as to which digest algorithms should
 be used with each key size. In addition, future revisions of {{RFC3280}} may
 specify mechanisms for certificates to indicate which digest algorithms are to
 be used with DSA.
+[[TODO: Update this to deal with DSS-3 and DSS-4.
+https://github.com/tlswg/tls13-spec/issues/59]]
 
 
 ###  Server Finished
@@ -2749,6 +2761,8 @@ E, and F.
 
 #  IANA Considerations
 
+[[TODO: Update https://github.com/tlswg/tls13-spec/issues/62]]
+
 This document uses several registries that were originally created in
 {{RFC4346}}. IANA has updated these to reference this document. The registries
 and their allocation policies (unchanged from {{RFC4346}}) are listed below.
@@ -2766,10 +2780,6 @@ and their allocation policies (unchanged from {{RFC4346}}) are listed below.
   (decimal) are assigned via Specification Required {{RFC2434}}.
   Values with the first byte 255 (decimal) are reserved for Private
   Use {{RFC2434}}.
-
--  This document defines several new HMAC-SHA256-based cipher suites,
-  whose values (in {{the-cipher-suite}}) have been allocated from the TLS
-  Cipher Suite registry.
 
 -  TLS ContentType Registry: Future values are allocated via
   Standards Action {{RFC2434}}.
@@ -2821,7 +2831,7 @@ This section describes protocol types and constants.
         uint8 minor;
     } ProtocolVersion;
 
-    ProtocolVersion version = { 3, 3 };     /* TLS v1.2*/
+    ProtocolVersion version = { 3, 4 };     /* TLS v1.3*/
 
     enum {
         change_cipher_spec(20), alert(21), handshake(22),
@@ -3131,7 +3141,7 @@ means to ensure authentication.)
       CipherSuite TLS_DH_anon_WITH_AES_256_GCM_SHA384 = {0x00,0xA7}
 
 [[TODO: Add all the defined AEAD ciphers. This currently only lists
-GCM.]]
+GCM. https://github.com/tlswg/tls13-spec/issues/53]]
 Note that using non-anonymous key exchange without actually verifying the key
 exchange is essentially equivalent to anonymous key exchange, and the same
 precautions apply. While non-anonymous key exchange will generally involve a
@@ -3469,6 +3479,8 @@ Cryptographic details:
 
 ## Compatibility with TLS 1.0/1.1 and SSL 3.0 {#compatibility}
 
+[[TODO: Revise backward compatibility section for TLS 1.3.
+https://github.com/tlswg/tls13-spec/issues/54]]
 Since there are various versions of TLS (1.0, 1.1, 1.2, and any future
 versions) and SSL (2.0 and 3.0), means are needed to negotiate the specific
 protocol version to use. The TLS protocol provides a built-in mechanism for
@@ -3481,8 +3493,8 @@ easy. Similarly, servers can easily handle clients trying to use future
 versions of TLS as long as the ClientHello format remains compatible, and the
 client supports the highest protocol version available in the server.
 
-A TLS 1.2 client who wishes to negotiate with such older servers will send a
-normal TLS 1.2 ClientHello, containing { 3, 3 } (TLS 1.2) in
+A TLS 1.3 client who wishes to negotiate with such older servers will send a
+normal TLS 1.3 ClientHello, containing { 3, 4 } (TLS 1.3) in
 ClientHello.client_version. If the server does not support this version, it
 will respond with a ServerHello containing an older version number. If the
 client agrees to use this version, the negotiation will proceed as appropriate
