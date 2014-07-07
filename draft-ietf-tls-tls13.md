@@ -835,7 +835,7 @@ record protection algorithm
 : The algorithm to be used for record protection. This algorithm must
   be of the AEAD type and thus provides integrity and confidentiality
   as a single primitive. It is possible to have AEAD algorithms which
-  do not provide any confidentiality and section
+  do not provide any confidentiality and
   {{record-payload-protection}} defines a special NULL_NULL AEAD
   algorithm for use in the initial handshake). This specification
   includes the key size of this algorithm and the lengths of explicit
@@ -1013,6 +1013,7 @@ length
 
 fragment
 : The AEAD encrypted form of TLSPlaintext.fragment.
+{:br }
 
 Each AEAD cipher suite MUST specify how the nonce supplied to the AEAD
 operation is constructed, and what is the length of the
@@ -1753,7 +1754,7 @@ handshake.)
 The cipher suite list, passed from the client to the server in the ClientHello
 message, contains the combinations of cryptographic algorithms supported by the
 client in order of the client's preference (favorite choice first). Each cipher
-suite defines a key exchange algorithm, a record encryption algorithm (including
+suite defines a key exchange algorithm, a record protection algorithm (including
 secret key length) and a PRF. The server will select a cipher
 suite or, if no acceptable choices are presented, return a handshake failure
 alert and close the connection. If the list contains cipher suites the server
@@ -2125,7 +2126,7 @@ do the following:
 
 - If the negotiated key exchange algorithm is one of (DHE_RSA, DH_RSA,
 ECDH_RSA, ECDHE_RSA), behave as if client had sent the value
-{sha1,rsa}.
+{sha1,rsa}. [[TODO: Remove the rest of the references to DH_*.]]
 
 - If the negotiated key exchange algorithm is one of (DHE_DSS, DH_DSS), behave
 as if the client had sent the value {sha1,dsa}.
