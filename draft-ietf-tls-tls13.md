@@ -320,7 +320,7 @@ draft-02
 
 -  Removed support for compression.
 
--  Removed support for static RSA key exchange.
+-  Removed support for static RSA and DH key exchange.
 
 -  Removed support for non-AEAD ciphers
 
@@ -2123,14 +2123,13 @@ signature_algorithms extension, listing the algorithms it is willing to accept.
 If the client does not send the signature_algorithms extension, the server MUST
 do the following:
 
-- If the negotiated key exchange algorithm is one of (DHE_RSA, DH_RSA,
-ECDH_RSA, ECDHE_RSA), behave as if client had sent the value
+- If the negotiated key exchange algorithm is one of (DHE_RSA, ECDHE_RSA), behave as if client had sent the value
 {sha1,rsa}.
 
-- If the negotiated key exchange algorithm is one of (DHE_DSS, DH_DSS), behave
+- If the negotiated key exchange algorithm is DHE_DSS, behave
 as if the client had sent the value {sha1,dsa}.
 
-- If the negotiated key exchange algorithm is one of (ECDH_ECDSA, ECDHE_ECDSA),
+- If the negotiated key exchange algorithm is ECDHE_ECDSA,
 behave as if the client had sent value {sha1,ecdsa}.
 
 Note: this is a change from TLS 1.1 where there are no explicit rules, but as a
@@ -2358,14 +2357,6 @@ The following rules apply to the certificates sent by the server:
                        algorithm that will be employed in the server
                        key exchange message.
 
-    DH_DSS             Diffie-Hellman public key; the keyAgreement bit
-    DH_RSA             MUST be set if the key usage extension is
-                       present.
-
-    ECDH_ECDSA         ECDH-capable public key; the public key MUST
-    ECDH_RSA           use a curve and point format supported by the
-                       client, as described in [RFC4492].
-
     ECDHE_ECDSA        ECDSA-capable public key; the certificate MUST
                        allow the key to be used for signing with the
                        hash algorithm that will be employed in the
@@ -2383,11 +2374,7 @@ algorithm pair that appears in that extension. Note that this implies that a
 certificate containing a key for one signature algorithm MAY be signed using a
 different signature algorithm (for instance, an RSA key signed with a DSA key).
 This is a departure from TLS 1.1, which required that the algorithms be the
-same. Note that this also implies that the DH_DSS, DH_RSA, ECDH_ECDSA, and
-ECDH_RSA key exchange algorithms do not restrict the algorithm used to sign the
-certificate. Fixed DH certificates MAY be signed with any hash/signature
-algorithm pair appearing in the extension. The names DH_DSS, DH_RSA,
-ECDH_ECDSA, and ECDH_RSA are historical.
+same.
 
 If the server has multiple certificates, it chooses one of them based on the
 above-mentioned criteria (in addition to other criteria, such as transport
@@ -3007,7 +2994,7 @@ This section describes protocol types and constants.
         ASN1Cert certificate_list<0..2^24-1>;
     } Certificate;
 
-    enum { dhe_dss, dhe_rsa, dh_anon, dh_dss, dh_rsa
+    enum { dhe_dss, dhe_rsa, dh_anon
            /* may be extended, e.g., for ECDH -- see [TLSECC] */
          } KeyExchangeAlgorithm;
 
@@ -3029,10 +3016,6 @@ This section describes protocol types and constants.
                     opaque server_random[32];
                     ServerDHParams params;
                 } signed_params;
-            case dh_dss:
-            case dh_rsa:
-                struct {} ;
-               /* message is omitted for rsa, dh_dss, and dh_rsa */
             /* may be extended, e.g., for ECDH --- see [RFC4492] */
     } ServerKeyExchange;
 
@@ -3059,8 +3042,6 @@ This section describes protocol types and constants.
         select (KeyExchangeAlgorithm) {
             case dhe_dss:
             case dhe_rsa:
-            case dh_dss:
-            case dh_rsa:
             case dh_anon:
                 ClientDiffieHellmanPublic;
         } exchange_keys;
@@ -3123,12 +3104,8 @@ Diffie-Hellman certificate provided by the client must use the parameters
       CipherSuite TLS_RSA_WITH_AES_256_GCM_SHA384 = {0x00,0x9D}
       CipherSuite TLS_DHE_RSA_WITH_AES_128_GCM_SHA256 = {0x00,0x9E}
       CipherSuite TLS_DHE_RSA_WITH_AES_256_GCM_SHA384 = {0x00,0x9F}
-      CipherSuite TLS_DH_RSA_WITH_AES_128_GCM_SHA256 = {0x00,0xA0}
-      CipherSuite TLS_DH_RSA_WITH_AES_256_GCM_SHA384 = {0x00,0xA1}
       CipherSuite TLS_DHE_DSS_WITH_AES_128_GCM_SHA256 = {0x00,0xA2}
       CipherSuite TLS_DHE_DSS_WITH_AES_256_GCM_SHA384 = {0x00,0xA3}
-      CipherSuite TLS_DH_DSS_WITH_AES_128_GCM_SHA256 = {0x00,0xA4}
-      CipherSuite TLS_DH_DSS_WITH_AES_256_GCM_SHA384 = {0x00,0xA5}
 
 The following cipher suites, defined in {{RFC5288},
 are used for completely anonymous Diffie-Hellman
@@ -3360,12 +3337,8 @@ Transport Layer Security (TLS)
     TLS_NULL_WITH_NULL_NULL               NULL       NULL_NULL    N/A
     TLS_DHE_RSA_WITH_AES_128_GCM_SHA256   DHE_RSA    AES_128_GCM  SHA256
     TLS_DHE_RSA_WITH_AES_256_GCM_SHA384   DHE_RSA    AES_256_GCM  SHA384
-    TLS_DH_RSA_WITH_AES_128_GCM_SHA256    DH_RSA     AES_128_GCM  SHA256
-    TLS_DH_RSA_WITH_AES_256_GCM_SHA384    DH_RSA     AES_256_GCM  SHA384
     TLS_DHE_DSS_WITH_AES_128_GCM_SHA256   DHE_DSS    AES_128_GCM  SHA256
     TLS_DHE_DSS_WITH_AES_256_GCM_SHA384   DHE_DSS    AES_256_GCM  SHA384
-    TLS_DH_DSS_WITH_AES_128_GCM_SHA256    DH_DSS     AES_128_GCM  SHA256
-    TLS_DH_DSS_WITH_AES_256_GCM_SHA384    DH_DSS     AES_256_GCM  SHA384
     TLS_DH_anon_WITH_AES_128_GCM_SHA256   DH_anon    AES_128_GCM  SHA256
     TLS_DH_anon_WITH_AES_256_GCM_SHA384   DH_anon    AES_128_GCM  SHA384
 
