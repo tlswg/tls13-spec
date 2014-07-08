@@ -16,7 +16,7 @@ next := $(draft)-$(next_ver)
 
 all latest: $(draft).txt $(draft).html
 
-submit: $(next).txt
+submit: $(next).xml $(next).txt
 
 idnits: $(next).txt
 	$(idnits) $<
