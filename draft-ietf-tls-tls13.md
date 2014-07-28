@@ -25,11 +25,6 @@ pi:
   text-list-symbols: -o*+
 author:
  -
-       ins: T. Dierks
-       name: Tim Dierks
-       organization: Independent
-       email: tim@dierks.org
- -
        ins: E. Rescorla
        name: Eric Rescorla
        organization: RTFM, Inc.
@@ -4124,6 +4119,10 @@ Archives of the list can be found at:
     Pete Chown
     Skygate Technology Ltd
     pc@skygate.co.uk
+
+    Tim Dierks (co-editor of TLS 1.1 and TLS 1.2)
+    Independent
+    tim@dierks.org
 
     Taher Elgamal
     taher@securify.com
