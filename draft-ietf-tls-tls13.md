@@ -1035,12 +1035,15 @@ The additional authenticated data, which we denote as additional_data, is
 defined as follows:
 
        additional_data = seq_num + TLSPlaintext.type +
-                         TLSPlaintext.version + TLSPlaintext.length;
-
-[[OPEN ISSUE: Fix length which gives us a problem here for algorithms which
-pad. See: https://github.com/tlswg/tls13-spec/issues/47]]
+                         TLSPlaintext.version
 
 where "+" denotes concatenation.
+
+Note: In versions of TLS prior to 1.3, the additional_data included a
+length field. This presents a problem for cipher constructions with
+data-dependent padding (such as CBC). TLS 1.3 removes the length
+field and relies on the AEAD cipher to provide integrity for the
+length of the data.
 
 The AEAD output consists of the ciphertext output by the AEAD encryption
 operation. The length will generally be larger than TLSPlaintext.length, but
