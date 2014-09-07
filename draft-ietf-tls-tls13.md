@@ -241,7 +241,7 @@ tampering, or message forgery.
 
 #  Introduction
 
-DISCLAIMER: This is a WIP draft of TLS 1.3 and has not yet seen significant security analysis. 
+DISCLAIMER: This is a WIP draft of TLS 1.3 and has not yet seen significant security analysis.
 
 RFC EDITOR: PLEASE REMOVE THE FOLLOWING PARAGRAPH
 The source for this draft is maintained in GitHub. Suggested changes
@@ -309,6 +309,9 @@ interpreted as described in RFC 2119 {{RFC2119}}.
 
 ##  Major Differences from TLS 1.2
 
+draft-03
+
+-  Remove renegotiation; add rekeying using ChangeCipherSpec.
 
 draft-03
 
@@ -803,24 +806,31 @@ wish to take steps (padding, cover traffic) to minimize information leakage.
 
 ##  Connection States
 
-A TLS connection state is the operating environment of the TLS Record
-Protocol.  It specifies a record protection algorithm and its
-parameters as well as the record protection keys and IVs for the
-connection in both the read and the write directions. Logically, there
-are always four connection states outstanding: the current read and
-write states, and the pending read and write states. All records are
-processed under the current read and write states. The security
-parameters for the pending states can be set by the TLS Handshake
-Protocol, and the ChangeCipherSpec can selectively make either of the
-pending states current, in which case the appropriate current state is
-disposed of and replaced with the pending state; the pending state is
-then reinitialized to an empty state. It is illegal to make a state
-that has not been initialized with security parameters a current
-state. The initial current state always specifies that records are
-not protected.
+A TLS connection state is the operating environment of the TLS Record Protocol.
+It specifies a record protection algorithm and its parameters as well as the
+record protection keys and IVs for the connection in both the read and write
+directions.
 
-The security parameters for a TLS Connection read and write state are set by
-providing the following values:
+Logically, there are always four connection states outstanding: the current read
+and write states, and pending read and write states. All records are processed
+under the current read and write states. During the initial handshake, the
+security parameters for the pending states are set by the TLS Handshake
+Protocol.  After the initial handshake is complete, the pending states are
+derived from the current state (see {{ms-advance}}).
+
+The ChangeCipherSpec message is used to make either of the pending states
+current, in which case the corresponding current state is disposed of and
+replaced with the pending state; the pending state is then reinitialized to an
+empty state.
+
+It is illegal to make a state that has not been initialized with security
+parameters a current state. The initial current state always specifies that no
+encryption or MAC will be used.
+
+The security parameters for a TLS Connection read and write state are set by the
+master secret, a 48-byte secret shared between the two peers in the connection.
+
+The following properties for a TLS Connection do not vary over time:
 
 {:br: vspace="0"}
 
@@ -845,10 +855,6 @@ record protection algorithm
   algorithm for use in the initial handshake). This specification
   includes the key size of this algorithm and the lengths of explicit
   and implicit initialization vectors (or nonces).
-
-master secret
-
-: A 48-byte secret shared between the two peers in the connection.
 
 client random
 
@@ -912,7 +918,8 @@ sequence number
   active state.  Sequence numbers are of type uint64 and may not
   exceed 2^64-1.  Sequence numbers do not wrap.  If a TLS
   implementation would need to wrap a sequence number, it must
-  renegotiate instead.  A sequence number is incremented after each
+  advance the master secret by sending a ChangeCipherSpec message instead.
+  A sequence number is incremented after each
   record: specifically, the first record transmitted under a
   particular connection state MUST use sequence number 0.
 {:br }
@@ -1147,33 +1154,45 @@ Protocol.
 ##  Change Cipher Spec Protocol
 
 The change cipher spec protocol exists to signal transitions in ciphering
-strategies. The protocol consists of a single message, which is encrypted
-under the current (not the pending) connection state. The message
-consists of a single byte of value 1.
+strategies. The protocol consists of a single message, which is encrypted under
+the current or previous connection state. That is, the first ChangeCipherSpec
+sent is not encrypted. The message consists of a single byte of value 1.
 
        struct {
            enum { change_cipher_spec(1), (255) } type;
        } ChangeCipherSpec;
 
-The ChangeCipherSpec message is sent by both the client and the server to
-notify the receiving party that subsequent records will be protected under the
-newly negotiated CipherSpec and keys. Reception of this message causes the
-receiver to instruct the record layer to immediately copy the read pending
-state into the read current state. Immediately after sending this message, the
-sender MUST instruct the record layer to make the write pending state the write
-current state. (See {{connection-states}}.) The ChangeCipherSpec message is sent
-during the handshake after the security parameters have been agreed upon,
-but before the first message protected with a new CipherSpec is sent.
+The ChangeCipherSpec message is sent by both the client and the server to notify
+the receiving party that subsequent records will be protected under a new
+CipherSpec.
 
-Note: If a rehandshake occurs while data is flowing on a connection, the
-communicating parties may continue to send data using the old CipherSpec.
-However, once the ChangeCipherSpec has been sent, the new CipherSpec MUST be
-used. The first side to send the ChangeCipherSpec does not know that the other
-side has finished computing the new keying material (e.g., if it has to perform
-a time-consuming public key operation). Thus, a small window of time, during
-which the recipient must buffer the data, MAY exist. In practice, with modern
-machines this interval is likely to be fairly short.
-[[TODO: This text seems confusing.]]
+During the initial handshake, ChangeCipherSpec is used to switch from the
+initial connection state to the negotiated state (see {{connection-states}}).
+Subsequent uses update the master secret and ensure that keying material can be
+refreshed.
+
+Immediately after receiving a ChangeCipherSpec message, the receiver MUST
+instruct the record layer to start using a new read state.  On the initial
+handshake, the new state is the negotiated read state; after subsequent
+ChangeCipherSpec messages, a new read state is generated by advancing the master
+secret (see {{ms-advance}}) and generating a new read state.
+
+If the received ChangeCipherSpec causes the master secret to be advanced such
+that the connection write state uses a different master secret to the one used
+for the read state, a ChangeCipherSpec message MUST be enqueued for sending.
+
+Immediately after sending a ChangeCipherSpec message, the sender MUST instruct
+the record layer to start using a new write state.  On the initial handshake,
+the new state is the negotiated write state; the ChangeCipherSpec message is
+sent during the handshake after the security parameters have been agreed upon,
+but before the verifying Finished message is sent.  After subsequent
+ChangeCipherSpec messages, a new write state is generated by advancing the
+master secret (see {{ms-advance}}).
+
+Note: Sending a ChangeCipherSpec message while data is flowing on a connection
+causes two master secrets to be in use until the remote party generates a
+corresponding ChangeCipherSpec.  Once matching ChangeCipherSpec messages are
+sent and received, the previous master secret can be discarded.
 
 ##  Alert Protocol
 
@@ -1212,7 +1231,7 @@ as specified by the current connection state.
            insufficient_security(71),
            internal_error(80),
            user_canceled(90),
-           no_renegotiation(100),
+           no_renegotiation_RESERVED(100),
            unsupported_extension(110),
            (255)
        } AlertDescription;
@@ -1278,8 +1297,7 @@ level.
 
 If an alert with a level of warning is sent and received, generally the
 connection can continue normally. If the receiving party decides not to proceed
-with the connection (e.g., after having received a no_renegotiation alert that
-it is not willing to accept), it SHOULD send a fatal alert to terminate the
+with the connection, it SHOULD send a fatal alert to terminate the
 connection. Given this, the sending party cannot, in general, know how the
 receiving party will behave. Therefore, warning alerts are not very useful when
 the sending party wants to continue the connection, and thus are sometimes
@@ -1401,18 +1419,9 @@ user_canceled
   close_notify is more appropriate.  This alert should be followed
   by a close_notify.  This message is generally a warning.
 
-no_renegotiation
-: Sent by the client in response to a hello request or by the server
-  in response to a client hello after initial handshaking.  Either
-  of these would normally lead to renegotiation; when that is not
-  appropriate, the recipient should respond with this alert.  At
-  that point, the original requester can decide whether to proceed
-  with the connection.  One case where this would be appropriate is
-  where a server has spawned a process to satisfy a request; the
-  process might receive security parameters (key length,
-  authentication, etc.) at startup, and it might be difficult to
-  communicate changes to these parameters after that point.  This
-  message is always a warning.
+no_renegotiation_RESERVED
+: This alert was used in some earlier versions of TLS.  It MUST NOT
+  be sent by compliant implementations.
 
 unsupported_extension
 : sent by clients that receive an extended server hello containing
@@ -1485,7 +1494,7 @@ share of the parameters for the key agreement. The server can now
 compute the shared secret. At this point, a ChangeCipherSpec message
 is sent by the server, and the server copies the pending Cipher Spec
 into the current Cipher Spec. The remainder of the server's handshake
-messages will be encrypted under that Cipher Spec. 
+messages will be encrypted under that Cipher Spec.
 
 Following these messages, the server will send an EncryptedExtensions
 message which contains a response to any client's extensions which are
@@ -1493,6 +1502,7 @@ not necessary to establish the Cipher Suite. The server will then send
 its certificate in a Certificate message if it is to be authenticated.
 The server may optionally request a certificate from the client by
 sending a CertificateRequest message at this point.
+
 Finally, if the server is authenticated, it will send a CertificateVerify
 message which provides a signature over the entire handshake up to
 this point. This serves both to authenticate the server and to establish
@@ -1513,12 +1523,14 @@ message, the client MUST send the Certificate message, though it may
 contain zero certificates.  If the client has sent a certificate,
 a digitally-signed CertificateVerify message is sent to
 explicitly verify possession of the private key in the certificate.
+
 Finally, the client sends the Finished message.
 At this point, the handshake is complete, and the
 client and server may exchange application layer data. (See flow chart
 below.) Application data MUST NOT be sent prior to the Finished message.
 [[TODO: can we make this clearer and more clearly match the text above
 about server-side False Start.]]
+
        Client                                               Server
 
        ClientHello
@@ -1573,7 +1585,7 @@ Figure 2:
        CertificateVerify*
        Finished                     -------->
        Application Data             <------->     Application Data
-       
+
    Figure 2.  Message flow for a full handshake with mismatched parameters
 
 [[OPEN ISSUE: Do we restart the handshake hash?]]
@@ -1601,7 +1613,7 @@ handshake.
 
        Client                                                Server
 
-       ClientHello                   
+       ClientHello
        ClientKeyExhange              -------->
                                                         ServerHello
                                                  [ChangeCipherSpec]
@@ -1624,7 +1636,7 @@ they are encapsulated within one or more TLSPlaintext structures, which are
 processed and transmitted as specified by the current active session state.
 
        enum {
-           hello_request(0), client_hello(1), server_hello(2),
+           hello_request_RESERVED(0), client_hello(1), server_hello(2),
            certificate(11), server_key_exchange (12),
            certificate_request(13), certificate_verify(15),
            client_key_exchange(16), finished(20), (255)
@@ -1634,7 +1646,6 @@ processed and transmitted as specified by the current active session state.
            HandshakeType msg_type;    /* handshake type */
            uint24 length;             /* bytes in message */
            select (HandshakeType) {
-               case hello_request:       HelloRequest;
                case client_hello:        ClientHello;
                case client_key_exchange: ClientKeyExchange;
                case server_hello:        ServerHello;
@@ -1649,10 +1660,7 @@ processed and transmitted as specified by the current active session state.
 The handshake protocol messages are presented below in the order they
 MUST be sent; sending handshake messages in an unexpected order
 results in a fatal error. Unneeded handshake messages can be omitted,
-however. The one message that is not bound by these
-ordering rules is the HelloRequest message, which can be sent at any
-time, but which SHOULD be ignored by the client if it arrives in the
-middle of a handshake.
+however.
 
 New handshake message types are assigned by IANA as described in
 {{iana-considerations}}.
@@ -1661,56 +1669,19 @@ New handshake message types are assigned by IANA as described in
 
 The hello phase messages are used to exchange security enhancement capabilities
 between the client and server. When a new session begins, the record layer's
-connection state AEAD algorithm is initialized to NULL_NULL.
-The current connection state is used for renegotiation messages.
-
-####  Hello Request
-
-When this message will be sent:
-
-> The HelloRequest message MAY be sent by the server at any time.
-
-Meaning of this message:
-
-> HelloRequest is a simple notification that the client should begin the
-negotiation process anew. In response, the client should send a ClientHello
-message when convenient. This message is not intended to establish which side
-is the client or server but merely to initiate a new negotiation. Servers
-SHOULD NOT send a HelloRequest immediately upon the client's initial
-connection. It is the client's job to send a ClientHello at that time.
-
-> This message will be ignored by the client if the client is currently
-negotiating a session. This message MAY be ignored by the client if it does not
-wish to renegotiate a session, or the client may, if it wishes, respond with a
-no_renegotiation alert. Since handshake messages are intended to have
-transmission precedence over application data, it is expected that the
-negotiation will begin before no more than a few records are received from the
-client. If the server sends a HelloRequest but does not receive a ClientHello
-in response, it may close the connection with a fatal alert.
-
-> After sending a HelloRequest, servers SHOULD NOT repeat the request until the
-subsequent handshake negotiation is complete.
-
-Structure of this message:
-
-       struct { } HelloRequest;
-
-This message MUST NOT be included in the message hashes that are maintained
-throughout the handshake and used in the Finished messages and the certificate
-verify message.
+connection state AEAD algorithm is initialized to NULL_NULL.  The current
+connection state is used for handshake messages.
 
 ####  Client Hello
 
 When this message will be sent:
 
 > When a client first connects to a server, it is required to send the
-ClientHello as its first message. The client can also send a ClientHello in
-response to a HelloRequest or on its own initiative in order to renegotiate the
-security parameters in an existing connection. Finally, the client will
-send a ClientHello when the server has responded to its ClientHello
-with a ServerHello that selects cryptographic parameters that don't
-match the client's ClientKeyExchange. In that case, the client MUST
-send the same ClientHello (without modification) along with the new ClientKeyExchange.
+ClientHello as its first message.  The client will also send a ClientHello when
+the server has responded to its ClientHello with a ServerHello that selects
+cryptographic parameters that don't match the client's ClientKeyExchange. In
+that case, the client MUST send the same ClientHello (without modification)
+along with the new ClientKeyExchange.
 
 Structure of this message:
 
@@ -1839,8 +1810,8 @@ of data in the message precisely matches one of these formats; if not, then it
 MUST send a fatal "decode_error" alert.
 
 After sending the ClientHello message, the client waits for a ServerHello
-message. Any handshake message returned by the server, except for a
-HelloRequest, is treated as a fatal error.
+message. Any handshake message returned by the server other than ServerHello is
+treated as a fatal error.
 
 
 ###  Client Key Exchange Message
@@ -1913,7 +1884,7 @@ Structure of this message:
        dh_Yc
           The client's Diffie-Hellman public value (g^X mod p).
 
-          
+
 ####  Server Hello
 
 When this message will be sent:
@@ -2161,7 +2132,7 @@ permit additional messages to follow the ClientHello. The EarlyData
 extension allows TLS messages which would otherwise be sent as
 separate records to be instead inserted in the ClientHello. The
 extension simply contains the TLS records which would otherwise have
-been included in the client's first flight. 
+been included in the client's first flight.
 
           struct {
             TLSCipherText messages<5 .. 2^24-1>;
@@ -2707,7 +2678,6 @@ be used with each key size. In addition, future revisions of {{RFC3280}} may
 specify mechanisms for certificates to indicate which digest algorithms are to
 be used with DSA.
 
-
 #  Cryptographic Computations
 
 In order to begin connection protection, the TLS Record Protocol
@@ -2730,6 +2700,19 @@ deleted from memory once the master_secret has been computed.
 
 The master secret is always exactly 48 bytes in length. The length of the
 premaster secret will vary depending on key exchange method.
+
+### Advancing the Master Secret {#ms-advance}
+
+In order to avoid provide for long-lived connections without risk of key
+exhaustion or sequence number reuse, either party MAY create a new master secret
+at any time by sending a ChangeCipherSpec message.
+
+       master_secret = PRF(old_master_secret, "master secret",
+                           ClientHello.random + ServerHello.random)
+                           [0..47];
+
+This is the same computation that is used for generating the master secret, with
+the previous master secret as input in place of the pre_master_secret.
 
 ###  Diffie-Hellman
 
@@ -2887,7 +2870,7 @@ This section describes protocol types and constants.
         insufficient_security(71),
         internal_error(80),
         user_canceled(90),
-        no_renegotiation(100),
+        no_renegotiation_RESERVED(100),
         unsupported_extension(110),           /* new */
         (255)
     } AlertDescription;
@@ -2900,8 +2883,8 @@ This section describes protocol types and constants.
 ##  Handshake Protocol
 
     enum {
-        hello_request(0), client_hello(1), server_hello(2),
-        certificate(11), server_key_exchange (12),
+        hello_request_RESERVED(0), client_hello(1), server_hello(2),
+        certificate(11), server_key_exchange(12),
         certificate_request(13), server_hello_done(14),
         certificate_verify(15), client_key_exchange(16),
         finished(20),
@@ -2912,7 +2895,6 @@ This section describes protocol types and constants.
         HandshakeType msg_type;
         uint24 length;
         select (HandshakeType) {
-            case hello_request:       HelloRequest;
             case client_hello:        ClientHello;
             case server_hello:        ServerHello;
             case certificate:         Certificate;
@@ -2927,8 +2909,6 @@ This section describes protocol types and constants.
 
 
 ### Hello Messages
-
-    struct { } HelloRequest;
 
     struct {
         opaque random_bytes[32];
@@ -3428,10 +3408,6 @@ TLS protocol issues:
 
 -  Do you handle TLS extensions in ClientHello correctly, including
   omitting the extensions field completely?
-
--  Do you support renegotiation, both client and server initiated?
-  While renegotiation is an optional feature, supporting it is
-  highly recommended.
 
 -  When the server has requested a client certificate, but no
   suitable certificate is available, do you correctly send an empty
