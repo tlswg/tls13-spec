@@ -1859,15 +1859,16 @@ for zero or more key establishment methods.
 
 Structure of this message:
 
-       enum { dhe(1), (255) } KeyExchangeAlgorithm;
-
        struct {
-           KeyExchangeAlgorithm algorithm;
+           NamedGroup group;
+           uint16 length;
            select (KeyExchangeAlgorithm) {
               dhe:
                   ClientDiffieHellmanParams;
            } exchange_keys;
        } ClientKeyShareOffer;
+
+
 
        struct {
            ClientKeyShareOffer offers<0..2^16-1>;
