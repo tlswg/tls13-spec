@@ -1468,7 +1468,7 @@ These goals are achieved by the handshake protocol, which can be
 summarized as follows: The client sends a ClientHello message which
 contains a random nonce (ClientHello.random), its preferences for
 Protocol Version, Cipher Suite, and a variety of extensions. In
-the same flight, it sends a ClientKeyExchange message which contains its
+the same flight, it sends a ClientKeyShare message which contains its
 share of the parameters for key agreement for some set of expected
 server parameters (DHE/ECDHE groups, etc.).
 
@@ -1478,9 +1478,9 @@ ServerHello contains the server's nonce (ServerHello.random), the
 server's choice of the Protocol Version, Session ID and Cipher Suite,
 and the server's response to the extensions the client offered.
 
-If the client has provided a ClientKeyExchange with an appropriate set
+If the client has provided a ClientKeyShare with an appropriate set
 of keying material, the server can then generate its own keying
-material share and send a ServerKeyExchange message which contains its
+material share and send a ServerKeyShare message which contains its
 share of the parameters for the key agreement. The server can now
 compute the shared secret. At this point, a ChangeCipherSpec message
 is sent by the server, and the server copies the pending Cipher Spec
@@ -1504,7 +1504,7 @@ agreed upon the same keys.
 it MAY start sending application data following the Finished, though
 the server has no way of knowing who will be receiving the data. Add this.]]
 
-Once the client receives the ServerKeyExchange, it can also compute
+Once the client receives the ServerKeyShare, it can also compute
 the shared key. At this point ChangeCipherSpec message is sent by the
 client, and the client copies the pending Cipher Spec into the current
 Cipher Spec. The remainder of the client's messages will be encrypted
@@ -1522,9 +1522,9 @@ about server-side False Start.]]
        Client                                               Server
 
        ClientHello
-       ClientKeyExchange            -------->
+       ClientKeyShare            -------->
                                                        ServerHello
-                                                 ServerKeyExchange
+                                                 ServerKeyShare
                                                 [ChangeCipherSpec]
                                               EncryptedExtensions*
                                                       Certificate*
@@ -1544,24 +1544,24 @@ about server-side False Start.]]
 Note: To help avoid pipeline stalls, ChangeCipherSpec is an independent TLS
 protocol content type, and is not actually a TLS handshake message.
 
-If the client has not provided an appropriate ClientKeyExchange
+If the client has not provided an appropriate ClientKeyShare
 (e.g. it includes only DHE or ECDHE groups unacceptable or unsupported by the server), the
 server corrects the mismatch with the ServerHello (which the client
 can detect by comparing the selected cipher suite and parameters with
-the ClientKeyExchange it offered) and the client will need to restart
-the handshake with an appropriate ClientKeyExchange, as shown in
+the ClientKeyShare it offered) and the client will need to restart
+the handshake with an appropriate ClientKeyShare, as shown in
 Figure 2:
 
        Client                                               Server
 
        ClientHello
-       ClientKeyExchange            -------->
+       ClientKeyShare            -------->
                                     <--------          ServerHello
 
        ClientHello
-       ClientKeyExchange            -------->
+       ClientKeyShare            -------->
                                                        ServerHello
-                                                 ServerKeyExchange
+                                                 ServerKeyShare
                                                 [ChangeCipherSpec]
                                               EncryptedExtensions*
                                                       Certificate*
@@ -1625,9 +1625,9 @@ processed and transmitted as specified by the current active session state.
 
        enum {
            hello_request(0), client_hello(1), server_hello(2),
-           certificate(11), server_key_exchange (12),
+           certificate(11), server_key_share (12),
            certificate_request(13), certificate_verify(15),
-           client_key_exchange(16), finished(20), (255)
+           client_key_share(16), finished(20), (255)
        } HandshakeType;
 
        struct {
@@ -1636,9 +1636,9 @@ processed and transmitted as specified by the current active session state.
            select (HandshakeType) {
                case hello_request:       HelloRequest;
                case client_hello:        ClientHello;
-               case client_key_exchange: ClientKeyExchange;
+               case client_key_share: ClientKeyShare;
                case server_hello:        ServerHello;
-               case server_key_exchange: ServerKeyExchange;
+               case server_key_share: ServerKeyShare;
                case certificate:         Certificate;
                case certificate_request: CertificateRequest;
                case certificate_verify:  CertificateVerify;
@@ -1709,8 +1709,8 @@ response to a HelloRequest or on its own initiative in order to renegotiate the
 security parameters in an existing connection. Finally, the client will
 send a ClientHello when the server has responded to its ClientHello
 with a ServerHello that selects cryptographic parameters that don't
-match the client's ClientKeyExchange. In that case, the client MUST
-send the same ClientHello (without modification) along with the new ClientKeyExchange.
+match the client's ClientKeyShare. In that case, the client MUST
+send the same ClientHello (without modification) along with the new ClientKeyShare.
 
 Structure of this message:
 
@@ -1843,7 +1843,7 @@ message. Any handshake message returned by the server, except for a
 HelloRequest, is treated as a fatal error.
 
 
-###  Client Key Exchange Message
+###  Client Key Share Message
 
 When this message will be sent:
 
@@ -1867,24 +1867,24 @@ Structure of this message:
               dhe:
                   ClientDiffieHellmanParams;
            } exchange_keys;
-       } ClientKeyExchangeOffer;
+       } ClientKeyShareOffer;
 
        struct {
-           ClientKeyExchangeOffer offers<0..2^16-1>;
-       } ClientKeyExchange;
+           ClientKeyShareOffer offers<0..2^16-1>;
+       } ClientKeyShare;
 
 offers
-: A list of ClientKeyExchangeOffer values.
+: A list of ClientKeyShareOffer values.
 {:br }
 
 [[OPEN ISSUE: Should we rename CKE here?]]
-Clients may offer an arbitrary number of ClientKeyExchangeOffer
+Clients may offer an arbitrary number of ClientKeyShareOffer
 values, each representing a single set of key agreement parameters;
 for instance a client might offer shares for several elliptic curves
-or multiple integer DH groups. The shares for each ClientKeyExchangeOffer
+or multiple integer DH groups. The shares for each ClientKeyShareOffer
 MUST by generated independently. Clients MUST NOT offer multiple
-ClientKeyExchangeOffers for the same parameters. It is explicitly
-permitted to send an empty ClientKeyExchange message, as this is used
+ClientKeyShareOffers for the same parameters. It is explicitly
+permitted to send an empty ClientKeyShare message, as this is used
 to elicit the server's parameters if the client has no useful
 information.
 
@@ -1894,7 +1894,7 @@ DH groups and which curves.]
 
 ####  Client Diffie-Hellman Parameters
 
-When one of the ClientKeyExchangeOffers is a Diffie-Hellman key, the
+When one of the ClientKeyShareOffers is a Diffie-Hellman key, the
 client SHALL encode it using ClientDiffieHellmanParams. This structure
 conveys the client's Diffie-Hellman public value (dh_Yc) and the group
 which it is being provided for.
@@ -2112,19 +2112,19 @@ signature
   The values indicate anonymous signatures, RSASSA-PKCS1-v1_5
   {{RFC3447}} and DSA {{DSS}}, and ECDSA {{ECDSA}}, respectively.  The
   "anonymous" value is meaningless in this context but used in
-  {{server-key-exchange-message}}.  It MUST NOT appear in this extension.
+  {{server-key-share-message}}.  It MUST NOT appear in this extension.
 {:br }
 
 The semantics of this extension are somewhat complicated because the cipher
 suite indicates permissible signature algorithms but not hash algorithms.
-{{server-certificate}} and {{server-key-exchange-message}} describe the
+{{server-certificate}} and {{server-key-share-message}} describe the
 appropriate rules.
 
 If the client supports only the default hash and signature algorithms (listed
 in this section), it MAY omit the signature_algorithms extension. If the client
 does not support the default algorithms, or supports other hash and signature
 algorithms (and it is willing to use them for verifying messages sent by the
-server, i.e., server certificates and server key exchange), it MUST send the
+server, i.e., server certificates and server key share), it MUST send the
 signature_algorithms extension, listing the algorithms it is willing to accept.
 
 If the client does not send the signature_algorithms extension, the server MUST
@@ -2176,9 +2176,9 @@ is used, then clients MUST NOT send any messages other than the
 ClientHello in their initial flight.
 
 Any data included in EarlyData is not integrated into the handshake
-hashes directly. E.g., if the ClientKeyExchange is included in
+hashes directly. E.g., if the ClientKeyShare is included in
 EarlyData, then the handshake hashes consist of ClientHello +
-ServerHello, etc.  However, because the ClientKeyExchange is in a
+ServerHello, etc.  However, because the ClientKeyShare is in a
 ClientHello extension, it is still hashed transitively. This procedure
 guarantees that the Finished message covers these messages even if
 they are ultimately ignored by the server (e.g., because it is sent to
@@ -2191,35 +2191,18 @@ serves as acknowledgement that it was processed as described above.
 
 [[OPEN ISSUE: This is a fairly general mechanism which is possibly
 overkill in the 1-RTT case, where it would potentially be more
-attractive to just have a "ClientKeyExchange" extension. However,
+attractive to just have a "ClientKeyShare" extension. However,
 for the 0-RTT case we will want to send the Certificate, CertificateVerify,
 and application data, so a more general extension seems appropriate
 at least until we have determined we don't need it for 0-RTT.]]
 
 
-#### Negotiated DL DHE Groups
-
-Previous versions of TLS before 1.3 allowed the server to specify a
-custom DHE group. This version of TLS requires the use of specific
-named groups. {{I-D.gillmor-tls-negotiated-dl-dhe}} describes a
-mechanism for negotiating such groups.
-
-If the ClientHello contains a DHE cipher suite, it MUST also
-include a "negotiated_dl_dhe_groups" extension. If the server
-selects a DHE cipher suite, it MUST respond with that extension
-to indicate the selected group. If no acceptable group can be
-selected across all cipher suites, then the server MUST generate
-a fatal "handshake_failure" alert.
-[[TODO: Presumably we want to bring {{I-D.gillmor-tls-negotiated-dl-dhe}}
-into this specification.]]
-
-
-###  Server Key Exchange Message
+###  Server Key Share Message
 
 When this message will be sent:
 
 > This message will be sent immediately after the ServerHello message if
-the client has provided a ClientKeyExchange message which is compatible
+the client has provided a ClientKeyShare message which is compatible
 with the selected cipher suite and group parameters.
 
 
@@ -2245,7 +2228,7 @@ Structure of this message:
                    ServerDiffieHellmanParams;
                /* may be extended, e.g., for ECDH -- see [RFC4492] */
            } params;
-       } ServerKeyExchange;
+       } ServerKeyShare;
 
 params
 : The server's key exchange parameters. These correspond to the group
@@ -2265,7 +2248,7 @@ When this message will be sent:
 
 > If this message is sent, it MUST be sent immediately after the server's
 ChangeCipherSpec (and hence as the first handshake message after the
-ServerKeyExchange).
+ServerKeyShare).
 
 Meaning of this message:
 
@@ -2299,7 +2282,7 @@ When this message will be sent:
 exchange method uses certificates for authentication (this includes all key
 exchange methods defined in this document except DH_anon). This message will
 always immediately follow the ChangeCipherSpec which follows the server's
-ServerKeyExchange message.
+ServerKeyShare message.
 
 
 Meaning of this message:
@@ -2901,9 +2884,9 @@ This section describes protocol types and constants.
 
     enum {
         hello_request(0), client_hello(1), server_hello(2),
-        certificate(11), server_key_exchange (12),
+        certificate(11), server_key_share (12),
         certificate_request(13), server_hello_done(14),
-        certificate_verify(15), client_key_exchange(16),
+        certificate_verify(15), client_key_share(16),
         finished(20),
         (255)
     } HandshakeType;
@@ -2916,11 +2899,11 @@ This section describes protocol types and constants.
             case client_hello:        ClientHello;
             case server_hello:        ServerHello;
             case certificate:         Certificate;
-            case server_key_exchange: ServerKeyExchange;
+            case server_key_share: ServerKeyShare;
             case certificate_request: CertificateRequest;
             case server_hello_done:   ServerHelloDone;
             case certificate_verify:  CertificateVerify;
-            case client_key_exchange: ClientKeyExchange;
+            case client_key_share: ClientKeyShare;
             case finished:            Finished;
         } body;
     } Handshake;
@@ -3023,7 +3006,7 @@ This section describes protocol types and constants.
                     ServerDHParams params;
                 } signed_params;
             /* may be extended, e.g., for ECDH --- see [RFC4492] */
-    } ServerKeyExchange;
+    } ServerKeyShare;
 
     enum {
         rsa_sign(1), dss_sign(2), rsa_fixed_dh(3), dss_fixed_dh(4),
@@ -3051,7 +3034,7 @@ This section describes protocol types and constants.
             case dh_anon:
                 ClientDiffieHellmanPublic;
         } exchange_keys;
-    } ClientKeyExchange;
+    } ClientKeyShare;
 
     struct {
         ProtocolVersion client_version;
