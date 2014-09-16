@@ -110,7 +110,7 @@ informative:
   RFC4506:
   RFC5081:
   RFC5116:
-  I-D.gillmor-tls-negotiated-dl-dhe:
+  I-D.ietf-tls-negotiated-ff-dhe:
 
   BLEI:
        title: Chosen Ciphertext Attacks against Protocols Based on RSA Encryption Standard PKCS #1
@@ -1906,7 +1906,7 @@ which it is being provided for.
 Structure of this message:
 
        struct {
-           DiscreteLogDHEGroup group;  // from draft-gillmor
+           DiscreteLogDHEGroup group;
            opaque dh_Yc<1..2^16-1>;
        } ClientDiffieHellmanParams;
 
@@ -2178,6 +2178,39 @@ extension.
 
 When performing session resumption, this extension is not included in Server
 Hello, and the server ignores the extension in Client Hello (if present).
+
+##### Negotiated DHE Groups
+
+When sent by the client the "negotiated_ff_dhe_groups" extension
+indicates the finite field Diffie-Hellman groups which the client
+supports, ordered from most preferred to least preferred.
+
+The "extension_data" field of this extension SHALL contain a
+"FiniteFieldDHEGroups" value:
+
+        enum {
+            ffdhe2432(0), ffdhe3072(1), ffdhe4096(2),
+            ffdhe6144(3), ffdhe8192(4), (2^16 - 1)
+        } FiniteFieldDHEGroup;
+
+        struct {
+            FiniteFieldDHEGroup finite_field_dhe_group_list<1..2^8-1>;
+        } FiniteFieldDHEGroups;
+
+The definitions of the groups corresponding to these values are in
+{{I-D.ietf-tls-negotiated-ff-dhe}}. If a client offers one or more
+DHE-key-exchange cipher suites, it MUST include this extension. Clients
+SHOULD not include this extension if they do not offer any
+DHE-key-exchange cipher suites. 
+
+If the server negotiates a DHE cipher suite, it MUST select one of the
+offered groups and provide it in a "negotiated_ff_dhe_groups"
+extension.  The "extension_data" field of this extension MUST be a
+single two-byte FiniteFieldDHEGroup. If the client does not supply a
+"negotiated_ff_dhe_groups" extension with a compatible group, the
+server MUST NOT negotiate a DHE cipher suite.  If no acceptable group
+can be selected across all cipher suites, then the server MUST
+generate a fatal "handshake_failure" alert.
 
 
 ##### Early Data Extension
@@ -3699,47 +3732,21 @@ attacks are a concern.
 
 ####  Diffie-Hellman Key Exchange with Authentication
 
-When Diffie-Hellman key exchange is used, the server can either supply a
-certificate containing fixed Diffie-Hellman parameters or use the server key
-exchange message to send a set of temporary Diffie-Hellman parameters signed
-with a DSA or RSA certificate. Temporary parameters are hashed with the
-hello.random values before signing to ensure that attackers do not replay old
-parameters. In either case, the client can verify the certificate or signature
-to ensure that the parameters belong to the server.
+When Diffie-Hellman key exchange is used, the client and server use
+the client key exchange and server key exchange messages to send
+temporary Diffie-Hellman parameters. The signature in the certificate
+verify message (if present) covers the entire handshake up to that
+point and thus binds the ephemeral DHE keys to the certificate.
 
-If the client has a certificate containing fixed Diffie-Hellman parameters, its
-certificate contains the information required to complete the key exchange.
-Note that in this case the client and server will generate the same
-Diffie-Hellman result (i.e., pre_master_secret) every time they communicate. To
-prevent the pre_master_secret from staying in memory any longer than necessary,
-it should be converted into the master_secret as soon as possible. Client
-Diffie-Hellman parameters must be compatible with those supplied by the server
-for the key exchange to work.
+Peers SHOULD validate each other's public key Y (dh_Ys offered by
+the server or DH_Yc offered by the client) by ensuring that 1 < Y <
+p-1.  This simple check ensures that the remote peer is properly
+behaved and isn't forcing the local system into a small subgroup.
 
-If the client has a standard DSA or RSA certificate or is unauthenticated, it
-sends a set of temporary parameters to the server in the client key exchange
-message, then optionally uses a certificate verify message to authenticate
-itself.
+Additionally, using a fresh key for each handshake provides Perfect
+Forward Secrecy. Implementations SHOULD generate a new X for each
+handshake when using DHE cipher suites.
 
-If the same DH keypair is to be used for multiple handshakes, either because
-the client or server has a certificate containing a fixed DH keypair or because
-the server is reusing DH keys, care must be taken to prevent small subgroup
-attacks. Implementations SHOULD follow the guidelines found in {{RFC2785}}.
-
-Small subgroup attacks are most easily avoided by using one of the DHE cipher
-suites and generating a fresh DH private key (X) for each handshake. If a
-suitable base (such as 2) is chosen, g^X mod p can be computed very quickly;
-therefore, the performance cost is minimized. Additionally, using a fresh key
-for each handshake provides Perfect Forward Secrecy. Implementations SHOULD
-generate a new X for each handshake when using DHE cipher suites.
-
-Because TLS allows the server to provide arbitrary DH groups, the client should
-verify that the DH group is of suitable size as defined by local policy. The
-client SHOULD also verify that the DH public exponent appears to be of adequate
-size. {{RFC3766}} provides a useful guide to the strength of various group
-sizes. The server MAY choose to assist the client by providing a known group,
-such as those defined in {{RFC4307}} or {{RFC3526}}. These can be verified by
-simple comparison.
 
 ###  Version Rollback Attacks
 
@@ -3887,6 +3894,10 @@ Archives of the list can be found at:
     David Hopwood
     Independent Consultant
     david.hopwood@blueyonder.co.uk
+
+    Daniel Kahn Gillmor
+    ACLU
+    dkg@fifthhorseman.net
 
     Phil Karlton (co-author of SSLv3)
 
