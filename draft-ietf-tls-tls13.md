@@ -1859,16 +1859,19 @@ for zero or more key establishment methods.
 
 Structure of this message:
 
+       enum { dhe(1), ecdhe(2), (255) } KeyExchangeAlgorithm;
+
        struct {
-           NamedGroup group;
+           KeyExchangeAlgorithm algorithm;
            uint16 length;
            select (KeyExchangeAlgorithm) {
               dhe:
                   ClientDiffieHellmanParams;
+
+              ecdhe:
+                  ClientECDiffieHellmanParams;
            } exchange_keys;
        } ClientKeyShareOffer;
-
-
 
        struct {
            ClientKeyShareOffer offers<0..2^16-1>;
@@ -1907,12 +1910,34 @@ Structure of this message:
            opaque dh_Yc<1..2^16-1>;
        } ClientDiffieHellmanParams;
 
-
        group
           The DHE group to which these parameters correspond.
 
        dh_Yc
           The client's Diffie-Hellman public value (g^X mod p).
+
+#### ClientECHDE Parameters
+
+When one of the ClientKeyShareOffers is an EC Diffie-Hellman key, the
+client SHALL encode it using ClientECDiffieHellmanParams. This
+structure conveys the client's EC Diffie-Hellman public value
+(ecdh_Yc) and the group which it is being provided for.
+
+        struct {
+            NamedCurve group;
+            ECPoint ecdh_Yc;
+        } ClientECDiffieHellmanPublic;
+
+       group
+          The DHE group to which these parameters correspond.
+
+       ecdh_Yc
+          Contains the client's ephemeral ECDH public key as a byte
+          string ECPoint.point, which may represent an elliptic curve point
+          in uncompressed or compressed format.  Here, the format MUST
+          conform to what the server has requested through a Supported Point
+          Formats Extension if this extension was used, and MUST be
+          uncompressed if this extension was not used.
 
           
 ####  Server Hello
@@ -2224,10 +2249,24 @@ Structure of this message:
           The server's Diffie-Hellman public value (g^X mod p).
 
        struct {
+           ECPoint ecdh_Ys;
+       } ServerECDiffieHellmanParams;   /* Ephemeral ECDH parameters */
+
+       ecdh_Ys
+          Contains the server's ephemeral ECDH public key as a byte
+          string ECPoint.point, which may represent an elliptic curve point
+          in uncompressed or compressed format. Here, the format MUST
+          conform to what the server has requested through a Supported Point
+          Formats Extension if this extension was used, and MUST be
+          uncompressed if this extension was not used.
+
+
+       struct {
            select (KeyExchangeAlgorithm) {
                case dhe:
                    ServerDiffieHellmanParams;
-               /* may be extended, e.g., for ECDH -- see [RFC4492] */
+               case ecdhe:
+                   ServerECDiffieHellmanParams;
            } params;
        } ServerKeyShare;
 
@@ -2235,11 +2274,7 @@ params
 : The server's key exchange parameters. These correspond to the group
   indicated by the ServerHello message using the cipher suite and the
   "negotiated_dl_dhe_groups" {{I-D.gillmor-tls-negotiated-dl-dhe}}
-  extension.  [[TODO: incorporate ECDHE if the WG decides to.]]
-  [[OPEN ISSUE: Note that we explicitly do not indicate the group
-  here since that's specified in the ServerHello. We could duplicate
-  it here, but that seems more confusing since there is room for
-  mismatch.]]
+  extension or the "elliptic_curves" extension.
 {:br }
 
 
