@@ -2213,6 +2213,68 @@ can be selected across all cipher suites, then the server MUST
 generate a fatal "handshake_failure" alert.
 
 
+##### Negotiated Elliptic Curves
+
+When sent by the client, the "elliptic_curves" extension indicates the
+elliptic curve groups which the client supports, ordered from most
+preferred to least preferred.
+
+The "extension_data" field of this extension SHALL contain a
+"EllipticCurveList" value:
+
+        enum {
+            sect163k1 (1), sect163r1 (2), sect163r2 (3),
+            sect193r1 (4), sect193r2 (5), sect233k1 (6),
+            sect233r1 (7), sect239k1 (8), sect283k1 (9),
+            sect283r1 (10), sect409k1 (11), sect409r1 (12),
+            sect571k1 (13), sect571r1 (14), secp160k1 (15),
+            secp160r1 (16), secp160r2 (17), secp192k1 (18),
+            secp192r1 (19), secp224k1 (20), secp224r1 (21),
+            secp256k1 (22), secp256r1 (23), secp384r1 (24),
+            secp521r1 (25),
+            reserved (0xFE00..0xFEFF),
+            reserved(0xFF01),
+            reserved(0xFF02),
+            (0xFFFF)
+        } NamedCurve;
+
+        struct {
+            NamedCurve elliptic_curve_list<1..2^16-1>
+        } EllipticCurveList;
+
+   sect163k1, etc:   Indicates support of the corresponding named curve
+      or class of explicitly defined curves.  The named curves defined
+      here are those specified in SEC 2 [13].  Note that many of these
+      curves are also recommended in ANSI X9.62 [7] and FIPS 186-2 [11].
+      Values 0xFE00 through 0xFEFF are reserved for private use.  Values
+      0xFF01 and 0xFF02 were used in previous versions of TLS but MUST
+      NOT be offered by TLS 1.3 implementations.
+      [[OPEN ISSUE: Triage curve list.]]
+
+Items in elliptic_curve_list are ordered according to the client's
+preferences (favorite choice first).
+
+As an example, a client that only supports secp192r1 (aka NIST P-192;
+value 19 = 0x0013) and secp224r1 (aka NIST P-224; value 21 = 0x0015)
+and prefers to use secp192r1 would include a TLS extension consisting
+of the following octets.  Note that the first two octets indicate the
+extension type (Supported Elliptic Curves Extension):
+
+        00 0A 00 06 00 04 00 13 00 15
+
+If the server negotiates an ECDHE cipher suite, it MUST select one of the
+offered groups and provide it in its "elliptic_curves extension.
+Note: This is a difference between TLS 1.3 and previous versions of
+TLS. The "extension_data" field of this extension MUST be a
+single two-byte NamedCurve. If the client does not supply a
+"elliptic_curves" extension with a compatible group, the
+server MUST NOT negotiate a ECDHE cipher suite.  If no acceptable group
+can be selected across all cipher suites, then the server MUST
+generate a fatal "handshake_failure" alert.
+
+[[TODO: IANA Considerations.]]
+
+           
 ##### Early Data Extension
 
 TLS versions before 1.3 have a strict message ordering and do not
