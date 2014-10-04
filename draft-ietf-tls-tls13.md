@@ -1,4 +1,5 @@
 ---
+# TODO
 title: The Transport Layer Security (TLS) Protocol Version 1.3
 abbrev: TLS
 docname: draft-ietf-tls-tls13-latest
@@ -64,6 +65,7 @@ normative:
          org: National Institute of Standards and Technology, U.S. Department of Commerce
        seriesinfo:
          NIST: FIPS PUB 186-2
+
   SCH:
        title: "Applied Cryptography: Protocols, Algorithms, and Source Code in C, 2nd ed."
        date: 1996
@@ -91,6 +93,13 @@ normative:
          org: ITU-T
        seriesinfo:
          ISO/IEC: 8825-1:2002
+  X962:
+       title: "Public Key Cryptography For The Financial Services Industry: The Elliptic Curve Digital Signature Algorithm (ECDSA)"
+       date: 1998
+       author:
+         org: ANSI
+       seriesinfo:
+         ANSI: X9.62
 
 informative:
   RFC0793:
@@ -312,8 +321,17 @@ interpreted as described in RFC 2119 {{RFC2119}}.
 
 draft-03
 
--  Remove GMT time.
+- Remove GMT time.
 
+- Merge in support for ECC from RFC 4492.
+
+- Remove the unnecessary length field from the AD input to AEAD
+  ciphers.
+
+- Rename {Client,Server}KeyExchange to {Client,Server}KeyShare
+
+- Add an explicit HelloRetryRequest to reject the client's
+  
 
 draft-02
 
@@ -683,6 +701,20 @@ DSS refers to the NIST standard. In the original SSL and TLS specs, "DSS" was
 used universally. This document uses "DSA" to refer to the algorithm, "DSS" to
 refer to the standard, and it uses "DSS" in the code point definitions for
 historical continuity.
+
+All ECDSA computations MUST be performed according to ANSI X9.62 {{X962}}
+or its successors.  Data to be signed/verified is hashed, and the
+result run directly through the ECDSA algorithm with no additional
+hashing.  The default hash function is SHA-1 {{SHS}}.  However, an
+alternative hash function, such as one of the new SHA hash functions
+specified in FIPS 180-2 may be used instead if the certificate
+containing the EC public key explicitly requires use of another hash
+function.  (The mechanism for specifying the required hash function
+has not been standardized, but this provision anticipates such
+standardization and obviates the need to update this document in
+response.  Future PKIX RFCs may choose, for example, to specify the
+hash function to be used with a public key in the parameters field of
+subjectPublicKeyInfo.) [[OPEN ISSUE: This needs updating per 4492-bis]]
 
 In AEAD encryption, the plaintext is simultaneously encrypted and integrity
 protected. The input may be of any length, and aead-ciphered output is
@@ -1472,20 +1504,20 @@ the same flight, it sends a ClientKeyShare message which contains its
 share of the parameters for key agreement for some set of expected
 server parameters (DHE/ECDHE groups, etc.).
 
-The server responds to the ClientHello with a ServerHello message, or
-else a fatal error will occur and the connection will fail. The
-ServerHello contains the server's nonce (ServerHello.random), the
-server's choice of the Protocol Version, Session ID and Cipher Suite,
-and the server's response to the extensions the client offered.
+If the client has provided a ClientKeyShare with an appropriate set of
+keying material, the server responds to the ClientHello a ServerHello
+message. The ServerHello contains the server's nonce
+(ServerHello.random), the server's choice of the Protocol Version,
+Session ID and Cipher Suite, and the server's response to the
+extensions the client offered.
 
-If the client has provided a ClientKeyShare with an appropriate set
-of keying material, the server can then generate its own keying
-material share and send a ServerKeyShare message which contains its
-share of the parameters for the key agreement. The server can now
-compute the shared secret. At this point, a ChangeCipherSpec message
-is sent by the server, and the server copies the pending Cipher Spec
-into the current Cipher Spec. The remainder of the server's handshake
-messages will be encrypted under that Cipher Spec. 
+The server can then generate its own keying material share and send a
+ServerKeyShare message which contains its share of the parameters for
+the key agreement. The server can now compute the shared secret. At
+this point, a ChangeCipherSpec message is sent by the server, and the
+server copies the pending Cipher Spec into the current Cipher
+Spec. The remainder of the server's handshake messages will be
+encrypted under that Cipher Spec.
 
 Following these messages, the server will send an EncryptedExtensions
 message which contains a response to any client's extensions which are
@@ -1522,15 +1554,15 @@ about server-side False Start.]]
        Client                                               Server
 
        ClientHello
-       ClientKeyShare            -------->
+       ClientKeyShare               -------->
                                                        ServerHello
-                                                 ServerKeyShare
+                                                    ServerKeyShare
                                                 [ChangeCipherSpec]
                                               EncryptedExtensions*
                                                       Certificate*
                                                CertificateRequest*
                                                 CertificateVerify*
-                                     <--------            Finished
+                                    <--------             Finished
        [ChangeCipherSpec]
        Certificate*
        CertificateVerify*
@@ -1544,24 +1576,22 @@ about server-side False Start.]]
 Note: To help avoid pipeline stalls, ChangeCipherSpec is an independent TLS
 protocol content type, and is not actually a TLS handshake message.
 
-If the client has not provided an appropriate ClientKeyShare
-(e.g. it includes only DHE or ECDHE groups unacceptable or unsupported by the server), the
-server corrects the mismatch with the ServerHello (which the client
-can detect by comparing the selected cipher suite and parameters with
-the ClientKeyShare it offered) and the client will need to restart
-the handshake with an appropriate ClientKeyShare, as shown in
-Figure 2:
+If the client has not provided an appropriate ClientKeyShare (e.g. it
+includes only DHE or ECDHE groups unacceptable or unsupported by the
+server), the server corrects the mismatch with a HelloRetryRequest and
+the client will need to restart the handshake with an appropriate
+ClientKeyShare, as shown in Figure 2:
 
        Client                                               Server
 
        ClientHello
        ClientKeyShare            -------->
-                                    <--------          ServerHello
+                                 <--------       HelloRetryRequest
 
        ClientHello
-       ClientKeyShare            -------->
+       ClientKeyShare               -------->
                                                        ServerHello
-                                                 ServerKeyShare
+                                                    ServerKeyShare
                                                 [ChangeCipherSpec]
                                               EncryptedExtensions*
                                                       Certificate*
@@ -1583,6 +1613,10 @@ hashes (as long as clients don't change their opinion of the server's
 capabilities with aborted handshakes) and requiring the client to send
 the same ClientHello (as is currently done) and then checking you get
 the same negotiated parameters.]]
+
+If no common cryptographic parameters can be negotiated, the server
+will send a fatal alert.
+
 
 When the client and server decide to resume a previous session or duplicate an
 existing session (instead of negotiating new security parameters), the message
@@ -1636,9 +1670,9 @@ processed and transmitted as specified by the current active session state.
            select (HandshakeType) {
                case hello_request:       HelloRequest;
                case client_hello:        ClientHello;
-               case client_key_share: ClientKeyShare;
+               case client_key_share:    ClientKeyShare;
                case server_hello:        ServerHello;
-               case server_key_share: ServerKeyShare;
+               case server_key_share:    ServerKeyShare;
                case certificate:         Certificate;
                case certificate_request: CertificateRequest;
                case certificate_verify:  CertificateVerify;
@@ -1859,19 +1893,21 @@ for zero or more key establishment methods.
 
 Structure of this message:
 
-       enum { dhe(1), ecdhe(2), (255) } KeyExchangeAlgorithm;
-
        struct {
-           KeyExchangeAlgorithm algorithm;
            uint16 length;
            select (KeyExchangeAlgorithm) {
               dhe:
-                  ClientDiffieHellmanParams;
+                  DiffieHellmanParams;
 
               ecdhe:
-                  ClientECDiffieHellmanParams;
+                  ECDiffieHellmanParams;
            } exchange_keys;
        } ClientKeyShareOffer;
+
+length
+: The length of the remainder of the ClientKeyShareOffer in bytes.
+This allows the server to skip unknown key share types.
+{:br }
 
        struct {
            ClientKeyShareOffer offers<0..2^16-1>;
@@ -1881,7 +1917,6 @@ offers
 : A list of ClientKeyShareOffer values.
 {:br }
 
-[[OPEN ISSUE: Should we rename CKE here?]]
 Clients may offer an arbitrary number of ClientKeyShareOffer
 values, each representing a single set of key agreement parameters;
 for instance a client might offer shares for several elliptic curves
@@ -1891,53 +1926,51 @@ ClientKeyShareOffers for the same parameters. It is explicitly
 permitted to send an empty ClientKeyShare message, as this is used
 to elicit the server's parameters if the client has no useful
 information.
-
 [TODO: Recommendation about what the client offers. Presumably which integer
 DH groups and which curves.]
 [TODO: Work out how this interacts with PSK and SRP.]
 
-####  Client Diffie-Hellman Parameters
 
-When one of the ClientKeyShareOffers is a Diffie-Hellman key, the
-client SHALL encode it using ClientDiffieHellmanParams. This structure
-conveys the client's Diffie-Hellman public value (dh_Yc) and the group
-which it is being provided for.
+####  Diffie-Hellman Parameters
+
+Diffie-Hellman parameters for both clients and servers are encoded
+using the DiffieHellmanParams structure This structure conveys the
+Diffie-Hellman public value (dh_Y) and the group which it is being
+provided for.
 
 Structure of this message:
 
        struct {
-           DiscreteLogDHEGroup group;
-           opaque dh_Yc<1..2^16-1>;
-       } ClientDiffieHellmanParams;
+           NamedGroup group;
+           opaque dh_Y<1..2^16-1>;
+       } DiffieHellmanParams;
 
        group
           The DHE group to which these parameters correspond.
 
-       dh_Yc
-          The client's Diffie-Hellman public value (g^X mod p).
+       dh_Y
+          The endpoint's Diffie-Hellman public value (g^X mod p).
 
-#### ClientECHDE Parameters
 
-When one of the ClientKeyShareOffers is an EC Diffie-Hellman key, the
-client SHALL encode it using ClientECDiffieHellmanParams. This
-structure conveys the client's EC Diffie-Hellman public value
-(ecdh_Yc) and the group which it is being provided for.
+#### ECHDE Parameters
+
+ECDHE parameters for both clients and servers are encoded
+using the ECDiffieHellmanParams structure. This structure conveys the
+Elliptic Curve Diffie-Hellman public value (ecdh_Y) and the group which it is being
+provided for.
 
         struct {
-            NamedCurve group;
-            ECPoint ecdh_Yc;
-        } ClientECDiffieHellmanPublic;
+            NamedGroupe group;
+            ECPoint ecdh_Y;
+        } ECDiffieHellmanPublic;
 
        group
-          The DHE group to which these parameters correspond.
+          The ECDHE group to which these parameters correspond.
 
-       ecdh_Yc
-          Contains the client's ephemeral ECDH public key as a byte
-          string ECPoint.point, which may represent an elliptic curve point
-          in uncompressed or compressed format.  Here, the format MUST
-          conform to what the server has requested through a Supported Point
-          Formats Extension if this extension was used, and MUST be
-          uncompressed if this extension was not used.
+       ecdh_Y
+          Contains the agent's ephemeral ECDH public key as a byte
+          string ECPoint.point, which may represent an elliptic curve
+          point in uncompressed or compressed format.
 
           
 ####  Server Hello
@@ -1945,7 +1978,8 @@ structure conveys the client's EC Diffie-Hellman public value
 When this message will be sent:
 
 > The server will send this message in response to a ClientHello message when
-it was able to find an acceptable set of algorithms. If it cannot find such a
+it was able to find an acceptable set of algorithms and the client's
+ClientKeyShare message was acceptable. If it cannot find such a
 match, it will respond with a handshake failure alert.
 
 Structure of this message:
@@ -2009,6 +2043,44 @@ extensions
   MUST only include extensions which are required to establish
   the cryptographic context.
 {:br }
+
+####  HelloRetryRequest
+
+When this message will be sent:
+
+> The server will send this message in response to a ClientHello
+message when it was able to find an acceptable set of algorithms but
+the client's ClientKeyShare message did not contain an acceptable
+offer.  If it cannot find such a match, it will respond with a
+handshake failure alert.
+
+Structure of this message:
+
+       struct {
+           ProtocolVersion server_version;
+           CipherSuite cipher_suite;
+           NamedGroup selected_group;
+           Extension extensions<0..2^16-1>;
+       } HelloRetryRequest;
+
+[[OPEN ISSUE: Merge in DTLS Cookies?]]
+[[OPEN ISSUE: Should we lose server_version?]]
+
+selected_group
+: The group which the client MUST use for its new ClientHello.
+{:br }
+
+The "server_version", "cipher_suite" and "extensions" fields have the
+same meanings as their corresponding values in the ServerHello. The
+server SHOULD send only the extensions necessary for the client to
+generate a correct ClientHello/ClientKeyShare pair.
+
+Upon receipt of a HelloRetryRequest, the client MUST send a new
+ClientHello/ClientKeyShare pair to the server. The ClientKeyShare MUST
+contain both the groups in the original ClientKeyShare as well as a
+ClientKeyShareOffer consistent with the "selected_group" field.
+I.e., it MUST be a superset of the previous ClientKeyShareOffer.
+
 
 ####  Hello Extensions
 
@@ -2179,50 +2251,22 @@ extension.
 When performing session resumption, this extension is not included in Server
 Hello, and the server ignores the extension in Client Hello (if present).
 
-##### Negotiated DHE Groups
 
-When sent by the client the "negotiated_ff_dhe_groups" extension
-indicates the finite field Diffie-Hellman groups which the client
-supports, ordered from most preferred to least preferred.
+##### Negotiated Groups
 
-The "extension_data" field of this extension SHALL contain a
-"FiniteFieldDHEGroups" value:
+When sent by the client, the "supported_groups" extension indicates the
+named groups which the client supports, ordered from most
+preferred to least preferred. 
 
-        enum {
-            ffdhe2432(0), ffdhe3072(1), ffdhe4096(2),
-            ffdhe6144(3), ffdhe8192(4), (2^16 - 1)
-        } FiniteFieldDHEGroup;
-
-        struct {
-            FiniteFieldDHEGroup finite_field_dhe_group_list<1..2^8-1>;
-        } FiniteFieldDHEGroups;
-
-The definitions of the groups corresponding to these values are in
-{{I-D.ietf-tls-negotiated-ff-dhe}}. If a client offers one or more
-DHE-key-exchange cipher suites, it MUST include this extension. Clients
-SHOULD not include this extension if they do not offer any
-DHE-key-exchange cipher suites. 
-
-If the server negotiates a DHE cipher suite, it MUST select one of the
-offered groups and provide it in a "negotiated_ff_dhe_groups"
-extension.  The "extension_data" field of this extension MUST be a
-single two-byte FiniteFieldDHEGroup. If the client does not supply a
-"negotiated_ff_dhe_groups" extension with a compatible group, the
-server MUST NOT negotiate a DHE cipher suite.  If no acceptable group
-can be selected across all cipher suites, then the server MUST
-generate a fatal "handshake_failure" alert.
-
-
-##### Negotiated Elliptic Curves
-
-When sent by the client, the "elliptic_curves" extension indicates the
-elliptic curve groups which the client supports, ordered from most
-preferred to least preferred.
+Note: In versions of TLS prior to TLS 1.3, this extension was named
+"elliptic curves" and only contained elliptic curve groups. See
+{{RFC4492}} and {{I-D.ietf-tls-negotiated-ff-dhe}}.
 
 The "extension_data" field of this extension SHALL contain a
-"EllipticCurveList" value:
+"NamedGroupList" value:
 
         enum {
+            // Elliptic Curve Groups.
             sect163k1 (1), sect163r1 (2), sect163r2 (3),
             sect193r1 (4), sect193r2 (5), sect233k1 (6),
             sect233r1 (7), sect239k1 (8), sect283k1 (9),
@@ -2232,47 +2276,134 @@ The "extension_data" field of this extension SHALL contain a
             secp192r1 (19), secp224k1 (20), secp224r1 (21),
             secp256k1 (22), secp256r1 (23), secp384r1 (24),
             secp521r1 (25),
+
+            // Finite Field Groups.
+            ffdhe2432(256), ffdhe3072(257), ffdhe4096(258),
+            ffdhe6144(259), ffdhe8192(260),
+            
+            // Reserved Code Points.
             reserved (0xFE00..0xFEFF),
             reserved(0xFF01),
             reserved(0xFF02),
             (0xFFFF)
-        } NamedCurve;
+        } NamedGroup;
 
         struct {
-            NamedCurve elliptic_curve_list<1..2^16-1>
-        } EllipticCurveList;
+            NamedGroup named_group_list<1..2^16-1>
+        } NamedGroupList;
 
    sect163k1, etc:   Indicates support of the corresponding named curve
-      or class of explicitly defined curves.  The named curves defined
-      here are those specified in SEC 2 [13].  Note that many of these
-      curves are also recommended in ANSI X9.62 [7] and FIPS 186-2 [11].
-      Values 0xFE00 through 0xFEFF are reserved for private use.  Values
-      0xFF01 and 0xFF02 were used in previous versions of TLS but MUST
-      NOT be offered by TLS 1.3 implementations.
+      The named curves defined here are those specified in SEC 2 [13].
+      Note that many of these curves are also recommended in ANSI
+      X9.62 {{X962}} and FIPS 186-2 {{DSS}}.  Values 0xFE00 through 0xFEFF are
+      reserved for private use.  Values 0xFF01 and 0xFF02 were used in
+      previous versions of TLS but MUST NOT be offered by TLS 1.3
+      implementations.
       [[OPEN ISSUE: Triage curve list.]]
 
-Items in elliptic_curve_list are ordered according to the client's
+   ffdhe2432, etc:   Indicates support of the corresponding finite field
+      group, defined in {{I-D.ietf-tls-negotiated-ff-dhe}}
+
+Items in named_curve_list are ordered according to the client's
 preferences (favorite choice first).
 
 As an example, a client that only supports secp192r1 (aka NIST P-192;
 value 19 = 0x0013) and secp224r1 (aka NIST P-224; value 21 = 0x0015)
 and prefers to use secp192r1 would include a TLS extension consisting
 of the following octets.  Note that the first two octets indicate the
-extension type (Supported Elliptic Curves Extension):
+extension type (Supported Group Extension):
 
         00 0A 00 06 00 04 00 13 00 15
 
-If the server negotiates an ECDHE cipher suite, it MUST select one of the
-offered groups and provide it in its "elliptic_curves extension.
-Note: This is a difference between TLS 1.3 and previous versions of
-TLS. The "extension_data" field of this extension MUST be a
-single two-byte NamedCurve. If the client does not supply a
-"elliptic_curves" extension with a compatible group, the
-server MUST NOT negotiate a ECDHE cipher suite.  If no acceptable group
-can be selected across all cipher suites, then the server MUST
-generate a fatal "handshake_failure" alert.
+If the client does not supply a "named_groups" extension with a
+compatible group, the server MUST NOT negotiate a cipher suite of the
+relevant type.  For instance, if a client supplies only ECDHE groups,
+the server MUST NOT negotiate finite field Diffie-Hellman.  If no
+acceptable group can be selected across all cipher suites, then the
+server MUST generate a fatal "handshake_failure" alert.
+
+NOTE: A server participating in an ECDHE-ECDSA key exchange may use
+different curves for (i) the ECDSA key in its certificate, and (ii)
+the ephemeral ECDH key in the ServerKeyExchange message.  The server
+must consider the supported groups in both cases.
 
 [[TODO: IANA Considerations.]]
+
+#####  Supported Point Formats Extension
+
+[[OPEN ISSUE: Can we simply mandate support for
+compressed points? If so, we can omit this extension entirely.
+https://github.com/tlswg/tls13-spec/issues/80.]]
+
+A client that proposes ECC cipher suites in its ClientHello message
+SHOULD send the Supported Point Formats Extension to indicate the
+elliptic curve point formats it supports. If the Supported Point Formats
+Extension is indeed sent, it MUST contain the value 0 (uncompressed)
+as one of the items in the list of point formats.
+
+        enum { uncompressed (0), ansiX962_compressed_prime (1),
+               ansiX962_compressed_char2 (2), reserved (248..255)
+        } ECPointFormat;
+
+        struct {
+            ECPointFormat ec_point_format_list<1..2^8-1>
+        } ECPointFormatList;
+
+Three point formats are included in the definition of ECPointFormat
+above. The uncompressed point format is the default format in that
+implementations of this document MUST support it for all of their
+supported curves.  Compressed point formats reduce bandwidth by
+including only the x-coordinate and a single bit of the y-coordinate
+of the point.  Implementations of this document MAY support the
+ansiX962_compressed_prime and ansiX962_compressed_char2 formats,
+where the former applies only to prime curves and the latter applies
+only to characteristic-2 curves.  (These formats are specified in
+{{X962}}.)  Values 248 through 255 are reserved for private use.
+
+The ECPointFormat name space is maintained by IANA.  See {{iana-considerations}}
+for information on how new value assignments are added.
+
+Items in ec_point_format_list are ordered according to the sender's
+preferences (favorite choice first).
+
+An endpoint that can parse only the uncompressed point format (value 0)
+includes an extension consisting of the following octets; note that
+the first two octets indicate the extension type (Supported Point
+Formats Extension):
+
+        00 0B 00 02 01 00
+
+An endpoint that in the case of prime fields prefers the compressed
+format (ansiX962_compressed_prime, value 1) over the uncompressed
+format (value 0), but in the case of characteristic-2 fields prefers
+the uncompressed format (value 0) over the compressed format
+(ansiX962_compressed_char2, value 2), may indicate these preferences
+by including an extension consisting of the following octets:
+
+        00 0B 00 04 03 01 00 02
+
+If the client supplies a Supported Points Formats Extension in the
+ClientHello, the server may send its own Supported Points Format
+extension in the ServerHello.  This extension allows a server to
+enumerate the point formats it can parse (for the curve that will
+appear in its ServerKeyExchange message when using the ECDHE_ECDSA,
+ECDHE_RSA, or ECDH_anon key exchange algorithm, or for the curve that
+is used in the server's public key that will appear in its Certificate
+message when using the ECDH_ECDSA or ECDH_RSA key exchange algorithm).
+
+The server's Supported Point Formats Extension has the same structure
+and semantics as the client's Supported Point Formats Extension. Note
+that the server may include items that were not found in the client's
+list (e.g., the server may prefer to receive points in compressed
+format even when a client cannot parse this format: the same client
+may nevertheless be capable of outputting points in compressed
+format).
+
+An endpoint that receives a ServerHello message containing a Supported
+Point Formats Extension MUST respect the sender's choice of point
+formats during the handshake. If no Supported Point Formats Extension
+is received this is equivalent to an extension allowing only the
+uncompressed point format.
 
            
 ##### Early Data Extension
@@ -2337,39 +2468,19 @@ or a public key for some other algorithm.
 Structure of this message:
 
        struct {
-           opaque dh_Ys<1..2^16-1>;
-       } ServerDiffieHellmanParams;     /* Ephemeral DH parameters */
-
-       dh_Ys
-          The server's Diffie-Hellman public value (g^X mod p).
-
-       struct {
-           ECPoint ecdh_Ys;
-       } ServerECDiffieHellmanParams;   /* Ephemeral ECDH parameters */
-
-       ecdh_Ys
-          Contains the server's ephemeral ECDH public key as a byte
-          string ECPoint.point, which may represent an elliptic curve point
-          in uncompressed or compressed format. Here, the format MUST
-          conform to what the server has requested through a Supported Point
-          Formats Extension if this extension was used, and MUST be
-          uncompressed if this extension was not used.
-
-
-       struct {
            select (KeyExchangeAlgorithm) {
                case dhe:
-                   ServerDiffieHellmanParams;
+                   DiffieHellmanParams;
                case ecdhe:
-                   ServerECDiffieHellmanParams;
+                   ECDiffieHellmanParams;
            } params;
        } ServerKeyShare;
 
 params
-: The server's key exchange parameters. These correspond to the group
-  indicated by the ServerHello message using the cipher suite and the
-  "negotiated_dl_dhe_groups" {{I-D.gillmor-tls-negotiated-dl-dhe}}
-  extension or the "elliptic_curves" extension.
+: The server's key exchange parameters. Note that for both Diffie-Hellman
+and ECDHE, the first field of the params structure is the group identifier
+(see {{client-key-share-message}}), thus identifying the ClientKeyShareOffer
+that the server has accepted and is responding to.
 {:br }
 
 
@@ -2855,6 +2966,23 @@ before it is used as the pre_master_secret.
 Note: Diffie-Hellman parameters are specified by the server and may be either
 ephemeral or contained within the server's certificate.
 
+### Elliptic Curve Diffie-Hellman
+
+All ECDH calculations (including parameter and key generation as well
+as the shared secret calculation) are performed according to [6]
+using the ECKAS-DH1 scheme with the identity map as key derivation
+function (KDF), so that the premaster secret is the x-coordinate of
+the ECDH shared secret elliptic curve point represented as an octet
+string.  Note that this octet string (Z in IEEE 1363 terminology) as
+output by FE2OSP, the Field Element to Octet String Conversion
+Primitive, has constant length for any given field; leading zeros
+found in this octet string MUST NOT be truncated.
+
+(Note that this use of the identity KDF is a technicality.  The
+complete picture is that ECDH is employed with a non-trivial KDF
+because TLS does not directly use the premaster secret for anything
+other than for computing the master secret.
+
 #  Mandatory Cipher Suites
 
 In the absence of an application profile standard specifying otherwise, a
@@ -2910,6 +3038,16 @@ updated it to reference this document. The registry and its allocation policy
   Consensus {{RFC2434}}.  IANA has updated this registry to include
   the signature_algorithms extension and its corresponding value
   (see {{hello-extensions}}).
+
+This document also uses two registries originally created in {{RFC4492}}. IANA
+[should update/has updated] it to reference this document. The registries
+and their allocation policies are listed below.
+
+- TLS NamedCurve registry: Future values are allocated via IETF Consensus
+  {{RFC2434}}.
+
+- TLS ECPointFormat Registry: Future values are allocated via IETF Consensus
+  {{RFC2434}}.
 
 In addition, this document defines two new registries to be maintained by IANA:
 
@@ -3015,9 +3153,10 @@ This section describes protocol types and constants.
 
     enum {
         hello_request(0), client_hello(1), server_hello(2),
-        certificate(11), server_key_share (12),
+        hello_retry_request(4),
+        certificate(11), server_key_share (17),
         certificate_request(13), server_hello_done(14),
-        certificate_verify(15), client_key_share(16),
+        certificate_verify(15), client_key_share(18),
         finished(20),
         (255)
     } HandshakeType;
@@ -3029,12 +3168,13 @@ This section describes protocol types and constants.
             case hello_request:       HelloRequest;
             case client_hello:        ClientHello;
             case server_hello:        ServerHello;
+            case hello_retry_requst:  HelloRetryRequest;
             case certificate:         Certificate;
-            case server_key_share: ServerKeyShare;
+            case server_key_share:    ServerKeyShare;
             case certificate_request: CertificateRequest;
             case server_hello_done:   ServerHelloDone;
             case certificate_verify:  CertificateVerify;
-            case client_key_share: ClientKeyShare;
+            case client_key_share:    ClientKeyShare;
             case finished:            Finished;
         } body;
     } Handshake;
@@ -3207,18 +3347,14 @@ negotiated, as it provides no more protection than an unsecured connection.
 
        CipherSuite TLS_NULL_WITH_NULL_NULL             = { 0x00,0x00 };
 
-The following cipher suite definitions, defined in {{RFC5288},
-are used for server-authenticated (and
-optionally client-authenticated) Diffie-Hellman. DH denotes cipher suites in
-which the server's certificate contains the Diffie-Hellman parameters signed by
-the certificate authority (CA). DHE denotes ephemeral Diffie-Hellman, where the
-Diffie-Hellman parameters are signed by a signature-capable certificate, which
-has been signed by the CA. The signing algorithm used by the server is
-specified after the DHE component of the CipherSuite name. The server can
-request any signature-capable certificate from the client for client
-authentication, or it may request a Diffie-Hellman certificate. Any
-Diffie-Hellman certificate provided by the client must use the parameters
-(group and generator) described by the server.
+The following cipher suite definitions, defined in {{RFC5288}, are
+used for server-authenticated (and optionally client-authenticated)
+Diffie-Hellman. DHE denotes ephemeral Diffie-Hellman,
+where the Diffie-Hellman parameters are signed by a signature-capable
+certificate, which has been signed by the CA. The signing algorithm
+used by the server is specified after the DHE component of the
+CipherSuite name. The server can request any signature-capable
+certificate from the client for client authentication.
 
       CipherSuite TLS_RSA_WITH_AES_128_GCM_SHA256 = {0x00,0x9C}
       CipherSuite TLS_RSA_WITH_AES_256_GCM_SHA384 = {0x00,0x9D}
@@ -3227,7 +3363,22 @@ Diffie-Hellman certificate provided by the client must use the parameters
       CipherSuite TLS_DHE_DSS_WITH_AES_128_GCM_SHA256 = {0x00,0xA2}
       CipherSuite TLS_DHE_DSS_WITH_AES_256_GCM_SHA384 = {0x00,0xA3}
 
-The following cipher suites, defined in {{RFC5288},
+The following cipher suite definitions, defined in {{RFC5289}, are
+used for server-authenticated (and optionally client-authenticated)
+Elliptic Curve Diffie-Hellman. ECDHE denotes ephemeral Diffie-Hellman,
+where the Diffie-Hellman parameters are signed by a signature-capable
+certificate, which has been signed by the CA. The signing algorithm
+used by the server is specified after the DHE component of the
+CipherSuite name. The server can request any signature-capable
+certificate from the client for client authentication.
+
+     CipherSuite TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256  = {0xC0,0x2B};
+     CipherSuite TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384  = {0xC0,0x2C};
+     CipherSuite TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256    = {0xC0,0x2F};
+     CipherSuite TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384    = {0xC0,0x30};
+
+
+The following ciphers, defined in {{RFC5288}},
 are used for completely anonymous Diffie-Hellman
 communications in which neither party is authenticated. Note that this mode is
 vulnerable to man-in-the-middle attacks. Using this mode therefore is of
@@ -3241,6 +3392,7 @@ means to ensure authentication.)
       CipherSuite TLS_DH_anon_WITH_AES_128_GCM_SHA256 = {0x00,0xA6}
       CipherSuite TLS_DH_anon_WITH_AES_256_GCM_SHA384 = {0x00,0xA7}
 
+
 [[TODO: Add all the defined AEAD ciphers. This currently only lists
 GCM. https://github.com/tlswg/tls13-spec/issues/53]]
 Note that using non-anonymous key exchange without actually verifying the key
@@ -3250,7 +3402,15 @@ higher computational and communicational cost than anonymous key exchange, it
 may be in the interest of interoperability not to disable non-anonymous key
 exchange when the application layer is allowing anonymous key exchange.
 
-New cipher suite values have been assigned by IANA as described in
+The PRFs SHALL be as follows:
+
+   o  For cipher suites ending with _SHA256, the PRF is the TLS PRF
+      with SHA-256 as the hash function.
+
+   o  For cipher suites ending with _SHA384, the PRF is the TLS PRF
+      with SHA-384 as the hash function.
+
+New cipher suite values are been assigned by IANA as described in
 {{iana-considerations}}.
 
 Note: The cipher suite values { 0x00, 0x1C } and { 0x00, 0x1D } are
@@ -3998,3 +4158,4 @@ Archives of the list can be found at:
     Tim Wright
     Vodafone
     timothy.wright@vodafone.com
+
