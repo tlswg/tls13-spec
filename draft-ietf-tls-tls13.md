@@ -1904,7 +1904,13 @@ Structure of this message:
            } exchange_keys;
        } ClientKeyShareOffer;
 
-length
+[[OPEN ISSUE: MT points out that this actually doesn't work for
+new types unless we either: (a) put in a key exchange algorithm block
+or (b) mandate that every ClientKeyShareOffer start with a
+NamedGroup field. I was trying to use a common type between
+client and server, but maybe that's not workable easily.
+I know I need to fix this before I put it in a PR.]]
+
 : The length of the remainder of the ClientKeyShareOffer in bytes.
 This allows the server to skip unknown key share types.
 {:br }
