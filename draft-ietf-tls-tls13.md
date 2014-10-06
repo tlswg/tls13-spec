@@ -1,5 +1,4 @@
 ---
-# TODO
 title: The Transport Layer Security (TLS) Protocol Version 1.3
 abbrev: TLS
 docname: draft-ietf-tls-tls13-latest
@@ -250,7 +249,7 @@ tampering, or message forgery.
 
 #  Introduction
 
-DISCLAIMER: This is a WIP draft of TLS 1.3 and has not yet seen significant security analysis. 
+DISCLAIMER: This is a WIP draft of TLS 1.3 and has not yet seen significant security analysis.
 
 RFC EDITOR: PLEASE REMOVE THE FOLLOWING PARAGRAPH
 The source for this draft is maintained in GitHub. Suggested changes
@@ -331,7 +330,7 @@ draft-03
 - Rename {Client,Server}KeyExchange to {Client,Server}KeyShare
 
 - Add an explicit HelloRetryRequest to reject the client's
-  
+
 
 draft-02
 
@@ -1603,7 +1602,7 @@ ClientKeyShare, as shown in Figure 2:
        CertificateVerify*
        Finished                     -------->
        Application Data             <------->     Application Data
-       
+
    Figure 2.  Message flow for a full handshake with mismatched parameters
 
 [[OPEN ISSUE: Do we restart the handshake hash?]]
@@ -1635,7 +1634,7 @@ handshake.
 
        Client                                                Server
 
-       ClientHello                   
+       ClientHello
        ClientKeyExhange              -------->
                                                         ServerHello
                                                  [ChangeCipherSpec]
@@ -1767,7 +1766,7 @@ that field for time synchronization.
 [[https://github.com/tlswg/tls13-spec/issues/64]]
 
 
-Note: 
+Note:
 The ClientHello message includes a variable-length session identifier. If not
 empty, the value identifies a session between the same client and server whose
 security parameters the client wishes to reuse. The session identifier MAY be
@@ -1972,7 +1971,7 @@ provided for.
           string ECPoint.point, which may represent an elliptic curve
           point in uncompressed or compressed format.
 
-          
+
 ####  Server Hello
 
 When this message will be sent:
@@ -2256,7 +2255,7 @@ Hello, and the server ignores the extension in Client Hello (if present).
 
 When sent by the client, the "supported_groups" extension indicates the
 named groups which the client supports, ordered from most
-preferred to least preferred. 
+preferred to least preferred.
 
 Note: In versions of TLS prior to TLS 1.3, this extension was named
 "elliptic curves" and only contained elliptic curve groups. See
@@ -2280,7 +2279,7 @@ The "extension_data" field of this extension SHALL contain a
             // Finite Field Groups.
             ffdhe2432(256), ffdhe3072(257), ffdhe4096(258),
             ffdhe6144(259), ffdhe8192(260),
-            
+
             // Reserved Code Points.
             reserved (0xFE00..0xFEFF),
             reserved(0xFF01),
@@ -2405,7 +2404,7 @@ formats during the handshake. If no Supported Point Formats Extension
 is received this is equivalent to an extension allowing only the
 uncompressed point format.
 
-           
+
 ##### Early Data Extension
 
 TLS versions before 1.3 have a strict message ordering and do not
@@ -2413,7 +2412,7 @@ permit additional messages to follow the ClientHello. The EarlyData
 extension allows TLS messages which would otherwise be sent as
 separate records to be instead inserted in the ClientHello. The
 extension simply contains the TLS records which would otherwise have
-been included in the client's first flight. 
+been included in the client's first flight.
 
           struct {
             TLSCipherText messages<5 .. 2^24-1>;
@@ -4158,4 +4157,3 @@ Archives of the list can be found at:
     Tim Wright
     Vodafone
     timothy.wright@vodafone.com
-
