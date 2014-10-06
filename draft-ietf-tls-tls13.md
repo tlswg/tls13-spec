@@ -1893,19 +1893,24 @@ for zero or more key establishment methods.
 Structure of this message:
 
        struct {
-           uint16 length;
-           select (KeyExchangeAlgorithm) {
-              dhe:
-                  DiffieHellmanParams;
-
-              ecdhe:
-                  ECDiffieHellmanParams;
-           } exchange_keys;
+           NamedGroup group;
+           opaque key_exchange<1..2^16-1>;
        } ClientKeyShareOffer;
 
-length
-: The length of the remainder of the ClientKeyShareOffer in bytes.
-This allows the server to skip unknown key share types.
+group
+
+: The named group for the key share offer.  This identifies the
+specific key exchange method that the ClientKeyShareOffer describes.
+Finite Field Diffie-Hellman parameters are described in
+{{ffdhe-param}}; Elliptic Curve Diffie-Hellman parameters are
+described in {{ecdhe-param}}.
+
+key_exchange
+
+: Key exchange information.  The contents of this field are
+determined by the value of NamedGroup entry and its corresponding
+definition.
+
 {:br }
 
        struct {
@@ -1930,46 +1935,28 @@ DH groups and which curves.]
 [TODO: Work out how this interacts with PSK and SRP.]
 
 
-####  Diffie-Hellman Parameters
+####  Diffie-Hellman Parameters {#ffdhe-param}
 
-Diffie-Hellman parameters for both clients and servers are encoded
-using the DiffieHellmanParams structure This structure conveys the
-Diffie-Hellman public value (dh_Y) and the group which it is being
-provided for.
-
-Structure of this message:
-
-       struct {
-           NamedGroup group;
-           opaque dh_Y<1..2^16-1>;
-       } DiffieHellmanParams;
-
-       group
-          The DHE group to which these parameters correspond.
-
-       dh_Y
-          The endpoint's Diffie-Hellman public value (g^X mod p).
+Diffie-Hellman parameters for both clients and servers are encoded in
+the opaque key_exchange field of the ClientKeyShareOffer or
+ServerKeyShare structures. The opaque value contains the
+Diffie-Hellman public value (dh_Y = g^X mod p) for the identified
+NamedGroup.
 
 
-#### ECHDE Parameters
+#### ECHDE Parameters {#ecdhe-param}
 
-ECDHE parameters for both clients and servers are encoded
-using the ECDiffieHellmanParams structure. This structure conveys the
-Elliptic Curve Diffie-Hellman public value (ecdh_Y) and the group which it is being
-provided for.
+ECDHE parameters for both clients and servers are encoded in the
+opaque key_exchange field of the ClientKeyShareOffer or
+ServerKeyShare structures. The opaque value conveys the Elliptic
+Curve Diffie-Hellman public value (ecdh_Y) represented as a byte
+string ECPoint.point, which can represent an elliptic curve point in
+uncompressed or compressed format.
 
-        struct {
-            NamedGroupe group;
-            ECPoint ecdh_Y;
-        } ECDiffieHellmanPublic;
-
-       group
-          The ECDHE group to which these parameters correspond.
-
-       ecdh_Y
-          Contains the agent's ephemeral ECDH public key as a byte
-          string ECPoint.point, which may represent an elliptic curve
-          point in uncompressed or compressed format.
+ISSUE: Determine if compressed/uncompressed form is determined based
+on the point format extension; by the definition of the NamedGroup;
+or, by some combination of the two (i.e., new NamedGroup entries
+might only include compressed forms, old might offer either).
 
 
 ####  Server Hello
@@ -2467,19 +2454,23 @@ or a public key for some other algorithm.
 Structure of this message:
 
        struct {
-           select (KeyExchangeAlgorithm) {
-               case dhe:
-                   DiffieHellmanParams;
-               case ecdhe:
-                   ECDiffieHellmanParams;
-           } params;
+         NamedGroup group;
+         opaque key_exchange<1..2^16-1>;
        } ServerKeyShare;
 
-params
-: The server's key exchange parameters. Note that for both Diffie-Hellman
-and ECDHE, the first field of the params structure is the group identifier
-(see {{client-key-share-message}}), thus identifying the ClientKeyShareOffer
-that the server has accepted and is responding to.
+group
+
+: The named group for the key share offer.  This identifies the
+selected key exchange method from the ClientKeyShare message
+({{client-key-share-message}}), identifying which value from the
+ClientKeyShareOffer the server has accepted as is responding to.
+
+key_exchange
+
+: Key exchange information.  The contents of this field are
+determined by the value of NamedGroup entry and its corresponding
+definition.
+
 {:br }
 
 
@@ -3253,29 +3244,9 @@ This section describes protocol types and constants.
         ASN1Cert certificate_list<0..2^24-1>;
     } Certificate;
 
-    enum { dhe_dss, dhe_rsa, dh_anon
-           /* may be extended, e.g., for ECDH -- see [TLSECC] */
-         } KeyExchangeAlgorithm;
-
     struct {
-        opaque dh_p<1..2^16-1>;
-        opaque dh_g<1..2^16-1>;
-        opaque dh_Ys<1..2^16-1>;
-    } ServerDHParams;     /* Ephemeral DH parameters */
-
-    struct {
-        select (KeyExchangeAlgorithm) {
-            case dh_anon:
-                ServerDHParams params;
-            case dhe_dss:
-            case dhe_rsa:
-                ServerDHParams params;
-                digitally-signed struct {
-                    opaque client_random[32];
-                    opaque server_random[32];
-                    ServerDHParams params;
-                } signed_params;
-            /* may be extended, e.g., for ECDH --- see [RFC4492] */
+        NamedGroup group;
+        opaque key_exchange<1..2^16-1>;
     } ServerKeyShare;
 
     enum {
@@ -3298,27 +3269,13 @@ This section describes protocol types and constants.
 ### Client Authentication and Key Exchange Messages
 
     struct {
-        select (KeyExchangeAlgorithm) {
-            case dhe_dss:
-            case dhe_rsa:
-            case dh_anon:
-                ClientDiffieHellmanPublic;
-        } exchange_keys;
+        ClientKeyShareOffer offers<0..2^16-1>;
     } ClientKeyShare;
 
     struct {
-        ProtocolVersion client_version;
-        opaque random[46];
-    } PreMasterSecret;
-
-    enum { implicit, explicit } PublicValueEncoding;
-
-    struct {
-        select (PublicValueEncoding) {
-            case implicit: struct {};
-            case explicit: opaque DH_Yc<1..2^16-1>;
-        } dh_public;
-    } ClientDiffieHellmanPublic;
+        NamedGroup group;
+        opaque key_exchange<1..2^16-1>;
+    } ClientKeyShareOffer;
 
     struct {
          digitally-signed struct {
