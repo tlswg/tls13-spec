@@ -1553,7 +1553,7 @@ about server-side False Start.]]
        Client                                               Server
 
        ClientHello
-       ClientKeyShare               -------->
+       ClientKeyShare            -------->
                                                        ServerHello
                                                     ServerKeyShare
                                                 [ChangeCipherSpec]
@@ -1561,12 +1561,12 @@ about server-side False Start.]]
                                                       Certificate*
                                                CertificateRequest*
                                                 CertificateVerify*
-                                    <--------             Finished
+                                 <--------                Finished
        [ChangeCipherSpec]
        Certificate*
        CertificateVerify*
-       Finished                     -------->
-       Application Data             <------->     Application Data
+       Finished                  -------->
+       Application Data          <------->        Application Data
 
                 Figure 1.  Message flow for a full handshake
 
@@ -1588,7 +1588,7 @@ ClientKeyShare, as shown in Figure 2:
                                  <--------       HelloRetryRequest
 
        ClientHello
-       ClientKeyShare               -------->
+       ClientKeyShare            -------->
                                                        ServerHello
                                                     ServerKeyShare
                                                 [ChangeCipherSpec]
@@ -1596,12 +1596,12 @@ ClientKeyShare, as shown in Figure 2:
                                                       Certificate*
                                                CertificateRequest*
                                                 CertificateVerify*
-                                    <--------             Finished
+                                 <--------                Finished
        [ChangeCipherSpec]
        Certificate*
        CertificateVerify*
-       Finished                     -------->
-       Application Data             <------->     Application Data
+       Finished                  -------->
+       Application Data          <------->        Application Data
 
    Figure 2.  Message flow for a full handshake with mismatched parameters
 
