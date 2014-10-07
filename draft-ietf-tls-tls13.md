@@ -1953,11 +1953,9 @@ Curve Diffie-Hellman public value (ecdh_Y) represented as a byte
 string ECPoint.point, which can represent an elliptic curve point in
 uncompressed or compressed format.
 
-ISSUE: Determine if compressed/uncompressed form is determined based
-on the point format extension; by the definition of the NamedGroup;
-or, by some combination of the two (i.e., new NamedGroup entries
-might only include compressed forms, old might offer either).
-
+[[OPEN ISSUE: We will need to adjust the compressed/uncompressed point issue
+if we have new curves that don't need point compression. This depends
+on the CFRG's recommendations.]]
 
 ####  Server Hello
 
@@ -2066,6 +2064,11 @@ ClientHello/ClientKeyShare pair to the server. The ClientKeyShare MUST
 contain both the groups in the original ClientKeyShare as well as a
 ClientKeyShareOffer consistent with the "selected_group" field.
 I.e., it MUST be a superset of the previous ClientKeyShareOffer.
+
+Upon re-sending the ClientHello/ClientKeyShare and receiving the
+server's ServerHello/ServerKeyShare, the client MUST verify that
+the selected ciphersuite and NamedGroup match that supplied in
+the HelloRetryRequest.
 
 
 ####  Hello Extensions
@@ -2971,7 +2974,7 @@ found in this octet string MUST NOT be truncated.
 (Note that this use of the identity KDF is a technicality.  The
 complete picture is that ECDH is employed with a non-trivial KDF
 because TLS does not directly use the premaster secret for anything
-other than for computing the master secret.
+other than for computing the master secret.)
 
 #  Mandatory Cipher Suites
 
