@@ -322,7 +322,8 @@ draft-03
 
 - Remove GMT time.
 
-- Merge in support for ECC from RFC 4492.
+- Merge in support for ECC from RFC 4492 but without explicit
+  curves.
 
 - Remove the unnecessary length field from the AD input to AEAD
   ciphers.
@@ -2254,8 +2255,8 @@ Hello, and the server ignores the extension in Client Hello (if present).
 
 ##### Negotiated Groups
 
-When sent by the client, the "supported_groups" extension indicates the
-named groups which the client supports, ordered from most
+When sent by the client, the "supported_groups" extension indicates
+the named groups which the client supports, ordered from most
 preferred to least preferred.
 
 Note: In versions of TLS prior to TLS 1.3, this extension was named
@@ -2315,6 +2316,9 @@ extension type (Supported Group Extension):
 
         00 0A 00 06 00 04 00 13 00 15
 
+The client MUST supply a "named_groups" extension containing at
+least one group for each key exchange algorithm (currently
+DHE and ECDHE) for which it offers a cipher suite.
 If the client does not supply a "named_groups" extension with a
 compatible group, the server MUST NOT negotiate a cipher suite of the
 relevant type.  For instance, if a client supplies only ECDHE groups,
