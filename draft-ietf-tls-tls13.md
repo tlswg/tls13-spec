@@ -1,5 +1,4 @@
 ---
-# TODO
 title: The Transport Layer Security (TLS) Protocol Version 1.3
 abbrev: TLS
 docname: draft-ietf-tls-tls13-latest
@@ -250,7 +249,7 @@ tampering, or message forgery.
 
 #  Introduction
 
-DISCLAIMER: This is a WIP draft of TLS 1.3 and has not yet seen significant security analysis. 
+DISCLAIMER: This is a WIP draft of TLS 1.3 and has not yet seen significant security analysis.
 
 RFC EDITOR: PLEASE REMOVE THE FOLLOWING PARAGRAPH
 The source for this draft is maintained in GitHub. Suggested changes
@@ -331,7 +330,7 @@ draft-03
 - Rename {Client,Server}KeyExchange to {Client,Server}KeyShare
 
 - Add an explicit HelloRetryRequest to reject the client's
-  
+
 
 draft-02
 
@@ -1554,7 +1553,7 @@ about server-side False Start.]]
        Client                                               Server
 
        ClientHello
-       ClientKeyShare               -------->
+       ClientKeyShare            -------->
                                                        ServerHello
                                                     ServerKeyShare
                                                 [ChangeCipherSpec]
@@ -1562,12 +1561,12 @@ about server-side False Start.]]
                                                       Certificate*
                                                CertificateRequest*
                                                 CertificateVerify*
-                                    <--------             Finished
+                                 <--------                Finished
        [ChangeCipherSpec]
        Certificate*
        CertificateVerify*
-       Finished                     -------->
-       Application Data             <------->     Application Data
+       Finished                  -------->
+       Application Data          <------->        Application Data
 
                 Figure 1.  Message flow for a full handshake
 
@@ -1589,7 +1588,7 @@ ClientKeyShare, as shown in Figure 2:
                                  <--------       HelloRetryRequest
 
        ClientHello
-       ClientKeyShare               -------->
+       ClientKeyShare            -------->
                                                        ServerHello
                                                     ServerKeyShare
                                                 [ChangeCipherSpec]
@@ -1597,13 +1596,13 @@ ClientKeyShare, as shown in Figure 2:
                                                       Certificate*
                                                CertificateRequest*
                                                 CertificateVerify*
-                                    <--------             Finished
+                                 <--------                Finished
        [ChangeCipherSpec]
        Certificate*
        CertificateVerify*
-       Finished                     -------->
-       Application Data             <------->     Application Data
-       
+       Finished                  -------->
+       Application Data          <------->        Application Data
+
    Figure 2.  Message flow for a full handshake with mismatched parameters
 
 [[OPEN ISSUE: Do we restart the handshake hash?]]
@@ -1635,7 +1634,7 @@ handshake.
 
        Client                                                Server
 
-       ClientHello                   
+       ClientHello
        ClientKeyExhange              -------->
                                                         ServerHello
                                                  [ChangeCipherSpec]
@@ -1767,7 +1766,7 @@ that field for time synchronization.
 [[https://github.com/tlswg/tls13-spec/issues/64]]
 
 
-Note: 
+Note:
 The ClientHello message includes a variable-length session identifier. If not
 empty, the value identifies a session between the same client and server whose
 security parameters the client wishes to reuse. The session identifier MAY be
@@ -1894,25 +1893,24 @@ for zero or more key establishment methods.
 Structure of this message:
 
        struct {
-           uint16 length;
-           select (KeyExchangeAlgorithm) {
-              dhe:
-                  DiffieHellmanParams;
-
-              ecdhe:
-                  ECDiffieHellmanParams;
-           } exchange_keys;
+           NamedGroup group;
+           opaque key_exchange<1..2^16-1>;
        } ClientKeyShareOffer;
 
-[[OPEN ISSUE: MT points out that this actually doesn't work for
-new types unless we either: (a) put in a key exchange algorithm block
-or (b) mandate that every ClientKeyShareOffer start with a
-NamedGroup field. I was trying to use a common type between
-client and server, but maybe that's not workable easily.
-I know I need to fix this before I put it in a PR.]]
+group
 
-: The length of the remainder of the ClientKeyShareOffer in bytes.
-This allows the server to skip unknown key share types.
+: The named group for the key share offer.  This identifies the
+specific key exchange method that the ClientKeyShareOffer describes.
+Finite Field Diffie-Hellman parameters are described in
+{{ffdhe-param}}; Elliptic Curve Diffie-Hellman parameters are
+described in {{ecdhe-param}}.
+
+key_exchange
+
+: Key exchange information.  The contents of this field are
+determined by the value of NamedGroup entry and its corresponding
+definition.
+
 {:br }
 
        struct {
@@ -1937,48 +1935,30 @@ DH groups and which curves.]
 [TODO: Work out how this interacts with PSK and SRP.]
 
 
-####  Diffie-Hellman Parameters
+####  Diffie-Hellman Parameters {#ffdhe-param}
 
-Diffie-Hellman parameters for both clients and servers are encoded
-using the DiffieHellmanParams structure This structure conveys the
-Diffie-Hellman public value (dh_Y) and the group which it is being
-provided for.
-
-Structure of this message:
-
-       struct {
-           NamedGroup group;
-           opaque dh_Y<1..2^16-1>;
-       } DiffieHellmanParams;
-
-       group
-          The DHE group to which these parameters correspond.
-
-       dh_Y
-          The endpoint's Diffie-Hellman public value (g^X mod p).
+Diffie-Hellman parameters for both clients and servers are encoded in
+the opaque key_exchange field of the ClientKeyShareOffer or
+ServerKeyShare structures. The opaque value contains the
+Diffie-Hellman public value (dh_Y = g^X mod p) for the identified
+NamedGroup.
 
 
-#### ECHDE Parameters
+#### ECHDE Parameters {#ecdhe-param}
 
-ECDHE parameters for both clients and servers are encoded
-using the ECDiffieHellmanParams structure. This structure conveys the
-Elliptic Curve Diffie-Hellman public value (ecdh_Y) and the group which it is being
-provided for.
+ECDHE parameters for both clients and servers are encoded in the
+opaque key_exchange field of the ClientKeyShareOffer or
+ServerKeyShare structures. The opaque value conveys the Elliptic
+Curve Diffie-Hellman public value (ecdh_Y) represented as a byte
+string ECPoint.point, which can represent an elliptic curve point in
+uncompressed or compressed format.
 
-        struct {
-            NamedGroupe group;
-            ECPoint ecdh_Y;
-        } ECDiffieHellmanPublic;
+ISSUE: Determine if compressed/uncompressed form is determined based
+on the point format extension; by the definition of the NamedGroup;
+or, by some combination of the two (i.e., new NamedGroup entries
+might only include compressed forms, old might offer either).
 
-       group
-          The ECDHE group to which these parameters correspond.
 
-       ecdh_Y
-          Contains the agent's ephemeral ECDH public key as a byte
-          string ECPoint.point, which may represent an elliptic curve
-          point in uncompressed or compressed format.
-
-          
 ####  Server Hello
 
 When this message will be sent:
@@ -2262,7 +2242,7 @@ Hello, and the server ignores the extension in Client Hello (if present).
 
 When sent by the client, the "supported_groups" extension indicates the
 named groups which the client supports, ordered from most
-preferred to least preferred. 
+preferred to least preferred.
 
 Note: In versions of TLS prior to TLS 1.3, this extension was named
 "elliptic curves" and only contained elliptic curve groups. See
@@ -2286,7 +2266,7 @@ The "extension_data" field of this extension SHALL contain a
             // Finite Field Groups.
             ffdhe2432(256), ffdhe3072(257), ffdhe4096(258),
             ffdhe6144(259), ffdhe8192(260),
-            
+
             // Reserved Code Points.
             reserved (0xFE00..0xFEFF),
             reserved(0xFF01),
@@ -2411,7 +2391,7 @@ formats during the handshake. If no Supported Point Formats Extension
 is received this is equivalent to an extension allowing only the
 uncompressed point format.
 
-           
+
 ##### Early Data Extension
 
 TLS versions before 1.3 have a strict message ordering and do not
@@ -2419,7 +2399,7 @@ permit additional messages to follow the ClientHello. The EarlyData
 extension allows TLS messages which would otherwise be sent as
 separate records to be instead inserted in the ClientHello. The
 extension simply contains the TLS records which would otherwise have
-been included in the client's first flight. 
+been included in the client's first flight.
 
           struct {
             TLSCipherText messages<5 .. 2^24-1>;
@@ -2474,19 +2454,23 @@ or a public key for some other algorithm.
 Structure of this message:
 
        struct {
-           select (KeyExchangeAlgorithm) {
-               case dhe:
-                   DiffieHellmanParams;
-               case ecdhe:
-                   ECDiffieHellmanParams;
-           } params;
+         NamedGroup group;
+         opaque key_exchange<1..2^16-1>;
        } ServerKeyShare;
 
-params
-: The server's key exchange parameters. Note that for both Diffie-Hellman
-and ECDHE, the first field of the params structure is the group identifier
-(see {{client-key-share-message}}), thus identifying the ClientKeyShareOffer
-that the server has accepted and is responding to.
+group
+
+: The named group for the key share offer.  This identifies the
+selected key exchange method from the ClientKeyShare message
+({{client-key-share-message}}), identifying which value from the
+ClientKeyShareOffer the server has accepted as is responding to.
+
+key_exchange
+
+: Key exchange information.  The contents of this field are
+determined by the value of NamedGroup entry and its corresponding
+definition.
+
 {:br }
 
 
@@ -3260,29 +3244,9 @@ This section describes protocol types and constants.
         ASN1Cert certificate_list<0..2^24-1>;
     } Certificate;
 
-    enum { dhe_dss, dhe_rsa, dh_anon
-           /* may be extended, e.g., for ECDH -- see [TLSECC] */
-         } KeyExchangeAlgorithm;
-
     struct {
-        opaque dh_p<1..2^16-1>;
-        opaque dh_g<1..2^16-1>;
-        opaque dh_Ys<1..2^16-1>;
-    } ServerDHParams;     /* Ephemeral DH parameters */
-
-    struct {
-        select (KeyExchangeAlgorithm) {
-            case dh_anon:
-                ServerDHParams params;
-            case dhe_dss:
-            case dhe_rsa:
-                ServerDHParams params;
-                digitally-signed struct {
-                    opaque client_random[32];
-                    opaque server_random[32];
-                    ServerDHParams params;
-                } signed_params;
-            /* may be extended, e.g., for ECDH --- see [RFC4492] */
+        NamedGroup group;
+        opaque key_exchange<1..2^16-1>;
     } ServerKeyShare;
 
     enum {
@@ -3305,27 +3269,13 @@ This section describes protocol types and constants.
 ### Client Authentication and Key Exchange Messages
 
     struct {
-        select (KeyExchangeAlgorithm) {
-            case dhe_dss:
-            case dhe_rsa:
-            case dh_anon:
-                ClientDiffieHellmanPublic;
-        } exchange_keys;
+        ClientKeyShareOffer offers<0..2^16-1>;
     } ClientKeyShare;
 
     struct {
-        ProtocolVersion client_version;
-        opaque random[46];
-    } PreMasterSecret;
-
-    enum { implicit, explicit } PublicValueEncoding;
-
-    struct {
-        select (PublicValueEncoding) {
-            case implicit: struct {};
-            case explicit: opaque DH_Yc<1..2^16-1>;
-        } dh_public;
-    } ClientDiffieHellmanPublic;
+        NamedGroup group;
+        opaque key_exchange<1..2^16-1>;
+    } ClientKeyShareOffer;
 
     struct {
          digitally-signed struct {
@@ -4164,4 +4114,3 @@ Archives of the list can be found at:
     Tim Wright
     Vodafone
     timothy.wright@vodafone.com
-
