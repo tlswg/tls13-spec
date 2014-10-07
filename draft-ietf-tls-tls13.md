@@ -1504,7 +1504,7 @@ share of the parameters for key agreement for some set of expected
 server parameters (DHE/ECDHE groups, etc.).
 
 If the client has provided a ClientKeyShare with an appropriate set of
-keying material, the server responds to the ClientHello a ServerHello
+keying material, the server responds to the ClientHello with a ServerHello
 message. The ServerHello contains the server's nonce
 (ServerHello.random), the server's choice of the Protocol Version,
 Session ID and Cipher Suite, and the server's response to the
@@ -1658,9 +1658,9 @@ processed and transmitted as specified by the current active session state.
 
        enum {
            hello_request(0), client_hello(1), server_hello(2),
-           certificate(11), server_key_share (12),
+           certificate(11), reserved(12), server_key_share (17),
            certificate_request(13), certificate_verify(15),
-           client_key_share(16), finished(20), (255)
+           reserved(16), client_key_share(18), finished(20), (255)
        } HandshakeType;
 
        struct {
@@ -1671,6 +1671,7 @@ processed and transmitted as specified by the current active session state.
                case client_hello:        ClientHello;
                case client_key_share:    ClientKeyShare;
                case server_hello:        ServerHello;
+               case hello_retry_requst:  HelloRetryRequest;
                case server_key_share:    ServerKeyShare;
                case certificate:         Certificate;
                case certificate_request: CertificateRequest;
@@ -1940,8 +1941,10 @@ DH groups and which curves.]
 Diffie-Hellman parameters for both clients and servers are encoded in
 the opaque key_exchange field of the ClientKeyShareOffer or
 ServerKeyShare structures. The opaque value contains the
-Diffie-Hellman public value (dh_Y = g^X mod p) for the identified
-NamedGroup.
+Diffie-Hellman public value (dh_Y = g^X mod p),
+encoded as a big-endian integer.
+ 
+       opaque dh_Y<1..2^16-1>;
 
 
 #### ECHDE Parameters {#ecdhe-param}
@@ -1953,6 +1956,15 @@ Curve Diffie-Hellman public value (ecdh_Y) represented as a byte
 string ECPoint.point, which can represent an elliptic curve point in
 uncompressed or compressed format.
 
+       opaque point <1..2^8-1>;
+
+point
+: This is the byte string representation of an elliptic curve
+  point following the conversion routine in Section 4.3.6 of ANSI
+  X9.62 {{X962}.
+{:br }
+
+
 [[OPEN ISSUE: We will need to adjust the compressed/uncompressed point issue
 if we have new curves that don't need point compression. This depends
 on the CFRG's recommendations.]]
@@ -1963,8 +1975,8 @@ When this message will be sent:
 
 > The server will send this message in response to a ClientHello message when
 it was able to find an acceptable set of algorithms and the client's
-ClientKeyShare message was acceptable. If it cannot find such a
-match, it will respond with a handshake failure alert.
+ClientKeyShare message was acceptable. If the client proposed groups are not
+acceptable by the server, it will respond with an insufficient_security fatal alert.
 
 Structure of this message:
 
@@ -2048,7 +2060,6 @@ Structure of this message:
        } HelloRetryRequest;
 
 [[OPEN ISSUE: Merge in DTLS Cookies?]]
-[[OPEN ISSUE: Should we lose server_version?]]
 
 selected_group
 : The group which the client MUST use for its new ClientHello.
@@ -3901,7 +3912,7 @@ that they know the correct pre_master_secret.
 
 Completely anonymous sessions can be established using Diffie-Hellman for key
 exchange. The server's public parameters are contained in the server key
-exchange message, and the client's are sent in the client key exchange message.
+share message, and the client's are sent in the client key share message.
 Eavesdroppers who do not know the private values should not be able to find the
 Diffie-Hellman result (i.e., the pre_master_secret).
 
@@ -3917,7 +3928,8 @@ When Diffie-Hellman key exchange is used, the client and server use
 the client key exchange and server key exchange messages to send
 temporary Diffie-Hellman parameters. The signature in the certificate
 verify message (if present) covers the entire handshake up to that
-point and thus binds the ephemeral DHE keys to the certificate.
+point and thus attests the certificate holder's desire to use the
+the ephemeral DHE keys.
 
 Peers SHOULD validate each other's public key Y (dh_Ys offered by
 the server or DH_Yc offered by the client) by ensuring that 1 < Y <
