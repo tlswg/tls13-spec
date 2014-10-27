@@ -4151,6 +4151,10 @@ Archives of the list can be found at:
     Microsoft, Inc.
     dansimon@microsoft.com
 
+    Martin Thomson
+    Mozilla
+    mt@mozilla.com
+
     Tom Weinstein
 
     Tim Wright
