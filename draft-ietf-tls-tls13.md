@@ -714,7 +714,8 @@ has not been standardized, but this provision anticipates such
 standardization and obviates the need to update this document in
 response.  Future PKIX RFCs may choose, for example, to specify the
 hash function to be used with a public key in the parameters field of
-subjectPublicKeyInfo.) [[OPEN ISSUE: This needs updating per 4492-bis]]
+subjectPublicKeyInfo.) [[OPEN ISSUE: This needs updating per 4492-bis
+https://github.com/tlswg/tls13-spec/issues/59]]
 
 In AEAD encryption, the plaintext is simultaneously encrypted and integrity
 protected. The input may be of any length, and aead-ciphered output is
@@ -1107,7 +1108,7 @@ MUST ONLY be used with the initial TLS_NULL_WITH_NULL_NULL cipher suite.
 
 ##  Key Calculation
 
-[[OPEN ISSUE: This may be revised. See https://github.com/tlswg/tls13-spec/issues/5]]
+[[OPEN ISSUE: This needs to be revised. See https://github.com/tlswg/tls13-spec/issues/5]]
 The Record Protocol requires an algorithm to generate keys required by the
 current connection state (see {{the-security-parameters}}) from the security
 parameters provided by the handshake protocol.
@@ -1968,7 +1969,9 @@ point
 
 [[OPEN ISSUE: We will need to adjust the compressed/uncompressed point issue
 if we have new curves that don't need point compression. This depends
-on the CFRG's recommendations.]]
+on the CFRG's recommendations. The expectation is that future curves will
+come with defined point formats and that existing curves conform to
+X9.62.]]
 
 ####  Server Hello
 
@@ -2390,8 +2393,8 @@ If the client supplies a Supported Points Formats Extension in the
 ClientHello, the server may send its own Supported Points Format
 extension in the ServerHello.  This extension allows a server to
 enumerate the point formats it can parse (for the curve that will
-appear in its ServerKeyExchange message when using the ECDHE_ECDSA,
-ECDHE_RSA, or ECDH_anon key exchange algorithm, or for the curve that
+appear in its ServerKeyExchange message when using the ECDHE_ECDSA or
+ECDHE_RSA key exchange algorithm, or for the curve that
 is used in the server's public key that will appear in its Certificate
 message when using the ECDH_ECDSA or ECDH_RSA key exchange algorithm).
 
@@ -2403,7 +2406,7 @@ format even when a client cannot parse this format: the same client
 may nevertheless be capable of outputting points in compressed
 format).
 
-An endpoint that receives a ServerHello message containing a Supported
+An endpoint that receives a hello message containing a Supported
 Point Formats Extension MUST respect the sender's choice of point
 formats during the handshake. If no Supported Point Formats Extension
 is received this is equivalent to an extension allowing only the
@@ -4061,9 +4064,13 @@ Archives of the list can be found at:
     Columbia University
     smb@cs.columbia.edu
 
-    Simon Blake-Wilson
+    Simon Blake-Wilson (co-author of RFC4492)
     BCI
     sblakewilson@bcisse.com
+
+    Nelson Bolyard
+    Sun Microsystems, Inc.
+    nelson@bolyard.com (co-author of RFC4492)
 
     Ran Canetti
     IBM
@@ -4084,7 +4091,15 @@ Archives of the list can be found at:
     Anil Gangolli
     anil@busybuddha.org
 
+    Vipul Gupta (co-author of RFC4492)
+    Sun Microsystems Laboratories
+    vipul.gupta@sun.com
+
     Kipp Hickman
+
+    Chris Hawk (co-author of RFC4492)
+    Corriente Networks LLC
+    chris@corriente.net
 
     Alfred Hoenes
 
@@ -4110,10 +4125,18 @@ Archives of the list can be found at:
     Transactionware
     janm@transactionware.com
 
+    Bodo Moeller (co-author of RFC4492)
+    Google
+    bodo@openssl.org
+
     Magnus Nystrom
     RSA Security
     magnus@rsasecurity.com
 
+    Alfredo Pironti
+    INRIA
+    alfredo.pironti@inria.fr
+    
     Robert Relyea
     Netscape Communications
     relyea@netscape.com
