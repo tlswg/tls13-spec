@@ -1762,12 +1762,7 @@ random_bytes
 {:br }
 
 Note: Versions of TLS prior to TLS 1.3 used the top 32 bits of
-the Random value to encode the time since the UNIX epoch. TLS 1.3
-Server implementations MAY opt to include the time in their
-Server.random values in order to accomodate clients which use
-that field for time synchronization.
-[[https://github.com/tlswg/tls13-spec/issues/64]]
-
+the Random value to encode the time since the UNIX epoch.
 
 Note:
 The ClientHello message includes a variable-length session identifier. If not
