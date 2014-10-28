@@ -520,7 +520,7 @@ a 17-byte vector of uint16 would be illegal).
 
        opaque mandatory<300..400>;
              /* length field is 2 bytes, cannot be empty */
-       uint16 longer<0..800>;
+       uint16 longer<0..400>;
              /* zero to 400 16-bit unsigned integers */
 
 ##  Numbers {#numbers}
