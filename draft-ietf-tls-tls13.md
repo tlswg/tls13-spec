@@ -1,7 +1,7 @@
 ---
 title: The Transport Layer Security (TLS) Protocol Version 1.3
 abbrev: TLS
-docname: draft-ietf-tls-tls13-latest
+docname: draft-ietf-tls-tls13-03
 date: 2014
 category: std
 updates: 4492
@@ -1950,8 +1950,7 @@ ECDHE parameters for both clients and servers are encoded in the
 opaque key_exchange field of the ClientKeyShareOffer or
 ServerKeyShare structures. The opaque value conveys the Elliptic
 Curve Diffie-Hellman public value (ecdh_Y) represented as a byte
-string ECPoint.point, which can represent an elliptic curve point in
-uncompressed or compressed format.
+string ECPoint.point.
 
        opaque point <1..2^8-1>;
 
@@ -1960,6 +1959,15 @@ point
   point following the conversion routine in Section 4.3.6 of ANSI
   X9.62 {{X962}.
 {:br }
+
+Although X9.62 supports multiple point formats, any given curve
+MUST specify only a single point format. All curves currently
+specified in this document MUST only be used with the uncompressed
+point format.
+
+Note: Versions of TLS prior to 1.3 permitted point negotiation;
+TLS 1.3 removes this feature in favor of a single point format
+for each curve.
 
 
 [[OPEN ISSUE: We will need to adjust the compressed/uncompressed point issue
@@ -2330,82 +2338,6 @@ the ephemeral ECDH key in the ServerKeyExchange message.  The server
 must consider the supported groups in both cases.
 
 [[TODO: IANA Considerations.]]
-
-#####  Supported Point Formats Extension
-
-[[OPEN ISSUE: Can we simply mandate support for
-compressed points? If so, we can omit this extension entirely.
-https://github.com/tlswg/tls13-spec/issues/80.]]
-
-A client that proposes ECC cipher suites in its ClientHello message
-SHOULD send the Supported Point Formats Extension to indicate the
-elliptic curve point formats it supports. If the Supported Point Formats
-Extension is indeed sent, it MUST contain the value 0 (uncompressed)
-as one of the items in the list of point formats.
-
-        enum { uncompressed (0), ansiX962_compressed_prime (1),
-               ansiX962_compressed_char2 (2), reserved (248..255)
-        } ECPointFormat;
-
-        struct {
-            ECPointFormat ec_point_format_list<1..2^8-1>
-        } ECPointFormatList;
-
-Three point formats are included in the definition of ECPointFormat
-above. The uncompressed point format is the default format in that
-implementations of this document MUST support it for all of their
-supported curves.  Compressed point formats reduce bandwidth by
-including only the x-coordinate and a single bit of the y-coordinate
-of the point.  Implementations of this document MAY support the
-ansiX962_compressed_prime and ansiX962_compressed_char2 formats,
-where the former applies only to prime curves and the latter applies
-only to characteristic-2 curves.  (These formats are specified in
-{{X962}}.)  Values 248 through 255 are reserved for private use.
-
-The ECPointFormat name space is maintained by IANA.  See {{iana-considerations}}
-for information on how new value assignments are added.
-
-Items in ec_point_format_list are ordered according to the sender's
-preferences (favorite choice first).
-
-An endpoint that can parse only the uncompressed point format (value 0)
-includes an extension consisting of the following octets; note that
-the first two octets indicate the extension type (Supported Point
-Formats Extension):
-
-        00 0B 00 02 01 00
-
-An endpoint that in the case of prime fields prefers the compressed
-format (ansiX962_compressed_prime, value 1) over the uncompressed
-format (value 0), but in the case of characteristic-2 fields prefers
-the uncompressed format (value 0) over the compressed format
-(ansiX962_compressed_char2, value 2), may indicate these preferences
-by including an extension consisting of the following octets:
-
-        00 0B 00 04 03 01 00 02
-
-If the client supplies a Supported Points Formats Extension in the
-ClientHello, the server may send its own Supported Points Format
-extension in the ServerHello.  This extension allows a server to
-enumerate the point formats it can parse (for the curve that will
-appear in its ServerKeyExchange message when using the ECDHE_ECDSA or
-ECDHE_RSA key exchange algorithm, or for the curve that
-is used in the server's public key that will appear in its Certificate
-message when using the ECDH_ECDSA or ECDH_RSA key exchange algorithm).
-
-The server's Supported Point Formats Extension has the same structure
-and semantics as the client's Supported Point Formats Extension. Note
-that the server may include items that were not found in the client's
-list (e.g., the server may prefer to receive points in compressed
-format even when a client cannot parse this format: the same client
-may nevertheless be capable of outputting points in compressed
-format).
-
-An endpoint that receives a hello message containing a Supported
-Point Formats Extension MUST respect the sender's choice of point
-formats during the handshake. If no Supported Point Formats Extension
-is received this is equivalent to an extension allowing only the
-uncompressed point format.
 
 
 ##### Early Data Extension
