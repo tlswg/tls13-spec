@@ -119,6 +119,7 @@ informative:
   RFC5081:
   RFC5116:
   I-D.ietf-tls-negotiated-ff-dhe:
+  I-D.ietf-tls-session-hash:
 
   BLEI:
        title: Chosen Ciphertext Attacks against Protocols Based on RSA Encryption Standard PKCS #1
@@ -813,17 +814,11 @@ wish to take steps (padding, cover traffic) to minimize information leakage.
 A TLS connection state is the operating environment of the TLS Record
 Protocol.  It specifies a record protection algorithm and its
 parameters as well as the record protection keys and IVs for the
-connection in both the read and the write directions. Logically, there
-are always four connection states outstanding: the current read and
-write states, and the pending read and write states. All records are
-processed under the current read and write states. The security
-parameters for the pending states can be set by the TLS Handshake
-Protocol, and the ChangeCipherSpec can selectively make either of the
-pending states current, in which case the appropriate current state is
-disposed of and replaced with the pending state; the pending state is
-then reinitialized to an empty state. It is illegal to make a state
-that has not been initialized with security parameters a current
-state. The initial current state always specifies that records are
+connection in both the read and the write directions. The security
+parameters are be set by the TLS Handshake Protocol, which also determines
+when new cryptographic keys are installed and used for record
+protection.
+The initial current state always specifies that records are
 not protected.
 
 The security parameters for a TLS Connection read and write state are set by
@@ -853,9 +848,16 @@ record protection algorithm
   includes the key size of this algorithm and the lengths of explicit
   and implicit initialization vectors (or nonces).
 
+hs master secret
+
+: A 48-byte secret shared between the two peers in the connection and
+used to generate keys for protecting the handshake.
+
+
 master secret
 
-: A 48-byte secret shared between the two peers in the connection.
+: A 48-byte secret shared between the two peers in the connection
+and used to generate keys for protecting application data.
 
 client random
 
@@ -886,6 +888,7 @@ These parameters are defined in the presentation language as:
            uint8                  block_length;
            uint8                  fixed_iv_length;
            uint8                  record_iv_length;
+           opaque                 hs_master_secret[48];
            opaque                 master_secret[48];
            opaque                 client_random[32];
            opaque                 server_random[32];
@@ -943,7 +946,7 @@ message MAY be fragmented across several records).
        } ProtocolVersion;
 
        enum {
-           change_cipher_spec(20), alert(21), handshake(22),
+           reserved(20), alert(21), handshake(22),
            application_data(23), (255)
        } ContentType;
 
@@ -977,8 +980,8 @@ fragment
   specified by the type field.
 {:br }
 
-Implementations MUST NOT send zero-length fragments of Handshake, Alert, or
-ChangeCipherSpec content types. Zero-length fragments of Application data MAY
+Implementations MUST NOT send zero-length fragments of Handshake or Alert
+types. Zero-length fragments of Application data MAY
 be sent as they are potentially useful as a traffic analysis countermeasure.
 
 
@@ -1086,18 +1089,21 @@ encryption key. Each of these is generated from the byte sequence in
 that order. Unused values are empty. Some ciphers may additionally
 require a client write IV and a server write IV.
 
-When keys are generated, the master secret is used as an entropy
-source.
+When keys are generated, the then current master secret (MS) is used
+as an entropy source. For handshake records, this means the
+hs_master_secret. For application data, records, this means the
+regular master_secret.
 
 To generate the key material, compute
 
-       key_block = PRF(SecurityParameters.master_secret,
+       key_block = PRF(MS,
                        "key expansion",
                        SecurityParameters.server_random +
                        SecurityParameters.client_random);
 
-until enough output has been generated. Then, the key_block is partitioned as
-follows:
+where MS is the relevant master secret. The PRF is computed enough
+times to generate the necessary amount of data for the key_block,
+which is then partitioned as follows:
 
        client_write_key[SecurityParameters.enc_key_length]
        server_write_key[SecurityParameters.enc_key_length]
@@ -1131,7 +1137,7 @@ cipher spec
   material, and the record protection algorithm (See
   {{the-security-parameters}} for formal definition.)
 
-master secret
+resumption master secret
 : 48-byte secret shared between the client and server.
 
 is resumable
@@ -1143,37 +1149,6 @@ These items are then used to create security parameters for use by the record
 layer when protecting application data. Many connections can be instantiated
 using the same session through the resumption feature of the TLS Handshake
 Protocol.
-
-##  Change Cipher Spec Protocol
-
-The change cipher spec protocol exists to signal transitions in ciphering
-strategies. The protocol consists of a single message, which is encrypted
-under the current (not the pending) connection state. The message
-consists of a single byte of value 1.
-
-       struct {
-           enum { change_cipher_spec(1), (255) } type;
-       } ChangeCipherSpec;
-
-The ChangeCipherSpec message is sent by both the client and the server to
-notify the receiving party that subsequent records will be protected under the
-newly negotiated CipherSpec and keys. Reception of this message causes the
-receiver to instruct the record layer to immediately copy the read pending
-state into the read current state. Immediately after sending this message, the
-sender MUST instruct the record layer to make the write pending state the write
-current state. (See {{connection-states}}.) The ChangeCipherSpec message is sent
-during the handshake after the security parameters have been agreed upon,
-but before the first message protected with a new CipherSpec is sent.
-
-Note: If a rehandshake occurs while data is flowing on a connection, the
-communicating parties may continue to send data using the old CipherSpec.
-However, once the ChangeCipherSpec has been sent, the new CipherSpec MUST be
-used. The first side to send the ChangeCipherSpec does not know that the other
-side has finished computing the new keying material (e.g., if it has to perform
-a time-consuming public key operation). Thus, a small window of time, during
-which the recipient must buffer the data, MAY exist. In practice, with modern
-machines this interval is likely to be fairly short.
-[[TODO: This text seems confusing.]]
 
 ##  Alert Protocol
 
@@ -1475,11 +1450,11 @@ extensions the client offered.
 
 The server can then generate its own keying material share and send a
 ServerKeyShare message which contains its share of the parameters for
-the key agreement. The server can now compute the shared secret. At
-this point, a ChangeCipherSpec message is sent by the server, and the
-server copies the pending Cipher Spec into the current Cipher
-Spec. The remainder of the server's handshake messages will be
-encrypted under that Cipher Spec.
+the key agreement. The server can now compute the shared secret (the
+premaster secret). At this point, the server starts encrypting all
+remaining handshake traffic with the negotiated cipher suite using a key
+derived from the premaster secret.  The remainder of the server's
+handshake messages will be encrypted using that key.
 
 Following these messages, the server will send an EncryptedExtensions
 message which contains a response to any client's extensions which are
@@ -1498,19 +1473,25 @@ agreed upon the same keys.
 it MAY start sending application data following the Finished, though
 the server has no way of knowing who will be receiving the data. Add this.]]
 
-Once the client receives the ServerKeyShare, it can also compute
-the shared key. At this point ChangeCipherSpec message is sent by the
-client, and the client copies the pending Cipher Spec into the current
-Cipher Spec. The remainder of the client's messages will be encrypted
-under this Cipher Spec.  If the server has sent a CertificateRequest
-message, the client MUST send the Certificate message, though it may
-contain zero certificates.  If the client has sent a certificate,
-a digitally-signed CertificateVerify message is sent to
-explicitly verify possession of the private key in the certificate.
-Finally, the client sends the Finished message.
+Once the client receives the ServerKeyShare, it can also compute the
+premaster secret and decrypt the server's remaining handshake messages.
+The client generates its own sending keys based on the premaster secret
+and will encrypt the remainder of its handshake messages using those keys
+and the newly established cipher suite.  If the server has sent a
+CertificateRequest message, the client MUST send the Certificate
+message, though it may contain zero certificates.  If the client has
+sent a certificate, a digitally-signed CertificateVerify message is
+sent to explicitly verify possession of the private key in the
+certificate.  Finally, the client sends the Finished message.
+
 At this point, the handshake is complete, and the
-client and server may exchange application layer data. (See flow chart
-below.) Application data MUST NOT be sent prior to the Finished message.
+client and server may exchange application layer data, which is
+protected using a new set of keys derived from both the premaster
+secret and the handshake transcript (see {{I-D.ietf-tls-session-hash}}
+for the security rationale for this.)
+
+Application data MUST NOT be sent prior to the Finished message.
+
 [[TODO: can we make this clearer and more clearly match the text above
 about server-side False Start.]]
        Client                                               Server
@@ -1519,24 +1500,25 @@ about server-side False Start.]]
        ClientKeyShare            -------->
                                                        ServerHello
                                                     ServerKeyShare
-                                                [ChangeCipherSpec]
-                                              EncryptedExtensions*
-                                                      Certificate*
-                                               CertificateRequest*
-                                                CertificateVerify*
-                                 <--------                Finished
-       [ChangeCipherSpec]
-       Certificate*
-       CertificateVerify*
-       Finished                  -------->
-       Application Data          <------->        Application Data
+                                            {EncryptedExtensions*}
+                                                    {Certificate*}
+                                             {CertificateRequest*}
+                                              {CertificateVerify*}
+                                 <--------              {Finished}
+       {Certificate*}
+       {CertificateVerify*}
+       {Finished}                -------->
+       [Application Data]        <------->      [Application Data]
+
 
                 Figure 1.  Message flow for a full handshake
 
 \* Indicates optional or situation-dependent messages that are not always sent.
 
-Note: To help avoid pipeline stalls, ChangeCipherSpec is an independent TLS
-protocol content type, and is not actually a TLS handshake message.
+{} Indicates messages encrypted under the handshake secret.
+
+[] Indicates messages encrypted under the application data secret.
+
 
 If the client has not provided an appropriate ClientKeyShare (e.g. it
 includes only DHE or ECDHE groups unacceptable or unsupported by the
@@ -1553,18 +1535,16 @@ ClientKeyShare, as shown in Figure 2:
        ClientHello
        ClientKeyShare            -------->
                                                        ServerHello
-                                                    ServerKeyShare
-                                                [ChangeCipherSpec]
-                                              EncryptedExtensions*
-                                                      Certificate*
-                                               CertificateRequest*
-                                                CertificateVerify*
-                                 <--------                Finished
-       [ChangeCipherSpec]
-       Certificate*
-       CertificateVerify*
-       Finished                  -------->
-       Application Data          <------->        Application Data
+                                                  {ServerKeyShare}
+                                            {EncryptedExtensions*}
+                                                    {Certificate*}
+                                             {CertificateRequest*}
+                                              {CertificateVerify*}
+                                 <--------              {Finished}
+       {Certificate*}
+       {CertificateVerify*}
+       {Finished}                -------->
+       [Application Data]        <------->     [Application Data]
 
    Figure 2.  Message flow for a full handshake with mismatched parameters
 
@@ -1584,27 +1564,28 @@ When the client and server decide to resume a previous session or duplicate an
 existing session (instead of negotiating new security parameters), the message
 flow is as follows:
 
-The client sends a ClientHello using the Session ID of the session to be
-resumed. The server then checks its session cache for a match. If a match is
-found, and the server is willing to re-establish the connection under the
-specified session state, it will send a ServerHello with the same Session ID
-value. At this point, both client and server MUST send ChangeCipherSpec
-messages and proceed directly to Finished messages. Once the re-establishment
-is complete, the client and server MAY begin to exchange application layer
-data. (See flow chart below.) If a Session ID match is not found, the server
-generates a new session ID, and the TLS client and server perform a full
-handshake.
+The client sends a ClientHello using the Session ID of the session to
+be resumed. The server then checks its session cache for a match. If a
+match is found, and the server is willing to re-establish the
+connection under the specified session state, it will send a
+ServerHello with the same Session ID value. At this point, both client
+and server MUST proceed directly to sending Finished messages, which
+are protected using handshake keys as described above, computed from the
+resumption premaster secret created in the first handshake. Once the
+re-establishment is complete, the client and server MAY begin to
+exchange application layer data, which is protected using the
+application secrets (See flow chart below.) If a Session ID match is
+not found, the server generates a new session ID, and the TLS client
+and server perform a full handshake.
 
        Client                                                Server
 
        ClientHello
        ClientKeyExhange              -------->
                                                         ServerHello
-                                                 [ChangeCipherSpec]
-                                     <--------             Finished
-       [ChangeCipherSpec]
-       Finished                      -------->
-       Application Data              <------->     Application Data
+                                     <--------           {Finished}
+       {Finished}                    -------->
+       [Application Data]            <------->   [Application Data]
 
            Figure 3.  Message flow for an abbreviated handshake
 
@@ -2350,8 +2331,7 @@ definition.
 When this message will be sent:
 
 > If this message is sent, it MUST be sent immediately after the server's
-ChangeCipherSpec (and hence as the first handshake message after the
-ServerKeyShare).
+ServerKeyShare.
 
 Meaning of this message:
 
@@ -2384,8 +2364,8 @@ When this message will be sent:
 > The server MUST send a Certificate message whenever the agreed-upon key
 exchange method uses certificates for authentication (this includes all key
 exchange methods defined in this document except DH_anon). This message will
-always immediately follow the ChangeCipherSpec which follows the server's
-ServerKeyShare message.
+always immediately follow either the EncryptedExtensions message if one is
+sent or the ServerKeyShare message.
 
 
 Meaning of this message:
@@ -2645,7 +2625,9 @@ Meaning of this message:
 > Recipients of Finished messages MUST verify that the contents are
 correct. Once a side has sent its Finished message and received and
 validated the Finished message from its peer, it may begin to send and
-receive application data over the connection.
+receive application data over the connection. This data will be
+protected under keys derived from the hs_master_secret (see
+{{cryptographic-computations}}.
 
 Structure of this message:
 
@@ -2654,7 +2636,7 @@ Structure of this message:
        } Finished;
 
        verify_data
-          PRF(master_secret, finished_label, Hash(handshake_messages))
+          PRF(hs_master_secret, finished_label, Hash(handshake_messages))
              [0..verify_data_length-1];
 
        finished_label
@@ -2684,9 +2666,6 @@ handshake_messages
   {{handshake-protocol}}, exchanged thus far.
 {:br }
 
-It is a fatal error if a Finished message is not preceded by a ChangeCipherSpec
-message at the appropriate point in the handshake.
-
 The value handshake_messages includes all handshake messages starting at
 ClientHello up to, but not including, this Finished message. This may be
 different from handshake_messages in {{server-certificate-verify}} or
@@ -2695,9 +2674,9 @@ for the Finished message sent by the client will be different from that for the
 Finished message sent by the server, because the one that is sent second will
 include the prior one.
 
-Note: ChangeCipherSpec messages, alerts, and any other record types are not
-handshake messages and are not included in the hash computations. Also,
-HelloRequest messages are omitted from handshake hashes.
+Note: Alerts and any other record types are not handshake messages
+and are not included in the hash computations. Also, HelloRequest
+messages are omitted from handshake hashes.
 
 
 ###  Client Certificate
@@ -2705,8 +2684,7 @@ HelloRequest messages are omitted from handshake hashes.
 When this message will be sent:
 
 > This message is the first handshake message the client can send
-after receiving the server's Finished and having sent its own
-ChangeCipherSpecs. This message is only sent if the server requests a
+after receiving the server's Finished This message is only sent if the server requests a
 certificate. If no suitable certificate is available, the client MUST send a
 certificate message containing no certificates. That is, the certificate_list
 structure has a length of zero. If the client does not send any certificates,
@@ -2814,16 +2792,91 @@ that remains is to calculate the master secret.
 
 ##  Computing the Master Secret
 
-For all key exchange methods, the same algorithm is used to convert the
-pre_master_secret into the master_secret. The pre_master_secret should be
-deleted from memory once the master_secret has been computed.
+The pre_master_secret is used to generate a series of master secret values,
+as shown in the following diagram and described below.
 
-       master_secret = PRF(pre_master_secret, "master secret",
-                           ClientHello.random + ServerHello.random)
+
+                            (Resumption) Premaster Secret <-+
+                                        |                   |
+                                       PRF                  |
+                                        |                   |
+                                        v                   |
+      Handshake   <-PRF-           Handshake                |
+     Traffic Keys                 Master Secret             | 
+                                        |                   | Via
+                                        |                   | Session
+                             +----------+----------+        | Cache
+                             |                     |        |
+                            PRF                   PRF       |
+                             |                     |        |
+                             v                     v        |
+     Application  <-PRF-  Master               Resumption   |
+    Traffic Keys          Secret               Premaster  --+
+                                                 Secret
+
+First, as soon as the ClientKeyShares and ServerKeyShares messages
+have been exchanged, the client and server each use the
+unauthenticated key shares to generate a master secret which is used
+for the protection of the remaining handshake records. Specifically,
+they generate:
+
+       hs_master_secret = PRF(pre_master_secret, "handshake master secret",
+                              session_hash)
+                              [0..47];
+
+This master secret value is used to generate the record protection
+keys used for the handshake, as described in {{key-calculation}}.
+
+Once the hs_master_secret has been computed, the premaster secret should
+be deleted from memory.
+
+Once the last non-Finished message has been sent, the client and
+server then compute the master secret which will be used for the
+remainder of the session:
+
+       master_secret = PRF(hs_master_secret, "extended master secret",
+                           session_hash)
                            [0..47];
 
-The master secret is always exactly 48 bytes in length. The length of the
-premaster secret will vary depending on key exchange method.
+
+If the server does not request client authentication, the master
+secret can be computed at the time that the server sends its Finished,
+thus allowing the server to send traffic on its first flight (see
+[TODO] for security considerations on this practice.)  If the server
+requests client authentication, this secret can be computed after the
+client's Certificate and CertificateVerify have been sent, or, if the
+client refuses client authentication, after the client's empty
+Certificate message has been sent.
+
+For full handshakes, each side also generates a new secret which will
+be used as the premaster_secret for future resumptions of the
+newly established session. This is computed as:
+
+       resumption_premaster_secret = PRF(hs_master_secret,
+                                         "resumption premaster secret",
+                                         session_hash)
+                                         [0..47];
+
+The session_hash value is a running hash of the handshake as
+defined in {{the-session-hash}}. Thus, the hs_master_secret
+is generated using a different session_hash from the other
+two secrets.
+
+All master secrets are always exactly 48 bytes in length. The length
+of the premaster secret will vary depending on key exchange method.
+
+
+###  The Session Hash
+
+When a handshake takes place, we define
+
+         session_hash = Hash(handshake_messages)
+
+where "handshake_messages" refers to all handshake messages sent or
+received, starting at client hello up to the present time, with the
+exception of the Finished message, including the type and length
+fields of the handshake messages. This is the concatenation of all the
+exchanged Handshake structures.
 
 ###  Diffie-Hellman
 
