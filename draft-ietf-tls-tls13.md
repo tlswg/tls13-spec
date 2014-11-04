@@ -874,7 +874,7 @@ record protection algorithm
   includes the key size of this algorithm and the lengths of explicit
   and implicit initialization vectors (or nonces).
 
-hs master secret
+handshake master secret
 
 : A 48-byte secret shared between the two peers in the connection and
 used to generate keys for protecting the handshake.
@@ -1492,7 +1492,8 @@ ServerKeyShare message which contains its share of the parameters for
 the key agreement. The server can now compute the shared secret (the
 premaster secret). At this point, the server starts encrypting all
 remaining handshake traffic with the negotiated cipher suite using a key
-derived from the premaster secret.  The remainder of the server's
+derived from the premaster secret (via the "handshake master secret").
+The remainder of the server's
 handshake messages will be encrypted using that key.
 
 Following these messages, the server will send an EncryptedExtensions
@@ -1530,7 +1531,6 @@ secret and the handshake transcript (see {{I-D.ietf-tls-session-hash}}
 for the security rationale for this.)
 
 Application data MUST NOT be sent prior to the Finished message.
-
 [[TODO: can we make this clearer and more clearly match the text above
 about server-side False Start.]]
        Client                                               Server
@@ -1554,9 +1554,10 @@ about server-side False Start.]]
 
 \* Indicates optional or situation-dependent messages that are not always sent.
 
-{} Indicates messages encrypted under the handshake secret.
+{} Indicates messages protected using keys derived from the handshake master
+secret.
 
-[] Indicates messages encrypted under the application data secret.
+[] Indicates messages protected using keys derived from the master secret.
 
 
 If the client has not provided an appropriate ClientKeyShare (e.g. it
@@ -2933,7 +2934,7 @@ The pre_master_secret is used to generate a series of master secret values,
 as shown in the following diagram and described below.
 
 
-                            (Resumption) Premaster Secret <-+
+                                 Premaster Secret <---------+
                                         |                   |
                                        PRF                  |
                                         |                   |
@@ -2951,7 +2952,7 @@ as shown in the following diagram and described below.
     Traffic Keys          Secret               Premaster  --+
                                                  Secret
 
-First, as soon as the ClientKeyShares and ServerKeyShares messages
+First, as soon as the ClientKeyShare and ServerKeyShare messages
 have been exchanged, the client and server each use the
 unauthenticated key shares to generate a master secret which is used
 for the protection of the remaining handshake records. Specifically,
@@ -2960,6 +2961,10 @@ they generate:
        hs_master_secret = PRF(pre_master_secret, "handshake master secret",
                               session_hash)
                               [0..47];
+
+During resumption, the premaster secret is initialized with the
+"resumption premaster secret", rather than using the values from the
+ClientKeyShare/ServerKeyShare exchange.
 
 This master secret value is used to generate the record protection
 keys used for the handshake, as described in {{key-calculation}}.
@@ -2985,7 +2990,7 @@ client's Certificate and CertificateVerify have been sent, or, if the
 client refuses client authentication, after the client's empty
 Certificate message has been sent.
 
-For full handshakes, each side also generates a new secret which will
+For full handshakes, each side also derives a new secret which will
 be used as the premaster_secret for future resumptions of the
 newly established session. This is computed as:
 
