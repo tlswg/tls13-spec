@@ -1692,7 +1692,7 @@ The current connection state is used for renegotiation messages.
 When this message will be sent:
 
 > When a client first connects to a server, it is required to send the
-ClientHello as its first message. Finally, the client will send a
+ClientHello as its first message. The client will also send a
 ClientHello when the server has responded to its ClientHello with a
 ServerHello that selects cryptographic parameters that don't match the
 client's ClientKeyShare. In that case, the client MUST send the same
