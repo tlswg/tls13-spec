@@ -318,6 +318,10 @@ interpreted as described in RFC 2119 {{RFC2119}}.
 
 ##  Major Differences from TLS 1.2
 
+draft-04
+
+- Modify key computations to include session hash.
+
 
 draft-03
 
