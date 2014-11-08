@@ -1575,7 +1575,7 @@ ClientKeyShare, as shown in Figure 2:
        ClientHello
        ClientKeyShare            -------->
                                                        ServerHello
-                                                  {ServerKeyShare}
+                                                    ServerKeyShare
                                             {EncryptedExtensions*}
                                                     {Certificate*}
                                              {CertificateRequest*}
@@ -4113,6 +4113,10 @@ Archives of the list can be found at:
     University of California, Santa Cruz
     abadi@cs.ucsc.edu
 
+    Karthikeyan Bhargavan (co-author of {{I-D.ietf-tls-session-hash}})
+    INRIA
+    karthikeyan.bhargavan@inria.fr
+
     Steven M. Bellovin
     Columbia University
     smb@cs.columbia.edu
@@ -4132,6 +4136,10 @@ Archives of the list can be found at:
     Pete Chown
     Skygate Technology Ltd
     pc@skygate.co.uk
+
+    Antoine Delignat-Lavaud (co-author of {{I-D.ietf-tls-session-hash}})
+    INRIA
+    antoine.delignat-lavaud@inria.fr
 
     Taher Elgamal
     taher@securify.com
@@ -4173,6 +4181,10 @@ Archives of the list can be found at:
     Hugo Krawczyk
     IBM
     hugo@ee.technion.ac.il
+    
+    Adam Langley (co-author of {{I-D.ietf-tls-session-hash}})
+    Google
+    agl@google.com
 
     Jan Mikkelsen
     Transactionware
@@ -4186,9 +4198,13 @@ Archives of the list can be found at:
     RSA Security
     magnus@rsasecurity.com
 
-    Alfredo Pironti
+    Alfredo Pironti (co-author of {{I-D.ietf-tls-session-hash}})
     INRIA
     alfredo.pironti@inria.fr
+
+    Marsh Ray (co-author of {{I-D.ietf-tls-session-hash}})
+    Microsoft
+    maray@microsoft.com
     
     Robert Relyea
     Netscape Communications
