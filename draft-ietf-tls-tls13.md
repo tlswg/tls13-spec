@@ -1527,9 +1527,10 @@ it MAY start sending application data following the Finished, though
 the server has no way of knowing who will be receiving the data. Add this.]]
 
 Once the client receives the ServerKeyShare, it can also compute the
-ESS and decrypt the server's remaining handshake messages up through
+ephemeral shared secret and decrypt the server's remaining handshake messages up through
 the SignedParameters message. Once the SignedParameters message is
-received, it computes the SSS and uses that to derive new keying
+received, it computes the semi-ephemeral shared secret
+and uses that to derive new keying
 material which is used to protect the remainder of the server's
 handshake messages and to protect the client's second flight of
 handshake messages.  If the server has sent a CertificateRequest
