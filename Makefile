@@ -12,6 +12,8 @@ next_ver ?= $(shell printf "%.2d" $$((1$(current_ver)-99)))
 endif
 next := $(draft)-$(next_ver)
 
+COMMIT=origin/master
+
 .PHONY: all latest submit clean
 
 all latest: $(draft).txt $(draft).html
@@ -30,8 +32,17 @@ $(draft)-orig.md:
 	-rm -rf $@
 	git show origin/master:$(draft).md > $@
 
+$(draft)-$(COMMIT).md:
+	-rm -rf $@
+	git show $(COMMIT):$(draft).md > $@
+
+
 diff: $(draft).txt $(draft)-orig.txt
 	$(rfcdiff) $(draft)-orig.txt $(draft).txt
+	-rm -rf $(draft)-orig.*
+
+diff-commit: $(draft).txt $(draft)-$(COMMIT).txt
+	$(rfcdiff) $(draft)-$(COMMIT).txt $(draft).txt
 	-rm -rf $(draft)-orig.*
 
 $(next).md: $(draft).md
