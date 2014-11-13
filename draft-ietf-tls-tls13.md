@@ -42,6 +42,7 @@ normative:
   RFC1321:
   RFC3447:
   RFC3280:
+  RFC5077:
   RFC5288:
   AES:
        title: Specification for the Advanced Encryption Standard (AES)
@@ -1822,9 +1823,9 @@ random
 : A client-generated random structure.
 
 session_id
-: The ID of a session the client wishes to use for this connection.
-  This field is empty if no session_id is available, or if the
-  client wishes to generate new security parameters.
+: Versions of TLS before 1.3 supported session resumption
+  via a session_id in the ClientHello. For TLS 1.3 resumptions,
+  this value MUST always be empty.
 
 cipher_suites
 : This is a list of the cryptographic options supported by the
@@ -1994,23 +1995,9 @@ random
   independently generated from the ClientHello.random.
 
 session_id
-: This is the identity of the session corresponding to this
-  connection.  If the ClientHello.session_id was non-empty, the
-  server will look in its session cache for a match.  If a match is
-  found and the server is willing to establish the new connection
-  using the specified session state, the server will respond with
-  the same value as was supplied by the client.  This indicates a
-  resumed session and dictates that the parties must proceed
-  directly to the Finished messages.  Otherwise, this field will
-  contain a different value identifying the new session.  The server
-  may return an empty session_id to indicate that the session will
-  not be cached and therefore cannot be resumed.  If a session is
-  resumed, it must be resumed using the same cipher suite it was
-  originally negotiated with.  Note that there is no requirement
-  that the server resume any session even if it had formerly
-  provided a session_id.  Clients MUST be prepared to do a full
-  negotiation --- including negotiating new cipher suites --- during
-  any handshake.
+: Versions of TLS before 1.3 supported session resumption
+  via a session_id in the ClientHello. For TLS 1.3 ServerHellos
+  this value MUST always be empty.
 
 cipher_suite
 : The single cipher suite selected by the server from the list in
@@ -2395,6 +2382,23 @@ formats during the handshake. If no Supported Point Formats Extension
 is received this is equivalent to an extension allowing only the
 uncompressed point format.
 
+
+##### Session Ticket Extension
+
+The format of this extension is an opaque structure used to carry
+session-specific state information. This extension may be sent in the
+ClientHello and ServerHello. {{RFC5077} contains background on session
+tickets.
+
+If the client possesses a ticket that it wants to use to resume a
+session, then it includes the ticket in the SessionTicket extension in
+the ClientHello. If the server fails to verify the ticket, then it
+falls back to performing a full handshake.  If the ticket is accepted
+by the server but the handshake fails, the client SHOULD delete the
+ticket.
+
+The SessionTicket extension has been assigned the number 35.  The
+extension_data field of SessionTicket extension contains the ticket.
 
 ##### Early Data Extension
 
@@ -3092,7 +3096,7 @@ In general, Update messages have the following structure:
                UpdateRekey rekey;
 
              case session_id:
-               UpdateSessionIdsession_id;
+               UpdateSessionId session_id;
   
              /* This structure may be extended */
            }
@@ -3205,6 +3209,7 @@ ticket_id
 : The ticket_id value, which is opaque from the client's perspective.
 This may either be a simple opaque ID or a session ticket as defined
 in {{RFC5077}}.
+{:br }
 
 Previous versions of TLS used the session_id field in the ClientHello
 and ServerHello messages for session resumption. As of TLS 1.3, this
