@@ -322,6 +322,7 @@ draft-04
 
 - Modify key computations to include session hash.
 
+- Add support for Update protocol
 
 draft-03
 
@@ -977,7 +978,7 @@ message MAY be fragmented across several records).
 
        enum {
            reserved(20), alert(21), handshake(22),
-           application_data(23), (255)
+           application_data(23), update(24), (255)
        } ContentType;
 
        struct {
@@ -1128,8 +1129,9 @@ require a client write IV and a server write IV.
 
 When keys are generated, the then current master secret (MS) is used
 as an entropy source. For handshake records, this means the
-hs_master_secret. For application data, records, this means the
-regular master_secret.
+hs_master_secret. For application data, records, this means either
+the client_master_secret (for traffic sent by the client)
+or the server_master_secret (for traffic sent by the server).
 
 To generate the key material, compute
 
@@ -2952,9 +2954,10 @@ as shown in the following diagram and described below.
                             PRF                   PRF       |
                              |                     |        |
                              v                     v        |
-     Application  <-PRF-  Master               Resumption   |
-    Traffic Keys          Secret               Premaster  --+
-                                                 Secret
+     Application  <-PRF-  Client/              Resumption   |
+    Traffic Keys          Server               Premaster  --+
+                          Master                 Secret
+                          Secret
 
 First, as soon as the ClientKeyShare and ServerKeyShare messages
 have been exchanged, the client and server each use the
@@ -2977,16 +2980,18 @@ Once the hs_master_secret has been computed, the premaster secret should
 be deleted from memory.
 
 Once the last non-Finished message has been sent, the client and
-server then compute the master secret which will be used for the
-remainder of the session:
+server then compute their respective master secrets:
 
-       master_secret = PRF(hs_master_secret, "extended master secret",
-                           session_hash)
-                           [0..47];
+       client_master_secret = PRF(hs_master_secret, "client master secret",
+                                  session_hash)
+                                  [0..47];
 
+       server_master_secret = PRF(hs_master_secret, "server master secret",
+                                  session_hash)
+                                  [0..47];
 
 If the server does not request client authentication, the master
-secret can be computed at the time that the server sends its Finished,
+secrets can be computed at the time that the server sends its Finished,
 thus allowing the server to send traffic on its first flight (see
 [TODO] for security considerations on this practice.)  If the server
 requests client authentication, this secret can be computed after the
@@ -3050,6 +3055,120 @@ found in this octet string MUST NOT be truncated.
 complete picture is that ECDH is employed with a non-trivial KDF
 because TLS does not directly use the premaster secret for anything
 other than for computing the master secret.)
+
+## Update Protocol
+
+TLS supports an Update protocol which allows endpoints to update the
+cryptographic state of the connection after the handshake has been
+completed. The Update protocol can currently be used for the following tasks:
+
+- Refreshing cryptographic keying material.
+
+- Establishing a shared key which can be used to resume future
+  sessions.
+
+In versions of TLS prior to TLS 1.3, these functions were part of the handshake
+and/or required renegotiation. In TLS 1.3 they have been moved into a separate
+subprotocol. Future versions of this specification may add new functions to
+the Update protocol.
+
+
+### General Update Protocol Behavior
+
+In general, Update messages have the following structure:
+
+       enum { rekey(1), ack(2),  authentication(3), (255) } UpdateType;
+
+       struct {
+           UpdateType msg_type;       /* update type */
+           uint24 length;             /* bytes in message */
+
+           switch (msg_type) {
+             case ack:
+               UpdateAck ack;
+ 
+             case rekey:
+               UpdateRekey rekey;
+  
+             /* This structure may be extended */
+           }
+        } Update;
+
+Whenever a site sends an Update message, it updates its own master secret
+as follows:
+
+      X_master_secret_{i+1} = PRF(X_master_secret_i, "master_secret_update",
+                                  Update_message)
+
+This new master secret is used to generate traffic keys for subsequent
+records that it sends. Similarly, when a site receives an Update
+message, it updates its view of the peer's master secret and uses that
+for new traffic that it receives from the peer. The previous
+master secret MUST be discarded. [[TODO: DTLS?]]
+
+
+
+### ACK
+
+When an implementation receives an Update of type other than "ack", it
+MUST immediately generate an Update message of type ack to respond to
+it in response.
+
+Structure of this message:
+
+       enum { ignored(0), understood(1) (255)} UpdateComprehension;
+
+       struct {
+           UpdateComprehension comprehension;
+           opaque digest<0..255>;  /* Based on the PRF */       
+       } UpdateAck;
+
+comprehension
+: If the implementation recognized and processed the Update being
+responded to, it SHALL set this value to "understood". Otherwise,
+it SHALL set it to "ignored".
+
+digest
+: Hash() of the Update message being responded to, including the
+type and length bytes.
+{:br}
+
+The "comprehension" field indicates whether the responder processed
+the Update or not. However, in either case, the ACK MUST be generated
+rather than ignored.
+
+### Rekey
+
+An Update message of type "rekey" is used to refresh the keying
+material for a connection.  Because Update messages MUST be
+acknowledged, sending an UpdateRekey causes the keying material to be
+refreshed in both directions.
+
+Structure of this message:
+
+       struct {
+           Random random;
+       } UpdateRekey;
+
+random
+: A random value as defined in {{client-hello}}.
+{:br}
+
+Two common reasons for sending rekey updates are:
+
+- Too much traffic has been encrypted with the same key, for instance
+  because the AEAD explicit nonce space is potentially exhausted.
+
+- Providing protection for already sent traffic against system compromise.
+  Because master_secret_X_{i+1} is generated from master_secret_X_i
+  by a one-way function, once an Update has occurred and the old
+  master secret has been destroyed, compromise of the endpoint
+  does not threaten old traffic.
+
+An implementation MAY send an UpdateRekey at any time after
+the handshake completes.
+
+
 
 #  Mandatory Cipher Suites
 
@@ -3135,6 +3254,7 @@ In addition, this document defines two new registries to be maintained by IANA:
   Values from 224-255 (decimal) inclusive are reserved for Private
   Use {{RFC2434}}.
 --- back
+
 
 # Protocol Data Structures and Constant Values
 
