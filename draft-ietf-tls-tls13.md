@@ -3077,7 +3077,8 @@ the Update protocol.
 
 In general, Update messages have the following structure:
 
-       enum { rekey(1), ack(2),  authentication(3), (255) } UpdateType;
+       enum { rekey(1), ack(2),  authentication(3),
+              ticket(4), (255) } UpdateType;
 
        struct {
            UpdateType msg_type;       /* update type */
@@ -3089,6 +3090,9 @@ In general, Update messages have the following structure:
  
              case rekey:
                UpdateRekey rekey;
+
+             case session_id:
+               UpdateSessionIdsession_id;
   
              /* This structure may be extended */
            }
@@ -3105,7 +3109,8 @@ records that it sends. Similarly, when a site receives an Update
 message, it updates its view of the peer's master secret and uses that
 for new traffic that it receives from the peer. The previous
 master secret MUST be discarded. [[TODO: DTLS?]]
-
+For Updates sent by the server, the resumption_master_secret is
+also updated as described above.
 
 
 ### ACK
@@ -3169,6 +3174,41 @@ An implementation MAY send an UpdateRekey at any time after
 the handshake completes.
 
 
+### Ticket
+
+The UpdateTicket message is used by the server to establish a new
+session_id with the client. This message binds the current
+resumption_master_secret to the provided ticket. The server MAY
+allow resumption on previous session ids established on this
+connection but the client SHOULD discard the existing session ID for
+the connection.
+
+Structure of this message:
+
+       struct {
+          uint32 ticket_lifetime_hint;
+          opaque ticket_id<0..2^16-1>;
+       } UpdateTicket;
+
+lifetime_hint
+: The ticket_lifetime_hint field contains a hint from the server about
+how long the ticket should be stored.  The value indicates the
+lifetime in seconds as a 32-bit unsigned integer in network byte order
+relative to when the ticket is received.  A value of zero is reserved
+to indicate that the lifetime of the ticket is unspecified.  A client
+SHOULD delete the ticket and associated state when the time expires.
+It MAY delete the ticket earlier based on local policy.  A server MAY
+treat a ticket as valid for a shorter or longer period of time than
+what is stated in the ticket_lifetime_hint.
+
+ticket_id
+: The ticket_id value, which is opaque from the client's perspective.
+This may either be a simple opaque ID or a session ticket as defined
+in {{RFC5077}}.
+
+Previous versions of TLS used the session_id field in the ClientHello
+and ServerHello messages for session resumption. As of TLS 1.3, this
+value is subsumed by the UpdateTicket mechanism.
 
 #  Mandatory Cipher Suites
 
