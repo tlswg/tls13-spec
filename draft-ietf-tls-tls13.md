@@ -1523,12 +1523,7 @@ Once the client receives the ServerKeyShare, it can also compute the
 premaster secret and decrypt the server's remaining handshake messages.
 The client generates its own sending keys based on the premaster secret
 and will encrypt the remainder of its handshake messages using those keys
-and the newly established cipher suite.  If the server has sent a
-CertificateRequest message, the client MUST send the Certificate
-message, though it may contain zero certificates.  If the client has
-sent a certificate, a digitally-signed CertificateVerify message is
-sent to explicitly verify possession of the private key in the
-certificate.  Finally, the client sends the Finished message.
+and the newly established cipher suite. The client then sends the Finished message.
 
 At this point, the handshake is complete, and the
 client and server may exchange application layer data, which is
@@ -1550,8 +1545,6 @@ about server-side False Start.]]
                                              {CertificateRequest*}
                                               {CertificateVerify*}
                                  <--------              {Finished}
-       {Certificate*}
-       {CertificateVerify*}
        {Finished}                -------->
        [Application Data]        <------->      [Application Data]
 
@@ -1587,8 +1580,6 @@ ClientKeyShare, as shown in Figure 2:
                                              {CertificateRequest*}
                                               {CertificateVerify*}
                                  <--------              {Finished}
-       {Certificate*}
-       {CertificateVerify*}
        {Finished}                -------->
        [Application Data]        <------->     [Application Data]
 
@@ -2812,8 +2803,8 @@ handshake_messages
 
 The value handshake_messages includes all handshake messages starting at
 ClientHello up to, but not including, this Finished message. This may be
-different from handshake_messages in {{server-certificate-verify}} or
-{{client-certificate-verify}}. Also, the handshake_messages
+different from handshake_messages in {{server-certificate-verify}}.
+Also, the handshake_messages
 for the Finished message sent by the client will be different from that for the
 Finished message sent by the server, because the one that is sent second will
 include the prior one.
@@ -2821,108 +2812,6 @@ include the prior one.
 Note: Alerts and any other record types are not handshake messages
 and are not included in the hash computations. Also, HelloRequest
 messages are omitted from handshake hashes.
-
-
-###  Client Certificate
-
-When this message will be sent:
-
-> This message is the first handshake message the client can send
-after receiving the server's Finished This message is only sent if the server requests a
-certificate. If no suitable certificate is available, the client MUST send a
-certificate message containing no certificates. That is, the certificate_list
-structure has a length of zero. If the client does not send any certificates,
-the server MAY at its discretion either continue the handshake without client
-authentication, or respond with a fatal handshake_failure alert. Also, if some
-aspect of the certificate chain was unacceptable (e.g., it was not signed by a
-known, trusted CA), the server MAY at its discretion either continue the
-handshake (considering the client unauthenticated) or send a fatal alert.
-
-> Client certificates are sent using the Certificate structure defined in
-{{server-certificate}}.
-
-Meaning of this message:
-
-> This message conveys the client's certificate chain to the server; the server
-will use it when verifying the CertificateVerify message (when the client
-authentication is based on signing) or calculating the premaster secret (for
-non-ephemeral Diffie- Hellman). The certificate MUST be appropriate for the
-negotiated cipher suite's key exchange algorithm, and any negotiated extensions.
-
-In particular:
-
-- The certificate type MUST be X.509v3, unless explicitly negotiated
-  otherwise (e.g., {{RFC5081}}).
-
-- The end-entity certificate's public key (and associated
-  restrictions) has to be compatible with the certificate types
-  listed in CertificateRequest:
-
-       Client Cert. Type   Certificate Key Type
-
-       rsa_sign            RSA public key; the certificate MUST allow the
-                           key to be used for signing with the signature
-                           scheme and hash algorithm that will be
-                           employed in the certificate verify message.
-
-       dss_sign            DSA public key; the certificate MUST allow the
-                           key to be used for signing with the hash
-                           algorithm that will be employed in the
-                           certificate verify message.
-
-       ecdsa_sign          ECDSA-capable public key; the certificate MUST
-                           allow the key to be used for signing with the
-                           hash algorithm that will be employed in the
-                           certificate verify message; the public key
-                           MUST use a curve and point format supported by
-                           the server.
-
-       rsa_fixed_dh        Diffie-Hellman public key; MUST use the same
-       dss_fixed_dh        parameters as server's key.
-
-       rsa_fixed_ecdh      ECDH-capable public key; MUST use the
-       ecdsa_fixed_ecdh    same curve as the server's key, and MUST use a
-                           point format supported by the server.
-
-- If the certificate_authorities list in the certificate request
-  message was non-empty, one of the certificates in the certificate
-  chain SHOULD be issued by one of the listed CAs.
-
-- The certificates MUST be signed using an acceptable hash/
-  signature algorithm pair, as described in {{certificate-request}}.  Note
-  that this relaxes the constraints on certificate-signing
-  algorithms found in prior versions of TLS.
-
-Note that, as with the server certificate, there are certificates that use
-algorithms/algorithm combinations that cannot be currently used with TLS.
-
-
-###  Client Certificate Verify
-
-When this message will be sent:
-
-> This message is used to provide explicit verification of a client
-certificate. This message is only sent following a client certificate that has
-signing capability (i.e., all certificates except those containing fixed
-Diffie-Hellman parameters). When sent, it MUST immediately follow the client's
-Certificate message. The contents of the message are computed as described
-in {{server-certificate-verify}}.
-
-> The hash and signature algorithms used in the signature MUST be one of those
-present in the supported_signature_algorithms field of the CertificateRequest
-message. In addition, the hash and signature algorithms MUST be compatible with
-the key in the client's end-entity certificate. RSA keys MAY be used with any
-permitted hash algorithm, subject to restrictions in the certificate, if any.
-
-> Because DSA signatures do not contain any secure indication of hash
-algorithm, there is a risk of hash substitution if multiple hashes may be used
-with any key. Currently, DSA {{DSS}} may only be used with SHA-1. Future
-revisions of DSS {{DSS-3}} are expected to allow the use of other digest
-algorithms with DSA, as well as guidance as to which digest algorithms should
-be used with each key size. In addition, future revisions of {{RFC3280}} may
-specify mechanisms for certificates to indicate which digest algorithms are to
-be used with DSA.
-
 
 #  Cryptographic Computations
 
@@ -3090,6 +2979,9 @@ In general, Update messages have the following structure:
              case rekey:
                UpdateRekey rekey;
   
+             case authentication:
+               UpdateAuthentication authentication;
+
              /* This structure may be extended */
            }
         } Update;
@@ -3168,6 +3060,93 @@ Two common reasons for sending rekey updates are:
 An implementation MAY send an UpdateRekey at any time after
 the handshake completes.
 
+
+### Authenticate
+
+An Update message of type "authenticate" is used to bind a new
+identity based on a certificate to the connection. 
+
+Structure of this message:
+
+       struct {      
+           Certificate certificate;
+           CertificateVerify certificate_verify;
+       } UpdateAuthenticate;
+
+certificate
+: A Certificate structure as defined in {{server-certificate}}.
+
+certificate_verify
+: A CertificateVerify structure as defined in {{server-certificate-verify}}.
+In this case the handshake_messages field consists of all the handshake
+messages sent (including the Finished messages) plus all Update messages
+sent by the endpoint sending the Update message (including ACKs) but not
+Update messages sent by the other side.
+{:br}
+
+Because the acknowlegement of the UpdateAuthenticate message includes
+a digest of that message, the endpoint authentication becomes integrated
+into both side's traffic keys. This is important for reasons documented
+in {{I-D.ietf-tls-session-hash}}.
+
+UpdateCertificate MUST only be sent by clients and only under
+the conditions described in {{client-certificate}} and clients MUST not send
+UpdateCertificate more than once. It is a fatal unexpected_message error
+for an agent to send this message at an inappropriate time. Future
+specifications may relax this requirement, which was added for simplicity
+of analysis rather than for technical reasons around the handshake.
+
+#### Client Certificate
+
+This message is only sent if the server requests a
+certificate. If no suitable certificate is available, the client MUST send a
+certificate message containing no certificates. That is, the certificate_list
+structure has a length of zero. If the client does not send any certificates,
+the server MAY at its discretion either continue the handshake without client
+authentication, or respond with a fatal handshake_failure alert. Also, if some
+aspect of the certificate chain was unacceptable (e.g., it was not signed by a
+known, trusted CA), the server MAY at its discretion either continue the
+handshake (considering the client unauthenticated) or send a fatal alert.
+
+The client's certificate MUST be selected as described below:
+
+- The certificate type MUST be X.509v3, unless explicitly negotiated
+  otherwise (e.g., {{RFC5081}}).
+
+- The end-entity certificate's public key (and associated
+  restrictions) has to be compatible with the certificate types
+  listed in CertificateRequest:
+
+       Client Cert. Type   Certificate Key Type
+
+       rsa_sign            RSA public key; the certificate MUST allow the
+                           key to be used for signing with the signature
+                           scheme and hash algorithm that will be
+                           employed in the certificate verify message.
+
+       dss_sign            DSA public key; the certificate MUST allow the
+                           key to be used for signing with the hash
+                           algorithm that will be employed in the
+                           certificate verify message.
+
+       ecdsa_sign          ECDSA-capable public key; the certificate MUST
+                           allow the key to be used for signing with the
+                           hash algorithm that will be employed in the
+                           certificate verify message; the public key
+                           MUST use a curve and point format supported by
+                           the server.
+
+- If the certificate_authorities list in the certificate request
+  message was non-empty, one of the certificates in the certificate
+  chain SHOULD be issued by one of the listed CAs.
+
+- The certificates MUST be signed using an acceptable hash/
+  signature algorithm pair, as described in {{certificate-request}}.  Note
+  that this relaxes the constraints on certificate-signing
+  algorithms found in prior versions of TLS.
+
+Note that, as with the server certificate, there are certificates that use
+algorithms/algorithm combinations that cannot be currently used with TLS.
 
 
 #  Mandatory Cipher Suites
