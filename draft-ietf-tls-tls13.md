@@ -322,6 +322,8 @@ draft-04
 
 - Remove renegotiation.
 
+- Update format of signatures with context.
+
 draft-03
 
 - Remove GMT time.
@@ -623,6 +625,20 @@ using those algorithms over the contents of the element. The contents
 themselves do not appear on the wire but are simply calculated. The length of
 the signature is specified by the signing algorithm and key.
 
+In previous versions of TLS, the ServerKeyExchange format meant that attackers
+can obtain a signature of a message with a chosen, 32-byte prefix. Because TLS
+1.3 servers are likely to also implement prior versions, the contents of the
+element always start with 64 bytes of octet 32 in order to clear that
+chosen-prefix.
+
+Following that padding is a NUL-terminated context string in order to
+disambiguate signatures for different purposes. The context string will be
+specified whenever a digitally-signed element is used.
+
+Finally, the specified contents of the digitally-signed structure follow the
+NUL at the end of the context string. (See the example at the end of this
+section.)
+
 In RSA signing, the opaque vector contains the signature generated using the
 RSASSA-PKCS1-v1_5 signature scheme defined in {{RFC3447}}. As discussed in
 {{RFC3447}}, the DigestInfo MUST be DER-encoded {{X680}} {{X690}}. For hash
@@ -679,8 +695,16 @@ In the following example
            };
        } UserType;
 
-The contents of the inner struct (field3 and field4) are used as input for the
-signature/hash algorithm. The length of the structure, in bytes, would be equal to two
+Assume that the context string for the signature was specified as "Example".
+The input for the signature/hash algorithm would be:
+
+       2020202020202020202020202020202020202020202020202020202020202020
+       2020202020202020202020202020202020202020202020202020202020202020
+       4578616d706c6500
+
+followed by the encoding of the inner struct (field3 and field4).
+
+The length of the structure, in bytes, would be equal to two
 bytes for field1 and field2, plus two bytes for the signature and hash
 algorithm, plus two bytes for the length of the signature, plus the length of
 the output of the signing algorithm. The length of the signature is known
@@ -2569,6 +2593,8 @@ time of the CertificateVerify computation. Servers can minimize this
 computation cost by offering a restricted set of digest algorithms in the
 CertificateRequest message.
 
+The context string for the signature is "TLS 1.3, server CertificateVerify".
+
 >If the client has offered the "signature_algorithms" extension, the signature
 algorithm and hash algorithm MUST be a pair listed in that extension. Note that
 there is a possibility for inconsistencies here. For instance, the client might
@@ -3123,6 +3149,8 @@ This section describes protocol types and constants.
              opaque handshake_messages[handshake_messages_length];
          }
     } CertificateVerify;
+
+The context string for the signature is "TLS 1.3, client CertificateVerify".
 
 ### Handshake Finalization Message
 
