@@ -2637,21 +2637,29 @@ Structure of this message:
 
        struct {
             digitally-signed struct {
-                opaque handshake_messages[handshake_messages_length];
+                opaque handshake_messages_hash[hash_length];
             }
        } CertificateVerify;
 
-> Here handshake_messages refers to all handshake messages sent or received,
+> Here handshake_messages_hash is a digest of all handshake messages sent or received,
 starting at client hello and up to, but not including, this message, including
 the type and length fields of the handshake messages. This is the concatenation
 of all the Handshake structures (as defined in {{handshake-protocol}})
-exchanged thus far. Note that this requires both sides to either buffer the
-messages or compute running hashes for all potential hash algorithms up to the
-time of the CertificateVerify computation. Servers can minimize this
-computation cost by offering a restricted set of digest algorithms in the
-CertificateRequest message.
+exchanged thus far.
 
-The context string for the signature is "TLS 1.3, server CertificateVerify".
+The hash function used MUST be the same as the hash function indicated by the
+SignatureAndHashAlgorithm in the digitally-signed structure. Note that this
+requires both sides to either buffer the messages or compute running hashes for
+all potential hash algorithms up to the time of the CertificateVerify
+computation. Servers can minimize this computation cost by offering a
+restricted set of digest algorithms in the CertificateRequest message.
+
+The context string for the signature is "TLS 1.3, server CertificateVerify". A
+hash of the handshake messages is signed rather than the messages themselves
+because the digitally-signed format requires padding and context bytes at the
+beginning of the input. Thus, by signing a digest of the messages, an
+implementation need only maintain one running hash per hash type for
+CertificateVerify, Finished and other messages.
 
 >If the client has offered the "signature_algorithms" extension, the signature
 algorithm and hash algorithm MUST be a pair listed in that extension. Note that
@@ -3204,7 +3212,7 @@ This section describes protocol types and constants.
 
     struct {
          digitally-signed struct {
-             opaque handshake_messages[handshake_messages_length];
+             opaque handshake_messages_hash[hash_length];
          }
     } CertificateVerify;
 
