@@ -118,6 +118,7 @@ informative:
   RFC4506:
   RFC5081:
   RFC5116:
+  RFC5705:
   I-D.ietf-tls-negotiated-ff-dhe:
   I-D.ietf-tls-session-hash:
 
@@ -322,8 +323,7 @@ draft-04
 
 - Modify key computations to include session hash.
 
-
-draft-04
+- Remove ChangeCipherSpec
 
 - Remove renegotiation.
 
@@ -1583,7 +1583,8 @@ ClientKeyShare, as shown in Figure 2:
 
    Figure 2.  Message flow for a full handshake with mismatched parameters
 
-[[OPEN ISSUE: Do we restart the handshake hash?]]
+[[OPEN ISSUE: Should we restart the handshake hash?
+https://github.com/tlswg/tls13-spec/issues/104.]]
 [[OPEN ISSUE: We need to make sure that this flow doesn't introduce
 downgrade issues. Potential options include continuing the handshake
 hashes (as long as clients don't change their opinion of the server's
@@ -2854,7 +2855,8 @@ During resumption, the premaster secret is initialized with the
 ClientKeyShare/ServerKeyShare exchange.
 
 This master secret value is used to generate the record protection
-keys used for the handshake, as described in {{key-calculation}}.
+keys used for the handshake, as described in {{key-calculation}}. It is
+also used with TLS Exporters {{RFC5705}}.
 
 Once the hs_master_secret has been computed, the premaster secret should
 be deleted from memory.
@@ -2906,6 +2908,18 @@ received, starting at client hello up to the present time, with the
 exception of the Finished message, including the type and length
 fields of the handshake messages. This is the concatenation of all the
 exchanged Handshake structures.
+
+For concreteness, at the point where the handshake master secret
+is derived, the session hash includes the ClientHello, ClientKeyShare,
+ServerHello, and ServerKeyShare, and HelloRetryRequest (if any)
+(though see [https://github.com/tlswg/tls13-spec/issues/104]).
+At the point where the master secret is derived, it includes every
+handshake message, with the exception of the Finished messages.
+Note that if client authentication is not used, then the session
+hash is complete at the point when the server has sent its first
+flight. Otherwise, it is only complete when the client has sent its
+first flight, as it covers the client's Certificate and CertificateVerify.
+
 
 ###  Diffie-Hellman
 
@@ -3996,7 +4010,7 @@ Archives of the list can be found at:
     University of California, Santa Cruz
     abadi@cs.ucsc.edu
 
-    Karthikeyan Bhargavan (co-author of {{I-D.ietf-tls-session-hash}})
+    Karthikeyan Bhargavan (co-author of [I-D.ietf-tls-session-hash])
     INRIA
     karthikeyan.bhargavan@inria.fr
 
@@ -4020,7 +4034,7 @@ Archives of the list can be found at:
     Skygate Technology Ltd
     pc@skygate.co.uk
 
-    Antoine Delignat-Lavaud (co-author of {{I-D.ietf-tls-session-hash}})
+    Antoine Delignat-Lavaud (co-author of [I-D.ietf-tls-session-hash])
     INRIA
     antoine.delignat-lavaud@inria.fr
 
@@ -4065,9 +4079,12 @@ Archives of the list can be found at:
     IBM
     hugo@ee.technion.ac.il
     
-    Adam Langley (co-author of {{I-D.ietf-tls-session-hash}})
+    Adam Langley (co-author of [I-D.ietf-tls-session-hash])
     Google
     agl@google.com
+
+    Ilari Liusvaara 
+    ilari.liusvaara@elisanet.fi
 
     Jan Mikkelsen
     Transactionware
@@ -4081,11 +4098,11 @@ Archives of the list can be found at:
     RSA Security
     magnus@rsasecurity.com
 
-    Alfredo Pironti (co-author of {{I-D.ietf-tls-session-hash}})
+    Alfredo Pironti (co-author of [I-D.ietf-tls-session-hash])
     INRIA
     alfredo.pironti@inria.fr
 
-    Marsh Ray (co-author of {{I-D.ietf-tls-session-hash}})
+    Marsh Ray (co-author of [I-D.ietf-tls-session-hash])
     Microsoft
     maray@microsoft.com
     
