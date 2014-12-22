@@ -118,15 +118,9 @@ informative:
   RFC4506:
   RFC5081:
   RFC5116:
+  RFC6176:
   I-D.ietf-tls-negotiated-ff-dhe:
 
-  BLEI:
-       title: Chosen Ciphertext Attacks against Protocols Based on RSA Encryption Standard PKCS #1
-       author:
-         - ins: D. Bleichenbacher
-       seriesinfo:
-         CRYPTO98: "LNCS vol. 1462, pages:  1-12, 1998, Advances in Cryptology"
-       date: 1998
   CBCATT:
        title: "Security of CBC Ciphersuites in SSL/TLS: Problems and Countermeasures"
        target: http://www.openssl.org/~bodo/tls-cbc.txt
@@ -3594,102 +3588,13 @@ document.
 
 ## Compatibility with SSL 2.0
 
-TLS 1.2 clients that wish to support SSL 2.0 servers MUST send version 2.0
-CLIENT-HELLO messages defined in {{SSL2}}. The message MUST contain the same
-version number as would be used for ordinary ClientHello, and MUST encode the
-supported TLS cipher suites in the CIPHER-SPECS-DATA field as described below.
+The security of SSL 2.0 is considered insufficient for the reasons enumerated
+in Section 2 of [RFC6176].
 
-Warning: The ability to send version 2.0 CLIENT-HELLO messages will be phased
-out with all due haste, since the newer ClientHello format provides better
-mechanisms for moving to newer versions and negotiating extensions. TLS 1.2
-clients SHOULD NOT support SSL 2.0.
-
-However, even TLS servers that do not support SSL 2.0 MAY accept version 2.0
-CLIENT-HELLO messages. The message is presented below in sufficient detail for
-TLS server implementors; the true definition is still assumed to be {{SSL2}}.
-
-For negotiation purposes, 2.0 CLIENT-HELLO is interpreted the same way as a
-ClientHello with a "null" compression method and no extensions. Note that this
-message MUST be sent directly on the wire, not wrapped as a TLS record. For the
-purposes of calculating Finished and CertificateVerify, the msg_length field is
-not considered to be a part of the handshake message.
-
-       uint8 V2CipherSpec[3];
-       struct {
-           uint16 msg_length;
-           uint8 msg_type;
-           Version version;
-           uint16 cipher_spec_length;
-           uint16 session_id_length;
-           uint16 challenge_length;
-           V2CipherSpec cipher_specs[V2ClientHello.cipher_spec_length];
-           opaque session_id[V2ClientHello.session_id_length];
-           opaque challenge[V2ClientHello.challenge_length;
-       } V2ClientHello;
-
-msg_length
-: The highest bit MUST be 1; the remaining bits contain the length
-  of the following data in bytes.
-
-msg_type
-: This field, in conjunction with the version field, identifies a
-  version 2 ClientHello message.  The value MUST be 1.
-
-version
-: Equal to ClientHello.client_version.
-
-cipher_spec_length
-: This field is the total length of the field cipher_specs.  It
-  cannot be zero and MUST be a multiple of the V2CipherSpec length
-  (3).
-
-session_id_length
-: This field MUST have a value of zero for a client that claims to
-  support TLS 1.2.
-
-challenge_length
-: The length in bytes of the client's challenge to the server to
-  authenticate itself.  Historically, permissible values are between
-  16 and 32 bytes inclusive.  When using the SSLv2 backward-
-  compatible handshake the client SHOULD use a 32-byte challenge.
-
-cipher_specs
-: This is a list of all CipherSpecs the client is willing and able
-  to use.  In addition to the 2.0 cipher specs defined in {{SSL2}},
-  this includes the TLS cipher suites normally sent in
-  ClientHello.cipher_suites, with each cipher suite prefixed by a
-  zero byte.  For example, the TLS cipher suite {0x00,0x0A} would be
-  sent as {0x00,0x00,0x0A}.
-
-session_id
-: This field MUST be empty.
-
-challenge
-: Corresponds to ClientHello.random.  If the challenge length is
-  less than 32, the TLS server will pad the data with leading (note:
-  not trailing) zero bytes to make it 32 bytes long.
-{:br }
-
-Note: Requests to resume a TLS session MUST use a TLS client hello.
-
-## Avoiding Man-in-the-Middle Version Rollback
-
-When TLS clients fall back to Version 2.0 compatibility mode, they MUST use
-special PKCS#1 block formatting. This is done so that TLS servers will reject
-Version 2.0 sessions with TLS-capable clients.
-
-When a client negotiates SSL 2.0 but also supports TLS, it MUST set the
-right-hand (least-significant) 8 random bytes of the PKCS padding (not
-including the terminal null of the padding) for the RSA encryption of the
-ENCRYPTED-KEY-DATA field of the CLIENT-MASTER-KEY to 0x03 (the other padding
-bytes are random).
-
-When a TLS-capable server negotiates SSL 2.0 it SHOULD, after decrypting the
-ENCRYPTED-KEY-DATA field, check that these 8 padding bytes are 0x03. If they
-are not, the server SHOULD generate a random value for SECRET-KEY-DATA, and
-continue the handshake (which will eventually fail since the keys will not
-match). Note that reporting the error situation to the client could make the
-server vulnerable to attacks described in {{BLEI}}.
+TLS 1.3 implementations MUST NOT support SSL 2.0 {{SSL2}}. Implementations
+MUST NOT send or accept SSL version 2.0 compatible CLIENT-HELLO or SERVER-HELLO
+messages. Implementations MUST NOT send or accept any messages with a protocol
+version that is less than { 3, 0 }.
 
 #  Security Analysis
 
