@@ -316,6 +316,8 @@ draft-04
 
 - Remove renegotiation.
 
+- Remove SSL 2 backwards compatibility.
+
 draft-03
 
 - Remove GMT time.
