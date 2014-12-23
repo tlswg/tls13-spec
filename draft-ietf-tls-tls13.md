@@ -3590,14 +3590,12 @@ document.
 
 ## Compatibility with SSL 2.0
 
-The security of SSL 2.0 is considered insufficient for the reasons enumerated
+The security of SSL 2.0 {{SSL2}} is considered insufficient for the reasons enumerated
 in Section 2 of [RFC6176].
 
-TLS 1.3 implementations MUST NOT support SSL 2.0 {{SSL2}}. Implementations
-MUST NOT send or accept SSL version 2.0 compatible CLIENT-HELLO or SERVER-HELLO
-messages. Implementations MUST NOT send or accept any messages with a protocol
-version that is less than { 3, 0 }.
-
+Implementations MUST NOT send or accept an SSL version 2.0 compatible CLIENT-HELLO.
+Implementations MUST NOT send or accept TLS records with a version less than { 3, 0 }.
+    
 #  Security Analysis
 
 The TLS protocol is designed to establish a secure connection between a client
