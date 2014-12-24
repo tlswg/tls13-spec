@@ -317,7 +317,7 @@ draft-04
 
 - Remove renegotiation.
 
-- Remove SSL 2 backwards compatibility.
+- Remove SSL 2 backwards compatibility and prohibit SSL 3 negotiation.
 
 draft-03
 
