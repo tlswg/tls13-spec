@@ -120,6 +120,7 @@ informative:
   RFC5116:
   RFC6176:
   I-D.ietf-tls-negotiated-ff-dhe:
+  I-D.ietf-tls-sslv3-diediedie:
 
   CBCATT:
        title: "Security of CBC Ciphersuites in SSL/TLS: Problems and Countermeasures"
@@ -3523,11 +3524,11 @@ Cryptographic details:
 
 # Backward Compatibility
 
-## Compatibility with TLS 1.0/1.1 and SSL 3.0 {#compatibility}
+## Compatibility with prior versions {#compatibility}
 
 [[TODO: Revise backward compatibility section for TLS 1.3.
 https://github.com/tlswg/tls13-spec/issues/54]]
-Since there are various versions of TLS (1.0, 1.1, 1.2, and any future
+Since there are various versions of TLS (1.0, 1.1, 1.2, 1.3, and any future
 versions) and SSL (2.0 and 3.0), means are needed to negotiate the specific
 protocol version to use. The TLS protocol provides a built-in mechanism for
 version negotiation so as not to bother other protocol components with the
@@ -3588,14 +3589,21 @@ ClientHello.client_version. No single value will guarantee interoperability
 with all old servers, but this is a complex topic beyond the scope of this
 document.
 
-## Compatibility with SSL 2.0
+## Compatibility with SSL
+
+The security of SSL 3.0 {{SSL3}} is considered insufficient for the reasons enumerated
+in [I-D.ietf-tls-sslv3-diediedie].
+
+Implementations MUST NOT send an SSL version 3.0 ClientHello or ServerHello. Any endpoint
+receiving a Hello message with the protocol version set to { 3, 0 } MUST respond with a
+"protocol_version" alert message and close the connection.
 
 The security of SSL 2.0 {{SSL2}} is considered insufficient for the reasons enumerated
-in Section 2 of [RFC6176].
+in [RFC6176].
 
 Implementations MUST NOT send or accept an SSL version 2.0 compatible CLIENT-HELLO.
-Implementations MUST NOT send or accept TLS records with a version less than { 3, 0 }.
-    
+Implementations MUST NOT send or accept any records with a version less than { 3, 0 }.
+
 #  Security Analysis
 
 The TLS protocol is designed to establish a secure connection between a client
