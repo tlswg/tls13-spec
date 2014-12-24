@@ -963,14 +963,18 @@ type
 : The higher-level protocol used to process the enclosed fragment.
 
 version
-: The version of the protocol being employed.  This document
-  describes TLS Version 1.3, which uses the version { 3, 4 }.  The
-  version value 3.4 is historical, deriving from the use of {3, 1}
-  for TLS 1.0.  (See {{record-layer-1}}.)  Note that a client that
-  supports multiple versions of TLS may not know what version will
-  be employed before it receives the ServerHello.  See
-  {{backward-compatibility}} for discussion about what record layer
-  version number should be employed for ClientHello.
+: The version of the protocol currently being employed. This document
+  describes TLS Version 1.3, which uses the version { 3, 4 }. The
+  version value 3.4 is historical, deriving from the use of { 3, 1 }
+  for TLS 1.0. (See {{record-layer-1}}) A client that supports
+  multiple versions of TLS will not know what version will
+  be employed for the connection before it receives the ServerHello.
+  Thus, the ClientHello MUST use the version { 3, 1 } for the
+  record layer version number. (the minium TLS version with which
+  the ClientHello format is compatible) All other record layer version
+  numbers MUST equal the negotiated version number. See
+  {{backward-compatibility}} for more information regarding negotiations
+  with endpoints supporting other versions.
 
 length
 : The length (in bytes) of the following TLSPlaintext.fragment.  The
