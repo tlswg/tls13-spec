@@ -3418,19 +3418,19 @@ Cryptographic details:
 
 ## Compatibility with prior versions {#compatibility}
 
-[[TODO: Revise backward compatibility section for TLS 1.3.
-https://github.com/tlswg/tls13-spec/issues/54]]
 Since there are various versions of TLS (1.0, 1.1, 1.2, 1.3, and any future
 versions) and SSL (2.0 and 3.0), means are needed to negotiate the specific
 protocol version to use. The TLS protocol provides a built-in mechanism for
 version negotiation so as not to bother other protocol components with the
 complexities of version selection.
 
-TLS versions 1.0, 1.1, and 1.2, and SSL 3.0 are very similar, and use
-compatible ClientHello messages; thus, supporting all of them is relatively
-easy. Similarly, servers can easily handle clients trying to use future
-versions of TLS as long as the ClientHello format remains compatible, and the
-client supports the highest protocol version available in the server.
+TLS 1.x and SSL 3.0 use compatible ClientHello messages, so supporting all
+of them is relatively easy. Similarly, servers can easily handle clients trying
+to use future versions of TLS as long as the ClientHello format remains
+compatible, and the client supports the highest protocol version available
+in the server.
+
+### Negotiating with an older server
 
 A TLS 1.3 client who wishes to negotiate with such older servers will send a
 normal TLS 1.3 ClientHello, containing { 3, 4 } (TLS 1.3) in
@@ -3447,20 +3447,30 @@ If a TLS server receives a ClientHello containing a version number greater than
 the highest version supported by the server, it MUST reply according to the
 highest version supported by the server.
 
+### Negotiating with an older client
+
 A TLS server can also receive a ClientHello containing a version number smaller
 than the highest supported version. If the server wishes to negotiate with old
 clients, it will proceed as appropriate for the highest version supported by
 the server that is not greater than ClientHello.client_version. For example, if
 the server supports TLS 1.0, 1.1, and 1.2, and client_version is TLS 1.0, the
-server will proceed with a TLS 1.0 ServerHello. If server supports (or is
-willing to use) only versions greater than client_version, it MUST send a
-"protocol_version" alert message and close the connection.
+server will proceed with a TLS 1.0 ServerHello. If the server only supports
+versions greater than client_version, it MUST send a "protocol_version"
+alert message and close the connection.
 
 Whenever a client already knows the highest protocol version known to a server
 (for example, when resuming a session), it SHOULD initiate the connection in
 that native protocol.
 
-Note: some server implementations are known to implement version negotiation
+Earlier versions of the TLS specification were not fully clear on what the
+record layer version number (TLSPlaintext.version) should contain when sending
+ClientHello (i.e., before it is known which version of the protocol will be
+employed). Thus, TLS servers compliant with this specification MUST accept any
+value { 03, XX } as the record layer version number for ClientHello.
+
+### Negotiating with buggy servers
+
+Some server implementations are known to implement version negotiation
 incorrectly. For example, there are buggy TLS 1.0 servers that simply close the
 connection when the client offers a version newer than TLS 1.0. Also, it is
 known that some servers will refuse the connection if any TLS extensions are
@@ -3468,14 +3478,8 @@ included in ClientHello. Interoperability with such buggy servers is a complex
 topic beyond the scope of this document, and may require multiple connection
 attempts by the client.
 
-Earlier versions of the TLS specification were not fully clear on what the
-record layer version number (TLSPlaintext.version) should contain when sending
-ClientHello (i.e., before it is known which version of the protocol will be
-employed). Thus, TLS servers compliant with this specification MUST accept any
-value {03,XX} as the record layer version number for ClientHello.
-
 TLS clients that wish to negotiate with older servers MAY send any value
-{03,XX} as the record layer version number. Typical values would be {03,00},
+{ 03, XX } as the record layer version number. Typical values would be { 3, 0 },
 the lowest version number supported by the client, and the value of
 ClientHello.client_version. No single value will guarantee interoperability
 with all old servers, but this is a complex topic beyond the scope of this
