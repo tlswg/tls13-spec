@@ -963,18 +963,10 @@ type
 : The higher-level protocol used to process the enclosed fragment.
 
 version
-: The version of the protocol currently being employed. This document
-  describes TLS Version 1.3, which uses the version { 3, 4 }. The
-  version value 3.4 is historical, deriving from the use of { 3, 1 }
-  for TLS 1.0. (See {{record-layer-1}}) A client that supports
-  multiple versions of TLS will not know what version will
-  be employed for the connection before it receives the ServerHello.
-  Thus, the ClientHello MUST use the version { 3, 1 } for the
-  record layer version number. (the minium TLS version with which
-  the ClientHello format is compatible) All other record layer version
-  numbers MUST equal the negotiated version number. See
-  {{backward-compatibility}} for more information regarding negotiations
-  with endpoints supporting other versions.
+: The version of the protocol being employed in the current record.
+  For the initial ClientHello this MUST be { 3, 1 }.
+  For the ServerHello and all other TLS records this MUST be equal to the negotiated version.
+  For TLS 1.3 connections, this version is { 3, 4 }.
 
 length
 : The length (in bytes) of the following TLSPlaintext.fragment.  The
@@ -986,8 +978,23 @@ fragment
   specified by the type field.
 {:br }
 
-Implementations MUST NOT send zero-length fragments of Handshake or Alert
-types. Zero-length fragments of Application data MAY
+This document describes TLS Version 1.3, which uses the version { 3, 4 }.
+The version value 3.4 is historical, deriving from the use of { 3, 1 }
+for TLS 1.0 and { 3, 0 } for SSL 3.0. A client that supports
+multiple versions of TLS will not know what version will
+be employed for the connection before it receives the ServerHello.
+In order to maximize backwards compatibility with servers, the
+ClientHello record layer version identifies as simply TLS 1.0
+rather than specifying additional detail.
+Using this fixed value instead of the minimum supported TLS version
+of the client avoids leaking information about the client's support
+for less secure versions of TLS that may be useful for an attacker,
+particularly if the client implements any TLS version fallback logic.
+See {{backward-compatibility}} for more information regarding
+negotiations with endpoints supporting other versions.
+
+Implementations MUST NOT send zero-length fragments of Handshake, Alert, or
+ChangeCipherSpec content types. Zero-length fragments of Application data MAY
 be sent as they are potentially useful as a traffic analysis countermeasure.
 
 
@@ -3473,8 +3480,8 @@ value { 03, XX } as the record layer version number for ClientHello.
 ### Negotiating with buggy servers
 
 Some server implementations are known to implement version negotiation
-incorrectly. For example, there are buggy TLS 1.0 servers that simply close the
-connection when the client offers a version newer than TLS 1.0. Also, it is
+incorrectly. There are buggy TLS servers that simply close the connection
+when a client offers a version newer than it supports. Also, it is
 known that some servers will refuse the connection if any TLS extensions are
 included in ClientHello. Interoperability with such buggy servers is a complex
 topic beyond the scope of this document, and may require multiple connection
