@@ -3422,16 +3422,14 @@ Cryptographic details:
 
 ## Compatibility with prior versions {#compatibility}
 
-Since there are various versions of TLS (1.0, 1.1, 1.2, 1.3, and any future
-versions) and SSL (2.0 and 3.0), means are needed to negotiate the specific
+Since there are various versions of TLS, endpoints may need to negotiate the specific
 protocol version to use. The TLS protocol provides a built-in mechanism for
 version negotiation so as not to bother other protocol components with the
 complexities of version selection.
 
-TLS 1.x and SSL 3.0 use compatible ClientHello messages, so supporting all
-of them is relatively easy. Similarly, servers can easily handle clients trying
-to use future versions of TLS as long as the ClientHello format remains
-compatible, and the client supports the highest protocol version available
+TLS 1.x and SSL 3.0 use compatible ClientHello messages. Servers can also handle
+clients trying to use future versions of TLS as long as the ClientHello format
+remains compatible, and the client supports the highest protocol version available
 in the server.
 
 ### Negotiating with an older server
