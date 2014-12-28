@@ -3486,6 +3486,10 @@ suites also supported by TLS 1.3 SHOULD be preferred, if available.
 Implementations MUST NOT offer or negotiate RC4 cipher suites for any version.
 [I-D.ietf-tls-prohibiting-rc4]
 
+Old versions of TLS permitted the usage of very low strength ciphers.
+Ciphers with a strength less than 100 bits MUST NOT be offered or
+negotiated for any version.
+
 ### Negotiating with buggy servers
 
 Some server implementations are known to implement version negotiation
