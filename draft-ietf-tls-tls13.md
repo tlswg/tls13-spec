@@ -116,6 +116,7 @@ informative:
   RFC6066:
   RFC6176:
   I-D.ietf-tls-negotiated-ff-dhe:
+  I-D.ietf-tls-prohibiting-rc4:
   I-D.ietf-tls-session-hash:
   I-D.ietf-tls-sslv3-diediedie:
 
@@ -3476,6 +3477,14 @@ record layer version number (TLSPlaintext.version) should contain when sending
 ClientHello (i.e., before it is known which version of the protocol will be
 employed). Thus, TLS servers compliant with this specification MUST accept any
 value { 03, XX } as the record layer version number for ClientHello.
+
+### Negotiating ciphers with older endpoints
+
+If an implementation negotiates usage of TLS 1.2, then negotiation of cipher
+suites also supported by TLS 1.3 SHOULD be preferred, if available.
+
+Implementations MUST NOT offer or negotiate RC4 cipher suites for any version.
+[I-D.ietf-tls-prohibiting-rc4]
 
 ### Negotiating with buggy servers
 
