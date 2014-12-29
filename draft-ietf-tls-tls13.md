@@ -2583,18 +2583,16 @@ Structure of this message:
             }
        } CertificateVerify;
 
-> Here handshake_messages_hash is a digest of all handshake messages sent or received,
-starting at client hello and up to, but not including, this message, including
-the type and length fields of the handshake messages. This is the concatenation
-of all the Handshake structures (as defined in {{handshake-protocol}})
-exchanged thus far.
-
-The hash function used MUST be the same as the hash function indicated by the
-SignatureAndHashAlgorithm in the digitally-signed structure. Note that this
-requires both sides to either buffer the messages or compute running hashes for
-all potential hash algorithms up to the time of the CertificateVerify
-computation. Servers can minimize this computation cost by offering a
-restricted set of digest algorithms in the CertificateRequest message.
+> Here handshake_messages_hash is a digest of all handshake messages
+sent or received, starting at client hello and up to, but not
+including, this message, including the type and length fields of the
+handshake messages. This is a digest of the concatenation of all the
+Handshake structures (as defined in {{handshake-protocol}}) exchanged
+thus far. For the PRF defined in Section 5, the digest MUST be the
+Hash used as the basis for the PRF.  Any cipher suite which defines a
+different PRF MUST also define the Hash to use in this
+computation. Note that this is the same running hash that is used in
+the Finished message {{server-finished}}.
 
 The context string for the signature is "TLS 1.3, server CertificateVerify". A
 hash of the handshake messages is signed rather than the messages themselves
