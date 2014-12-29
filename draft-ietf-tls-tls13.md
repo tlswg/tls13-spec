@@ -320,6 +320,10 @@ interpreted as described in RFC 2119 {{RFC2119}}.
 
 draft-04
 
+- Renumber the new handshake messages to be somewhat more
+  consistent with existing convention and to remove a duplicate
+  registration.
+
 - Remove renegotiation.
 
 draft-03
