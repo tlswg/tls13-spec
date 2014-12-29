@@ -2584,7 +2584,7 @@ Structure of this message:
        } CertificateVerify;
 
 > Here handshake_messages_hash is a digest of all handshake messages
-sent or received, starting at client hello and up to, but not
+sent or received, starting at ClientHello and up to, but not
 including, this message, including the type and length fields of the
 handshake messages. This is a digest of the concatenation of all the
 Handshake structures (as defined in {{handshake-protocol}}) exchanged
