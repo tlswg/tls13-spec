@@ -320,6 +320,10 @@ interpreted as described in RFC 2119 {{RFC2119}}.
 
 draft-04
 
+- Renumber the new handshake messages to be somewhat more
+  consistent with existing convention and to remove a duplicate
+  registration.
+
 - Remove renegotiation.
 
 draft-03
@@ -1591,11 +1595,13 @@ of a session. Handshake messages are supplied to the TLS record layer, where
 they are encapsulated within one or more TLSPlaintext structures, which are
 processed and transmitted as specified by the current active session state.
 
+
        enum {
            reserved(0), client_hello(1), server_hello(2),
-           certificate(11), reserved(12), server_key_share (17),
+           client_key_share(5), hello_retry_request(6),
+           server_key_share(7), certificate(11), reserved(12),
            certificate_request(13), certificate_verify(15),
-           reserved(16), client_key_share(18), finished(20), (255)
+           reserved(16), finished(20), (255)
        } HandshakeType;
 
        struct {
@@ -1605,7 +1611,7 @@ processed and transmitted as specified by the current active session state.
                case client_hello:        ClientHello;
                case client_key_share:    ClientKeyShare;
                case server_hello:        ServerHello;
-               case hello_retry_requst:  HelloRetryRequest;
+               case hello_retry_request: HelloRetryRequest;
                case server_key_share:    ServerKeyShare;
                case certificate:         Certificate;
                case certificate_request: CertificateRequest;
@@ -2983,13 +2989,11 @@ This section describes protocol types and constants.
 ##  Handshake Protocol
 
     enum {
-        hello_request(0), client_hello(1), server_hello(2),
-        hello_retry_request(4),
-        certificate(11), server_key_share (17),
-        certificate_request(13), server_hello_done(14),
-        certificate_verify(15), client_key_share(18),
-        finished(20),
-        (255)
+        reserved(0), client_hello(1), server_hello(2),
+        client_key_share(5), hello_retry_request(6),
+        server_key_share(7), certificate(11), reserved(12),
+        certificate_request(13), certificate_verify(15),
+        reserved(16), finished(20), (255)
     } HandshakeType;
 
     struct {
@@ -2999,7 +3003,7 @@ This section describes protocol types and constants.
             case hello_request:       HelloRequest;
             case client_hello:        ClientHello;
             case server_hello:        ServerHello;
-            case hello_retry_requst:  HelloRetryRequest;
+            case hello_retry_request: HelloRetryRequest;
             case certificate:         Certificate;
             case server_key_share:    ServerKeyShare;
             case certificate_request: CertificateRequest;
