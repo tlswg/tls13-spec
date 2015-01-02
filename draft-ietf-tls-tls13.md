@@ -332,6 +332,9 @@ draft-04
 
 - Update format of signatures with context.
 
+- Remove point format negotiation.
+
+
 draft-03
 
 - Remove GMT time.
@@ -1094,7 +1097,7 @@ require a client write IV and a server write IV.
 
 When keys are generated, the then current master secret (MS) is used
 as an entropy source. For handshake records, this means the
-hs_master_secret. For application data, records, this means the
+hs_master_secret. For application data records, this means the
 regular master_secret.
 
 To generate the key material, compute
@@ -1140,7 +1143,7 @@ cipher spec
   material, and the record protection algorithm (See
   {{the-security-parameters}} for formal definition.)
 
-resumption master secret
+resumption premaster secret
 : 48-byte secret shared between the client and server.
 
 is resumable
@@ -1575,8 +1578,9 @@ match is found, and the server is willing to re-establish the
 connection under the specified session state, it will send a
 ServerHello with the same Session ID value. At this point, both client
 and server MUST proceed directly to sending Finished messages, which
-are protected using handshake keys as described above, computed from the
-resumption premaster secret created in the first handshake. Once the
+are protected using handshake keys as described above, computed using
+resumption premaster secret created in the first handshake as the
+premaster secret. Once the
 re-establishment is complete, the client and server MAY begin to
 exchange application layer data, which is protected using the
 application secrets (See flow chart below.) If a Session ID match is
@@ -1780,7 +1784,7 @@ of data in the message precisely matches one of these formats; if not, then it
 MUST send a fatal "decode_error" alert.
 
 After sending the ClientHello message, the client waits for a ServerHello
-or HelloVerifyRequest message.
+or HelloRetryRequest message.
 
 
 ###  Client Key Share Message
@@ -2585,7 +2589,7 @@ different PRF MUST also define the Hash to use in this
 computation. Note that this is the same running hash that is used in
 the Finished message {{server-finished}}.
 
-The context string for the signature is "TLS 1.3, server CertificateVerify". A
+> The context string for the signature is "TLS 1.3, server CertificateVerify". A
 hash of the handshake messages is signed rather than the messages themselves
 because the digitally-signed format requires padding and context bytes at the
 beginning of the input. Thus, by signing a digest of the messages, an
@@ -2689,7 +2693,7 @@ messages are omitted from handshake hashes.
 When this message will be sent:
 
 > This message is the first handshake message the client can send
-after receiving the server's Finished This message is only sent if the server requests a
+after receiving the server's Finished. This message is only sent if the server requests a
 certificate. If no suitable certificate is available, the client MUST send a
 certificate message containing no certificates. That is, the certificate_list
 structure has a length of zero. If the client does not send any certificates,
@@ -2767,7 +2771,8 @@ certificate. This message is only sent following a client certificate that has
 signing capability (i.e., all certificates except those containing fixed
 Diffie-Hellman parameters). When sent, it MUST immediately follow the client's
 Certificate message. The contents of the message are computed as described
-in {{server-certificate-verify}}.
+in {{server-certificate-verify}}, except that the context string is
+"TLS 1.3, client CertificateVerify".
 
 > The hash and signature algorithms used in the signature MUST be one of those
 present in the supported_signature_algorithms field of the CertificateRequest
@@ -2837,7 +2842,7 @@ This master secret value is used to generate the record protection
 keys used for the handshake, as described in {{key-calculation}}. It is
 also used with TLS Exporters {{RFC5705}}.
 
-Once the hs_master_secret has been computed, the premaster secret should
+Once the hs_master_secret has been computed, the premaster secret SHOULD
 be deleted from memory.
 
 Once the last non-Finished message has been sent, the client and
