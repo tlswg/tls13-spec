@@ -877,6 +877,7 @@ server random
 
 These parameters are defined in the presentation language as:
 
+%%% Security Parameters
        enum { server, client } ConnectionEnd;
 
        enum { tls_prf_sha256 } PRFAlgorithm;
@@ -946,10 +947,13 @@ not preserved in the record layer (i.e., multiple client messages of the same
 ContentType MAY be coalesced into a single TLSPlaintext record, or a single
 message MAY be fragmented across several records).
 
+%%% Record Layer
        struct {
            uint8 major;
            uint8 minor;
        } ProtocolVersion;
+
+       ProtocolVersion version = { 3, 4 };     /* TLS v1.3*/
 
        enum {
            reserved(20), alert(21), handshake(22),
@@ -1005,6 +1009,7 @@ AEAD ciphers take as input a single key, a nonce, a plaintext, and "additional
 data" to be included in the authentication check, as described in Section 2.1
 of {{RFC5116}}. The key is either the client_write_key or the server_write_key.
 
+%%% Record Layer
        struct {
            ContentType type;
            ProtocolVersion version;
@@ -1167,6 +1172,7 @@ invalidated, preventing the failed session from being used to establish new
 connections. Like other messages, alert messages are encrypted
 as specified by the current connection state.
 
+%%% Alert Messages
        enum { warning(1), fatal(2), (255) } AlertLevel;
 
        enum {
@@ -1609,7 +1615,7 @@ of a session. Handshake messages are supplied to the TLS record layer, where
 they are encapsulated within one or more TLSPlaintext structures, which are
 processed and transmitted as specified by the current active session state.
 
-
+%%% Handshake Protocol
        enum {
            reserved(0), client_hello(1), server_hello(2),
            client_key_share(5), hello_retry_request(6),
@@ -1693,6 +1699,7 @@ until it is removed due to aging or because a fatal error was encountered on a
 connection associated with the session. The actual contents of the SessionID
 are defined by the server.
 
+%%% Hello Messages
        opaque SessionID<0..32>;
 
 Warning: Because the SessionID is transmitted without confidentiality or
@@ -1712,6 +1719,7 @@ alert and close the connection. If the list contains cipher suites the server
 does not recognize, support, or wish to use, the server MUST ignore those
 cipher suites, and process the remaining ones as usual.
 
+%%% Hello Messages
        uint8 CipherSuite[2];    /* Cryptographic suite selector */
 
        enum { null(0), (255) } CompressionMethod;
@@ -1803,6 +1811,7 @@ for zero or more key establishment methods.
 
 Structure of this message:
 
+%%% Key Exchange Messages
        struct {
            NamedGroup group;
            opaque key_exchange<1..2^16-1>;
@@ -1824,6 +1833,7 @@ definition.
 
 {:br }
 
+%%% Key Exchange Messages
        struct {
            ClientKeyShareOffer offers<0..2^16-1>;
        } ClientKeyShare;
@@ -1853,7 +1863,8 @@ the opaque key_exchange field of the ClientKeyShareOffer or
 ServerKeyShare structures. The opaque value contains the
 Diffie-Hellman public value (dh_Y = g^X mod p),
 encoded as a big-endian integer.
- 
+
+%%% Key Exchange Messages
        opaque dh_Y<1..2^16-1>;
 
 
@@ -1865,6 +1876,7 @@ ServerKeyShare structures. The opaque value conveys the Elliptic
 Curve Diffie-Hellman public value (ecdh_Y) represented as a byte
 string ECPoint.point.
 
+%%% Key Exchange Messages
        opaque point <1..2^8-1>;
 
 point
@@ -1900,6 +1912,7 @@ acceptable by the server, it will respond with an insufficient_security fatal al
 
 Structure of this message:
 
+%%% Hello Messages
        struct {
            ProtocolVersion server_version;
            Random random;
@@ -1972,6 +1985,7 @@ handshake failure alert.
 
 Structure of this message:
 
+%%% Hello Messages
        struct {
            ProtocolVersion server_version;
            CipherSuite cipher_suite;
@@ -2006,6 +2020,7 @@ the HelloRetryRequest.
 
 The extension format is:
 
+%%% Hello Messages
        struct {
            ExtensionType extension_type;
            opaque extension_data<0..2^16-1>;
@@ -2094,6 +2109,7 @@ which signature/hash algorithm pairs may be used in digital signatures. The
 "extension_data" field of this extension contains a
 "supported_signature_algorithms" value.
 
+%%% Signature Algorithm Extension
        enum {
            none(0), md5(1), sha1(2), sha224(3), sha256(4), sha384(5),
            sha512(6), (255)
@@ -2185,6 +2201,7 @@ Note: In versions of TLS prior to TLS 1.3, this extension was named
 The "extension_data" field of this extension SHALL contain a
 "NamedGroupList" value:
 
+%%% Named Group Extension
         enum {
             // Elliptic Curve Groups.
             sect163k1 (1), sect163r1 (2), sect163r2 (3),
@@ -2212,7 +2229,8 @@ The "extension_data" field of this extension SHALL contain a
             NamedGroup named_group_list<1..2^16-1>
         } NamedGroupList;
 
-   sect163k1, etc:   Indicates support of the corresponding named curve
+sect163k1, etc
+:     Indicates support of the corresponding named curve
       The named curves defined here are those specified in SEC 2 [13].
       Note that many of these curves are also recommended in ANSI
       X9.62 {{X962}} and FIPS 186-2 {{DSS}}.  Values 0xFE00 through 0xFEFF are
@@ -2221,8 +2239,10 @@ The "extension_data" field of this extension SHALL contain a
       implementations.
       [[OPEN ISSUE: Triage curve list.]]
 
-   ffdhe2432, etc:   Indicates support of the corresponding finite field
-      group, defined in {{I-D.ietf-tls-negotiated-ff-dhe}}
+ffdhe2432, etc
+:   Indicates support of the corresponding finite field
+    group, defined in {{I-D.ietf-tls-negotiated-ff-dhe}}
+{:br }
 
 Items in named_curve_list are ordered according to the client's
 preferences (favorite choice first).
@@ -2262,6 +2282,7 @@ separate records to be instead inserted in the ClientHello. The
 extension simply contains the TLS records which would otherwise have
 been included in the client's first flight.
 
+%%% Hello Messages
           struct {
             TLSCipherText messages<5 .. 2^24-1>;
           } EarlyDataExtension;
@@ -2314,6 +2335,7 @@ or a public key for some other algorithm.
 
 Structure of this message:
 
+%%% Key Exchange Messages
        struct {
          NamedGroup group;
          opaque key_exchange<1..2^16-1>;
@@ -2358,6 +2380,7 @@ encrypted.]]
 
 Structure of this message:
 
+%%% Hello Messages
        struct {
            Extension extensions<0..2^16-1>;
        } EncryptedExtensions;
@@ -2386,6 +2409,7 @@ exchange algorithm and any negotiated extensions.
 
 Structure of this message:
 
+%%% Authentication Messages
        opaque ASN1Cert<1..2^24-1>;
 
        struct {
@@ -2483,6 +2507,7 @@ immediately follow the server's Certificate message).
 
 Structure of this message:
 
+%%% Authentication Messages
        enum {
            rsa_sign(1), dss_sign(2), rsa_fixed_dh(3), dss_fixed_dh(4),
            rsa_ephemeral_dh_RESERVED(5), dss_ephemeral_dh_RESERVED(6),
@@ -2572,6 +2597,7 @@ last server handshake message prior to the Finished.
 
 Structure of this message:
 
+%%% Authentication Messages
        struct {
             digitally-signed struct {
                 opaque handshake_messages_hash[hash_length];
@@ -2640,18 +2666,22 @@ protected under keys derived from the hs_master_secret (see
 
 Structure of this message:
 
+%%% Handshake Finalization Messages
+
        struct {
            opaque verify_data[verify_data_length];
        } Finished;
 
-       verify_data
-          PRF(hs_master_secret, finished_label, Hash(handshake_messages))
+
+verify_data
+:      PRF(hs_master_secret, finished_label, Hash(handshake_messages))
              [0..verify_data_length-1];
 
-       finished_label
-          For Finished messages sent by the client, the string
-          "client finished".  For Finished messages sent by the server,
-          the string "server finished".
+finished_label
+:       For Finished messages sent by the client, the string
+        "client finished".  For Finished messages sent by the server,
+        the string "server finished".
+{:br }
 
 > Hash denotes a Hash of the handshake messages. For the PRF defined in
 {{HMAC}}, the Hash MUST be the Hash used as the basis for the PRF. Any cipher
@@ -3021,233 +3051,15 @@ In addition, this document defines two new registries to be maintained by IANA:
 
 This section describes protocol types and constants.
 
-[[TODO: Clean this up to match the in-text description.]]
-
-##  Record Layer
-
-    struct {
-        uint8 major;
-        uint8 minor;
-    } ProtocolVersion;
-
-    ProtocolVersion version = { 3, 4 };     /* TLS v1.3*/
-
-    enum {
-        change_cipher_spec(20), alert(21), handshake(22),
-        application_data(23), (255)
-    } ContentType;
-
-    struct {
-        ContentType type;
-        ProtocolVersion version;
-        uint16 length;
-        opaque fragment[TLSPlaintext.length];
-    } TLSPlaintext;
-
-    struct {
-        ContentType type;
-        ProtocolVersion version;
-        uint16 length;
-        opaque nonce_explicit[SecurityParameters.record_iv_length];
-        aead-ciphered struct {
-            opaque content[TLSPlaintext.length];
-        } fragment;
-    } TLSCiphertext;
-
-##  Change Cipher Specs Message
-
-    struct {
-        enum { change_cipher_spec(1), (255) } type;
-    } ChangeCipherSpec;
-
-##  Alert Messages
-
-    enum { warning(1), fatal(2), (255) } AlertLevel;
-
-    enum {
-        close_notify(0),
-        unexpected_message(10),
-        bad_record_mac(20),
-        decryption_failed_RESERVED(21),
-        record_overflow(22),
-        decompression_failure_RESERVED(30),
-        handshake_failure(40),
-        no_certificate_RESERVED(41),
-        bad_certificate(42),
-        unsupported_certificate(43),
-        certificate_revoked(44),
-        certificate_expired(45),
-        certificate_unknown(46),
-        illegal_parameter(47),
-        unknown_ca(48),
-        access_denied(49),
-        decode_error(50),
-        decrypt_error(51),
-        export_restriction_RESERVED(60),
-        protocol_version(70),
-        insufficient_security(71),
-        internal_error(80),
-        user_canceled(90),
-        no_renegotiation(100),
-        unsupported_extension(110),           /* new */
-        (255)
-    } AlertDescription;
-
-    struct {
-        AlertLevel level;
-        AlertDescription description;
-    } Alert;
-
-##  Handshake Protocol
-
-    enum {
-        reserved(0), client_hello(1), server_hello(2),
-        client_key_share(5), hello_retry_request(6),
-        server_key_share(7), certificate(11), reserved(12),
-        certificate_request(13), certificate_verify(15),
-        reserved(16), finished(20), (255)
-    } HandshakeType;
-
-    struct {
-        HandshakeType msg_type;
-        uint24 length;
-        select (HandshakeType) {
-            case hello_request:       HelloRequest;
-            case client_hello:        ClientHello;
-            case server_hello:        ServerHello;
-            case hello_retry_request: HelloRetryRequest;
-            case certificate:         Certificate;
-            case server_key_share:    ServerKeyShare;
-            case certificate_request: CertificateRequest;
-            case server_hello_done:   ServerHelloDone;
-            case certificate_verify:  CertificateVerify;
-            case client_key_share:    ClientKeyShare;
-            case finished:            Finished;
-        } body;
-    } Handshake;
-
-
-### Hello Messages
-
-    struct { } HelloRequest;
-
-    struct {
-        opaque random_bytes[32];
-    } Random;
-
-    opaque SessionID<0..32>;
-
-    uint8 CipherSuite[2];
-
-    enum { null(0), (255) } CompressionMethod;
-
-    struct {
-        ProtocolVersion client_version;
-        Random random;
-        SessionID session_id;
-        CipherSuite cipher_suites<2..2^16-2>;
-        CompressionMethod compression_methods<1..2^8-1>;
-        select (extensions_present) {
-            case false:
-                struct {};
-            case true:
-                Extension extensions<0..2^16-1>;
-        };
-    } ClientHello;
-
-    struct {
-        ProtocolVersion server_version;
-        Random random;
-        SessionID session_id;
-        CipherSuite cipher_suite;
-        select (extensions_present) {
-            case false:
-                struct {};
-            case true:
-                Extension extensions<0..2^16-1>;
-        };
-    } ServerHello;
-
-    struct {
-        ExtensionType extension_type;
-        opaque extension_data<0..2^16-1>;
-    } Extension;
-
-    enum {
-        signature_algorithms(13), (65535)
-    } ExtensionType;
-
-    enum{
-        none(0), md5(1), sha1(2), sha224(3), sha256(4), sha384(5),
-        sha512(6), (255)
-    } HashAlgorithm;
-    enum {
-       anonymous(0), rsa(1), dsa(2), ecdsa(3), (255)
-    } SignatureAlgorithm;
-
-    struct {
-          HashAlgorithm hash;
-          SignatureAlgorithm signature;
-    } SignatureAndHashAlgorithm;
-
-    SignatureAndHashAlgorithm
-     supported_signature_algorithms<2..2^16-2>;
-
-### Server Authentication and Key Exchange Messages
-
-    opaque ASN1Cert<2^24-1>;
-
-    struct {
-        ASN1Cert certificate_list<0..2^24-1>;
-    } Certificate;
-
-    struct {
-        NamedGroup group;
-        opaque key_exchange<1..2^16-1>;
-    } ServerKeyShare;
-
-    enum {
-        rsa_sign(1), dss_sign(2), rsa_fixed_dh(3), dss_fixed_dh(4),
-        rsa_ephemeral_dh_RESERVED(5), dss_ephemeral_dh_RESERVED(6),
-        fortezza_dms_RESERVED(20),
-        (255)
-    } ClientCertificateType;
-
-    opaque DistinguishedName<1..2^16-1>;
-
-    struct {
-        ClientCertificateType certificate_types<1..2^8-1>;
-        DistinguishedName certificate_authorities<0..2^16-1>;
-    } CertificateRequest;
-
-    struct { } ServerHelloDone;
-
-
-### Client Authentication and Key Exchange Messages
-
-    struct {
-        ClientKeyShareOffer offers<0..2^16-1>;
-    } ClientKeyShare;
-
-    struct {
-        NamedGroup group;
-        opaque key_exchange<1..2^16-1>;
-    } ClientKeyShareOffer;
-
-    struct {
-         digitally-signed struct {
-             opaque handshake_messages_hash[hash_length];
-         }
-    } CertificateVerify;
-
-The context string for the signature is "TLS 1.3, client CertificateVerify".
-
-### Handshake Finalization Message
-
-    struct {
-        opaque verify_data[verify_data_length];
-    } Finished;
-
+%%## Record Layer
+%%## Alert Messages
+%%## Handshake Protocol
+%%### Hello Messages
+%%#### Signature Algorithm Extension
+%%#### Named Group Extension
+%%### Key Exchange Messages
+%%### Authentication Messages
+%%### Handshake Finalization Messages
 
 ## The Cipher Suite
 
@@ -3338,29 +3150,7 @@ These security parameters are determined by the TLS Handshake Protocol and
 provided as parameters to the TLS record layer in order to initialize a
 connection state. SecurityParameters includes:
 
-    enum { null(0), (255) } CompressionMethod;
-
-    enum { server, client } ConnectionEnd;
-
-    enum { tls_prf_sha256 } PRFAlgorithm;
-
-    enum { aes_gcm } RecordProtAlgorithm;
-
-    /* Other values may be added to the algorithms specified in
-    PRFAlgorithm and RecordProtAlgorithm */
-
-    struct {
-        ConnectionEnd          entity;
-        PRFAlgorithm           prf_algorithm;
-        RecordProtAlgorithm    record_prot_algorithm;
-        uint8                  enc_key_length;
-        uint8                  block_length;
-        uint8                  fixed_iv_length;
-        uint8                  record_iv_length;
-        opaque                 master_secret[48];
-        opaque                 client_random[32];
-        opaque                 server_random[32];
-      } SecurityParameters;
+%%! Security Parameters
 
 ## Changes to RFC 4492
 
