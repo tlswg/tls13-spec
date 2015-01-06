@@ -15,6 +15,7 @@ next := $(draft)-$(next_ver)
 COMMIT=origin/master
 
 .PHONY: all latest submit clean
+.INTERMEDIATE: %.md2
 
 all latest: $(draft).txt $(draft).html
 
@@ -27,6 +28,7 @@ clean:
 	-rm -f $(draft).txt $(draft).html
 	-rm -f $(next).txt $(next).html
 	-rm -f $(draft)-[0-9][0-9].xml
+	-rm -f *.md2
 
 $(draft)-orig.md:
 	-rm -rf $@
@@ -49,7 +51,6 @@ $(next).md: $(draft).md
 	sed -e"s/$(basename $<)-latest/$(basename $@)/" $< > $@
 
 %.md2: %.md
-	- rm $@
 	python mk-appendix.py < $< > $@
 
 %.xml: %.md2
