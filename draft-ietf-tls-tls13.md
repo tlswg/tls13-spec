@@ -2215,8 +2215,8 @@ The "extension_data" field of this extension SHALL contain a
             secp521r1 (25),
 
             // Finite Field Groups.
-            ffdhe2432(256), ffdhe3072(257), ffdhe4096(258),
-            ffdhe6144(259), ffdhe8192(260),
+            ffdhe2048(256), ffdhe3072(257), ffdhe4096(258),
+            ffdhe8192(259),
 
             // Reserved Code Points.
             reserved (0xFE00..0xFEFF),
