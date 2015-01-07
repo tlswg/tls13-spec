@@ -2215,8 +2215,8 @@ The "extension_data" field of this extension SHALL contain a
             secp521r1 (25),
 
             // Finite Field Groups.
-            ffdhe2432(256), ffdhe3072(257), ffdhe4096(258),
-            ffdhe6144(259), ffdhe8192(260),
+            ffdhe2048(256), ffdhe3072(257), ffdhe4096(258),
+            ffdhe8192(259),
 
             // Reserved Code Points.
             reserved (0xFE00..0xFEFF),
@@ -2941,9 +2941,6 @@ A conventional Diffie-Hellman computation is performed. The negotiated key (Z)
 is used as the pre_master_secret, and is converted into the master_secret, as
 specified above. Leading bytes of Z that contain all zero bits are stripped
 before it is used as the pre_master_secret.
-
-Note: Diffie-Hellman parameters are specified by the server and may be either
-ephemeral or contained within the server's certificate.
 
 ### Elliptic Curve Diffie-Hellman
 
