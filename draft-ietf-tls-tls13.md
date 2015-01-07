@@ -2942,9 +2942,6 @@ is used as the pre_master_secret, and is converted into the master_secret, as
 specified above. Leading bytes of Z that contain all zero bits are stripped
 before it is used as the pre_master_secret.
 
-Note: Diffie-Hellman parameters are specified by the server and may be either
-ephemeral or contained within the server's certificate.
-
 ### Elliptic Curve Diffie-Hellman
 
 All ECDH calculations (including parameter and key generation as well
