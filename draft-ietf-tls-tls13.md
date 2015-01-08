@@ -1512,6 +1512,9 @@ about server-side False Start.]]
        ClientKeyShare            -------->
                                                        ServerHello
                                                     ServerKeyShare
+                    [Compute pre_master_secret]
+                    [Compute hs_master_secret]
+                    [Switch to hs_master_secret keys]
                                             {EncryptedExtensions*}
                                                     {Certificate*}
                                              {CertificateRequest*}
@@ -1519,18 +1522,20 @@ about server-side False Start.]]
                                  <--------              {Finished}
        {Certificate*}
        {CertificateVerify*}
+                    [Compute master_secret]
+                    [Compute resumption_premaster_secret]
        {Finished}                -------->
-       [Application Data]        <------->      [Application Data]
+                    [Switch to master_secret keys]
+       {Application Data}        <------->      {Application Data}
 
 
                 Figure 1.  Message flow for a full handshake
 
 \* Indicates optional or situation-dependent messages that are not always sent.
 
-{} Indicates messages protected using keys derived from the handshake master
-secret.
+{} Indicates messages protected using keys derived from the master secrets.
 
-[] Indicates messages protected using keys derived from the master secret.
+[] Indicates actions performed on both client and server.
 
 
 If the client has not provided an appropriate ClientKeyShare (e.g. it
@@ -1549,6 +1554,9 @@ ClientKeyShare, as shown in Figure 2:
        ClientKeyShare            -------->
                                                        ServerHello
                                                     ServerKeyShare
+                    [Compute pre_master_secret]
+                    [Compute hs_master_secret]
+                    [Switch to hs_master_secret keys]
                                             {EncryptedExtensions*}
                                                     {Certificate*}
                                              {CertificateRequest*}
@@ -1556,8 +1564,11 @@ ClientKeyShare, as shown in Figure 2:
                                  <--------              {Finished}
        {Certificate*}
        {CertificateVerify*}
+                    [Compute master_secret]
+                    [Compute resumption_premaster_secret]
        {Finished}                -------->
-       [Application Data]        <------->     [Application Data]
+                    [Switch to master_secret keys]
+       {Application Data}        <------->     {Application Data}
 
    Figure 2.  Message flow for a full handshake with mismatched parameters
 
@@ -1598,9 +1609,15 @@ and server perform a full handshake.
        ClientHello
        ClientKeyShare                -------->
                                                         ServerHello
+                    [Retrieve pre_master_secret from session]
+                    [Compute hs_master_secret]
+                    [Switch to hs_master_secret keys]
                                      <--------           {Finished}
+                    [Compute master_secret]
+                    [Compute resumption_premaster_secret]
        {Finished}                    -------->
-       [Application Data]            <------->   [Application Data]
+                    [Switch to master_secret keys]
+       {Application Data}            <------->   {Application Data}
 
            Figure 3.  Message flow for an abbreviated handshake
 
