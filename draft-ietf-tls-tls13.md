@@ -1596,7 +1596,7 @@ and server perform a full handshake.
        Client                                                Server
 
        ClientHello
-       ClientKeyExhange              -------->
+       ClientKeyShare                -------->
                                                         ServerHello
                                      <--------           {Finished}
        {Finished}                    -------->
