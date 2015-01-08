@@ -2928,7 +2928,7 @@ is derived, the session hash includes the ClientHello, ClientKeyShare,
 ServerHello, and ServerKeyShare, and HelloRetryRequest (if any)
 (though see [https://github.com/tlswg/tls13-spec/issues/104]).
 At the point where the master secret is derived, it includes every
-handshake message, with the exception of the Finished messages.
+handshake message, with the exception of the last Finished message.
 Note that if client authentication is not used, then the session
 hash is complete at the point when the server has sent its first
 flight. Otherwise, it is only complete when the client has sent its
