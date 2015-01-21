@@ -24,11 +24,6 @@ pi:
   text-list-symbols: -o*+
 author:
  -
-       ins: T. Dierks
-       name: Tim Dierks
-       organization: Independent
-       email: tim@dierks.org
- -
        ins: E. Rescorla
        name: Eric Rescorla
        organization: RTFM, Inc.
@@ -3806,6 +3801,10 @@ Archives of the list can be found at:
     Antoine Delignat-Lavaud (co-author of [I-D.ietf-tls-session-hash])
     INRIA
     antoine.delignat-lavaud@inria.fr
+
+    Tim Dierks (co-editor of TLS 1.0, 1.1, and 1.2)
+    Independent
+    tim@dierks.org
 
     Taher Elgamal
     taher@securify.com
