@@ -816,7 +816,7 @@ A TLS connection state is the operating environment of the TLS Record
 Protocol.  It specifies a record protection algorithm and its
 parameters as well as the record protection keys and IVs for the
 connection in both the read and the write directions. The security
-parameters are be set by the TLS Handshake Protocol, which also determines
+parameters are set by the TLS Handshake Protocol, which also determines
 when new cryptographic keys are installed and used for record
 protection.
 The initial current state always specifies that records are
