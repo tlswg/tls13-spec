@@ -1648,7 +1648,6 @@ New handshake message types are assigned by IANA as described in
 The hello phase messages are used to exchange security enhancement capabilities
 between the client and server. When a new session begins, the record layer's
 connection state AEAD algorithm is initialized to NULL_NULL.
-The current connection state is used for renegotiation messages.
 
 ####  Client Hello
 
