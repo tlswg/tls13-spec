@@ -1218,7 +1218,7 @@ close_notify
   with widespread implementation practice.
 {:br }
 
-Either party may initiate a close by sending a close_notify alert. Any data
+Either party MAY initiate a close by sending a close_notify alert. Any data
 received after a closure alert is ignored.
 
 Unless some other fatal alert has been transmitted, each party is required to
