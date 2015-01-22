@@ -1095,7 +1095,7 @@ encryption key. Each of these is generated from the byte sequence in
 that order. Unused values are empty. Some ciphers may additionally
 require a client write IV and a server write IV.
 
-When keys are generated, the then current master secret (MS) is used
+When keys are generated, the current master secret (MS) is used
 as an entropy source. For handshake records, this means the
 hs_master_secret. For application data records, this means the
 regular master_secret.
