@@ -1709,7 +1709,7 @@ message, contains the combinations of cryptographic algorithms supported by the
 client in order of the client's preference (favorite choice first). Each cipher
 suite defines a key exchange algorithm, a record protection algorithm (including
 secret key length) and a PRF. The server will select a cipher
-suite or, if no acceptable choices are presented, return a handshake failure
+suite or, if no acceptable choices are presented, return a handshake_failure
 alert and close the connection. If the list contains cipher suites the server
 does not recognize, support, or wish to use, the server MUST ignore those
 cipher suites, and process the remaining ones as usual.
@@ -1976,7 +1976,7 @@ When this message will be sent:
 message when it was able to find an acceptable set of algorithms but
 the client's ClientKeyShare message did not contain an acceptable
 offer.  If it cannot find such a match, it will respond with a
-handshake failure alert.
+handshake_failure alert.
 
 Structure of this message:
 
