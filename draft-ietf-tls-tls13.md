@@ -790,7 +790,7 @@ manageable blocks, protects the records, and transmits the
 result. Received data is decrypted and verified, reassembled, and then
 delivered to higher-level clients.
 
-Four protocols that use the record protocol are described in this document: the
+Three protocols that use the record protocol are described in this document: the
 handshake protocol, the alert protocol, and
 the application data protocol. In order to allow extension of the TLS protocol,
 additional record content types can be supported by the record protocol. New
