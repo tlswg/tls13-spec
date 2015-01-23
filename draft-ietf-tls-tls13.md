@@ -1095,7 +1095,7 @@ encryption key. Each of these is generated from the byte sequence in
 that order. Unused values are empty. Some ciphers may additionally
 require a client write IV and a server write IV.
 
-When keys are generated, the then current master secret (MS) is used
+When keys are generated, the current master secret (MS) is used
 as an entropy source. For handshake records, this means the
 hs_master_secret. For application data records, this means the
 regular master_secret.
@@ -1218,7 +1218,7 @@ close_notify
   with widespread implementation practice.
 {:br }
 
-Either party may initiate a close by sending a close_notify alert. Any data
+Either party MAY initiate a close by sending a close_notify alert. Any data
 received after a closure alert is ignored.
 
 Unless some other fatal alert has been transmitted, each party is required to
@@ -1648,7 +1648,6 @@ New handshake message types are assigned by IANA as described in
 The hello phase messages are used to exchange security enhancement capabilities
 between the client and server. When a new session begins, the record layer's
 connection state AEAD algorithm is initialized to NULL_NULL.
-The current connection state is used for renegotiation messages.
 
 ####  Client Hello
 
@@ -1813,18 +1812,16 @@ Structure of this message:
        } ClientKeyShareOffer;
 
 group
-
 : The named group for the key share offer.  This identifies the
-specific key exchange method that the ClientKeyShareOffer describes.
-Finite Field Diffie-Hellman parameters are described in
-{{ffdhe-param}}; Elliptic Curve Diffie-Hellman parameters are
-described in {{ecdhe-param}}.
+  specific key exchange method that the ClientKeyShareOffer describes.
+  Finite Field Diffie-Hellman parameters are described in
+  {{ffdhe-param}}; Elliptic Curve Diffie-Hellman parameters are
+  described in {{ecdhe-param}}.
 
 key_exchange
-
 : Key exchange information.  The contents of this field are
-determined by the value of NamedGroup entry and its corresponding
-definition.
+  determined by the value of NamedGroup entry and its corresponding
+  definition.
 
 {:br }
 
