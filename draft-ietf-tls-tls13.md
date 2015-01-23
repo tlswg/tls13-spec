@@ -1812,18 +1812,16 @@ Structure of this message:
        } ClientKeyShareOffer;
 
 group
-
 : The named group for the key share offer.  This identifies the
-specific key exchange method that the ClientKeyShareOffer describes.
-Finite Field Diffie-Hellman parameters are described in
-{{ffdhe-param}}; Elliptic Curve Diffie-Hellman parameters are
-described in {{ecdhe-param}}.
+  specific key exchange method that the ClientKeyShareOffer describes.
+  Finite Field Diffie-Hellman parameters are described in
+  {{ffdhe-param}}; Elliptic Curve Diffie-Hellman parameters are
+  described in {{ecdhe-param}}.
 
 key_exchange
-
 : Key exchange information.  The contents of this field are
-determined by the value of NamedGroup entry and its corresponding
-definition.
+  determined by the value of NamedGroup entry and its corresponding
+  definition.
 
 {:br }
 
