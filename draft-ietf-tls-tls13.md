@@ -3603,7 +3603,7 @@ Implementations MUST NOT send or accept any records with a version less than { 3
 The security of SSL 3.0 {{SSL3}} is considered insufficient for the reasons enumerated
 in [I-D.ietf-tls-sslv3-diediedie].
 
-Implementations MUST NOT send a ClientHello or ServerHello with the protocol version set
+Implementations MUST NOT send a ClientHello.version or ServerHello.version set
 to { 3, 0 } or less. Any endpoint receiving a Hello message with the protocol version set
 to { 3, 0 } MUST respond with a "protocol_version" alert message and close the connection.
 
