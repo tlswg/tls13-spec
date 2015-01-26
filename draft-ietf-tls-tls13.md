@@ -3592,7 +3592,7 @@ document.
 ## Compatibility with SSL
 
 The security of SSL 2.0 {{SSL2}} is considered insufficient for the reasons enumerated
-in [RFC6176].
+in [RFC6176], and MUST NOT be negotiated for any reason.
 
 Implementations MUST NOT send an SSL version 2.0 compatible CLIENT-HELLO.
 Implementations MUST NOT negotiate TLS 1.3 or later using an SSL version 2.0 compatible
@@ -3601,7 +3601,7 @@ order to negotiate older versions of TLS, however this is not recommended.
 Implementations MUST NOT send or accept any records with a version less than { 3, 0 }.
 
 The security of SSL 3.0 {{SSL3}} is considered insufficient for the reasons enumerated
-in [I-D.ietf-tls-sslv3-diediedie].
+in [I-D.ietf-tls-sslv3-diediedie], and MUST NOT be negotiated for any reason.
 
 Implementations MUST NOT send a ClientHello.version or ServerHello.version set
 to { 3, 0 } or less. Any endpoint receiving a Hello message with the protocol version set
