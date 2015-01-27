@@ -965,7 +965,7 @@ type
 
 version
 : The version of the protocol being employed in the current record.
-  For the initial ClientHello this MUST be { 3, 1 }.
+  TLS clients MUST set this version to { 3, 1 } for the initial ClientHello.
   For the ServerHello and all other TLS records this MUST be equal to the negotiated version.
   For TLS 1.3 connections, this version is { 3, 4 }.
 
@@ -991,6 +991,8 @@ Using this fixed value instead of the minimum supported TLS version
 of the client avoids leaking information about the client's support
 for less secure versions of TLS that may be useful for an attacker,
 particularly if the client implements any TLS version fallback logic.
+In order to maximise backwards compatibility with clients,
+TLS servers MUST accept any value { 03, XX } for this version in a ClientHello.
 See {{backward-compatibility}} for more information regarding
 negotiations with endpoints supporting other versions.
 
