@@ -3605,8 +3605,9 @@ The security of SSL 3.0 {{SSL3}} is considered insufficient for the reasons enum
 in [I-D.ietf-tls-sslv3-diediedie], and MUST NOT be negotiated for any reason.
 
 Implementations MUST NOT send a ClientHello.version or ServerHello.version set
-to { 3, 0 } or less. Any endpoint receiving a Hello message with the protocol version set
-to { 3, 0 } MUST respond with a "protocol_version" alert message and close the connection.
+to { 3, 0 } or less. Any endpoint receiving a Hello message with
+ClientHello.version or ServerHello.version set to { 3, 0 } MUST respond with a
+"protocol_version" alert message and close the connection.
 
 #  Security Analysis
 
