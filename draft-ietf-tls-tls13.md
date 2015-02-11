@@ -307,8 +307,8 @@ and implementors of protocols that run on top of TLS.
 ##  Requirements Terminology
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
-"SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be
-interpreted as described in RFC 2119 {{RFC2119}}.
+"SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this
+document are to be interpreted as described in RFC 2119 {{RFC2119}}.
 
 ##  Major Differences from TLS 1.2
 
@@ -3596,8 +3596,9 @@ in [RFC6176], and MUST NOT be negotiated for any reason.
 
 Implementations MUST NOT send an SSL version 2.0 compatible CLIENT-HELLO.
 Implementations MUST NOT negotiate TLS 1.3 or later using an SSL version 2.0 compatible
-CLIENT-HELLO. Implementations MAY accept an SSL version 2.0 compatible CLIENT-HELLO in
-order to negotiate older versions of TLS, however this is not recommended.
+CLIENT-HELLO. Implementations are NOT RECOMMENDED to accept an SSL version 2.0 compatible
+CLIENT-HELLO in order to negotiate older versions of TLS.
+
 Implementations MUST NOT send or accept any records with a version less than { 3, 0 }.
 
 The security of SSL 3.0 {{SSL3}} is considered insufficient for the reasons enumerated
