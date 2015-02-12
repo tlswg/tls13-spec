@@ -996,8 +996,8 @@ TLS servers MUST accept any value { 03, XX } for this version in a ClientHello.
 See {{backward-compatibility}} for more information regarding
 negotiations with endpoints supporting other versions.
 
-Implementations MUST NOT send zero-length fragments of Handshake, Alert, or
-ChangeCipherSpec content types. Zero-length fragments of Application data MAY
+Implementations MUST NOT send zero-length fragments of Handshake or Alert
+types. Zero-length fragments of Application data MAY
 be sent as they are potentially useful as a traffic analysis countermeasure.
 
 
@@ -3501,13 +3501,6 @@ known that some servers will refuse the connection if any TLS extensions are
 included in ClientHello. Interoperability with such buggy servers is a complex
 topic beyond the scope of this document, and may require multiple connection
 attempts by the client.
-
-TLS clients that wish to negotiate with older servers MAY send any value
-{ 03, XX } as the record layer version number. Typical values would be { 3, 0 },
-the lowest version number supported by the client, and the value of
-ClientHello.client_version. No single value will guarantee interoperability
-with all old servers, but this is a complex topic beyond the scope of this
-document.
 
 ## Compatibility with SSL
 
