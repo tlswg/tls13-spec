@@ -115,8 +115,8 @@ informative:
   RFC5705:
   RFC6066:
   RFC6176:
+  RFC7465:
   I-D.ietf-tls-negotiated-ff-dhe:
-  I-D.ietf-tls-prohibiting-rc4:
   I-D.ietf-tls-session-hash:
   I-D.ietf-tls-sslv3-diediedie:
 
@@ -307,7 +307,7 @@ document are to be interpreted as described in RFC 2119 {{RFC2119}}.
 
 draft-05
 
-- Prohibit SSL negotiation for backwards compatibility.
+- Prohibit SSL or RC4 negotiation for backwards compatibility.
 
 - Fix which MS is used for exporters.
 
@@ -3485,8 +3485,9 @@ value { 03, XX } as the record layer version number for ClientHello.
 If an implementation negotiates usage of TLS 1.2, then negotiation of cipher
 suites also supported by TLS 1.3 SHOULD be preferred, if available.
 
-Implementations MUST NOT offer or negotiate RC4 cipher suites for any version.
-[I-D.ietf-tls-prohibiting-rc4]
+The security of RC4 cipher suites is considered insufficient for the reasons
+cited in [RFC7465]. Implementations MUST NOT offer or negotiate RC4 cipher suites
+for any version of TLS for any reason.
 
 Old versions of TLS permitted the usage of very low strength ciphers.
 Ciphers with a strength less than 112 bits MUST NOT be offered or
