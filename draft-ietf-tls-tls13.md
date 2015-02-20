@@ -3398,7 +3398,7 @@ TLS protocol issues:
   handshake messages can be large enough to require fragmentation.
 
 -  Do you ignore the TLS record layer version number in all TLS
-  records before ServerHello (see {{compatibility}})?
+  records before ServerHello (see {{backward-compatibility}})?
 
 -  Do you handle TLS extensions in ClientHello correctly, including
   omitting the extensions field completely?
@@ -3428,28 +3428,25 @@ Cryptographic details:
   generator (see {{random-number-generation-and-seeding}}) Diffie-Hellman private values, the
   DSA "k" parameter, and other security-critical values?
 
-# Backward Compatibility
+# Backward Compatibility {#backward-compatibility}
 
-## Compatibility with prior versions {#compatibility}
-
-Since there are various versions of TLS, endpoints may need to negotiate the specific
-protocol version to use. The TLS protocol provides a built-in mechanism for
-version negotiation so as not to bother other protocol components with the
-complexities of version selection.
+The TLS protocol provides a built-in mechanism for version negotiation between
+endpoints potentially supporting different versions of TLS.
 
 TLS 1.x and SSL 3.0 use compatible ClientHello messages. Servers can also handle
 clients trying to use future versions of TLS as long as the ClientHello format
-remains compatible, and the client supports the highest protocol version available
+remains compatible and the client supports the highest protocol version available
 in the server.
 
-### Negotiating with an older server
+## Negotiating with an older server
 
 A TLS 1.3 client who wishes to negotiate with such older servers will send a
-normal TLS 1.3 ClientHello, containing { 3, 4 } (TLS 1.3) in
-ClientHello.client_version. If the server does not support this version, it
+normal TLS 1.3 ClientHello containing { 3, 4 } (TLS 1.3) in
+ClientHello.client_version. If the server does not support this version it
 will respond with a ServerHello containing an older version number. If the
 client agrees to use this version, the negotiation will proceed as appropriate
-for the negotiated protocol.
+for the negotiated protocol. A client resuming a session SHOULD initiate the
+connection using the version that was previously negotiated.
 
 If the version chosen by the server is not supported by the client (or not
 acceptable), the client MUST send a "protocol_version" alert message and close
@@ -3459,7 +3456,15 @@ If a TLS server receives a ClientHello containing a version number greater than
 the highest version supported by the server, it MUST reply according to the
 highest version supported by the server.
 
-### Negotiating with an older client
+Some legacy server implementations are known to not implement the TLS
+specification properly and might abort connections upon encountering
+TLS extensions or versions which it is not aware of. Interoperability
+with buggy servers is a complex topic beyond the scope of this document.
+Multiple connection attempts may be required in order to negotiate
+a backwards compatible connection, however this practice is vulnerable
+to downgrade attacks and is NOT RECOMMENDED.
+
+## Negotiating with an older client
 
 A TLS server can also receive a ClientHello containing a version number smaller
 than the highest supported version. If the server wishes to negotiate with old
@@ -3470,17 +3475,13 @@ server will proceed with a TLS 1.0 ServerHello. If the server only supports
 versions greater than client_version, it MUST send a "protocol_version"
 alert message and close the connection.
 
-Whenever a client already knows the highest protocol version known to a server
-(for example, when resuming a session), it SHOULD initiate the connection in
-that native protocol.
-
 Earlier versions of the TLS specification were not fully clear on what the
 record layer version number (TLSPlaintext.version) should contain when sending
 ClientHello (i.e., before it is known which version of the protocol will be
 employed). Thus, TLS servers compliant with this specification MUST accept any
 value { 03, XX } as the record layer version number for ClientHello.
 
-### Negotiating ciphers with older endpoints
+## Backwards Compatibility Security Restrictions
 
 If an implementation negotiates usage of TLS 1.2, then negotiation of cipher
 suites also supported by TLS 1.3 SHOULD be preferred, if available.
@@ -3491,19 +3492,7 @@ for any version of TLS for any reason.
 
 Old versions of TLS permitted the usage of very low strength ciphers.
 Ciphers with a strength less than 112 bits MUST NOT be offered or
-negotiated for any version.
-
-### Negotiating with buggy servers
-
-Some server implementations are known to implement version negotiation
-incorrectly. There are buggy TLS servers that simply close the connection
-when a client offers a version newer than it supports. Also, it is
-known that some servers will refuse the connection if any TLS extensions are
-included in ClientHello. Interoperability with such buggy servers is a complex
-topic beyond the scope of this document, and may require multiple connection
-attempts by the client.
-
-## Compatibility with SSL
+negotiated for any version of TLS for any reason.
 
 The security of SSL 2.0 {{SSL2}} is considered insufficient for the reasons enumerated
 in [RFC6176], and MUST NOT be negotiated for any reason.
