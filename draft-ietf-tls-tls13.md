@@ -93,6 +93,14 @@ normative:
          org: ANSI
        seriesinfo:
          ANSI: X9.62
+  DH:
+        title: "New Directions in Cryptography"
+        author:
+          - ins: W. Diffie
+          - ins: M. Hellman
+        date: 1977-06
+        seriesinfo: IEEE Transactions on Information Theory, V.IT-22 n.6
+
 
 informative:
   RFC0793:
@@ -1813,7 +1821,7 @@ Structure of this message:
 group
 : The named group for the key share offer.  This identifies the
   specific key exchange method that the ClientKeyShareOffer describes.
-  Finite Field Diffie-Hellman parameters are described in
+  Finite Field Diffie-Hellman {{DH}} parameters are described in
   {{ffdhe-param}}; Elliptic Curve Diffie-Hellman parameters are
   described in {{ecdhe-param}}.
 
@@ -1849,7 +1857,7 @@ DH groups and which curves.]
 
 ####  Diffie-Hellman Parameters {#ffdhe-param}
 
-Diffie-Hellman parameters for both clients and servers are encoded in
+Diffie-Hellman {{DH}} parameters for both clients and servers are encoded in
 the opaque key_exchange field of the ClientKeyShareOffer or
 ServerKeyShare structures. The opaque value contains the
 Diffie-Hellman public value (dh_Y = g^X mod p),
@@ -2928,7 +2936,7 @@ first flight, as it covers the client's Certificate and CertificateVerify.
 
 ###  Diffie-Hellman
 
-A conventional Diffie-Hellman computation is performed. The negotiated key (Z)
+A conventional Diffie-Hellman computation is performed {{DH}}. The negotiated key (Z)
 is used as the pre_master_secret, and is converted into the master_secret, as
 specified above. Leading bytes of Z that contain all zero bits are stripped
 before it is used as the pre_master_secret.
