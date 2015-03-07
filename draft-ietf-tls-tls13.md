@@ -960,8 +960,8 @@ message MAY be fragmented across several records).
 
        enum {
            reserved(20), alert(21), handshake(22),
-           application_data(23), handshake_padded(24),
-           application_data_padded(25), (255)
+           application_data(23), handshake_padded(25),
+           application_data_padded(26), (255)
        } ContentType;
 
        struct {
