@@ -1044,8 +1044,11 @@ to decrease the maximum size of fragment from 2^14 to 2^14 - 2 (because
 of the additional two bytes used to specify the padding length.)
 
 Implementations MUST accept handshake_padded and application_data_padded
-records, and MAY send them.  Padded records MAY contain no underlying data
-and only padding. Similarly, padded records MAY contain no padding at all.
+records, and MAY send them.  To prevent ambiguities when conducting the
+handshake, implementations MUST NOT send handshake_padded records
+containing only padding. Implementations MAY send application_data_padded
+records containing only padding and no underlying data. Padded records
+MAY contain no padding at all.
 
 Choosing a padding algorithm that suggests when and how much to pad is
 outside the scope of the specification. Later documents may define padding
@@ -3454,11 +3457,8 @@ TLS protocol issues:
   size? In particular, the certificate and certificate request
   handshake messages can be large enough to require fragmentation.
 
--  Do you accept padded records that contain no padding, or all padding
-  and no data?
-
--  Do you accept handshake_padded records with no data in the middle of
-  'normal' application data flow?
+-  Do you accept application_data_padded records that contain no padding,
+  or all padding and no data?
 
 -  Do you ignore the TLS record layer version number in all TLS
   records before ServerHello (see {{compatibility}})?
