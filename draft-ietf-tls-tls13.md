@@ -2774,8 +2774,7 @@ include the prior one.
 
 Note: Alerts and any other record types are not handshake messages
 and are not included in the hash computations. HelloRequest
-messages are omitted from handshake hashes. Any padding present in padded
-handshake message is omitted as well.
+messages are omitted from handshake hashes.
 
 
 ###  Client Certificate
