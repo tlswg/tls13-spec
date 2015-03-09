@@ -312,6 +312,8 @@ draft-05
 
 - Prohibit SSL negotiation for backwards compatibility.
 
+- Fix which MS is used for exporters.
+
 draft-04
 
 - Modify key computations to include session hash.
@@ -2860,20 +2862,18 @@ During resumption, the premaster secret is initialized with the
 ClientKeyShare/ServerKeyShare exchange.
 
 This master secret value is used to generate the record protection
-keys used for the handshake, as described in {{key-calculation}}. It is
-also used with TLS Exporters {{RFC5705}}.
+keys used for the handshake, as described in {{key-calculation}}.
 
 Once the hs_master_secret has been computed, the premaster secret SHOULD
 be deleted from memory.
 
 Once the last non-Finished message has been sent, the client and
 server then compute the master secret which will be used for the
-remainder of the session:
+remainder of the session.  It is also used with TLS Exporters {{RFC5705}}.
 
        master_secret = PRF(hs_master_secret, "extended master secret",
                            session_hash)
                            [0..47];
-
 
 If the server does not request client authentication, the master
 secret can be computed at the time that the server sends its Finished,
