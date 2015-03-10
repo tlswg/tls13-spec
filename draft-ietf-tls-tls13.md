@@ -961,7 +961,7 @@ message MAY be fragmented across several records).
 
        struct {
            ContentType type;
-           ProtocolVersion record_version;
+           ProtocolVersion record_version = { 3, 1 };    /* TLS v1.x */
            uint16 length;
            opaque fragment[TLSPlaintext.length];
        } TLSPlaintext;
@@ -1013,7 +1013,7 @@ of {{RFC5116}}. The key is either the client_write_key or the server_write_key.
 %%% Record Layer
        struct {
            ContentType type;
-           ProtocolVersion record_version;
+           ProtocolVersion record_version = { 3, 1 };    /* TLS v1.x */
            uint16 length;
            opaque nonce_explicit[SecurityParameters.record_iv_length];
            aead-ciphered struct {
@@ -1025,7 +1025,7 @@ type
 : The type field is identical to TLSPlaintext.type.
 
 record_version
-: The record_version field is identical to TLSPlaintext.record_version.
+: The record_version field is identical to TLSPlaintext.record_version and is always { 3, 1 }.
 
 length
 : The length (in bytes) of the following TLSCiphertext.fragment.
@@ -1725,7 +1725,7 @@ cipher suites, and process the remaining ones as usual.
        enum { null(0), (255) } CompressionMethod;
 
        struct {
-           ProtocolVersion client_version;
+           ProtocolVersion client_version = { 3, 4 };    /* TLS v1.3 */
            Random random;
            SessionID session_id;
            CipherSuite cipher_suites<2..2^16-2>;
