@@ -1823,7 +1823,6 @@ key_exchange
 : Key exchange information.  The contents of this field are
   determined by the value of NamedGroup entry and its corresponding
   definition.
-
 {:br }
 
 %%% Key Exchange Messages
