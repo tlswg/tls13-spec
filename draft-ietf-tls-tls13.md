@@ -3394,6 +3394,11 @@ TLS protocol issues:
 
 -  Do you ignore the TLS record layer version number in all TLS
   records? (see {{backward-compatibility}})
+  
+-  Have you ensured that all support for SSL, RC4, and EXPORT ciphers
+  is completely removed from all possible configurations that support
+  TLS 1.3 or later, and that attempts to use these obsolete capabilities
+  fail correctly? (see {{backward-compatibility}})
 
 -  Do you handle TLS extensions in ClientHello correctly, including
   omitting the extensions field completely?
