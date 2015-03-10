@@ -3476,11 +3476,10 @@ server will proceed with a TLS 1.0 ServerHello. If the server only supports
 versions greater than client_version, it MUST send a "protocol_version"
 alert message and close the connection.
 
-Earlier versions of the TLS specification were not fully clear on what the
-record layer version number (TLSPlaintext.record_version) should contain when sending
-ClientHello (i.e., before it is known which version of the protocol will be
-employed). Thus, TLS servers compliant with this specification MUST accept any
-value { 03, XX } as the record layer version number for ClientHello.
+Note that earlier versions of TLS did not clearly specify the record layer
+version number value in all cases (TLSPlaintext.record_version). Servers
+will receive various TLS 1.x versions in this field, however its value
+MUST always be ignored.
 
 ## Backwards Compatibility Security Restrictions
 
