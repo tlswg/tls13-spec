@@ -3438,6 +3438,10 @@ purposes. (TLSPlaintext.record_version & TLSCiphertext.record_version)
 As of TLS 1.3, this field is deprecated and its value MUST be ignored by all
 implementations. Version negotiation is performed using only the handshake versions.
 (ClientHello.client_version & ServerHello.server_version)
+In order to maximize interoperability with older endpoints, implementations
+that negotiate the usage of TLS 1.0-1.2 SHOULD set the record layer
+version number to the negotiated version for the ServerHello and all
+records thereafter.
 
 ## Negotiating with an older server
 
