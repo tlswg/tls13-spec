@@ -1875,7 +1875,7 @@ string ECPoint.point.
 point
 : This is the byte string representation of an elliptic curve
   point following the conversion routine in Section 4.3.6 of ANSI
-  X9.62 {{X962}.
+  X9.62 {{X962}}.
 {:br }
 
 Although X9.62 supports multiple point formats, any given curve
