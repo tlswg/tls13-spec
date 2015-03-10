@@ -113,6 +113,7 @@ informative:
   RFC5081:
   RFC5116:
   RFC5705:
+  RFC6066:
   RFC6176:
   I-D.ietf-tls-negotiated-ff-dhe:
   I-D.ietf-tls-session-hash:
@@ -216,11 +217,6 @@ informative:
        seriesinfo:
          USENIX: Security Symposium
        date: 2003
-  TLSEXT:
-       title: "Transport Layer Security (TLS) Extensions:  Extension Definitions"
-       author:
-         ins: D. Eastlake 3rd
-       date: 2008-02
   X501:
        title: "Information Technology - Open Systems Interconnection - The Directory: Models"
        date: 1993
@@ -2029,7 +2025,7 @@ Here:
 -  "extension_data" contains information specific to the particular
   extension type.
 
-The initial set of extensions is defined in a companion document {{TLSEXT}}.
+The initial set of extensions is defined in {{RFC6066}}.
 The list of extension types is maintained by IANA as described in
 {{iana-considerations}}.
 
@@ -2170,7 +2166,7 @@ practical matter one can assume that the peer supports MD5 and SHA-1.
 
 Note: this extension is not meaningful for TLS versions prior to 1.2. Clients
 MUST NOT offer it if they are offering prior versions. However, even if clients
-do offer it, the rules specified in {{TLSEXT}} require servers to ignore
+do offer it, the rules specified in {{RFC6066}} require servers to ignore
 extensions they do not understand.
 
 Servers MUST NOT send this extension. TLS servers MUST support receiving this
@@ -2463,7 +2459,7 @@ The following rules apply to the certificates sent by the server:
                        the client, as described in  [RFC4492].
 ~~~~
 
-- The "server_name" and "trusted_ca_keys" extensions {{TLSEXT}} are used to
+- The "server_name" and "trusted_ca_keys" extensions {{RFC6066}} are used to
   guide certificate selection.
 
 If the client provided a "signature_algorithms" extension, then all
