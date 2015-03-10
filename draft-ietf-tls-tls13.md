@@ -1749,8 +1749,8 @@ client_version
 : The version of the TLS protocol by which the client wishes to
   communicate during this session.  This SHOULD be the latest
   (highest valued) version supported by the client.  For this
-  version of the specification, the version will be 3.4 (see
-  {{backward-compatibility}} for details about backward compatibility).
+  version of the specification, the version will be 3.4. (See
+  {{backward-compatibility}} for details about backward compatibility.)
 
 random
 : A client-generated random structure.
@@ -1929,7 +1929,7 @@ bytes following the cipher_suite field at the end of the ServerHello.
 server_version
 : This field will contain the lower of that suggested by the client
   in the client hello and the highest supported by the server.  For
-  this version of the specification, the version is 3.4.  (See
+  this version of the specification, the version is 3.4. (See
   {{backward-compatibility}} for details about backward compatibility.)
 
 random
@@ -3393,7 +3393,7 @@ TLS protocol issues:
   handshake messages can be large enough to require fragmentation.
 
 -  Do you ignore the TLS record layer version number in all TLS
-  records (see {{backward-compatibility}})?
+  records? (see {{backward-compatibility}})
 
 -  Do you handle TLS extensions in ClientHello correctly, including
   omitting the extensions field completely?
