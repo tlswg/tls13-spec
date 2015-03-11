@@ -790,8 +790,7 @@ delivered to higher-level clients.
 Three protocols that use the record protocol are described in this document: the
 handshake protocol, the alert protocol, and
 the application data protocol.
-Additionally, padded variants of the handshake and application data protocols
-are provided.
+Additionally, a padded variant of application data records is provided.
 In order to allow extension of the TLS protocol,
 additional record content types can be supported by the record protocol. New
 record content type values are assigned by IANA in the TLS Content Type
@@ -806,13 +805,14 @@ all possible attacks against it. As a practical matter, this means that the
 protocol designer must be aware of what security properties TLS does and does
 not provide and cannot safely rely on the latter.
 
-The padded variants of the handshake and application data protocols are designed
-to obsecure the length of the exact data transmitted within them. However, padding
-cannot provide perfect security, and statistical attacks on padding may reveal
-some information regardless. Without the padded variants, the exact length of the
-content may be visible, depending on factors such as the record protection algorithm
-chosen.  Relying upon these factors, rather than using the padded variants, is not
-recommended.
+Encrypted handshake messages and the padded variant of the application
+data protocol are designed to obsecure the length of the exact data
+transmitted within them. However, padding cannot provide perfect
+security, and statistical attacks on padding may reveal some
+information regardless. Without the padding, the exact length
+of the content may be visible, depending on factors such as the record
+protection algorithm chosen.  Relying upon these factors, rather than
+using the padded variants, is not recommended.
 
 Additionally, the record type is not protected by encryption. This means that,
 even if the padded variants are used, the type of record and whether or not it
@@ -960,29 +960,15 @@ message MAY be fragmented across several records).
 
        enum {
            reserved(20), alert(21), handshake(22),
-           application_data(23), handshake_padded(25),
-           application_data_padded(26), (255)
+           application_data(23), application_data_padded(25),
+           (255)
        } ContentType;
-
-       struct {
-           uint16 padding_length;
-           opaque fragment[TLSPlaintext.length - padding_length];
-           opaque padding[padding_length];
-       } PaddedFragment;
 
        struct {
            ContentType type;
            ProtocolVersion version;
            uint16 length;
-           select(type) {
-               case alert:
-               case handshake:
-               case application_data:
-                   opaque fragment[TLSPlaintext.length];
-               case handshake_padded:
-               case application_data_padded:
-                   PaddedFragment padded_fragment;
-           }
+           opaque fragment[TLSPlaintext.length];
        } TLSPlaintext;
 
 type
@@ -1006,58 +992,12 @@ fragment
 : The application data.  This data is transparent and treated as an
   independent block to be dealt with by the higher-level protocol
   specified by the type field.
-
-padded_fragment
-: The application data, combined with the padding for the record.
 {:br }
 
 Implementations MUST NOT send zero-length fragments of Handshake or Alert
 types. Zero-length fragments of Application data MAY
 be sent as they are potentially useful as a traffic analysis countermeasure.
 
-### Record Padding
-
-The handshake_padded and application_data_padded record types allow
-optional padding to be specified to inflate the size of the encrypted
-record.  The PaddedFragment struct specifies two bytes to define the length of
-padding present, followed by the application data, and finally the
-padding itself.
-
-[[[Options:
- - PKCS5 style padding, where it's application data followed by two-byte
-   repeating octets that specify the length.
- - Padding could be required to be all zeros but implementations
-   MAY NOT/SHOULD NOT verify this
- - Padding could be all zeros and implementations MUST verify this
-
-Specifying the length preceeding and then ignore the padding will hopefully
-yield simpler code, but the authors don't have strong feelings here. ]]]
-
-The padding sent will be authenticated by the record protection mechanism
-but MUST NOT be validated against any particular algorithm. However,
-when calculating hashes of handshake messages, the padding MUST be
-included in the hash.  This is to prevent timing attacks that may be able to
-distinguish amount of padding present.
-
-The presence of padding does not adjust the record size limitations, except
-to decrease the maximum size of fragment from 2^14 to 2^14 - 2 (because
-of the additional two bytes used to specify the padding length.)
-
-Implementations MUST accept handshake_padded and application_data_padded
-records, and MAY send them.  To prevent ambiguities when conducting the
-handshake, implementations MUST NOT send handshake_padded records
-containing only padding. Implementations MAY send application_data_padded
-records containing only padding and no underlying data. Padded records
-MAY contain no padding at all.
-
-Choosing a padding algorithm that suggests when and how much to pad is
-outside the scope of the specification. Later documents may define padding
-selection algorithms, or define a padding policy request mechanism through
-TLS extensions or some other means.
-
-Throughout the document, whenthe handshake and application_data record layers
-are mentioned, these are interchangable with their padded variants unless
-otherwise specified.
 
 ###  Record Payload Protection
 
@@ -1080,7 +1020,16 @@ of {{RFC5116}}. The key is either the client_write_key or the server_write_key.
            uint16 length;
            opaque nonce_explicit[SecurityParameters.record_iv_length];
            aead-ciphered struct {
-              opaque content[TLSPlaintext.length];
+               select(type) {
+                   case alert:
+                   case application_data:
+                       opaque content[TLSPlaintext.length];
+                   case handshake:
+                   case application_data_padded:
+                       opaque padding<0..2^16-1>;
+                       opaque content[TLSPlaintext.length -
+                                      (2 + length(padding))];
+               }
            } fragment;
        } TLSCiphertext;
 
@@ -1095,7 +1044,7 @@ length
   The length MUST NOT exceed 2^14 + 2048.
 
 fragment
-: The AEAD encrypted form of TLSPlaintext.fragment.
+: The AEAD encrypted form of the (possibly padded) TLSPlaintext.fragment
 {:br }
 
 Each AEAD cipher suite MUST specify how the nonce supplied to the AEAD
@@ -1148,8 +1097,48 @@ separate integrity check. That is:
 If the decryption fails, a fatal bad_record_mac alert MUST be generated.
 
 As a special case, we define the NULL_NULL AEAD cipher which is simply
-the identity operation and thus provides no security. This cipher
-MUST ONLY be used with the initial TLS_NULL_WITH_NULL_NULL cipher suite.
+the identity operation and thus provides no security. This cipher MUST
+ONLY be used with the initial TLS_NULL_WITH_NULL_NULL cipher suite.
+When the identity operation is used for handshake messages, the
+padding element is omitted entirely.
+
+### Record Padding
+
+All encrypted TLS 1.3 handshake and application_data_padded record
+types allow padding to be specified to inflate the size of the
+encrypted record.
+
+When generating a TLSCiphertext record in TLS 1.3 for either handshake
+or application_data_padded record types, implementations SHOULD set
+the padding bytes to all zeros before encrypting.  In particular,
+implementations MUST NOT encrypt uninitialized memory.
+
+The padding sent will be authenticated by the record protection
+mechanism but receiving peers MUST NOT try to validate the padding
+data against any particular algorithm.  However, when calculating
+hashes of handshake messages, the padding MUST be included in the
+hash.  This is to prevent timing attacks that may be able to
+distinguish amount of padding present.
+
+The presence of padding does not adjust the record size limitations, except
+to decrease the maximum size of content from 2^14 to 2^14 - 2 (because
+of the additional two bytes used to specify the padding length.)
+
+Implementations MUST accept application_data_padded records, and MAY
+send them.  To prevent ambiguities when conducting the handshake,
+implementations MUST NOT send handshake records containing only
+padding. Implementations MAY send application_data_padded records
+containing only padding and no underlying data. Padded records MAY
+contain no padding at all.
+
+Selecting a padding policy that suggests when and how much to pad is
+outside the scope of this specification. Later documents may define
+padding selection algorithms, or define a padding policy request
+mechanism through TLS extensions or some other means.
+
+Throughout the document, when the application_data records are
+mentioned, they are interchangable with application_data_padded
+records unless otherwise specified.
 
 ##  Key Calculation
 
@@ -2760,9 +2749,9 @@ handshake_messages
 : All of the data from all messages in this handshake (not
   including any HelloRequest messages) up to, but not including,
   this message.  This is only data visible at the handshake layer
-  and does not include record layer headers. However, if padded handshake
-  records are used, the hash does include the two bytes specifying the length
-  of the padding, as well as any padding present. handshake_messages is the
+  and does not include record layer headers.  For encrypted handshake
+  records, the hash includes the two bytes specifying the length
+  of the padding, as well as any padding present.  handshake_messages is the
   concatenation of all the Handshake structures as defined in
   {{handshake-protocol}}, exchanged thus far.
 {:br }
@@ -2776,7 +2765,7 @@ Finished message sent by the server, because the one that is sent second will
 include the prior one.
 
 Note: Alerts and any other record types are not handshake messages
-and are not included in the hash computations. HelloRequest
+and are not included in the hash computations. Also, HelloRequest
 messages are omitted from handshake hashes.
 
 
@@ -3456,9 +3445,6 @@ TLS protocol issues:
   you fragment handshake messages that exceed the maximum fragment
   size? In particular, the certificate and certificate request
   handshake messages can be large enough to require fragmentation.
-
--  Do you accept application_data_padded records that contain no padding,
-  or all padding and no data?
 
 -  Do you ignore the TLS record layer version number in all TLS
   records before ServerHello (see {{compatibility}})?
