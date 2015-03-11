@@ -2746,8 +2746,7 @@ suites MAY specify other lengths but such length MUST be at least 12 bytes.
 
 handshake_messages
 
-: All of the data from all messages in this handshake (not
-  including any HelloRequest messages) up to, but not including,
+: All of the data from all messages in this handshake up to, but not including,
   this message.  This is only data visible at the handshake layer
   and does not include record layer headers.  For encrypted handshake
   records, the hash includes the two bytes specifying the length
@@ -2765,9 +2764,7 @@ Finished message sent by the server, because the one that is sent second will
 include the prior one.
 
 Note: Alerts and any other record types are not handshake messages
-and are not included in the hash computations. Also, HelloRequest
-messages are omitted from handshake hashes.
-
+and are not included in the hash computations.
 
 ###  Client Certificate
 
