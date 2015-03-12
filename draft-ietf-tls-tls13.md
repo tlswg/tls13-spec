@@ -2161,9 +2161,6 @@ as if the client had sent the value {sha1,dsa}.
 - If the negotiated key exchange algorithm is ECDHE_ECDSA,
 behave as if the client had sent value {sha1,ecdsa}.
 
-Note: this is a change from TLS 1.1 where there are no explicit rules, but as a
-practical matter one can assume that the peer supports MD5 and SHA-1.
-
 Note: this extension is not meaningful for TLS versions prior to 1.2. Clients
 MUST NOT offer it if they are offering prior versions. However, even if clients
 do offer it, the rules specified in {{RFC6066}} require servers to ignore
@@ -2467,8 +2464,6 @@ certificates provided by the server MUST be signed by a hash/signature
 algorithm pair that appears in that extension. Note that this implies that a
 certificate containing a key for one signature algorithm MAY be signed using a
 different signature algorithm (for instance, an RSA key signed with a DSA key).
-This is a departure from TLS 1.1, which required that the algorithms be the
-same.
 
 If the server has multiple certificates, it chooses one of them based on the
 above-mentioned criteria (in addition to other criteria, such as transport
