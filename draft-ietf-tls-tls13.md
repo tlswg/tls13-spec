@@ -255,7 +255,7 @@ well. Editorial changes can be managed in GitHub, but any substantive
 change should be discussed on the TLS mailing list.
 
 The primary goal of the TLS protocol is to provide privacy and data integrity
-between two communicating applications. The protocol is composed of two layers:
+between two communicating applications. TLS is composed of two layers:
 the TLS Record Protocol and the TLS Handshake Protocol. At the lowest level,
 layered on top of some reliable transport protocol (e.g., TCP {{RFC0793}}), is
 the TLS Record Protocol. The TLS Record Protocol provides connection security
@@ -265,15 +265,15 @@ that has two basic properties:
   data encryption (e.g., AES {{AES}}, etc.).  The keys for
   this symmetric encryption are generated uniquely for each
   connection and are based on a secret negotiated by another
-  protocol (such as the TLS Handshake Protocol).  The Record
+  protocol (such as the TLS Handshake Protocol).  The TLS Record
   Protocol can also be used without encryption, i.e., in integrity-only
   modes.
 
 - The connection is reliable.  Messages include an authentication
   tag which protects them against modification.
 
-- The Record Protocol can operate in an insecure mode but is generally
-  only used in this mode while another protocol is using the Record
+- The TLS Record Protocol can operate in an insecure mode but is generally
+  only used in this mode while another protocol is using the TLS Record
   Protocol as a transport for negotiating security parameters.
 
 The TLS Record Protocol is used for encapsulation of various higher- level
@@ -282,6 +282,7 @@ the server and client to authenticate each other and to negotiate an encryption
 algorithm and cryptographic keys before the application protocol transmits or
 receives its first byte of data. The TLS Handshake Protocol provides connection
 security that has three basic properties:
+
 
 - The peer's identity can be authenticated using asymmetric, or
   public key, cryptography (e.g., RSA {{RSA}}, DSA {{DSS}}, etc.).  This
@@ -385,7 +386,7 @@ care has been taken to reduce network activity.
 #  Goals of This Document
 
 This document and the TLS protocol itself are based on the SSL 3.0 Protocol
-Specification as published by Netscape. The differences between this protocol
+Specification as published by Netscape. The differences between TLS
 and SSL 3.0 are not dramatic, but they are significant enough that the various
 versions of TLS and SSL 3.0 do not interoperate (although each protocol
 incorporates a mechanism by which an implementation can back down to prior
@@ -784,16 +785,16 @@ the following bytes:
 #  The TLS Record Protocol
 
 The TLS Record Protocol is a layered protocol. At each layer, messages
-may include fields for length, description, and content. The Record
+may include fields for length, description, and content.  The TLS Record
 Protocol takes messages to be transmitted, fragments the data into
 manageable blocks, protects the records, and transmits the
 result. Received data is decrypted and verified, reassembled, and then
 delivered to higher-level clients.
 
-Four protocols that use the record protocol are described in this document: the
-handshake protocol, the alert protocol, and
+Four protocols that use the TLS Record Protocol are described in this document: the TLS
+Handshake Protocol, the Alert Protocol, and
 the application data protocol. In order to allow extension of the TLS protocol,
-additional record content types can be supported by the record protocol. New
+additional record content types can be supported by the TLS Record Protocol. New
 record content type values are assigned by IANA in the TLS Content Type
 Registry as described in {{iana-considerations}}.
 
@@ -1085,9 +1086,9 @@ MUST ONLY be used with the initial TLS_NULL_WITH_NULL_NULL cipher suite.
 ##  Key Calculation
 
 [[OPEN ISSUE: This needs to be revised. See https://github.com/tlswg/tls13-spec/issues/5]]
-The Record Protocol requires an algorithm to generate keys required by the
+The TLS Record Protocol requires an algorithm to generate keys required by the
 current connection state (see {{the-security-parameters}}) from the security
-parameters provided by the handshake protocol.
+parameters provided by the TLS Handshake Protocol.
 
 The master secret is expanded into a sequence of secure bytes, which
 is then split to a client write encryption key and a server write
@@ -1126,7 +1127,7 @@ TLS has three subprotocols that are used to allow peers to agree upon security
 parameters for the record layer, to authenticate themselves, to instantiate
 negotiated security parameters, and to report error conditions to each other.
 
-The Handshake Protocol is responsible for negotiating a session, which consists
+The TLS Handshake Protocol is responsible for negotiating a session, which consists
 of the following items:
 
 session identifier
@@ -1243,7 +1244,7 @@ before destroying the transport.
 
 ###  Error Alerts
 
-Error handling in the TLS Handshake protocol is very simple. When an error is
+Error handling in the TLS Handshake Protocol is very simple. When an error is
 detected, the detecting party sends a message to the other party. Upon
 transmission or receipt of a fatal alert message, both parties immediately
 close the connection. Servers and clients MUST forget any session-identifiers,
@@ -1429,7 +1430,7 @@ The TLS Handshake Protocol involves the following steps:
 Note that higher layers should not be overly reliant on whether TLS always
 negotiates the strongest possible connection between two peers. There are a
 number of ways in which a man-in-the-middle attacker can attempt to make two
-entities drop down to the least secure method they support. The protocol has
+entities drop down to the least secure method they support. The TLS protocol has
 been designed to minimize this risk, but there are still attacks available: for
 example, an attacker could block access to the port a secure service runs on,
 or attempt to get the peers to negotiate an unauthenticated connection. The
@@ -1440,7 +1441,7 @@ its promised level of security: if you negotiate AES-GCM {{GCM}} with
 a 1024-bit DHE key exchange with a host whose certificate you have
 verified, you can expect to be that secure.
 
-These goals are achieved by the handshake protocol, which can be
+These goals are achieved by the TLS Handshake Protocol, which can be
 summarized as follows: The client sends a ClientHello message which
 contains a random nonce (ClientHello.random), its preferences for
 Protocol Version, Cipher Suite, and a variety of extensions. In
@@ -1635,7 +1636,7 @@ processed and transmitted as specified by the current active session state.
            } body;
        } Handshake;
 
-The handshake protocol messages are presented below in the order they
+The TLS Handshake Protocol messages are presented below in the order they
 MUST be sent; sending handshake messages in an unexpected order
 results in a fatal error. Unneeded handshake messages can be omitted,
 however.
@@ -1687,7 +1688,7 @@ from an earlier connection, this connection, or from another currently active
 connection. The second option is useful if the client only wishes to update the
 random structures and derived values of a connection, and the third option
 makes it possible to establish several independent secure connections without
-repeating the full handshake protocol. These independent connections may occur
+repeating the full TLS Handshake Protocol. These independent connections may occur
 sequentially or simultaneously; a SessionID becomes valid when the handshake
 negotiating it completes with the exchange of Finished messages and persists
 until it is removed due to aging or because a fatal error was encountered on a
@@ -3272,7 +3273,7 @@ server
 
 session
 : A TLS session is an association between a client and a server.
-  Sessions are created by the handshake protocol.  Sessions define a
+  Sessions are created by the TLS Handshake Protocol.  Sessions define a
   set of cryptographic security parameters that can be shared among
   multiple connections.  Sessions are used to avoid the expensive
   negotiation of new security parameters for each connection.
@@ -3602,9 +3603,9 @@ resist a variety of attacks.
 
 ## Handshake Protocol
 
-The handshake protocol is responsible for selecting a cipher spec and
+The TLS Handshake Protocol is responsible for selecting a cipher spec and
 generating a master secret, which together comprise the primary cryptographic
-parameters associated with a secure session. The handshake protocol can also
+parameters associated with a secure session. The TLS Handshake Protocol can also
 optionally authenticate parties who have certificates signed by a trusted
 certificate authority.
 
