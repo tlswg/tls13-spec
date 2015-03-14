@@ -1158,7 +1158,7 @@ Protocol.
 
 ##  Alert Protocol
 
-One of the content types supported by the TLS record layer is the alert type.
+One of the content types supported by the TLS Record Protocol is the alert type.
 Alert messages convey the severity of the message (warning or fatal) and a
 description of the alert. Alert messages with a level of fatal result in the
 immediate termination of the connection. In this case, other connections
@@ -1207,8 +1207,7 @@ as specified by the current connection state.
 ###  Closure Alerts
 
 The client and the server must share knowledge that the connection is ending in
-order to avoid a truncation attack. Either peer may initiate the exchange of
-closing messages.
+order to avoid a truncation attack. Either peer may initiate a close by sending a "close_notify" alert. Any data received after a closure is ignored.
 
 close_notify
 : This message notifies the recipient that the sender will not send
@@ -1217,9 +1216,6 @@ close_notify
   session not be resumed.  This is a change from TLS 1.0 to conform
   with widespread implementation practice.
 {:br }
-
-Either peer may initiate a close by sending a close_notify alert. Any data
-received after a closure alert is ignored.
 
 Unless some other fatal alert has been transmitted, each peer is required to
 send a close_notify alert before closing the write side of the connection. The
@@ -1234,7 +1230,7 @@ implementation must receive the responding close_notify alert before indicating
 to the application layer that the TLS connection has ended. If the application
 protocol will not transfer any additional data, but will only close the
 underlying transport connection, then the implementation MAY choose to close
-the transport without waiting for the responding close_notify. No part of this
+the transport without waiting for the responding close_notify alert. No part of this
 standard should be taken to dictate the manner in which a usage profile for TLS
 manages its data transport, including when connections are opened or closed.
 
@@ -1244,7 +1240,7 @@ before destroying the transport.
 ###  Error Alerts
 
 Error handling in the TLS Handshake protocol is very simple. When an error is
-detected, the detecting peer sends a message to the other peer. Upon
+detected, the detecting peer sends an alert message to the other peer. Upon
 transmission or receipt of a fatal alert message, both peers immediately
 close the connection. Servers and clients MUST forget any session-identifiers,
 keys, and secrets associated with a failed connection. Thus, any connection
@@ -1280,7 +1276,7 @@ bad_record_mac
 : This alert is returned if a record is received which cannot be
   deprotected. Because AEAD algorithms combine decryption and
   verification, this message is used for all deprotection failures.
-  This message is always fatal and should never be observed in
+  This alert is always fatal and should never be observed in
   communication between proper implementations (except when messages
   were corrupted in the network).
 
@@ -1292,12 +1288,12 @@ decryption_failed_RESERVED
 record_overflow
 : A TLSCiphertext record was received that had a length more than
   2^14+2048 bytes, or a record decrypted to a TLSPlaintext record
-  with more than 2^14 bytes.  This message is always fatal and
+  with more than 2^14 bytes.  This alert is always fatal and
   should never be observed in communication between proper
   implementations (except when messages were corrupted in the
   network).
 
-decompression_failure
+decompression_failure_RESERVED
 : This alert was used in previous versions of TLS. TLS 1.3 does not
   include compression and TLS 1.3 implementations MUST NOT send this
   alert when in TLS 1.3 mode.
@@ -1330,30 +1326,30 @@ certificate_unknown
 
 illegal_parameter
 : A field in the handshake was out of range or inconsistent with
-  other fields.  This message is always fatal.
+  other fields.  This alert is always fatal.
 
 unknown_ca
 : A valid certificate chain or partial chain was received, but the
   certificate was not accepted because the CA certificate could not
   be located or couldn't be matched with a known, trusted CA.  This
-  message is always fatal.
+  alert is always fatal.
 
 access_denied
 : A valid certificate was received, but when access control was
   applied, the sender decided not to proceed with negotiation.  This
-  message is always fatal.
+  alert is always fatal.
 
 decode_error
 : A message could not be decoded because some field was out of the
   specified range or the length of the message was incorrect.  This
-  message is always fatal and should never be observed in
+  alert is always fatal and should never be observed in
   communication between proper implementations (except when messages
   were corrupted in the network).
 
 decrypt_error
 : A handshake cryptographic operation failed, including being unable
   to correctly verify a signature or validate a Finished message.
-  This message is always fatal.
+  This alert is always fatal.
 
 export_restriction_RESERVED
 : This alert was used in some earlier versions of TLS.  It MUST NOT
@@ -1362,38 +1358,38 @@ export_restriction_RESERVED
 protocol_version
 : The protocol version the client has attempted to negotiate is
   recognized but not supported.  (For example, old protocol versions
-  might be avoided for security reasons.)  This message is always
+  might be avoided for security reasons.)  This alert is always
   fatal.
 
 insufficient_security
 : Returned instead of handshake_failure when a negotiation has
   failed specifically because the server requires ciphers more
-  secure than those supported by the client.  This message is always
+  secure than those supported by the client.  This alert is always
   fatal.
 
 internal_error
 : An internal error unrelated to the peer or the correctness of the
   protocol (such as a memory allocation failure) makes it impossible
-  to continue.  This message is always fatal.
+  to continue.  This alert is always fatal.
 
 user_canceled
 : This handshake is being canceled for some reason unrelated to a
   protocol failure.  If the user cancels an operation after the
   handshake is complete, just closing the connection by sending a
   close_notify is more appropriate.  This alert should be followed
-  by a close_notify.  This message is generally a warning.
+  by a close_notify.  This alert is generally a warning.
 
 no_renegotiation
   Sent by the client in response to a ServerHello or by the server
   in response to a ClientHello after initial handshaking. Versions
   of TLS prior to TLS 1.3 supported renegotiation of a previously
   established connection; TLS 1.3 removes this feature. This
-  message is always fatal.
+  alert is always fatal.
 
 unsupported_extension
-: sent by clients that receive an extended ServerHello containing
+: Sent by clients that receive an extended ServerHello containing
   an extension that they did not put in the corresponding ClientHello.
-  This message is always fatal.
+  This alert is always fatal.
 {:br }
 
 New Alert values are assigned by IANA as described in {{iana-considerations}}.
@@ -1566,7 +1562,7 @@ the same ClientHello (as is currently done) and then checking you get
 the same negotiated parameters.]]
 
 If no common cryptographic parameters can be negotiated, the server
-will send a fatal alert.
+will send a "handshake_failure" or "insufficient_security" fatal alert (see {{alert-protocol}}).
 
 
 When the client and server decide to resume a previous session or duplicate an
@@ -1637,7 +1633,7 @@ processed and transmitted as specified by the current active session state.
 
 The handshake protocol messages are presented below in the order they
 MUST be sent; sending handshake messages in an unexpected order
-results in a fatal error. Unneeded handshake messages can be omitted,
+results in an "unexpected_message" fatal error. Unneeded handshake messages can be omitted,
 however.
 
 New handshake message types are assigned by IANA as described in
@@ -1709,12 +1705,12 @@ client in order of the client's preference (favorite choice first). Each cipher
 suite defines a key exchange algorithm, a record protection algorithm (including
 secret key length) and a PRF. The server will select a cipher
 suite or, if no acceptable choices are presented, return a handshake failure
-alert and close the connection. If the list contains cipher suites the server
+alert and close the connection or return an "insufficent_security" alert and close the connection (see {{alert-protocol}}. If the list contains cipher suites the server
 does not recognize, support, or wish to use, the server MUST ignore those
 cipher suites, and process the remaining ones as usual.
 
 %%% Hello Messages
-       uint8 CipherSuite[2];    /* Cryptographic suite selector */
+       uint8 CipherSuite[2];    /* Cryptographi/c suite selector */
 
        enum { null(0), (255) } CompressionMethod;
 
