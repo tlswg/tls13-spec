@@ -1380,16 +1380,16 @@ user_canceled
   by a close_notify.  This alert is generally a warning.
 
 no_renegotiation
-  Sent by the client in response to a server hello or by the server
+  Sent by the client in response to a hello request or by the server
   in response to a client hello after initial handshaking. Versions
   of TLS prior to TLS 1.3 supported renegotiation of a previously
   established connection; TLS 1.3 removes this feature. This
   alert is always fatal.
 
 unsupported_extension
-: Sent by clients that receive an extended server Hello containing
-  an extension that they did not put in the corresponding client hello.
-  This alert is always fatal.
+: Sent by clients that receive an extended server hello containing
+  an extension that they did not put in the corresponding client
+  hello. This alert is always fatal.
 {:br }
 
 New Alert values are assigned by IANA as described in {{iana-considerations}}.
