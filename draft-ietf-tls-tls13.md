@@ -1203,7 +1203,7 @@ as specified by the current connection state.
 
 The client and the server must share knowledge that the connection is ending in
 order to avoid a truncation attack. Either party may initiate the exchange of
-closing messages by sending.
+closing messages.
 
 close_notify
 : This message notifies the recipient that the sender will not send
