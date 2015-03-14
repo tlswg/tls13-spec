@@ -2058,7 +2058,7 @@ In general, the specification of each extension type needs to describe the
 effect of the extension both during full handshake and session resumption. Most
 current TLS extensions are relevant only when a session is initiated: when an
 older session is resumed, the server does not process these extensions in
-client hello, and does not include them in server hello. However, some
+Client Hello, and does not include them in Server Hello. However, some
 extensions may specify different behavior during session resumption.
 
 There are subtle (and not so subtle) interactions that may occur in this
@@ -2174,8 +2174,8 @@ extensions they do not understand.
 Servers MUST NOT send this extension. TLS servers MUST support receiving this
 extension.
 
-When performing session resumption, this extension is not included in
-Server Hello, and the server ignores the extension in Client Hello (if present).
+When performing session resumption, this extension is not included in Server
+Hello, and the server ignores the extension in Client Hello (if present).
 
 
 ##### Negotiated Groups
