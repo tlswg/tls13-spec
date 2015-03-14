@@ -294,7 +294,7 @@ security that has three basic properties:
   can place himself in the middle of the connection.
 
 - The negotiation is reliable: no attacker can modify the
-  negotiation communication without being detected by the peers to
+  negotiation communication without being detected by the parties to
   the communication.
 
 
@@ -364,7 +364,7 @@ draft-02
 The goals of the TLS protocol, in order of priority, are as follows:
 
 1. Cryptographic security: TLS should be used to establish a secure connection
-between two peers.
+between two parties.
 
 2. Interoperability: Independent programmers should be able to develop
 applications utilizing TLS that can successfully exchange cryptographic
@@ -1217,9 +1217,9 @@ close_notify
   with widespread implementation practice.
 {:br }
 
-Unless some other fatal alert has been transmitted, each peer is required to
+Unless some other fatal alert has been transmitted, each party is required to
 send a close_notify alert before closing the write side of the connection. The
-other peer MUST respond with a close_notify alert of its own and close down
+other party MUST respond with a close_notify alert of its own and close down
 the connection immediately, discarding any pending writes. It is not required
 for the initiator of the close to wait for the responding close_notify alert
 before closing the read side of the connection.
@@ -1240,15 +1240,15 @@ before destroying the transport.
 ###  Error Alerts
 
 Error handling in the TLS Handshake protocol is very simple. When an error is
-detected, the detecting peer sends an alert message to the other peer. Upon
-transmission or receipt of a fatal alert message, both peers immediately
+detected, the detecting party sends an alert message to the other party. Upon
+transmission or receipt of a fatal alert message, both parties immediately
 close the connection. Servers and clients MUST forget any session-identifiers,
 keys, and secrets associated with a failed connection. Thus, any connection
 terminated with a fatal alert MUST NOT be resumed.
 
 Whenever an implementation encounters a condition which is defined as a fatal
 alert, it MUST send the appropriate alert prior to closing the connection. For
-all errors where an alert level is not explicitly specified, the sending peer
+all errors where an alert level is not explicitly specified, the sending party
 MAY determine at its discretion whether to treat this as a fatal error or not.
 If the implementation chooses to send an alert but intends to close the
 connection immediately afterwards, it MUST send that alert at the fatal alert
@@ -1258,9 +1258,9 @@ If an alert with a level of warning is sent and received, generally the
 connection can continue normally. If the receiving peer decides not to proceed
 with the connection (e.g., after having received a no_renegotiation alert that
 it is not willing to accept), it SHOULD send a fatal alert to terminate the
-connection. Given this, the sending peer cannot, in general, know how the
-receiving peer will behave. Therefore, warning alerts are not very useful when
-the sending peer wants to continue the connection, and thus are sometimes
+connection. Given this, the sending party cannot, in general, know how the
+receiving party will behave. Therefore, warning alerts are not very useful when
+the sending party wants to continue the connection, and thus are sometimes
 omitted. For example, if a peer decides to accept an expired certificate
 (perhaps after confirming this with the user) and wants to continue the
 connection, it would not generally send a certificate_expired alert.
@@ -1936,7 +1936,7 @@ session_id
   found and the server is willing to establish the new connection
   using the specified session state, the server will respond with
   the same value as was supplied by the client.  This indicates a
-  resumed session and dictates that the peers must proceed
+  resumed session and dictates that the parties must proceed
   directly to the Finished messages.  Otherwise, this field will
   contain a different value identifying the new session.  The server
   may return an empty session_id to indicate that the session will
@@ -3091,7 +3091,7 @@ certificate from the client for client authentication.
 
 The following ciphers, defined in {{RFC5288}},
 are used for completely anonymous Diffie-Hellman
-communications in which neither peer is authenticated. Note that this mode is
+communications in which neither party is authenticated. Note that this mode is
 vulnerable to man-in-the-middle attacks. Using this mode therefore is of
 limited use: These cipher suites MUST NOT be used by TLS 1.2 implementations
 unless the application layer has specifically requested to allow anonymous key
@@ -3185,7 +3185,7 @@ authentication
 certificate
 : As part of the X.509 protocol (a.k.a. ISO Authentication
   framework), certificates are assigned by a trusted Certificate
-  Authority and provide a strong binding between a peer's identity
+  Authority and provide a strong binding between a parties's identity
   or some other attributes and its public key.
 
 client
@@ -3599,24 +3599,24 @@ resist a variety of attacks.
 The handshake protocol is responsible for selecting a cipher spec and
 generating a master secret, which together comprise the primary cryptographic
 parameters associated with a secure session. The handshake protocol can also
-optionally authenticate peers who have certificates signed by a trusted
+optionally authenticate parties who have certificates signed by a trusted
 certificate authority.
 
 ###  Authentication and Key Exchange
 
-TLS supports three authentication modes: authentication of both peers, server
+TLS supports three authentication modes: authentication of both parties, server
 authentication with an unauthenticated client, and total anonymity. Whenever
 the server is authenticated, the channel is secure against man-in-the-middle
 attacks, but completely anonymous sessions are inherently vulnerable to such
 attacks. Anonymous servers cannot authenticate clients. If the server is
 authenticated, its certificate message must provide a valid certificate chain
 leading to an acceptable certificate authority. Similarly, authenticated
-clients must supply an acceptable certificate to the server. Each peers is
+clients must supply an acceptable certificate to the server. Each party is
 responsible for verifying that the other's certificate is valid and has not
 expired or been revoked.
 
 The general goal of the key exchange process is to create a pre_master_secret
-known to the communicating peers and not to attackers. The pre_master_secret
+known to the communicating parties and not to attackers. The pre_master_secret
 will be used to generate the master_secret (see
 {{computing-the-master-secret}}). The master_secret is required to generate the
 Finished messages and record protection keys (see {{server-finished}} and
@@ -3660,7 +3660,7 @@ handshake when using DHE cipher suites.
 
 Because TLS includes substantial improvements over SSL Version 2.0, attackers
 may try to make TLS-capable clients and servers fall back to Version 2.0. This
-attack can occur if (and only if) two TLS-capable peers use an SSL 2.0
+attack can occur if (and only if) two TLS-capable parties use an SSL 2.0
 handshake.
 
 Although the solution using non-random PKCS #1 block type 2 message padding is
@@ -3675,12 +3675,12 @@ increasing the input block size by 8 bytes.
 
 ###  Detecting Attacks Against the Handshake Protocol
 
-An attacker might try to influence the handshake exchange to make the peers
+An attacker might try to influence the handshake exchange to make the parties
 select different encryption algorithms than they would normally choose.
 
 For this attack, an attacker must actively change one or more handshake
 messages. If this occurs, the client and server will compute different values
-for the handshake message hashes. As a result, the peers will not accept each
+for the handshake message hashes. As a result, the parties will not accept each
 others' Finished messages. Without the master_secret, the attacker cannot
 repair the Finished messages, so the attack will be discovered.
 
@@ -3695,10 +3695,10 @@ connections. Attackers cannot use known keys to
 compromise the master_secret without breaking the secure hash operations.
 
 Sessions cannot be resumed unless both the client and server agree. If either
-peer suspects that the session may have been compromised, or that certificates
+parties suspects that the session may have been compromised, or that certificates
 may have expired or been revoked, it should force a full handshake. An upper
 limit of 24 hours is suggested for session ID lifetimes, since an attacker who
-obtains a master_secret may be able to impersonate the compromised peer until
+obtains a master_secret may be able to impersonate the compromised party until
 the corresponding session ID is retired. Applications that may be run in
 relatively insecure environments should not write session IDs to stable storage.
 
@@ -3713,7 +3713,7 @@ and the message contents. The message type field is necessary to ensure that mes
 intended for one TLS record layer client are not redirected to another. The
 sequence number ensures that attempts to delete or reorder messages will be
 detected. Since sequence numbers are 64 bits long, they should never overflow.
-Messages from one peer cannot be inserted into the other's output, since they
+Messages from one party cannot be inserted into the other's output, since they
 use independent keys.
 
 ## Denial of Service
