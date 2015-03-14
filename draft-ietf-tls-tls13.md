@@ -1710,7 +1710,7 @@ does not recognize, support, or wish to use, the server MUST ignore those
 cipher suites, and process the remaining ones as usual.
 
 %%% Hello Messages
-       uint8 CipherSuite[2];    /* Cryptographi/c suite selector */
+       uint8 CipherSuite[2];    /* Cryptographic suite selector */
 
        enum { null(0), (255) } CompressionMethod;
 
