@@ -2959,7 +2959,7 @@ E, and F.
 
 This document uses several registries that were originally created in
 {{RFC4346}}. IANA has updated these to reference this document. The registries
-and their alocation policies (unchanged from {{RFC4346}}) are listed below.
+and their allocation policies (unchanged from {{RFC4346}}) are listed below.
 
 -  TLS ClientCertificateType Identifiers Registry: Future values in
   the range 0-63 (decimal) inclusive are assigned via Standards
