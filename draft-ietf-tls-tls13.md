@@ -1255,7 +1255,7 @@ connection immediately afterwards, it MUST send that alert at the fatal alert
 level.
 
 If an alert with a level of warning is sent and received, generally the
-connection can continue normally. If the receiving peer decides not to proceed
+connection can continue normally. If the receiving party decides not to proceed
 with the connection (e.g., after having received a no_renegotiation alert that
 it is not willing to accept), it SHOULD send a fatal alert to terminate the
 connection. Given this, the sending party cannot, in general, know how the
@@ -3185,7 +3185,7 @@ authentication
 certificate
 : As part of the X.509 protocol (a.k.a. ISO Authentication
   framework), certificates are assigned by a trusted Certificate
-  Authority and provide a strong binding between a parties's identity
+  Authority and provide a strong binding between a party's identity
   or some other attributes and its public key.
 
 client
@@ -3620,7 +3620,7 @@ known to the communicating parties and not to attackers. The pre_master_secret
 will be used to generate the master_secret (see
 {{computing-the-master-secret}}). The master_secret is required to generate the
 Finished messages and record protection keys (see {{server-finished}} and
-{{key-calculation}}). By sending a correct Finished message, peers thus prove
+{{key-calculation}}). By sending a correct Finished message, parties thus prove
 that they know the correct pre_master_secret.
 
 ####  Anonymous Key Exchange
@@ -3695,7 +3695,7 @@ connections. Attackers cannot use known keys to
 compromise the master_secret without breaking the secure hash operations.
 
 Sessions cannot be resumed unless both the client and server agree. If either
-parties suspects that the session may have been compromised, or that certificates
+party suspects that the session may have been compromised, or that certificates
 may have expired or been revoked, it should force a full handshake. An upper
 limit of 24 hours is suggested for session ID lifetimes, since an attacker who
 obtains a master_secret may be able to impersonate the compromised party until
