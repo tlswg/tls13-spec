@@ -2175,7 +2175,7 @@ Servers MUST NOT send this extension. TLS servers MUST support receiving this
 extension.
 
 When performing session resumption, this extension is not included in
-ServerHello, and the server ignores the extension in ClientHello (if present).
+Server Hello, and the server ignores the extension in Client Hello (if present).
 
 
 ##### Negotiated Groups
