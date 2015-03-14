@@ -1203,7 +1203,7 @@ as specified by the current connection state.
 
 The client and the server must share knowledge that the connection is ending in
 order to avoid a truncation attack. Either party may initiate the exchange of
-closing messages by sending a "close_notify" alert.  Any data received after a closure alert is ignored.
+closing messages by sending.  Any data received after a closure alert is ignored.
 
 close_notify
 : This message notifies the recipient that the sender will not send
@@ -1213,10 +1213,14 @@ close_notify
   with widespread implementation practice.
 {:br }
 
+Either party may initiate a close by sending a close_notify alert.  Any data received after a closure alert is ignored.
+
 Unless some other fatal alert has been transmitted, each party is required to
 send a close_notify alert before closing the write side of the connection. The
 other party MUST respond with a close_notify alert of its own and close down
-the connection immediately, discarding any pending writes. The initiator of the close need not wait for the responding "close_notify" alert before closing the read side of the connection.
+the connection immediately, discarding any pending writes. It is not required
+for the initiator of the close to wait for the responding close_notify alert
+before closing the read side of the connection.
 
 If the application protocol using TLS provides that any data may be carried
 over the underlying transport after the TLS connection is closed, the TLS
