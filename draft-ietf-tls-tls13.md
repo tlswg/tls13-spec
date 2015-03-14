@@ -856,7 +856,7 @@ record protection algorithm
   as a single primitive. It is possible to have AEAD algorithms which
   do not provide any confidentiality and
   {{record-payload-protection}} defines a special NULL_NULL AEAD
-  algorithm for only use in the initial handshake. This specification
+  algorithm for use only in the initial handshake. This specification
   includes the key size of this algorithm and the lengths of explicit
   and implicit initialization vectors (or nonces).
 
@@ -2973,7 +2973,7 @@ E, and F.
 
 This document uses several registries that were originally created in
 {{RFC4346}}. IANA has updated these to reference this document. The registries
-and their allocation policies (unchanged from {{RFC4346}}) are listed below.
+and their alocation policies (unchanged from {{RFC4346}}) are listed below.
 
 -  TLS ClientCertificateType Identifiers Registry: Future values in
   the range 0-63 (decimal) inclusive are assigned via Standards
