@@ -254,11 +254,7 @@ well. Editorial changes can be managed in GitHub, but any substantive
 change should be discussed on the TLS mailing list.
 
 The primary goal of the TLS protocol is to provide privacy and data integrity
-<<<<<<< Updated upstream
 between two communicating applications. TLS is composed of two layers:
-=======
-between two communicating peers. The protocol is composed of two layers:
->>>>>>> Stashed changes
 the TLS Record Protocol and the TLS Handshake Protocol. At the lowest level,
 layered on top of some reliable transport protocol (e.g., TCP {{RFC0793}}), is
 the TLS Record Protocol. The TLS Record Protocol provides connection security
@@ -269,23 +265,13 @@ that has two basic properties:
   this symmetric encryption are generated uniquely for each
   connection and are based on a secret negotiated by another
   protocol (such as the TLS Handshake Protocol).  The TLS Record
-<<<<<<< Updated upstream
-  Protocol can also be used without encryption, i.e., in integrity-only
-=======
   Protocol can also be used without encryption to support integrity-only
->>>>>>> Stashed changes
   modes.
 
 - The connection is reliable.  Messages include an authentication
   tag which protects them against modification.
 
-<<<<<<< Updated upstream
-- The TLS Record Protocol can operate in an insecure mode but is generally
-  only used in this mode while another protocol is using the TLS Record
-  Protocol as a transport for negotiating security parameters.
-=======
 Note: The TLS Record Protocol can operate in an insecure mode but is generally only used in this mode while another protocol is using the TLS Record Protocol as a transport for negotiating security parameters.
->>>>>>> Stashed changes
 
 The TLS Record Protocol is used for encapsulation of various higher-level
 protocols. One such encapsulated protocol, the TLS Handshake Protocol, allows
@@ -1431,7 +1417,7 @@ The TLS Handshake Protocol involves the following steps:
   occurred without tampering by an attacker.
 
 Note that higher layers should not be overly reliant on whether TLS always
-negotiates the strongest possible connection between two peers. There are a
+negotiates the strongest possible connection between two applications. There are a
 number of ways in which a man-in-the-middle attacker can attempt to make two
 entities drop down to the least secure method they support (i.e., perform a downgrade attack). The TLS protocol has
 been designed to minimize this risk, but there are still attacks available: for
