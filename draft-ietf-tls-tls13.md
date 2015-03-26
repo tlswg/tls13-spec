@@ -1398,7 +1398,7 @@ no_renegotiation
   message is always fatal.
 
 unsupported_extension
-: sent by clients that receive an extended server hello containing
+: Sent by clients that receive an extended server hello containing
   an extension that they did not put in the corresponding client
   hello.  This message is always fatal.
 {:br }
@@ -2010,7 +2010,7 @@ I.e., it MUST be a superset of the previous ClientKeyShareOffer.
 
 Upon re-sending the ClientHello/ClientKeyShare and receiving the
 server's ServerHello/ServerKeyShare, the client MUST verify that
-the selected ciphersuite and NamedGroup match that supplied in
+the selected CipherSuite and NamedGroup match that supplied in
 the HelloRetryRequest.
 
 
@@ -2582,8 +2582,8 @@ client authentication.
 When this message will be sent:
 
 > This message is used to provide explicit proof that the server
-possesses the private key corresponding to its certificate.
-certificate and also provides integrity for the handshake up
+possesses the private key corresponding to its certificate
+and also provides integrity for the handshake up
 to this point. This message is only sent when the server is
 authenticated via a certificate. When sent, it MUST be the
 last server handshake message prior to the Finished.
@@ -2655,7 +2655,7 @@ correct. Once a side has sent its Finished message and received and
 validated the Finished message from its peer, it may begin to send and
 receive application data over the connection. This data will be
 protected under keys derived from the hs_master_secret (see
-{{cryptographic-computations}}.
+{{cryptographic-computations}}).
 
 Structure of this message:
 
