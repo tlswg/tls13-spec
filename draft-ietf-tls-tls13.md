@@ -1367,7 +1367,7 @@ export_restriction_RESERVED
   be sent by compliant implementations.
 
 protocol_version
-: The protocol version the client has attempted to negotiate is
+: The protocol version the peer has attempted to negotiate is
   recognized but not supported.  (For example, old protocol versions
   might be avoided for security reasons.)  This message is always
   fatal.
