@@ -1178,30 +1178,30 @@ as specified by the current connection state.
 
        enum {
            close_notify(0),
-           unexpected_message(10),
-           bad_record_mac(20),
+           unexpected_message(10),              /* fatal */
+           bad_record_mac(20),                  /* fatal */
            decryption_failed_RESERVED(21),
-           record_overflow(22),
+           record_overflow(22),                 /* fatal */
            decompression_failure_RESERVED(30),
-           handshake_failure(40),
+           handshake_failure(40),               /* fatal */
            no_certificate_RESERVED(41),
            bad_certificate(42),
            unsupported_certificate(43),
            certificate_revoked(44),
            certificate_expired(45),
            certificate_unknown(46),
-           illegal_parameter(47),
-           unknown_ca(48),
-           access_denied(49),
-           decode_error(50),
-           decrypt_error(51),
+           illegal_parameter(47),               /* fatal */
+           unknown_ca(48),                      /* fatal */
+           access_denied(49),                   /* fatal */
+           decode_error(50),                    /* fatal */
+           decrypt_error(51),                   /* fatal */
            export_restriction_RESERVED(60),
-           protocol_version(70),
-           insufficient_security(71),
-           internal_error(80),
+           protocol_version(70),                /* fatal */
+           insufficient_security(71),           /* fatal */
+           internal_error(80),                  /* fatal */
            user_canceled(90),
-           no_renegotiation(100),
-           unsupported_extension(110),
+           no_renegotiation(100),               /* fatal */
+           unsupported_extension(110),          /* fatal */
            (255)
        } AlertDescription;
 
@@ -1311,7 +1311,8 @@ decompression_failure
 handshake_failure
 : Reception of a handshake_failure alert message indicates that the
   sender was unable to negotiate an acceptable set of security
-  parameters given the options available.  This is a fatal error.
+  parameters given the options available.
+  This message is always fatal.
 
 no_certificate_RESERVED
 : This alert was used in SSLv3 but not any version of TLS.  It MUST
