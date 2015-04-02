@@ -115,6 +115,7 @@ informative:
   RFC5705:
   RFC6066:
   RFC6176:
+  RFC7465:
   I-D.ietf-tls-negotiated-ff-dhe:
   I-D.ietf-tls-session-hash:
   I-D.ietf-tls-sslv3-diediedie:
@@ -304,11 +305,19 @@ document are to be interpreted as described in RFC 2119 {{RFC2119}}.
 
 ##  Major Differences from TLS 1.2
 
+draft-06
+
+- Prohibit RC4 negotiation for backwards compatibility.
+
+- Freeze & deprecate record layer version field.
+
+
 draft-05
 
 - Prohibit SSL negotiation for backwards compatibility.
 
 - Fix which MS is used for exporters.
+
 
 draft-04
 
@@ -945,8 +954,6 @@ message MAY be fragmented across several records).
            uint8 minor;
        } ProtocolVersion;
 
-       ProtocolVersion version = { 3, 4 };     /* TLS v1.3*/
-
        enum {
            reserved(20), alert(21), handshake(22),
            application_data(23), (255)
@@ -954,7 +961,7 @@ message MAY be fragmented across several records).
 
        struct {
            ContentType type;
-           ProtocolVersion version;
+           ProtocolVersion record_version = { 3, 1 };    /* TLS v1.x */
            uint16 length;
            opaque fragment[TLSPlaintext.length];
        } TLSPlaintext;
@@ -962,15 +969,10 @@ message MAY be fragmented across several records).
 type
 : The higher-level protocol used to process the enclosed fragment.
 
-version
-: The version of the protocol being employed.  This document
-  describes TLS Version 1.3, which uses the version { 3, 4 }.  The
-  version value 3.4 is historical, deriving from the use of {3, 1}
-  for TLS 1.0.  (See {{record-layer-1}}.)  Note that a client that
-  supports multiple versions of TLS may not know what version will
-  be employed before it receives the ServerHello.  See
-  {{backward-compatibility}} for discussion about what record layer
-  version number should be employed for ClientHello.
+record_version
+: The protocol version the current record is compatible with.
+  This value MUST be set to { 3, 1 } for all records.
+  This field is deprecated and MUST be ignored for all purposes.
 
 length
 : The length (in bytes) of the following TLSPlaintext.fragment.  The
@@ -981,6 +983,13 @@ fragment
   independent block to be dealt with by the higher-level protocol
   specified by the type field.
 {:br }
+
+This document describes TLS Version 1.3, which uses the version { 3, 4 }.
+The version value 3.4 is historical, deriving from the use of { 3, 1 }
+for TLS 1.0 and { 3, 0 } for SSL 3.0. In order to maximize backwards
+compatibility, the record layer version identifies as simply TLS 1.0.
+Endpoints supporting other versions negotiate the version to use
+by following the procedure and requirements in {{backward-compatibility}}.
 
 Implementations MUST NOT send zero-length fragments of Handshake or Alert
 types. Zero-length fragments of Application data MAY
@@ -1004,7 +1013,7 @@ of {{RFC5116}}. The key is either the client_write_key or the server_write_key.
 %%% Record Layer
        struct {
            ContentType type;
-           ProtocolVersion version;
+           ProtocolVersion record_version = { 3, 1 };    /* TLS v1.x */
            uint16 length;
            opaque nonce_explicit[SecurityParameters.record_iv_length];
            aead-ciphered struct {
@@ -1015,8 +1024,8 @@ of {{RFC5116}}. The key is either the client_write_key or the server_write_key.
 type
 : The type field is identical to TLSPlaintext.type.
 
-version
-: The version field is identical to TLSPlaintext.version.
+record_version
+: The record_version field is identical to TLSPlaintext.record_version and is always { 3, 1 }.
 
 length
 : The length (in bytes) of the following TLSCiphertext.fragment.
@@ -1041,7 +1050,7 @@ The additional authenticated data, which we denote as additional_data, is
 defined as follows:
 
        additional_data = seq_num + TLSPlaintext.type +
-                         TLSPlaintext.version
+                         TLSPlaintext.record_version
 
 where "+" denotes concatenation.
 
@@ -1716,7 +1725,7 @@ cipher suites, and process the remaining ones as usual.
        enum { null(0), (255) } CompressionMethod;
 
        struct {
-           ProtocolVersion client_version;
+           ProtocolVersion client_version = { 3, 4 };    /* TLS v1.3 */
            Random random;
            SessionID session_id;
            CipherSuite cipher_suites<2..2^16-2>;
@@ -1740,8 +1749,8 @@ client_version
 : The version of the TLS protocol by which the client wishes to
   communicate during this session.  This SHOULD be the latest
   (highest valued) version supported by the client.  For this
-  version of the specification, the version will be 3.4 (see
-  {{backward-compatibility}} for details about backward compatibility).
+  version of the specification, the version will be 3.4. (See
+  {{backward-compatibility}} for details about backward compatibility.)
 
 random
 : A client-generated random structure.
@@ -1920,7 +1929,7 @@ bytes following the cipher_suite field at the end of the ServerHello.
 server_version
 : This field will contain the lower of that suggested by the client
   in the client hello and the highest supported by the server.  For
-  this version of the specification, the version is 3.4.  (See
+  this version of the specification, the version is 3.4. (See
   {{backward-compatibility}} for details about backward compatibility.)
 
 random
@@ -3379,7 +3388,12 @@ TLS protocol issues:
   handshake messages can be large enough to require fragmentation.
 
 -  Do you ignore the TLS record layer version number in all TLS
-  records before ServerHello (see {{compatibility}})?
+  records? (see {{backward-compatibility}})
+  
+-  Have you ensured that all support for SSL, RC4, and EXPORT ciphers
+  is completely removed from all possible configurations that support
+  TLS 1.3 or later, and that attempts to use these obsolete capabilities
+  fail correctly? (see {{backward-compatibility}})
 
 -  Do you handle TLS extensions in ClientHello correctly, including
   omitting the extensions field completely?
@@ -3409,30 +3423,35 @@ Cryptographic details:
   generator (see {{random-number-generation-and-seeding}}) Diffie-Hellman private values, the
   DSA "k" parameter, and other security-critical values?
 
-# Backward Compatibility
+# Backward Compatibility {#backward-compatibility}
 
-## Compatibility with prior versions {#compatibility}
+The TLS protocol provides a built-in mechanism for version negotiation between
+endpoints potentially supporting different versions of TLS.
 
-[[TODO: Revise backward compatibility section for TLS 1.3.
-https://github.com/tlswg/tls13-spec/issues/54]]
-Since there are various versions of TLS (1.0, 1.1, 1.2, 1.3, and any future
-versions) and SSL (2.0 and 3.0), means are needed to negotiate the specific
-protocol version to use. The TLS protocol provides a built-in mechanism for
-version negotiation so as not to bother other protocol components with the
-complexities of version selection.
+TLS 1.x and SSL 3.0 use compatible ClientHello messages. Servers can also handle
+clients trying to use future versions of TLS as long as the ClientHello format
+remains compatible and the client supports the highest protocol version available
+in the server.
 
-TLS versions 1.0, 1.1, and 1.2, and SSL 3.0 are very similar, and use
-compatible ClientHello messages; thus, supporting all of them is relatively
-easy. Similarly, servers can easily handle clients trying to use future
-versions of TLS as long as the ClientHello format remains compatible, and the
-client supports the highest protocol version available in the server.
+Prior versions of TLS used the record layer version number for various
+purposes. (TLSPlaintext.record_version & TLSCiphertext.record_version)
+As of TLS 1.3, this field is deprecated and its value MUST be ignored by all
+implementations. Version negotiation is performed using only the handshake versions.
+(ClientHello.client_version & ServerHello.server_version)
+In order to maximize interoperability with older endpoints, implementations
+that negotiate the usage of TLS 1.0-1.2 SHOULD set the record layer
+version number to the negotiated version for the ServerHello and all
+records thereafter.
+
+## Negotiating with an older server
 
 A TLS 1.3 client who wishes to negotiate with such older servers will send a
-normal TLS 1.3 ClientHello, containing { 3, 4 } (TLS 1.3) in
-ClientHello.client_version. If the server does not support this version, it
+normal TLS 1.3 ClientHello containing { 3, 4 } (TLS 1.3) in
+ClientHello.client_version. If the server does not support this version it
 will respond with a ServerHello containing an older version number. If the
 client agrees to use this version, the negotiation will proceed as appropriate
-for the negotiated protocol.
+for the negotiated protocol. A client resuming a session SHOULD initiate the
+connection using the version that was previously negotiated.
 
 If the version chosen by the server is not supported by the client (or not
 acceptable), the client MUST send a "protocol_version" alert message and close
@@ -3442,41 +3461,42 @@ If a TLS server receives a ClientHello containing a version number greater than
 the highest version supported by the server, it MUST reply according to the
 highest version supported by the server.
 
+Some legacy server implementations are known to not implement the TLS
+specification properly and might abort connections upon encountering
+TLS extensions or versions which it is not aware of. Interoperability
+with buggy servers is a complex topic beyond the scope of this document.
+Multiple connection attempts may be required in order to negotiate
+a backwards compatible connection, however this practice is vulnerable
+to downgrade attacks and is NOT RECOMMENDED.
+
+## Negotiating with an older client
+
 A TLS server can also receive a ClientHello containing a version number smaller
 than the highest supported version. If the server wishes to negotiate with old
 clients, it will proceed as appropriate for the highest version supported by
 the server that is not greater than ClientHello.client_version. For example, if
 the server supports TLS 1.0, 1.1, and 1.2, and client_version is TLS 1.0, the
-server will proceed with a TLS 1.0 ServerHello. If server supports (or is
-willing to use) only versions greater than client_version, it MUST send a
-"protocol_version" alert message and close the connection.
+server will proceed with a TLS 1.0 ServerHello. If the server only supports
+versions greater than client_version, it MUST send a "protocol_version"
+alert message and close the connection.
 
-Whenever a client already knows the highest protocol version known to a server
-(for example, when resuming a session), it SHOULD initiate the connection in
-that native protocol.
+Note that earlier versions of TLS did not clearly specify the record layer
+version number value in all cases (TLSPlaintext.record_version). Servers
+will receive various TLS 1.x versions in this field, however its value
+MUST always be ignored.
 
-Note: some server implementations are known to implement version negotiation
-incorrectly. For example, there are buggy TLS 1.0 servers that simply close the
-connection when the client offers a version newer than TLS 1.0. Also, it is
-known that some servers will refuse the connection if any TLS extensions are
-included in ClientHello. Interoperability with such buggy servers is a complex
-topic beyond the scope of this document, and may require multiple connection
-attempts by the client.
+## Backwards Compatibility Security Restrictions
 
-Earlier versions of the TLS specification were not fully clear on what the
-record layer version number (TLSPlaintext.version) should contain when sending
-ClientHello (i.e., before it is known which version of the protocol will be
-employed). Thus, TLS servers compliant with this specification MUST accept any
-value {03,XX} as the record layer version number for ClientHello.
+If an implementation negotiates usage of TLS 1.2, then negotiation of cipher
+suites also supported by TLS 1.3 SHOULD be preferred, if available.
 
-TLS clients that wish to negotiate with older servers MAY send any value
-{03,XX} as the record layer version number. Typical values would be {03,00},
-the lowest version number supported by the client, and the value of
-ClientHello.client_version. No single value will guarantee interoperability
-with all old servers, but this is a complex topic beyond the scope of this
-document.
+The security of RC4 cipher suites is considered insufficient for the reasons
+cited in [RFC7465]. Implementations MUST NOT offer or negotiate RC4 cipher suites
+for any version of TLS for any reason.
 
-## Compatibility with SSL
+Old versions of TLS permitted the usage of very low strength ciphers.
+Ciphers with a strength less than 112 bits MUST NOT be offered or
+negotiated for any version of TLS for any reason.
 
 The security of SSL 2.0 {{SSL2}} is considered insufficient for the reasons enumerated
 in [RFC6176], and MUST NOT be negotiated for any reason.
