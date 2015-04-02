@@ -805,7 +805,7 @@ Registry as described in {{iana-considerations}}.
 
 Implementations MUST NOT send record types not defined in this document unless
 negotiated by some extension. If a TLS implementation receives an unexpected
-record type, it MUST send an unexpected_message alert.
+record type, it MUST send an "unexpected_message" alert.
 
 Any protocol designed for use over TLS must be carefully designed to deal with
 all possible attacks against it. As a practical matter, this means that the
@@ -1082,7 +1082,7 @@ separate integrity check. That is:
                                             AEADEncrypted,
                                             additional_data)
 
-If the decryption fails, a fatal bad_record_mac alert MUST be generated.
+If the decryption fails, a fatal "bad_record_mac" alert MUST be generated.
 
 As a special case, we define the NULL_NULL AEAD cipher which is simply
 the identity operation and thus provides no security. This cipher
@@ -1224,23 +1224,23 @@ close_notify
   with widespread implementation practice.
 {:br }
 
-Either party MAY initiate a close by sending a close_notify alert. Any data
+Either party MAY initiate a close by sending a "close_notify" alert. Any data
 received after a closure alert is ignored.
 
 Unless some other fatal alert has been transmitted, each party is required to
-send a close_notify alert before closing the write side of the connection. The
-other party MUST respond with a close_notify alert of its own and close down
+send a "close_notify" alert before closing the write side of the connection. The
+other party MUST respond with a "close_notify" alert of its own and close down
 the connection immediately, discarding any pending writes. It is not required
-for the initiator of the close to wait for the responding close_notify alert
+for the initiator of the close to wait for the responding "close_notify" alert
 before closing the read side of the connection.
 
 If the application protocol using TLS provides that any data may be carried
 over the underlying transport after the TLS connection is closed, the TLS
-implementation must receive the responding close_notify alert before indicating
+implementation must receive the responding "close_notify" alert before indicating
 to the application layer that the TLS connection has ended. If the application
 protocol will not transfer any additional data, but will only close the
 underlying transport connection, then the implementation MAY choose to close
-the transport without waiting for the responding close_notify. No part of this
+the transport without waiting for the responding "close_notify". No part of this
 standard should be taken to dictate the manner in which a usage profile for TLS
 manages its data transport, including when connections are opened or closed.
 
@@ -1266,14 +1266,14 @@ level.
 
 If an alert with a level of warning is sent and received, generally the
 connection can continue normally. If the receiving party decides not to proceed
-with the connection (e.g., after having received a no_renegotiation alert that
+with the connection (e.g., after having received a "no_renegotiation" alert that
 it is not willing to accept), it SHOULD send a fatal alert to terminate the
 connection. Given this, the sending party cannot, in general, know how the
 receiving party will behave. Therefore, warning alerts are not very useful when
 the sending party wants to continue the connection, and thus are sometimes
 omitted. For example, if a peer decides to accept an expired certificate
 (perhaps after confirming this with the user) and wants to continue the
-connection, it would not generally send a certificate_expired alert.
+connection, it would not generally send a "certificate_expired" alert.
 
 The following error alerts are defined:
 
@@ -1309,7 +1309,7 @@ decompression_failure
   alert when in TLS 1.3 mode.
 
 handshake_failure
-: Reception of a handshake_failure alert message indicates that the
+: Reception of a "handshake_failure" alert message indicates that the
   sender was unable to negotiate an acceptable set of security
   parameters given the options available.
   This message is always fatal.
@@ -1373,7 +1373,7 @@ protocol_version
   fatal.
 
 insufficient_security
-: Returned instead of handshake_failure when a negotiation has
+: Returned instead of "handshake_failure" when a negotiation has
   failed specifically because the server requires ciphers more
   secure than those supported by the client.  This message is always
   fatal.
@@ -1387,8 +1387,8 @@ user_canceled
 : This handshake is being canceled for some reason unrelated to a
   protocol failure.  If the user cancels an operation after the
   handshake is complete, just closing the connection by sending a
-  close_notify is more appropriate.  This alert should be followed
-  by a close_notify.  This message is generally a warning.
+  "close_notify" is more appropriate.  This alert should be followed
+  by a "close_notify".  This message is generally a warning.
 
 no_renegotiation
 : Sent by the client in response to a hello request or by the server
@@ -1667,7 +1667,7 @@ ServerHello that selects cryptographic parameters that don't match the
 client's ClientKeyShare. In that case, the client MUST send the same
 ClientHello (without modification) along with the new ClientKeyShare.
 If a server receives a ClientHello at any other time, it MUST send
-a fatal no_renegotiation alert.
+a fatal "no_renegotiation" alert.
 
 Structure of this message:
 
@@ -1715,7 +1715,7 @@ message, contains the combinations of cryptographic algorithms supported by the
 client in order of the client's preference (favorite choice first). Each cipher
 suite defines a key exchange algorithm, a record protection algorithm (including
 secret key length) and a PRF. The server will select a cipher
-suite or, if no acceptable choices are presented, return a handshake failure
+suite or, if no acceptable choices are presented, return a "handshake_failure"
 alert and close the connection. If the list contains cipher suites the server
 does not recognize, support, or wish to use, the server MUST ignore those
 cipher suites, and process the remaining ones as usual.
@@ -1906,7 +1906,7 @@ When this message will be sent:
 > The server will send this message in response to a ClientHello message when
 it was able to find an acceptable set of algorithms and the client's
 ClientKeyShare message was acceptable. If the client proposed groups are not
-acceptable by the server, it will respond with an insufficient_security fatal alert.
+acceptable by the server, it will respond with an "insufficient_security" fatal alert.
 
 Structure of this message:
 
@@ -1979,7 +1979,7 @@ When this message will be sent:
 message when it was able to find an acceptable set of algorithms but
 the client's ClientKeyShare message did not contain an acceptable
 offer.  If it cannot find such a match, it will respond with a
-handshake failure alert.
+"handshake_failure" alert.
 
 Structure of this message:
 
@@ -2042,7 +2042,7 @@ The list of extension types is maintained by IANA as described in
 An extension type MUST NOT appear in the ServerHello unless the same extension
 type appeared in the corresponding ClientHello. If a client receives an
 extension type in ServerHello that it did not request in the associated
-ClientHello, it MUST abort the handshake with an unsupported_extension fatal
+ClientHello, it MUST abort the handshake with an "unsupported_extension" fatal
 alert.
 
 Nonetheless, "server-oriented" extensions may be provided in the future within
@@ -2572,7 +2572,7 @@ New ClientCertificateType values are assigned by IANA as described in
 
 Note: Values listed as RESERVED may not be used. They were used in SSLv3.
 
-Note: It is a fatal handshake_failure alert for an anonymous server to request
+Note: It is a fatal "handshake_failure" alert for an anonymous server to request
 client authentication.
 
 
@@ -2721,7 +2721,7 @@ certificate. If no suitable certificate is available, the client MUST send a
 certificate message containing no certificates. That is, the certificate_list
 structure has a length of zero. If the client does not send any certificates,
 the server MAY at its discretion either continue the handshake without client
-authentication, or respond with a fatal handshake_failure alert. Also, if some
+authentication, or respond with a fatal "handshake_failure" alert. Also, if some
 aspect of the certificate chain was unacceptable (e.g., it was not signed by a
 known, trusted CA), the server MAY at its discretion either continue the
 handshake (considering the client unauthenticated) or send a fatal alert.
