@@ -1303,7 +1303,7 @@ record_overflow
   implementations (except when messages were corrupted in the
   network).
 
-decompression_failure
+decompression_failure_RESERVED
 : This alert was used in previous versions of TLS. TLS 1.3 does not
   include compression and TLS 1.3 implementations MUST NOT send this
   alert when in TLS 1.3 mode.
