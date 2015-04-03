@@ -1384,7 +1384,7 @@ user_canceled
   by a close_notify.  This message is generally a warning.
 
 no_renegotiation
-  Sent by the client in response to a ServerHello or by the server
+  Sent by the client in response to a HelloRequest or by the server
   in response to a ClientHello after initial handshaking. Versions
   of TLS prior to TLS 1.3 supported renegotiation of a previously
   established connection; TLS 1.3 removes this feature. This
