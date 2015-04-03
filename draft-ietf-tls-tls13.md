@@ -1180,11 +1180,11 @@ as specified by the current connection state.
            close_notify(0),
            unexpected_message(10),              /* fatal */
            bad_record_mac(20),                  /* fatal */
-           decryption_failed_RESERVED(21),
+           decryption_failed_RESERVED(21),      /* fatal */
            record_overflow(22),                 /* fatal */
-           decompression_failure_RESERVED(30),
+           decompression_failure_RESERVED(30),  /* fatal */
            handshake_failure(40),               /* fatal */
-           no_certificate_RESERVED(41),
+           no_certificate_RESERVED(41),         /* fatal */
            bad_certificate(42),
            unsupported_certificate(43),
            certificate_revoked(44),
@@ -1195,7 +1195,7 @@ as specified by the current connection state.
            access_denied(49),                   /* fatal */
            decode_error(50),                    /* fatal */
            decrypt_error(51),                   /* fatal */
-           export_restriction_RESERVED(60),
+           export_restriction_RESERVED(60),     /* fatal */
            protocol_version(70),                /* fatal */
            insufficient_security(71),           /* fatal */
            internal_error(80),                  /* fatal */
@@ -1293,7 +1293,7 @@ bad_record_mac
 decryption_failed_RESERVED
 : This alert was used in some earlier versions of TLS, and may have
   permitted certain attacks against the CBC mode {{CBCATT}}.  It MUST
-  NOT be sent by compliant implementations.
+  NOT be sent by compliant implementations. This message is always fatal.
 
 record_overflow
 : A TLSCiphertext record was received that had a length more than
@@ -1306,7 +1306,7 @@ record_overflow
 decompression_failure_RESERVED
 : This alert was used in previous versions of TLS. TLS 1.3 does not
   include compression and TLS 1.3 implementations MUST NOT send this
-  alert when in TLS 1.3 mode.
+  alert when in TLS 1.3 mode. This message is always fatal.
 
 handshake_failure
 : Reception of a "handshake_failure" alert message indicates that the
@@ -1317,6 +1317,7 @@ handshake_failure
 no_certificate_RESERVED
 : This alert was used in SSLv3 but not any version of TLS.  It MUST
   NOT be sent by compliant implementations.
+  This message is always fatal.
 
 bad_certificate
 : A certificate was corrupt, contained signatures that did not
@@ -1363,8 +1364,8 @@ decrypt_error
   This message is always fatal.
 
 export_restriction_RESERVED
-: This alert was used in some earlier versions of TLS.  It MUST NOT
-  be sent by compliant implementations.
+: This alert was used in some earlier versions of TLS. It MUST NOT
+  be sent by compliant implementations. This message is always fatal.
 
 protocol_version
 : The protocol version the client has attempted to negotiate is
