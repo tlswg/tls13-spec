@@ -3623,7 +3623,7 @@ repair the Finished messages, so the attack will be discovered.
 When a connection is established by resuming a session, new ClientHello.random
 and ServerHello.random values are hashed with the session's master_secret.
 Provided that the master_secret has not been compromised and that the secure
-hash operations used to produce the record protection kayes are secure,
+hash operations used to produce the record protection keys are secure,
 the connection should be secure and effectively independent from previous
 connections. Attackers cannot use known keys to
 compromise the master_secret without breaking the secure hash operations.
