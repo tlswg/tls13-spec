@@ -3694,21 +3694,23 @@ Archives of the list can be found at:
 
 # Contributors
 
-    Christopher Allen (co-editor of TLS 1.0)
-    Alacrity Ventures
-    ChristopherA@AlacrityManagement.com
-
     Martin Abadi
     University of California, Santa Cruz
     abadi@cs.ucsc.edu
 
-    Karthikeyan Bhargavan (co-author of [I-D.ietf-tls-session-hash])
-    INRIA
-    karthikeyan.bhargavan@inria.fr
+    Christopher Allen (co-editor of TLS 1.0)
+    Alacrity Ventures
+    ChristopherA@AlacrityManagement.com
 
     Steven M. Bellovin
     Columbia University
     smb@cs.columbia.edu
+
+    Benjamin Beurdouche
+
+    Karthikeyan Bhargavan (co-author of [I-D.ietf-tls-session-hash])
+    INRIA
+    karthikeyan.bhargavan@inria.fr
 
     Simon Blake-Wilson (co-author of RFC4492)
     BCI
@@ -3735,12 +3737,12 @@ Archives of the list can be found at:
     tim@dierks.org
 
     Taher Elgamal
-    taher@securify.com
     Securify
+    taher@securify.com
 
     Pasi Eronen
-    pasi.eronen@nokia.com
     Nokia
+    pasi.eronen@nokia.com
 
     Anil Gangolli
     anil@busybuddha.org
@@ -3749,11 +3751,11 @@ Archives of the list can be found at:
     Sun Microsystems Laboratories
     vipul.gupta@sun.com
 
-    Kipp Hickman
-
     Chris Hawk (co-author of RFC4492)
     Corriente Networks LLC
     chris@corriente.net
+
+    Kipp Hickman
 
     Alfred Hoenes
 
@@ -3774,12 +3776,12 @@ Archives of the list can be found at:
     Hugo Krawczyk
     IBM
     hugo@ee.technion.ac.il
-    
+
     Adam Langley (co-author of [I-D.ietf-tls-session-hash])
     Google
     agl@google.com
 
-    Ilari Liusvaara 
+    Ilari Liusvaara
     ilari.liusvaara@elisanet.fi
 
     Jan Mikkelsen
@@ -3801,7 +3803,7 @@ Archives of the list can be found at:
     Marsh Ray (co-author of [I-D.ietf-tls-session-hash])
     Microsoft
     maray@microsoft.com
-    
+
     Robert Relyea
     Netscape Communications
     relyea@netscape.com
