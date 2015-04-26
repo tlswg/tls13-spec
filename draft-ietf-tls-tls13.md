@@ -3706,6 +3706,8 @@ Archives of the list can be found at:
     Columbia University
     smb@cs.columbia.edu
 
+    Benjamin Beurdouche
+
     Karthikeyan Bhargavan (co-author of [I-D.ietf-tls-session-hash])
     INRIA
     karthikeyan.bhargavan@inria.fr
