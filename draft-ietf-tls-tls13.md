@@ -3053,8 +3053,7 @@ This section describes protocol types and constants.
 
 The following values define the cipher suite codes used in the ClientHello and
 ServerHello messages.
-
-A cipher suite defines a cipher specification supported in TLS Version 1.2.
+A cipher suite defines a cipher specification supported in TLS.
 
 TLS_NULL_WITH_NULL_NULL is specified and is the initial state of a TLS
 connection during the first handshake on that channel, but MUST NOT be
