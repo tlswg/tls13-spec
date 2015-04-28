@@ -1413,15 +1413,12 @@ Note that higher layers should not be overly reliant on whether TLS always
 negotiates the strongest possible connection between two peers. There are a
 number of ways in which a man-in-the-middle attacker can attempt to make two
 entities drop down to the least secure method they support. The protocol has
-been designed to minimize this risk, but there are still attacks available: for
-example, an attacker could block access to the port a secure service runs on,
+been designed to minimize this risk, but there are still attacks available. For
+example, an attacker could block access to the port a secure service runs on
 or attempt to get the peers to negotiate an unauthenticated connection. The
 fundamental rule is that higher levels must be cognizant of what their security
 requirements are and never transmit information over a channel less secure than
-what they require. The TLS protocol is secure in that any cipher suite offers
-its promised level of security: if you negotiate AES-GCM {{GCM}} with
-a 1024-bit DHE key exchange with a host whose certificate you have
-verified, you can expect to be that secure.
+what they require.
 
 These goals are achieved by the handshake protocol, which can be
 summarized as follows: The client sends a ClientHello message which
