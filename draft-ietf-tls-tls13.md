@@ -37,6 +37,7 @@ normative:
   RFC3447:
   RFC3280:
   RFC5288:
+  RFC5289:
   AES:
        title: Specification for the Advanced Encryption Standard (AES)
        date: 2001-11-26
@@ -3061,7 +3062,7 @@ negotiated, as it provides no more protection than an unsecured connection.
 
        CipherSuite TLS_NULL_WITH_NULL_NULL             = { 0x00,0x00 };
 
-The following cipher suite definitions, defined in {{RFC5288}, are
+The following cipher suite definitions, defined in {{RFC5288}}, are
 used for server-authenticated (and optionally client-authenticated)
 Diffie-Hellman. DHE denotes ephemeral Diffie-Hellman,
 where the Diffie-Hellman parameters are signed by a signature-capable
@@ -3075,7 +3076,7 @@ certificate from the client for client authentication.
       CipherSuite TLS_DHE_DSS_WITH_AES_128_GCM_SHA256 = {0x00,0xA2}
       CipherSuite TLS_DHE_DSS_WITH_AES_256_GCM_SHA384 = {0x00,0xA3}
 
-The following cipher suite definitions, defined in {{RFC5289}, are
+The following cipher suite definitions, defined in {{RFC5289}}, are
 used for server-authenticated (and optionally client-authenticated)
 Elliptic Curve Diffie-Hellman. ECDHE denotes ephemeral Diffie-Hellman,
 where the Diffie-Hellman parameters are signed by a signature-capable
