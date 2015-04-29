@@ -44,13 +44,6 @@ normative:
          org: National Institute of Standards and Technology
        seriesinfo:
          NIST: FIPS 197
-  TRIPLEDES:
-       title: Recommendation for the Triple Data Encryption Algorithm (TDEA) Block Cipher
-       date: 2004-05
-       author:
-         org: National Institute of Standards and Technology
-       seriesinfo:
-         NIST: Special Publication 800-67
   DSS:
        title: Digital Signature Standard
        date: 2000
@@ -58,7 +51,6 @@ normative:
          org: National Institute of Standards and Technology, U.S. Department of Commerce
        seriesinfo:
          NIST: FIPS PUB 186-2
-
   SCH:
        title: "Applied Cryptography: Protocols, Algorithms, and Source Code in C, 2nd ed."
        date: 1996
@@ -130,11 +122,6 @@ informative:
        title: "NIST Special Publication 800-38C: The CCM Mode for Authentication and Confidentiality"
        target: http://csrc.nist.gov/publications/nistpubs/800-38C/SP800-38C.pdf
        date: 2004-05
-  DES:
-       title: "Data Encryption Standard (DES)"
-       seriesinfo:
-         NIST: FIPS PUB 46-3
-       date: 1999-10
   DSS-3:
        title: "Digital Signature Standard"
        seriesinfo:
