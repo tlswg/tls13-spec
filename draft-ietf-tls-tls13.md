@@ -123,7 +123,7 @@ informative:
 
   CBCATT:
        title: "Security of CBC Ciphersuites in SSL/TLS: Problems and Countermeasures"
-       target: http://www.openssl.org/~bodo/tls-cbc.txt
+       target: https://www.openssl.org/~bodo/tls-cbc.txt
        author:
          - ins: B. Moeller
        date: 2004-05-20
@@ -3688,7 +3688,7 @@ address <tls@ietf.org>. Information on the group and information on how to
 subscribe to the list is at <https://www1.ietf.org/mailman/listinfo/tls>
 
 Archives of the list can be found at:
-<http://www.ietf.org/mail-archive/web/tls/current/index.html>
+<https://www.ietf.org/mail-archive/web/tls/current/index.html>
 
 
 
