@@ -752,7 +752,7 @@ produces an output of arbitrary length.
 
 In this section, we define one PRF, based on HMAC {{RFC2104}}. This PRF with the SHA-256
 hash function is used for all cipher suites defined in this document and in TLS
-documents published prior to this document when TLS 1.2 is negotiated. New
+documents published prior to this document when TLS 1.2 or later is negotiated. New
 cipher suites MUST explicitly specify a PRF and, in general, SHOULD use the TLS
 PRF with SHA-256 or a stronger standard hash function.
 
@@ -3095,7 +3095,7 @@ The following ciphers, defined in {{RFC5288}},
 are used for completely anonymous Diffie-Hellman
 communications in which neither party is authenticated. Note that this mode is
 vulnerable to man-in-the-middle attacks. Using this mode therefore is of
-limited use: These cipher suites MUST NOT be used by TLS 1.2 implementations
+limited use: These cipher suites MUST NOT be used by TLS implementations
 unless the application layer has specifically requested to allow anonymous key
 exchange. (Anonymous key exchange may sometimes be acceptable, for example, to
 support opportunistic encryption when no set-up for authentication is in place,
