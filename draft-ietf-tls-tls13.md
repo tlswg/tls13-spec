@@ -2649,15 +2649,24 @@ Structure of this message:
        } Certificate;
 
 certificate_list
-: This is a sequence (chain) of certificates.  The server's
-  certificate MUST come first in the list.  Each following
-  certificate MUST directly certify the one preceding it.  Because
-  certificate validation requires that root keys be distributed
-  independently, the self-signed certificate that specifies the root
-  certification authority (CA) MAY be omitted from the chain, under the
-  assumption that the client must already possess it in order to
-  validate it in any case.
+: This is a sequence (chain) of certificates. The sender's
+  certificate MUST come first in the list. Each following
+  certificate SHOULD directly certify one preceding it. Because
+  certificate validation requires that trust anchors be distributed
+  independently, a self-signed certificate that specifies a
+  trust anchor MAY be omitted from the chain, provided that
+  supported peers are known to possess any omitted certificates
+  they may require.
 {:br }
+
+Note: Prior to TLS 1.3, "certificate_list" ordering was required to be strict,
+however some implementations already allowed for some flexibility. For maximum
+compatibility, all implementations SHOULD be prepared to handle potentially
+extraneous certificates and arbitrary orderings from any TLS version (with
+the exception of the sender's certificate, which is expected to be first). Some
+servers are configured to send both a current and deprecated intermediate for
+transitional purposes, and others were simply configured incorrectly, but these
+cases can nonetheless can be validated properly by clients capable of doing so.
 
 The same message type and structure will be used for the client's response to a
 certificate request message. Note that a client MAY send no certificates if it
