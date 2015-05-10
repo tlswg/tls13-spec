@@ -2172,7 +2172,7 @@ as if the client had sent the value {sha1,dsa}.
 - If the negotiated key exchange algorithm is ECDHE_ECDSA,
 behave as if the client had sent value {sha1,ecdsa}.
 
-Note: this extension is not meaningful for TLS versions prior to 1.2. Clients
+Note: This extension is not meaningful for TLS versions prior to 1.2. Clients
 MUST NOT offer it if they are offering prior versions. However, even if clients
 do offer it, the rules specified in {{RFC6066}} require servers to ignore
 extensions they do not understand.
