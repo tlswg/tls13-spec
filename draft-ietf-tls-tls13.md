@@ -2084,7 +2084,6 @@ be taken into account when designing new extensions:
   forces use (or non-use) of a particular feature by manipulation of handshake
   messages. This principle should be followed regardless of whether the feature
   is believed to cause a security problem.
-
   Often the fact that the extension fields are included in the inputs to the
   Finished message hashes will be sufficient, but extreme care is needed when
   the extension changes the meaning of messages sent in the handshake phase.
