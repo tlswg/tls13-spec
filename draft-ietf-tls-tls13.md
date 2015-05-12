@@ -3336,10 +3336,10 @@ Users should be able to view information about the certificate and root CA.
 TLS supports a range of key sizes and security levels, including some that
 provide no or minimal security. A proper implementation will probably not
 support many cipher suites. For instance, anonymous Diffie-Hellman is strongly
-discouraged because it cannot prevent man- in-the-middle attacks. Applications
+discouraged because it cannot prevent man-in-the-middle attacks. Applications
 should also enforce minimum and maximum key sizes. For example, certificate
-chains containing 512- bit RSA keys or signatures are not appropriate for
-high-security applications.
+chains containing keys or signatures weaker than 2048-bit RSA are not appropriate
+for secure applications.
 
 ## Implementation Pitfalls
 
