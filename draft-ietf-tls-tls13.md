@@ -1503,7 +1503,7 @@ certificate.  Finally, the client sends the Finished message.
 At this point, the handshake is complete, and the
 client and server may exchange application layer data, which is
 protected using a new set of keys derived from both the premaster
-secret and the handshake transcript (see {{I-D.ietf-tls-session-hash}}
+secret and the handshake transcript (See {{I-D.ietf-tls-session-hash}}
 for the security rationale for this.)
 
 Application data MUST NOT be sent prior to the Finished message.
@@ -2877,7 +2877,7 @@ remainder of the session.  It is also used with TLS Exporters {{RFC5705}}.
 
 If the server does not request client authentication, the master
 secret can be computed at the time that the server sends its Finished,
-thus allowing the server to send traffic on its first flight (see
+thus allowing the server to send traffic on its first flight (See
 [TODO] for security considerations on this practice.)  If the server
 requests client authentication, this secret can be computed after the
 client's Certificate and CertificateVerify have been sent, or, if the
@@ -2953,7 +2953,7 @@ other than for computing the master secret.)
 #  Mandatory Cipher Suites
 
 In the absence of an application profile standard specifying otherwise, a
-TLS-compliant application MUST implement the cipher suite [TODO:Needs to be selected](https://github.com/tlswg/tls13-spec/issues/32). (See {{the-cipher-suite}} for the definition).
+TLS-compliant application MUST implement the cipher suite [TODO:Needs to be selected](https://github.com/tlswg/tls13-spec/issues/32). (See {{the-cipher-suite}} for the definition.)
 
 #  Application Data Protocol
 
