@@ -321,6 +321,8 @@ draft-08
  
 - Reduce maximum permitted record expansion for AEAD from 2048 to 256 octets.
 
+- Relax certificate_list ordering requirement to match current practice.
+
 
 draft-07
 
@@ -3704,6 +3706,10 @@ that negotiate the use of TLS 1.0-1.2 SHOULD set the record layer
 version number to the negotiated version for the ServerHello and all
 records thereafter.
 
+For maximum compatibility with previously non-standard behavior and misconfigured
+deployments, all implementations SHOULD support validation of certificate chains
+based on the expectations in this document, even when handling prior TLS versions'
+handshakes. (see {{server-certificate}})
 
 ## Negotiating with an older server
 
