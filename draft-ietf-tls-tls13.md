@@ -1418,7 +1418,13 @@ example, an attacker could block access to the port a secure service runs on
 or attempt to get the peers to negotiate an unauthenticated connection. The
 fundamental rule is that higher levels must be cognizant of what their security
 requirements are and never transmit information over a channel less secure than
-what they require.
+what they require. The TLS protocol is secure in that any cipher suite offers
+its promised level of security: if you negotiate AES-GCM {{GCM}} with
+a 255-bit ECDHE or 3072-bit DHE key exchange with a host whose certificate
+chain you have verified, you can expect that to be reasonably secure.
+
+[[TODO: Cite Curve25519 TLS I-D/RFC when available, or whatever other
+curve at the ~128-bit security level is decided to be TLS 1.3 MTI. ]]
 
 These goals are achieved by the handshake protocol, which can be
 summarized as follows: The client sends a ClientHello message which
