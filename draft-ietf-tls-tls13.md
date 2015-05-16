@@ -2159,12 +2159,12 @@ signature
   The values indicate anonymous signatures, RSASSA-PKCS1-v1_5
   {{RFC3447}} and DSA {{DSS}}, and ECDSA {{ECDSA}}, respectively.  The
   "anonymous" value is meaningless in this context but used in
-  {{server-key-share-message}}.  It MUST NOT appear in this extension.
+  {{server-key-share}}.  It MUST NOT appear in this extension.
 {:br }
 
 The semantics of this extension are somewhat complicated because the cipher
 suite indicates permissible signature algorithms but not hash algorithms.
-{{server-certificate}} and {{server-key-share-message}} describe the
+{{server-certificate}} and {{server-key-share}} describe the
 appropriate rules.
 
 If the client supports only the default hash and signature algorithms (listed
@@ -2352,7 +2352,7 @@ group
 
 : The named group for the key share offer.  This identifies the
 selected key exchange method from the ClientKeyShare message
-({{client-key-share-message}}), identifying which value from the
+({{client-key-share}}), identifying which value from the
 ClientKeyShareOffer the server has accepted as is responding to.
 
 key_exchange
