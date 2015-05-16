@@ -280,11 +280,13 @@ the decisions on how to initiate TLS handshaking and how to interpret the
 authentication certificates exchanged are left to the judgment of the designers
 and implementors of protocols that run on top of TLS.
 
+
 ##  Requirements Terminology
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
 "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this
 document are to be interpreted as described in RFC 2119 {{RFC2119}}.
+
 
 ##  Major Differences from TLS 1.2
 
@@ -348,6 +350,7 @@ draft-02
 
 -  Removed support for non-AEAD ciphers
 
+
 #  Goals
 
 The goals of the TLS protocol, in order of priority, are as follows:
@@ -371,6 +374,7 @@ protocol has incorporated an optional session caching scheme to reduce the
 number of connections that need to be established from scratch. Additionally,
 care has been taken to reduce network activity.
 
+
 #  Goals of This Document
 
 This document and the TLS protocol itself are based on the SSL 3.0 Protocol
@@ -389,6 +393,7 @@ This document is not intended to supply any details of service definition or of
 interface definition, although it does cover select areas of policy as they are
 required for the maintenance of solid security.
 
+
 #  Presentation Language
 
 This document deals with the formatting of data in an external representation.
@@ -398,6 +403,7 @@ resembles the programming language "C" in its syntax and XDR {{RFC4506}} in
 both its syntax and intent, it would be risky to draw too many parallels. The
 purpose of this presentation language is to document TLS only; it has no
 general application beyond that particular goal.
+
 
 ##  Basic Block Size {#basic_block_size}
 
@@ -413,6 +419,7 @@ notation) by:
 This byte ordering for multi-byte values is the commonplace network byte order
 or big-endian format.
 
+
 ##  Miscellaneous
 
 Comments begin with "/\*" and end with "\*/".
@@ -422,6 +429,7 @@ brackets.
 
 Single-byte entities containing uninterpreted data are of type
 opaque.
+
 
 ##  Vectors
 
@@ -466,6 +474,7 @@ a 17-byte vector of uint16 would be illegal).
        uint16 longer<0..800>;
              /* zero to 400 16-bit unsigned integers */
 
+
 ##  Numbers {#numbers}
 
 The basic numeric data type is an unsigned byte (uint8). All larger numeric
@@ -486,6 +495,7 @@ Note that in some cases (e.g., DH parameters) it is necessary to represent
 integers as opaque vectors. In such cases, they are represented as unsigned
 integers (i.e., leading zero octets are not required even if the most
 significant bit is set).
+
 
 ##  Enumerateds
 
@@ -524,6 +534,7 @@ For enumerateds that are never converted to external representation, the
 numerical information may be omitted.
 
        enum { low, medium, high } Amount;
+
 
 ##  Constructed Types
 
@@ -706,6 +717,7 @@ the output of the signing algorithm. The length of the signature is known
 because the algorithm and key used for the signing are known prior to encoding
 or decoding this structure.
 
+
 ##  Constants
 
 Typed constants can be defined for purposes of specification by declaring a
@@ -770,6 +782,7 @@ the following bytes:
 
        73 6C 69 74 68 79 20 74 6F 76 65 73
 
+
 #  The TLS Record Protocol
 
 The TLS Record Protocol is a layered protocol. At each layer, messages
@@ -798,6 +811,7 @@ not provide and cannot safely rely on the latter.
 Note in particular that type and length of a record are not protected by
 encryption. If this information is itself sensitive, application designers may
 wish to take steps (padding, cover traffic) to minimize information leakage.
+
 
 ##  Connection States
 
@@ -918,6 +932,7 @@ sequence number
   particular connection state MUST use sequence number 0.
 {:br }
 
+
 ##  Record Layer
 
 The TLS record layer receives uninterpreted data from higher layers in
@@ -977,7 +992,6 @@ by following the procedure and requirements in {{backward-compatibility}}.
 Implementations MUST NOT send zero-length fragments of Handshake or Alert
 types. Zero-length fragments of Application data MAY
 be sent as they are potentially useful as a traffic analysis countermeasure.
-
 
 ###  Record Payload Protection
 
@@ -1071,6 +1085,7 @@ As a special case, we define the NULL_NULL AEAD cipher which is simply
 the identity operation and thus provides no security. This cipher
 MUST ONLY be used with the initial TLS_NULL_WITH_NULL_NULL cipher suite.
 
+
 ##  Key Calculation
 
 [[OPEN ISSUE: This needs to be revised. See https://github.com/tlswg/tls13-spec/issues/5]]
@@ -1144,6 +1159,7 @@ These items are then used to create security parameters for use by the record
 layer when protecting application data. Many connections can be instantiated
 using the same session through the resumption feature of the TLS Handshake
 Protocol.
+
 
 ##  Alert Protocol
 
@@ -1389,6 +1405,7 @@ unsupported_extension
 
 New Alert values are assigned by IANA as described in {{iana-considerations}}.
 
+
 ##  Handshake Protocol Overview
 
 The cryptographic parameters of the session state are produced by the TLS
@@ -1593,6 +1610,7 @@ and server perform a full handshake.
 The contents and significance of each message will be presented in detail in
 the following sections.
 
+
 ##  Handshake Protocol
 
 The TLS Handshake Protocol is one of the defined higher-level clients of the
@@ -1779,8 +1797,7 @@ MUST send a fatal "decode_error" alert.
 After sending the ClientHello message, the client waits for a ServerHello
 or HelloRetryRequest message.
 
-
-###  Client Key Share Message
+###  Client Key Share
 
 When this message will be sent:
 
@@ -1837,7 +1854,6 @@ information.
 DH groups and which curves.]
 [TODO: Work out how this interacts with PSK and SRP.]
 
-
 ####  Diffie-Hellman Parameters {#ffdhe-param}
 
 Diffie-Hellman {{DH}} parameters for both clients and servers are encoded in
@@ -1848,7 +1864,6 @@ encoded as a big-endian integer.
 
 %%% Key Exchange Messages
        opaque dh_Y<1..2^16-1>;
-
 
 #### ECHDE Parameters {#ecdhe-param}
 
@@ -1955,7 +1970,7 @@ extensions
   the cryptographic context.
 {:br }
 
-####  HelloRetryRequest
+####  Hello Retry Request
 
 When this message will be sent:
 
@@ -1996,7 +2011,6 @@ Upon re-sending the ClientHello/ClientKeyShare and receiving the
 server's ServerHello/ServerKeyShare, the client MUST verify that
 the selected CipherSuite and NamedGroup match that supplied in
 the HelloRetryRequest.
-
 
 ####  Hello Extensions
 
@@ -2082,7 +2096,6 @@ be taken into account when designing new extensions:
   the possibility of version rollback should be a significant consideration in
   any major design change.
 
-
 #####  Signature Algorithms
 
 The client uses the "signature_algorithms" extension to indicate to the server
@@ -2163,7 +2176,6 @@ Servers MUST NOT send this extension. TLS servers MUST support receiving this
 extension.
 
 When performing session resumption, this extension is not included in ServerHello, and the server ignores the extension in ClientHello (if present).
-
 
 ##### Negotiated Groups
 
@@ -2250,7 +2262,6 @@ must consider the supported groups in both cases.
 
 [[TODO: IANA Considerations.]]
 
-
 ##### Early Data Extension
 
 TLS versions before 1.3 have a strict message ordering and do not
@@ -2294,8 +2305,7 @@ for the 0-RTT case we will want to send the Certificate, CertificateVerify,
 and application data, so a more general extension seems appropriate
 at least until we have determined we don't need it for 0-RTT.]]
 
-
-###  Server Key Share Message
+###  Server Key Share
 
 When this message will be sent:
 
@@ -2332,7 +2342,6 @@ key_exchange
 determined by the value of NamedGroup entry and its corresponding
 definition.
 {:br }
-
 
 ###  Encrypted Extensions
 
@@ -2471,7 +2480,6 @@ As cipher suites that specify new key exchange methods are specified for the
 TLS protocol, they will imply the certificate format and the required encoded
 keying information.
 
-
 ###  Certificate Request
 
 When this message will be sent:
@@ -2557,9 +2565,7 @@ Note: Values listed as RESERVED may not be used. They were used in SSLv3.
 Note: It is a fatal "handshake_failure" alert for an anonymous server to request
 client authentication.
 
-
 ###  Server Certificate Verify
-
 
 When this message will be sent:
 
@@ -2620,7 +2626,6 @@ specify mechanisms for certificates to indicate which digest algorithms are to
 be used with DSA.
 [[TODO: Update this to deal with DSS-3 and DSS-4.
 https://github.com/tlswg/tls13-spec/issues/59]]
-
 
 ###  Server Finished
 
@@ -2691,7 +2696,6 @@ include the prior one.
 Note: Alerts and any other record types are not handshake messages
 and are not included in the hash computations. Also, HelloRequest
 messages are omitted from handshake hashes.
-
 
 ###  Client Certificate
 
@@ -2766,7 +2770,6 @@ In particular:
 Note that, as with the server certificate, there are certificates that use
 algorithms/algorithm combinations that cannot be currently used with TLS.
 
-
 ###  Client Certificate Verify
 
 When this message will be sent:
@@ -2804,6 +2807,7 @@ agreement, and record protection algorithms are determined by the
 cipher_suite selected by the server and revealed in the ServerHello
 message. The random values are exchanged in the hello messages. All
 that remains is to calculate the master secret.
+
 
 ##  Computing the Master Secret
 
@@ -2883,7 +2887,6 @@ two secrets.
 All master secrets are always exactly 48 bytes in length. The length
 of the premaster secret will vary depending on key exchange method.
 
-
 ###  The Session Hash
 
 When a handshake takes place, we define
@@ -2906,7 +2909,6 @@ Note that if client authentication is not used, then the session
 hash is complete at the point when the server has sent its first
 flight. Otherwise, it is only complete when the client has sent its
 first flight, as it covers the client's Certificate and CertificateVerify.
-
 
 ###  Diffie-Hellman
 
@@ -2932,10 +2934,12 @@ complete picture is that ECDH is employed with a non-trivial KDF
 because TLS does not directly use the premaster secret for anything
 other than for computing the master secret.)
 
+
 #  Mandatory Cipher Suites
 
 In the absence of an application profile standard specifying otherwise, a
 TLS-compliant application MUST implement the cipher suite [TODO:Needs to be selected](https://github.com/tlswg/tls13-spec/issues/32). (See {{the-cipher-suite}} for the definition.)
+
 
 #  Application Data Protocol
 
@@ -2943,10 +2947,12 @@ Application data messages are carried by the record layer and are fragmented
 and encrypted based on the current connection state. The messages
 are treated as transparent data to the record layer.
 
+
 #  Security Considerations
 
 Security issues are discussed throughout this memo, especially in Appendices D,
 E, and F.
+
 
 #  IANA Considerations
 
@@ -3017,6 +3023,7 @@ In addition, this document defines two new registries to be maintained by IANA:
   Use {{RFC2434}}.
 --- back
 
+
 # Protocol Data Structures and Constant Values
 
 This section describes protocol types and constants.
@@ -3030,6 +3037,7 @@ This section describes protocol types and constants.
 %%### Key Exchange Messages
 %%### Authentication Messages
 %%### Handshake Finalization Messages
+
 
 ## The Cipher Suite
 
@@ -3111,6 +3119,7 @@ Note: The cipher suite values { 0x00, 0x1C } and { 0x00, 0x1D } are
 reserved to avoid collision with Fortezza-based cipher suites in
 SSL 3.
 
+
 ## The Security Parameters
 
 These security parameters are determined by the TLS Handshake Protocol and
@@ -3118,6 +3127,7 @@ provided as parameters to the TLS record layer in order to initialize a
 connection state. SecurityParameters includes:
 
 %%! Security Parameters
+
 
 ## Changes to RFC 4492
 
@@ -3140,6 +3150,7 @@ ClientCertificateType (when used by the client). Thus, the restrictions on the
 algorithm used to sign certificates specified in Sections 2 and 3 of RFC 4492
 are also relaxed. As in this document, the restrictions on the keys in the
 end-entity certificate remain.
+
 
 # Glossary
 
@@ -3281,6 +3292,7 @@ Transport Layer Security (TLS)
   Information" at the end of this document (see {{working-group-information}}).
 {:br }
 
+
 # Cipher Suite Definitions
 
     Cipher Suite                          Key        Record
@@ -3314,10 +3326,12 @@ Explicit IV Size
   initialization vector. This is equal to SecurityParameters.record_iv_length).
 {:br }
 
+
 # Implementation Notes
 
 The TLS protocol cannot prevent many common security mistakes. This section
 provides several recommendations to assist implementors.
+
 
 ## Random Number Generation and Seeding
 
@@ -3334,6 +3348,7 @@ Seeding a 128-bit PRNG would thus require approximately 100 such timer values.
 
 {{RFC4086}} provides guidance on the generation of random values.
 
+
 ## Certificates and Authentication
 
 Implementations are responsible for verifying the integrity of certificates and
@@ -3341,6 +3356,7 @@ should generally support certificate revocation messages. Certificates should
 always be verified to ensure proper signing by a trusted Certificate Authority
 (CA). The selection and addition of trusted CAs should be done very carefully.
 Users should be able to view information about the certificate and root CA.
+
 
 ## Cipher Suites
 
@@ -3351,6 +3367,7 @@ discouraged because it cannot prevent man- in-the-middle attacks. Applications
 should also enforce minimum and maximum key sizes. For example, certificate
 chains containing 512- bit RSA keys or signatures are not appropriate for
 high-security applications.
+
 
 ## Implementation Pitfalls
 
@@ -3405,6 +3422,7 @@ Cryptographic details:
   generator (see {{random-number-generation-and-seeding}}) Diffie-Hellman private values, the
   DSA "k" parameter, and other security-critical values?
 
+
 # Backward Compatibility {#backward-compatibility}
 
 The TLS protocol provides a built-in mechanism for version negotiation between
@@ -3424,6 +3442,7 @@ In order to maximize interoperability with older endpoints, implementations
 that negotiate the usage of TLS 1.0-1.2 SHOULD set the record layer
 version number to the negotiated version for the ServerHello and all
 records thereafter.
+
 
 ## Negotiating with an older server
 
@@ -3451,6 +3470,7 @@ Multiple connection attempts may be required in order to negotiate
 a backwards compatible connection, however this practice is vulnerable
 to downgrade attacks and is NOT RECOMMENDED.
 
+
 ## Negotiating with an older client
 
 A TLS server can also receive a ClientHello containing a version number smaller
@@ -3466,6 +3486,7 @@ Note that earlier versions of TLS did not clearly specify the record layer
 version number value in all cases (TLSPlaintext.record_version). Servers
 will receive various TLS 1.x versions in this field, however its value
 MUST always be ignored.
+
 
 ## Backwards Compatibility Security Restrictions
 
@@ -3498,6 +3519,7 @@ set to { 3, 0 } or less. Any endpoint receiving a Hello message with
 ClientHello.client_version or ServerHello.server_version set to { 3, 0 } MUST respond
 with a "protocol_version" alert message and close the connection.
 
+
 #  Security Analysis
 
 The TLS protocol is designed to establish a secure connection between a client
@@ -3508,6 +3530,7 @@ outside the protocol. Attackers are assumed to have the ability to capture,
 modify, delete, replay, and otherwise tamper with messages sent over the
 communication channel. This appendix outlines how TLS has been designed to
 resist a variety of attacks.
+
 
 ## Handshake Protocol
 
@@ -3570,7 +3593,6 @@ Additionally, using a fresh key for each handshake provides Perfect
 Forward Secrecy. Implementations SHOULD generate a new X for each
 handshake when using DHE cipher suites.
 
-
 ###  Version Rollback Attacks
 
 Because TLS includes substantial improvements over SSL Version 2.0, attackers
@@ -3617,6 +3639,7 @@ obtains a master_secret may be able to impersonate the compromised party until
 the corresponding session ID is retired. Applications that may be run in
 relatively insecure environments should not write session IDs to stable storage.
 
+
 ## Protecting Application Data
 
 The master_secret is hashed with the ClientHello.random and ServerHello.random
@@ -3630,6 +3653,7 @@ sequence number ensures that attempts to delete or reorder messages will be
 detected. Since sequence numbers are 64 bits long, they should never overflow.
 Messages from one party cannot be inserted into the other's output, since they
 use independent keys.
+
 
 ## Denial of Service
 
@@ -3647,6 +3671,7 @@ connection to stall. These attacks cannot in general be defended against by a
 TCP-using protocol. Implementors or users who are concerned with this class of
 attack should use IPsec AH {{RFC4302}} or ESP {{RFC4303}}.
 
+
 ## Final Notes
 
 For TLS to be able to provide a secure connection, both the client and server
@@ -3661,7 +3686,6 @@ certificates and certificate authorities are acceptable; a dishonest
 certificate authority can do tremendous damage.
 
 
-
 # Working Group Information
 
 The discussion list for the IETF TLS working group is located at the e-mail
@@ -3670,7 +3694,6 @@ subscribe to the list is at <https://www1.ietf.org/mailman/listinfo/tls>
 
 Archives of the list can be found at:
 <https://www.ietf.org/mail-archive/web/tls/current/index.html>
-
 
 
 # Contributors
