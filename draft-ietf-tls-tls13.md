@@ -1057,9 +1057,9 @@ The nonce for the AEAD construction is formed as follows:
      to iv_length and XORed with the fixed iv, which is of length
      iv_length.
 
-The resulting quantity is used as the per-record nonce. An AEAD
-algorithm where N_MAX is less than 64 bits MUST not be used with
-TLS. 
+The resulting quantity (of length iv_length) is used as the per-record
+nonce. An AEAD algorithm where N_MAX is less than 64 bits MUST not be
+used with TLS.
 
 Note: This is a different construction from that in TLS 1.2, which
 specified a partially explicit nonce.
