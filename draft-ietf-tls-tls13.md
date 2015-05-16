@@ -1001,7 +1001,7 @@ be sent as they are potentially useful as a traffic analysis countermeasure.
 
 The record protection functions translate a TLSPlaintext structure into a
 TLSCiphertext. The deprotection functions reverse the process. In TLS 1.3
-as opposed to previous versions of TLS, all ciphers are modelled as
+as opposed to previous versions of TLS, all ciphers are modeled as
 "Authenticated Encryption with Additional Data" (AEAD) {{RFC5116}}.
 AEAD functions provide a unified encryption and authentication
 operation which turns plaintext into authenticated ciphertext and
@@ -2303,7 +2303,7 @@ EarlyData, and aside from hashing them differently, MUST treat them as
 if they had been sent immediately after the ClientHello.
 
 Servers MUST NOT send the EarlyData extension. Negotiating TLS 1.3
-serves as acknowledgement that it was processed as described above.
+serves as acknowledgment that it was processed as described above.
 
 [[OPEN ISSUE: This is a fairly general mechanism which is possibly
 overkill in the 1-RTT case, where it would potentially be more
@@ -2734,7 +2734,7 @@ Meaning of this message:
 > This message conveys the client's certificate chain to the server; the server
 will use it when verifying the CertificateVerify message (when the client
 authentication is based on signing) or calculating the premaster secret (for
-non-ephemeral Diffie- Hellman). The certificate MUST be appropriate for the
+non-ephemeral Diffie-Hellman). The certificate MUST be appropriate for the
 negotiated cipher suite's key exchange algorithm, and any negotiated extensions.
 
 In particular:
@@ -2835,7 +2835,7 @@ as shown in the following diagram and described below.
                                         |                   |
                                         v                   |
       Handshake   <-PRF-           Handshake                |
-     Traffic Keys                 Master Secret             | 
+     Traffic Keys                 Master Secret             |
                                         |                   | Via
                                         |                   | Session
                              +----------+----------+        | Cache
@@ -3346,7 +3346,7 @@ security than the size of the random number generator state.
 
 To estimate the amount of seed material being produced, add the number of bits
 of unpredictable information in each seed byte. For example, keystroke timing
-values taken from a PC compatible's 18.2 Hz timer provide 1 or 2 secure bits
+values taken from a PC compatible 18.2 Hz timer provide 1 or 2 secure bits
 each, even though the total size of the counter value is 16 bits or more.
 Seeding a 128-bit PRNG would thus require approximately 100 such timer values.
 
@@ -3389,7 +3389,7 @@ TLS protocol issues:
 
 -  Do you ignore the TLS record layer version number in all TLS
   records? (see {{backward-compatibility}})
-  
+
 -  Have you ensured that all support for SSL, RC4, and EXPORT ciphers
   is completely removed from all possible configurations that support
   TLS 1.3 or later, and that attempts to use these obsolete capabilities
@@ -3622,7 +3622,7 @@ repair the Finished messages, so the attack will be discovered.
 When a connection is established by resuming a session, new ClientHello.random
 and ServerHello.random values are hashed with the session's master_secret.
 Provided that the master_secret has not been compromised and that the secure
-hash operations used to produce the record protection kayes are secure,
+hash operations used to produce the record protection keys are secure,
 the connection should be secure and effectively independent from previous
 connections. Attackers cannot use known keys to
 compromise the master_secret without breaking the secure hash operations.
