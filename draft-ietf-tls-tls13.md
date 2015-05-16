@@ -315,6 +315,8 @@ draft-06
 
 - Freeze & deprecate record layer version field.
 
+- Update format of signatures with context.
+
 
 draft-05
 
@@ -334,8 +336,6 @@ draft-04
   registration.
 
 - Remove renegotiation.
-
-- Update format of signatures with context.
 
 - Remove point format negotiation.
 
