@@ -35,7 +35,7 @@ normative:
   RFC2434:
   RFC1321:
   RFC3447:
-  RFC3280:
+  RFC5280:
   RFC5288:
   RFC5289:
   AES:
@@ -1115,7 +1115,7 @@ session identifier
   active or resumable session state.
 
 peer certificate
-: X509v3 {{RFC3280}} certificate of the peer.  This element of the state
+: X509v3 {{RFC5280}} certificate of the peer.  This element of the state
   may be null.
 
 cipher spec
@@ -2410,7 +2410,7 @@ difficult.
 
 The following rules apply to the certificates sent by the server:
 
--  The certificate type MUST be X.509v3, unless explicitly negotiated
+-  The certificate type MUST be X.509v3 {{RFC5280}}, unless explicitly negotiated
   otherwise (e.g., {{RFC5081}}).
 
 -  The end entity certificate's public key (and associated
@@ -2608,7 +2608,7 @@ algorithm, there is a risk of hash substitution if multiple hashes may be used
 with any key. Currently, DSA {{DSS}} may only be used with SHA-1. Future
 revisions of DSS {{DSS-3}} are expected to allow the use of other digest
 algorithms with DSA, as well as guidance as to which digest algorithms should
-be used with each key size. In addition, future revisions of {{RFC3280}} may
+be used with each key size. In addition, future revisions of {{RFC5280}} may
 specify mechanisms for certificates to indicate which digest algorithms are to
 be used with DSA.
 [[TODO: Update this to deal with DSS-3 and DSS-4.
@@ -2714,7 +2714,7 @@ negotiated cipher suite's key exchange algorithm, and any negotiated extensions.
 
 In particular:
 
-- The certificate type MUST be X.509v3, unless explicitly negotiated
+- The certificate type MUST be X.509v3 {{RFC5280}}, unless explicitly negotiated
   otherwise (e.g., {{RFC5081}}).
 
 - The end-entity certificate's public key (and associated
@@ -2783,7 +2783,7 @@ algorithm, there is a risk of hash substitution if multiple hashes may be used
 with any key. Currently, DSA {{DSS}} may only be used with SHA-1. Future
 revisions of DSS {{DSS-3}} are expected to allow the use of other digest
 algorithms with DSA, as well as guidance as to which digest algorithms should
-be used with each key size. In addition, future revisions of {{RFC3280}} may
+be used with each key size. In addition, future revisions of {{RFC5280}} may
 specify mechanisms for certificates to indicate which digest algorithms are to
 be used with DSA.
 
@@ -3124,7 +3124,7 @@ element in order to identify the signature and digest algorithms used to create
 a signature. This change applies to digital signatures formed using ECDSA as
 well, thus allowing ECDSA signatures to be used with digest algorithms other
 than SHA-1, provided such use is compatible with the certificate and any
-restrictions imposed by future revisions of {{RFC3280}}.
+restrictions imposed by future revisions of {{RFC5280}}.
 
 As described in {{server-certificate}} and {{client-certificate}}, the
 restrictions on the signature algorithms used to sign certificates are no
