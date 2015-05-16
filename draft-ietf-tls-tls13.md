@@ -280,12 +280,31 @@ the decisions on how to initiate TLS handshaking and how to interpret the
 authentication certificates exchanged are left to the judgment of the designers
 and implementors of protocols that run on top of TLS.
 
-
-##  Requirements Terminology
+##  Conventions and Terminology
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
 "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this
 document are to be interpreted as described in RFC 2119 {{RFC2119}}.
+
+The following terms are used:
+
+client: The endpoint initiating the TLS connection.
+
+connection: A transport-layer connection between two endpoints.
+
+endpoint: Either the client or server of the connection.
+
+handshake: An initial negotiation between client and server that establishes the parameters of their transactions.
+
+peer: An endpoint. When discussing a particular endpoint, "peer" refers to the endpoint that is remote to the primary subject of discussion.
+
+receiver: An endpoint that is receiving records.
+
+sender: An endpoint that is transmitting records.
+
+session: An association between a client and a server resulting from a handshake.
+
+server: The endpoint which did not initiate the TLS connection.
 
 
 ##  Major Differences from TLS 1.2
@@ -3150,147 +3169,6 @@ ClientCertificateType (when used by the client). Thus, the restrictions on the
 algorithm used to sign certificates specified in Sections 2 and 3 of RFC 4492
 are also relaxed. As in this document, the restrictions on the keys in the
 end-entity certificate remain.
-
-
-# Glossary
-
-Advanced Encryption Standard (AES)
-: AES {{AES}} is a widely used symmetric encryption algorithm.  AES is
-  a block cipher with a 128-, 192-, or 256-bit keys and a 16-byte
-  block size.  TLS currently only supports the 128- and 256-bit key
-  sizes.
-
-application protocol
-: An application protocol is a protocol that normally layers
-  directly on top of the transport layer (e.g., TCP/IP).  Examples
-  include HTTP, TELNET, FTP, and SMTP.
-
-asymmetric cipher
-: See public key cryptography.
-
-authenticated encryption with additional data (AEAD)
-: A symmetric encryption algorithm that simultaneously provides
-  confidentiality and message integrity.
-
-authentication
-: Authentication is the ability of one entity to determine the
-  identity of another entity.
-
-certificate
-: As part of the X.509 protocol (a.k.a. ISO Authentication
-  framework), certificates are assigned by a trusted Certificate
-  Authority and provide a strong binding between a party's identity
-  or some other attributes and its public key.
-
-client
-: The application entity that initiates a TLS connection to a
-  server.  This may or may not imply that the client initiated the
-  underlying transport connection.  The primary operational
-  difference between the server and client is that the server is
-  generally authenticated, while the client is only optionally
-  authenticated.
-
-client write key
-: The key used to protect data written by the client.
-
-connection
-: A connection is a transport (in the OSI layering model definition)
-  that provides a suitable type of service.  For TLS, such
-  connections are peer-to-peer relationships.  The connections are
-  transient.  Every connection is associated with one session.
-
-Digital Signature Standard (DSS)
-: A standard for digital signing, including the Digital Signing
-  Algorithm, approved by the National Institute of Standards and
-  Technology, defined in NIST FIPS PUB 186-2, "Digital Signature
-  Standard", published January 2000 by the U.S. Department of
-  Commerce {{DSS}}.  A significant update {{DSS-3}} has been drafted and
-  was published in March 2006.
-
-digital signatures
-: Digital signatures utilize public key cryptography and one-way
-  hash functions to produce a signature of the data that can be
-  authenticated, and is difficult to forge or repudiate.
-
-handshake
-: An initial negotiation between client and server that
-  establishes the parameters of their transactions.
-
-Initialization Vector (IV)
-: Some AEAD ciphers require an initialization vector to allow
-  the cipher to safely protect multiple chunks of data with the
-  same keying material. The size of the IV depends on the cipher
-  suite.
-
-Message Authentication Code (MAC)
-: A Message Authentication Code is a one-way hash computed from a
-  message and some secret data.  It is difficult to forge without
-  knowing the secret data.  Its purpose is to detect if the message
-  has been altered.
-
-master secret
-: Secure secret data used for generating keys and IVs.
-
-MD5
-: MD5 {{RFC1321}} is a hashing function that converts an arbitrarily long
-  data stream into a hash of fixed size (16 bytes).  Due to
-  significant progress in cryptanalysis, at the time of publication
-  of this document, MD5 no longer can be considered a 'secure'
-  hashing function.
-
-public key cryptography
-: A class of cryptographic techniques employing two-key ciphers.
-  Messages encrypted with the public key can only be decrypted with
-  the associated private key.  Conversely, messages signed with the
-  private key can be verified with the public key.
-
-one-way hash function
-: A one-way transformation that converts an arbitrary amount of data
-  into a fixed-length hash.  It is computationally hard to reverse
-  the transformation or to find collisions.  MD5 and SHA are
-  examples of one-way hash functions.
-
-RSA
-: A very widely used public key algorithm that can be used for
-  either encryption or digital signing.  {{RSA}}
-
-server
-: The server is the application entity that responds to requests for
-  connections from clients.  See also "client".
-
-session
-: A TLS session is an association between a client and a server.
-  Sessions are created by the handshake protocol.  Sessions define a
-  set of cryptographic security parameters that can be shared among
-  multiple connections.  Sessions are used to avoid the expensive
-  negotiation of new security parameters for each connection.
-
-session identifier
-: A session identifier is a value generated by a server that
-  identifies a particular session.
-
-server write key
-: The key used to protect data written by the server.
-
-SHA
-: The Secure Hash Algorithm {{SHS}} is defined in FIPS PUB 180-2.  It
-  produces a 20-byte output.  Note that all references to SHA
-  (without a numerical suffix) actually use the modified SHA-1
-  algorithm.
-
-SHA-256
-: The 256-bit Secure Hash Algorithm is defined in FIPS PUB 180-2.
-  It produces a 32-byte output.
-
-SSL
-: Netscape's Secure Socket Layer protocol {{SSL3}}.  TLS is based on
-  SSL Version 3.0.
-
-Transport Layer Security (TLS)
-: This protocol; also, the Transport Layer Security working group of
-  the Internet Engineering Task Force (IETF).  See "Working Group
-  Information" at the end of this document (see {{working-group-information}}).
-{:br }
 
 
 # Cipher Suite Definitions
