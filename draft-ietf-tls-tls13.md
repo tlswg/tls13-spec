@@ -1367,16 +1367,16 @@ user_canceled
   by a "close_notify".  This message is generally a warning.
 
 no_renegotiation
-: Sent by the client in response to a hello request or by the server
-  in response to a client hello after initial handshaking. Versions
+: Sent by the client in response to a HelloRequest or by the server
+  in response to a ClientHello after initial handshaking. Versions
   of TLS prior to TLS 1.3 supported renegotiation of a previously
   established connection; TLS 1.3 removes this feature. This
   message is always fatal.
 
 unsupported_extension
-: Sent by clients that receive an extended server hello containing
-  an extension that they did not put in the corresponding client
-  hello.  This message is always fatal.
+: sent by clients that receive an extended ServerHello containing
+  an extension that they did not put in the corresponding ClientHello.
+  This message is always fatal.
 {:br }
 
 New Alert values are assigned by IANA as described in {{iana-considerations}}.
@@ -1905,8 +1905,8 @@ bytes following the cipher_suite field at the end of the ServerHello.
 
 server_version
 : This field will contain the lower of that suggested by the client
-  in the client hello and the highest supported by the server.  For
-  this version of the specification, the version is 3.4. (See
+  in the ClientHello and the highest supported by the server.  For
+  this version of the specification, the version is 3.4.  (See
   {{backward-compatibility}} for details about backward compatibility.)
 
 random
@@ -2042,7 +2042,7 @@ In general, the specification of each extension type needs to describe the
 effect of the extension both during full handshake and session resumption. Most
 current TLS extensions are relevant only when a session is initiated: when an
 older session is resumed, the server does not process these extensions in
-Client Hello, and does not include them in Server Hello. However, some
+ClientHello, and does not include them in ServerHello. However, some
 extensions may specify different behavior during session resumption.
 
 There are subtle (and not so subtle) interactions that may occur in this
@@ -2154,8 +2154,7 @@ extensions they do not understand.
 Servers MUST NOT send this extension. TLS servers MUST support receiving this
 extension.
 
-When performing session resumption, this extension is not included in Server
-Hello, and the server ignores the extension in Client Hello (if present).
+When performing session resumption, this extension is not included in ServerHello, and the server ignores the extension in ClientHello (if present).
 
 
 ##### Negotiated Groups
@@ -2884,7 +2883,7 @@ When a handshake takes place, we define
        session_hash = Hash(handshake_messages)
 
 where "handshake_messages" refers to all handshake messages sent or
-received, starting at client hello up to the present time, with the
+received, starting at ClientHello up to the present time, with the
 exception of the Finished message, including the type and length
 fields of the handshake messages. This is the concatenation of all the
 exchanged Handshake structures.
