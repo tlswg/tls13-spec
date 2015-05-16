@@ -1642,7 +1642,7 @@ connection state AEAD algorithm is initialized to NULL_NULL.
 
 ####  Client Hello
 
-When this message will be sent:
+When will this message be sent ?
 
 > When a client first connects to a server, it is required to send the
 ClientHello as its first message. The client will also send a
@@ -1782,7 +1782,7 @@ or HelloRetryRequest message.
 
 ###  Client Key Share Message
 
-When this message will be sent:
+When will this message be sent ?
 
 > This message is always sent by the client. It MUST immediately follow the
 ClientHello message. In backward compatibility mode (see Section XXX)
@@ -1885,7 +1885,7 @@ X9.62.]]
 
 ####  Server Hello
 
-When this message will be sent:
+When will this message be sent ?
 
 > The server will send this message in response to a ClientHello message when
 it was able to find an acceptable set of algorithms and the client's
@@ -1957,7 +1957,7 @@ extensions
 
 ####  HelloRetryRequest
 
-When this message will be sent:
+When will this message be sent ?
 
 > The server will send this message in response to a ClientHello
 message when it was able to find an acceptable set of algorithms but
@@ -2297,7 +2297,7 @@ at least until we have determined we don't need it for 0-RTT.]]
 
 ###  Server Key Share Message
 
-When this message will be sent:
+When will this message be sent ?
 
 > This message will be sent immediately after the ServerHello message if
 the client has provided a ClientKeyShare message which is compatible
@@ -2336,7 +2336,7 @@ definition.
 
 ###  Encrypted Extensions
 
-When this message will be sent:
+When will this message be sent ?
 
 > If this message is sent, it MUST be sent immediately after the server's
 ServerKeyShare.
@@ -2368,7 +2368,7 @@ extensions
 
 ###  Server Certificate
 
-When this message will be sent:
+When will this message be sent ?
 
 > The server MUST send a Certificate message whenever the agreed-upon key
 exchange method uses certificates for authentication (this includes all key
@@ -2474,7 +2474,7 @@ keying information.
 
 ###  Certificate Request
 
-When this message will be sent:
+When will this message be sent ?
 
 > A non-anonymous server can optionally request a certificate from the client,
 if appropriate for the selected cipher suite. This message, if sent, will
@@ -2561,7 +2561,7 @@ client authentication.
 ###  Server Certificate Verify
 
 
-When this message will be sent:
+When will this message be sent ?
 
 > This message is used to provide explicit proof that the server
 possesses the private key corresponding to its certificate
@@ -2624,7 +2624,7 @@ https://github.com/tlswg/tls13-spec/issues/59]]
 
 ###  Server Finished
 
-When this message will be sent:
+When will this message be sent ?
 
 > The Server's Finished message is the final message sent by the server
 and indicates that the key exchange and authentication processes were successful.
@@ -2695,7 +2695,7 @@ messages are omitted from handshake hashes.
 
 ###  Client Certificate
 
-When this message will be sent:
+When will this message be sent ?
 
 > This message is the first handshake message the client can send
 after receiving the server's Finished. This message is only sent if the server requests a
@@ -2769,7 +2769,7 @@ algorithms/algorithm combinations that cannot be currently used with TLS.
 
 ###  Client Certificate Verify
 
-When this message will be sent:
+When will this message be sent ?
 
 > This message is used to provide explicit verification of a client
 certificate. This message is only sent following a client certificate that has
