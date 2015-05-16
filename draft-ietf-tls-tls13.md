@@ -1420,11 +1420,8 @@ fundamental rule is that higher levels must be cognizant of what their security
 requirements are and never transmit information over a channel less secure than
 what they require. The TLS protocol is secure in that any cipher suite offers
 its promised level of security: if you negotiate AES-GCM {{GCM}} with
-a 255-bit ECDHE or 3072-bit DHE key exchange with a host whose certificate
+a 255-bit ECDHE key exchange with a host whose certificate
 chain you have verified, you can expect that to be reasonably secure.
-
-[[TODO: Cite Curve25519 TLS I-D/RFC when available, or whatever other
-curve at the ~128-bit security level is decided to be TLS 1.3 MTI. ]]
 
 These goals are achieved by the handshake protocol, which can be
 summarized as follows: The client sends a ClientHello message which
@@ -3344,8 +3341,8 @@ provide no or minimal security. A proper implementation will probably not
 support many cipher suites. For instance, anonymous Diffie-Hellman is strongly
 discouraged because it cannot prevent man-in-the-middle attacks. Applications
 should also enforce minimum and maximum key sizes. For example, certificate
-chains containing keys or signatures weaker than 2048-bit RSA are not appropriate
-for secure applications.
+chains containing keys or signatures weaker than 2048-bit RSA or 224-bit ECDSA
+are not appropriate for secure applications.
 
 ## Implementation Pitfalls
 
