@@ -37,6 +37,7 @@ normative:
   RFC3447:
   RFC3280:
   RFC5288:
+  RFC5289:
   AES:
        title: Specification for the Advanced Encryption Standard (AES)
        date: 2001-11-26
@@ -122,7 +123,7 @@ informative:
 
   CBCATT:
        title: "Security of CBC Ciphersuites in SSL/TLS: Problems and Countermeasures"
-       target: http://www.openssl.org/~bodo/tls-cbc.txt
+       target: https://www.openssl.org/~bodo/tls-cbc.txt
        author:
          - ins: B. Moeller
        date: 2004-05-20
@@ -751,7 +752,7 @@ produces an output of arbitrary length.
 
 In this section, we define one PRF, based on HMAC {{RFC2104}}. This PRF with the SHA-256
 hash function is used for all cipher suites defined in this document and in TLS
-documents published prior to this document when TLS 1.2 is negotiated. New
+documents published prior to this document when TLS 1.2 or later is negotiated. New
 cipher suites MUST explicitly specify a PRF and, in general, SHOULD use the TLS
 PRF with SHA-256 or a stronger standard hash function.
 
@@ -1367,7 +1368,7 @@ export_restriction_RESERVED
   be sent by compliant implementations.
 
 protocol_version
-: The protocol version the client has attempted to negotiate is
+: The protocol version the peer has attempted to negotiate is
   recognized but not supported.  (For example, old protocol versions
   might be avoided for security reasons.)  This message is always
   fatal.
@@ -1398,7 +1399,7 @@ no_renegotiation
   message is always fatal.
 
 unsupported_extension
-: sent by clients that receive an extended server hello containing
+: Sent by clients that receive an extended server hello containing
   an extension that they did not put in the corresponding client
   hello.  This message is always fatal.
 {:br }
@@ -1502,7 +1503,7 @@ certificate.  Finally, the client sends the Finished message.
 At this point, the handshake is complete, and the
 client and server may exchange application layer data, which is
 protected using a new set of keys derived from both the premaster
-secret and the handshake transcript (see {{I-D.ietf-tls-session-hash}}
+secret and the handshake transcript (See {{I-D.ietf-tls-session-hash}}
 for the security rationale for this.)
 
 Application data MUST NOT be sent prior to the Finished message.
@@ -2010,7 +2011,7 @@ I.e., it MUST be a superset of the previous ClientKeyShareOffer.
 
 Upon re-sending the ClientHello/ClientKeyShare and receiving the
 server's ServerHello/ServerKeyShare, the client MUST verify that
-the selected ciphersuite and NamedGroup match that supplied in
+the selected CipherSuite and NamedGroup match that supplied in
 the HelloRetryRequest.
 
 
@@ -2083,7 +2084,6 @@ be taken into account when designing new extensions:
   forces use (or non-use) of a particular feature by manipulation of handshake
   messages. This principle should be followed regardless of whether the feature
   is believed to cause a security problem.
-
   Often the fact that the extension fields are included in the inputs to the
   Finished message hashes will be sufficient, but extreme care is needed when
   the extension changes the meaning of messages sent in the handshake phase.
@@ -2171,7 +2171,7 @@ as if the client had sent the value {sha1,dsa}.
 - If the negotiated key exchange algorithm is ECDHE_ECDSA,
 behave as if the client had sent value {sha1,ecdsa}.
 
-Note: this extension is not meaningful for TLS versions prior to 1.2. Clients
+Note: This extension is not meaningful for TLS versions prior to 1.2. Clients
 MUST NOT offer it if they are offering prior versions. However, even if clients
 do offer it, the rules specified in {{RFC6066}} require servers to ignore
 extensions they do not understand.
@@ -2582,8 +2582,8 @@ client authentication.
 When this message will be sent:
 
 > This message is used to provide explicit proof that the server
-possesses the private key corresponding to its certificate.
-certificate and also provides integrity for the handshake up
+possesses the private key corresponding to its certificate
+and also provides integrity for the handshake up
 to this point. This message is only sent when the server is
 authenticated via a certificate. When sent, it MUST be the
 last server handshake message prior to the Finished.
@@ -2655,7 +2655,7 @@ correct. Once a side has sent its Finished message and received and
 validated the Finished message from its peer, it may begin to send and
 receive application data over the connection. This data will be
 protected under keys derived from the hs_master_secret (see
-{{cryptographic-computations}}.
+{{cryptographic-computations}}).
 
 Structure of this message:
 
@@ -2877,7 +2877,7 @@ remainder of the session.  It is also used with TLS Exporters {{RFC5705}}.
 
 If the server does not request client authentication, the master
 secret can be computed at the time that the server sends its Finished,
-thus allowing the server to send traffic on its first flight (see
+thus allowing the server to send traffic on its first flight (See
 [TODO] for security considerations on this practice.)  If the server
 requests client authentication, this secret can be computed after the
 client's Certificate and CertificateVerify have been sent, or, if the
@@ -2953,7 +2953,7 @@ other than for computing the master secret.)
 #  Mandatory Cipher Suites
 
 In the absence of an application profile standard specifying otherwise, a
-TLS-compliant application MUST implement the cipher suite [TODO:Needs to be selected](https://github.com/tlswg/tls13-spec/issues/32). (See {{the-cipher-suite}} for the definition).
+TLS-compliant application MUST implement the cipher suite [TODO:Needs to be selected](https://github.com/tlswg/tls13-spec/issues/32). (See {{the-cipher-suite}} for the definition.)
 
 #  Application Data Protocol
 
@@ -3053,8 +3053,7 @@ This section describes protocol types and constants.
 
 The following values define the cipher suite codes used in the ClientHello and
 ServerHello messages.
-
-A cipher suite defines a cipher specification supported in TLS Version 1.2.
+A cipher suite defines a cipher specification supported in TLS.
 
 TLS_NULL_WITH_NULL_NULL is specified and is the initial state of a TLS
 connection during the first handshake on that channel, but MUST NOT be
@@ -3062,7 +3061,7 @@ negotiated, as it provides no more protection than an unsecured connection.
 
        CipherSuite TLS_NULL_WITH_NULL_NULL             = { 0x00,0x00 };
 
-The following cipher suite definitions, defined in {{RFC5288}, are
+The following cipher suite definitions, defined in {{RFC5288}}, are
 used for server-authenticated (and optionally client-authenticated)
 Diffie-Hellman. DHE denotes ephemeral Diffie-Hellman,
 where the Diffie-Hellman parameters are signed by a signature-capable
@@ -3076,7 +3075,7 @@ certificate from the client for client authentication.
       CipherSuite TLS_DHE_DSS_WITH_AES_128_GCM_SHA256 = {0x00,0xA2}
       CipherSuite TLS_DHE_DSS_WITH_AES_256_GCM_SHA384 = {0x00,0xA3}
 
-The following cipher suite definitions, defined in {{RFC5289}, are
+The following cipher suite definitions, defined in {{RFC5289}}, are
 used for server-authenticated (and optionally client-authenticated)
 Elliptic Curve Diffie-Hellman. ECDHE denotes ephemeral Diffie-Hellman,
 where the Diffie-Hellman parameters are signed by a signature-capable
@@ -3095,7 +3094,7 @@ The following ciphers, defined in {{RFC5288}},
 are used for completely anonymous Diffie-Hellman
 communications in which neither party is authenticated. Note that this mode is
 vulnerable to man-in-the-middle attacks. Using this mode therefore is of
-limited use: These cipher suites MUST NOT be used by TLS 1.2 implementations
+limited use: These cipher suites MUST NOT be used by TLS implementations
 unless the application layer has specifically requested to allow anonymous key
 exchange. (Anonymous key exchange may sometimes be acceptable, for example, to
 support opportunistic encryption when no set-up for authentication is in place,
@@ -3297,7 +3296,7 @@ SSL
 Transport Layer Security (TLS)
 : This protocol; also, the Transport Layer Security working group of
   the Internet Engineering Task Force (IETF).  See "Working Group
-  Information" at the end of this document (see page 99).
+  Information" at the end of this document (see {{working-group-information}}).
 {:br }
 
 # Cipher Suite Definitions
@@ -3688,7 +3687,7 @@ address <tls@ietf.org>. Information on the group and information on how to
 subscribe to the list is at <https://www1.ietf.org/mailman/listinfo/tls>
 
 Archives of the list can be found at:
-<http://www.ietf.org/mail-archive/web/tls/current/index.html>
+<https://www.ietf.org/mail-archive/web/tls/current/index.html>
 
 
 
@@ -3746,6 +3745,8 @@ Archives of the list can be found at:
 
     Anil Gangolli
     anil@busybuddha.org
+
+    David M. Garrett
 
     Vipul Gupta (co-author of RFC4492)
     Sun Microsystems Laboratories

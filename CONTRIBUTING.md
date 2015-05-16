@@ -2,9 +2,9 @@
 
 Before submitting feedback, please familiarize yourself with our current issues
 list and review the [working
-group home page](http://trac.tools.ietf.org/wg/tls/trac/wiki). If you're
+group home page](https://trac.tools.ietf.org/wg/tls/trac/wiki). If you're
 new to this, you may also want to read the [Tao of the
-IETF](http://www.ietf.org/tao.html).
+IETF](https://www.ietf.org/tao.html).
 
 Be aware that all contributions to the specification fall under the "NOTE WELL"
 terms outlined below.
@@ -38,7 +38,7 @@ providing a link to the issue in the message body.
 
 # NOTE WELL
 
-Any submission to the [IETF](http://www.ietf.org/) intended by the Contributor
+Any submission to the [IETF](https://www.ietf.org/) intended by the Contributor
 for publication as all or part of an IETF Internet-Draft or RFC and any
 statement made within the context of an IETF activity is considered an "IETF
 Contribution". Such statements include oral statements in IETF sessions, as
@@ -54,16 +54,16 @@ are addressed to:
  * The IAB or any member thereof on behalf of the IAB
  * The RFC Editor or the Internet-Drafts function
  * All IETF Contributions are subject to the rules of 
-   [RFC 5378](http://tools.ietf.org/html/rfc5378) and 
-   [RFC 3979](http://tools.ietf.org/html/rfc3979) 
-   (updated by [RFC 4879](http://tools.ietf.org/html/rfc4879)).
+   [RFC 5378](https://tools.ietf.org/html/rfc5378) and 
+   [RFC 3979](https://tools.ietf.org/html/rfc3979) 
+   (updated by [RFC 4879](https://tools.ietf.org/html/rfc4879)).
 
 Statements made outside of an IETF session, mailing list or other function,
 that are clearly not intended to be input to an IETF activity, group or
 function, are not IETF Contributions in the context of this notice.
 
-Please consult [RFC 5378](http://tools.ietf.org/html/rfc5378) and [RFC 
-3979](http://tools.ietf.org/html/rfc3979) for details.
+Please consult [RFC 5378](https://tools.ietf.org/html/rfc5378) and [RFC 
+3979](https://tools.ietf.org/html/rfc3979) for details.
 
 A participant in any IETF activity is deemed to accept all IETF rules of
 process, as documented in Best Current Practices RFCs and IESG Statements.
