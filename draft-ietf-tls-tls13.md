@@ -3040,7 +3040,6 @@ In addition, this document defines two new registries to be maintained by IANA:
   inclusive are assigned via Specification Required {{RFC2434}}.
   Values from 224-255 (decimal) inclusive are reserved for Private
   Use {{RFC2434}}.
---- back
 
 
 # Protocol Data Structures and Constant Values
