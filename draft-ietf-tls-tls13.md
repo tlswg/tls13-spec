@@ -1050,8 +1050,8 @@ fragment
 
 The nonce for the AEAD construction is formed as follows:
 
-  1. iv_length is set to the greater of 64 bits and N_MIN for the
-     AEAD algorithm (see {{RFC5116}} Section 4). 
+  1. iv_length is set to max(8 bytes, N_MIN) for the AEAD algorithm
+     (see {{RFC5116}} Section 4).
 
   2. The 64-bit sequence number is padded to the left with zeroes
      to iv_length and XORed with the fixed iv, which is of length
@@ -1141,9 +1141,6 @@ which is then partitioned as follows:
        server_write_key[SecurityParameters.enc_key_length]
        client_write_IV[SecurityParameters.iv_length]
        server_write_IV[SecurityParameters.iv_length]
-
-iv_length is set to the greater of N_MAX
-
 
 #  The TLS Handshaking Protocols
 
