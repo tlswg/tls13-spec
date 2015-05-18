@@ -52,12 +52,6 @@ normative:
          org: National Institute of Standards and Technology, U.S. Department of Commerce
        seriesinfo:
          NIST: FIPS PUB 186-2
-  SCH:
-       title: "Applied Cryptography: Protocols, Algorithms, and Source Code in C, 2nd ed."
-       date: 1996
-       author:
-         name: Bruce Schneier
-         ins: B. Schneier
   SHS:
        title: Secure Hash Standard
        date: 2002-08
