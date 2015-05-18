@@ -2969,8 +2969,8 @@ are treated as transparent data to the record layer.
 
 #  Security Considerations
 
-Security issues are discussed throughout this memo, especially in Appendices D,
-E, and F.
+Security issues are discussed throughout this memo, especially in Appendices C,
+D, and E.
 
 
 #  IANA Considerations
