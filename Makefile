@@ -1,5 +1,5 @@
 xml2rfc ?= xml2rfc
-kramdown-rfc2629 ?= kramdown-rfc2629
+kramdown-rfc2629 ?= XML_RESOURCE_ORG_PREFIX=https://unicorn-wg.github.io/idrefs kramdown-rfc2629
 idnits ?= idnits
 rfcdiff ?= rfcdiff
 
