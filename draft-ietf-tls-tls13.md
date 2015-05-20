@@ -1242,14 +1242,14 @@ bad_record_mac
 : This alert is returned if a record is received which cannot be
   deprotected. Because AEAD algorithms combine decryption and
   verification, this message is used for all deprotection failures.
-  This message is always fatal and should never be observed in
+  This alert is always fatal and should never be observed in
   communication between proper implementations (except when messages
   were corrupted in the network).
 
 decryption_failed_RESERVED
 : This alert was used in some earlier versions of TLS, and may have
   permitted certain attacks against the CBC mode {{CBCATT}}.  It MUST
-  NOT be sent by compliant implementations. This message is always fatal.
+  NOT be sent by compliant implementations. This alert is always fatal.
 
 record_overflow
 : A TLSCiphertext record was received that had a length more than
@@ -1262,18 +1262,18 @@ record_overflow
 decompression_failure_RESERVED
 : This alert was used in previous versions of TLS. TLS 1.3 does not
   include compression and TLS 1.3 implementations MUST NOT send this
-  alert when in TLS 1.3 mode. This message is always fatal.
+  alert when in TLS 1.3 mode. This alert is always fatal.
 
 handshake_failure
 : Reception of a "handshake_failure" alert message indicates that the
   sender was unable to negotiate an acceptable set of security
   parameters given the options available.
-  This message is always fatal.
+  This alert is always fatal.
 
 no_certificate_RESERVED
 : This alert was used in SSL 3.0 but not any version of TLS.  It MUST
   NOT be sent by compliant implementations.
-  This message is always fatal.
+  This alert is always fatal.
 
 bad_certificate
 : A certificate was corrupt, contained signatures that did not
@@ -1321,7 +1321,7 @@ decrypt_error
 
 export_restriction_RESERVED
 : This alert was used in some earlier versions of TLS. It MUST NOT
-  be sent by compliant implementations. This message is always fatal.
+  be sent by compliant implementations. This alert is always fatal.
 
 protocol_version
 : The protocol version the peer has attempted to negotiate is
