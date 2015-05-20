@@ -937,9 +937,9 @@ sequence number
 : Each connection state contains a sequence number, which is
   maintained separately for read and write states.  The sequence
   number MUST be set to zero whenever a connection state is made the
-  active state.  Sequence numbers are of type uint64 and may not
+  active state.  Sequence numbers are of type uint64 and MUST NOT
   exceed 2^64-1.  Sequence numbers do not wrap.  If a TLS
-  implementation would need to wrap a sequence number, it must
+  implementation would need to wrap a sequence number, it MUST
   terminate the connection.  A sequence number is incremented after each
   record: specifically, the first record transmitted under a
   particular connection state MUST use sequence number 0.
@@ -2573,7 +2573,7 @@ supported_signature_algorithms.  The following rules apply:
 New ClientCertificateType values are assigned by IANA as described in
 {{iana-considerations}}.
 
-Note: Values listed as RESERVED may not be used. They were used in SSLv3.
+Note: Values listed as RESERVED MUST NOT be used. They were used in SSLv3.
 
 Note: It is a fatal "handshake_failure" alert for an anonymous server to request
 client authentication.
