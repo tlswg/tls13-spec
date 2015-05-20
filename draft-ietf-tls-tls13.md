@@ -1914,7 +1914,7 @@ bytes following the cipher_suite field at the end of the ServerHello.
 
 server_version
 : This field will contain the lower of that suggested by the client
-  in the client hello and the highest supported by the server.  For
+  in the ClientHello and the highest supported by the server.  For
   this version of the specification, the version is { 3, 4 }.  (See
   {{backward-compatibility}} for details about backward compatibility.)
 
