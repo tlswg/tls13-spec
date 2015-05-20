@@ -3609,7 +3609,7 @@ known to the communicating parties and not to attackers. The pre_master_secret
 will be used to generate the master_secret (see
 {{computing-the-master-secret}}). The master_secret is required to generate the
 Finished messages and record protection keys (see {{server-finished}} and
-{{key-calculation}}). By sending a correct Finished message, partyies thus prove
+{{key-calculation}}). By sending a correct Finished message, parties thus prove
 that they know the correct pre_master_secret.
 
 ####  Anonymous Key Exchange
