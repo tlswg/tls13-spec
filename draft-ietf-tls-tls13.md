@@ -1327,7 +1327,7 @@ handshake_failure
   This message is always fatal.
 
 no_certificate_RESERVED
-: This alert was used in SSLv3 but not any version of TLS.  It MUST
+: This alert was used in SSL 3.0 but not any version of TLS.  It MUST
   NOT be sent by compliant implementations.
   This message is always fatal.
 
@@ -2545,7 +2545,7 @@ certificate_authorities
 
 The interaction of the certificate_types and
 supported_signature_algorithms fields is somewhat complicated.
-certificate_types has been present in TLS since SSLv3, but was
+certificate_types has been present in TLS since SSL 3.0, but was
 somewhat underspecified.  Much of its functionality is superseded by
 supported_signature_algorithms.  The following rules apply:
 
@@ -2573,7 +2573,7 @@ supported_signature_algorithms.  The following rules apply:
 New ClientCertificateType values are assigned by IANA as described in
 {{iana-considerations}}.
 
-Note: Values listed as RESERVED MUST NOT be used. They were used in SSLv3.
+Note: Values listed as RESERVED MUST NOT be used. They were used in SSL 3.0.
 
 Note: It is a fatal "handshake_failure" alert for an anonymous server to request
 client authentication.
@@ -3130,7 +3130,7 @@ New cipher suite values are been assigned by IANA as described in
 
 Note: The cipher suite values { 0x00, 0x1C } and { 0x00, 0x1D } are
 reserved to avoid collision with Fortezza-based cipher suites in
-SSL 3.
+SSL 3.0.
 
 
 ## The Security Parameters
@@ -3645,9 +3645,9 @@ Archives of the list can be found at:
     ACLU
     dkg@fifthhorseman.net
 
-    Phil Karlton (co-author of SSLv3)
+    Phil Karlton (co-author of SSL 3.0)
 
-    Paul Kocher (co-author of SSLv3)
+    Paul Kocher (co-author of SSL 3.0)
     Cryptography Research
     paul@cryptography.com
 
