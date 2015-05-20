@@ -853,7 +853,6 @@ PRF algorithm
 : An algorithm used to generate keys from the master secret (see
   {{HMAC}} and {{key-calculation}}).
 
-
 record protection algorithm
 
 : The algorithm to be used for record protection. This algorithm must
@@ -862,8 +861,8 @@ record protection algorithm
   do not provide any confidentiality and
   {{record-payload-protection}} defines a special NULL_NULL AEAD
   algorithm for use in the initial handshake). This specification
-  includes the key size of this algorithm and the lengths of explicit
-  and implicit initialization vectors (or nonces).
+  includes the key size of this algorithm and of the nonce for
+  the AEAD algorithm.
 
 handshake master secret
 
@@ -903,9 +902,7 @@ These parameters are defined in the presentation language as:
            PRFAlgorithm           prf_algorithm;
            RecordProtAlgorithm    record_prot_algorithm;
            uint8                  enc_key_length;
-           uint8                  block_length;
-           uint8                  fixed_iv_length;
-           uint8                  record_iv_length;
+           uint8                  iv_length;
            opaque                 hs_master_secret[48];
            opaque                 master_secret[48];
            opaque                 client_random[32];
@@ -913,12 +910,12 @@ These parameters are defined in the presentation language as:
        } SecurityParameters;
 
 The record layer will use the security parameters to generate the following four
-items (some of which are not required by all ciphers, and are thus empty):
+items:
 
        client write key
        server write key
-       client write IV
-       server write IV
+       client write iv
+       server write iv 
 
 The client write parameters are used by the server when receiving and
 processing records and vice versa. The algorithm used for generating these
@@ -1025,7 +1022,6 @@ of {{RFC5116}}. The key is either the client_write_key or the server_write_key.
            ContentType type;
            ProtocolVersion record_version = { 3, 1 };    /* TLS v1.x */
            uint16 length;
-           opaque nonce_explicit[SecurityParameters.record_iv_length];
            aead-ciphered struct {
               opaque content[TLSPlaintext.length];
            } fragment;
@@ -1045,14 +1041,22 @@ fragment
 : The AEAD encrypted form of TLSPlaintext.fragment.
 {:br }
 
-Each AEAD cipher suite MUST specify how the nonce supplied to the AEAD
-operation is constructed, and what is the length of the
-TLSCiphertext.nonce_explicit part. In many cases, it is appropriate to use
-the partially implicit nonce technique described in Section 3.2.1 of
-{{RFC5116}}; with record_iv_length being the length of the explicit part. In
-this case, the implicit part SHOULD be derived from key_block as
-client_write_iv and server_write_iv (as described in {{key-calculation}}), and
-the explicit part is included in GenericAEAEDCipher.nonce_explicit.
+
+The nonce for the AEAD construction is formed as follows:
+
+  1. iv_length is set to max(8 bytes, N_MIN) for the AEAD algorithm
+     (see {{RFC5116}} Section 4).
+
+  2. The 64-bit sequence number is padded to the left with zeroes
+     to iv_length and XORed with the fixed iv, which is of length
+     iv_length.
+
+The resulting quantity (of length iv_length) is used as the per-record
+nonce. An AEAD algorithm where N_MAX is less than 64 bits MUST not be
+used with TLS.
+
+Note: This is a different construction from that in TLS 1.2, which
+specified a partially explicit nonce.
 
 The plaintext is the TLSPlaintext.fragment.
 
@@ -1109,8 +1113,7 @@ parameters provided by the handshake protocol.
 The master secret is expanded into a sequence of secure bytes, which
 is then split to a client write encryption key and a server write
 encryption key. Each of these is generated from the byte sequence in
-that order. Unused values are empty. Some ciphers may additionally
-require a client write IV and a server write IV.
+that order. Unused values are empty.
 
 When keys are generated, the current master secret (MS) is used
 as an entropy source. For handshake records, this means the
@@ -1130,12 +1133,8 @@ which is then partitioned as follows:
 
        client_write_key[SecurityParameters.enc_key_length]
        server_write_key[SecurityParameters.enc_key_length]
-       client_write_IV[SecurityParameters.fixed_iv_length]
-       server_write_IV[SecurityParameters.fixed_iv_length]
-
-Currently, the client_write_IV and server_write_IV are only generated for
-implicit nonce techniques as described in Section 3.2.1 of {{RFC5116}}.
-
+       client_write_IV[SecurityParameters.iv_length]
+       server_write_IV[SecurityParameters.iv_length]
 
 #  The TLS Handshaking Protocols
 
@@ -3178,24 +3177,10 @@ end-entity certificate remain.
     TLS_DH_anon_WITH_AES_128_GCM_SHA256   DH_anon    AES_128_GCM  SHA256
     TLS_DH_anon_WITH_AES_256_GCM_SHA384   DH_anon    AES_128_GCM  SHA384
 
-                    Key      Implicit IV   Explicit IV
-    Cipher         Material  Size          Size
-    ------------   --------  ----------    -----------
-    NULL               0          0             0
-    AES_128_GCM       16          4             8
-    AES_256_GCM       32          4             8
 
 Key Material
 : The number of bytes from the key_block that are used for
   generating the write keys.
-
-Implicit IV Size
-: The amount of data to be generated for the per-connection part of the
-  initialization vector. This is equal to SecurityParameters.fixed_iv_length).
-
-Explicit IV Size
-: The amount of data needed to be generated for the per-record part of the
-  initialization vector. This is equal to SecurityParameters.record_iv_length).
 {:br }
 
 
