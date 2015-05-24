@@ -311,6 +311,8 @@ draft-06
 
 - Update format of signatures with context.
 
+- Remove explicit IV.
+
 
 draft-05
 
