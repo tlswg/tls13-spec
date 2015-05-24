@@ -915,11 +915,11 @@ items:
        client write key
        server write key
        client write iv
-       server write iv 
+       server write iv
 
 The client write parameters are used by the server when receiving and
 processing records and vice versa. The algorithm used for generating these
-items from the security parameters is described in {{key-calculation}}
+items from the security parameters is described in {{key-calculation}}.
 
 Once the security parameters have been set and the keys have been generated,
 the connection states can be instantiated by making them the current states.
@@ -1042,18 +1042,19 @@ fragment
 {:br }
 
 
-The nonce for the AEAD construction is formed as follows:
+The length of the per-record nonce (iv_length) is set to max(8 bytes,
+N_MIN) for the AEAD algorithm (see {{RFC5116}} Section 4). An AEAD
+algorithm where N_MAX is less than 8 bytes MUST not be used with TLS.
+The per-record nonce for the AEAD construction is formed as follows:
 
-  1. iv_length is set to max(8 bytes, N_MIN) for the AEAD algorithm
-     (see {{RFC5116}} Section 4).
+  1. The 64-bit record sequence number is padded to the left with zeroes
+     to iv_length.
 
-  2. The 64-bit sequence number is padded to the left with zeroes
-     to iv_length and XORed with the fixed iv, which is of length
-     iv_length.
+  2. The padded sequence number is XORed with the static client_write_iv
+     or server_write_iv, depending on the role.
 
 The resulting quantity (of length iv_length) is used as the per-record
-nonce. An AEAD algorithm where N_MAX is less than 64 bits MUST not be
-used with TLS.
+nonce. 
 
 Note: This is a different construction from that in TLS 1.2, which
 specified a partially explicit nonce.
@@ -3176,12 +3177,6 @@ end-entity certificate remain.
     TLS_DHE_DSS_WITH_AES_256_GCM_SHA384   DHE_DSS    AES_256_GCM  SHA384
     TLS_DH_anon_WITH_AES_128_GCM_SHA256   DH_anon    AES_128_GCM  SHA256
     TLS_DH_anon_WITH_AES_256_GCM_SHA384   DH_anon    AES_128_GCM  SHA384
-
-
-Key Material
-: The number of bytes from the key_block that are used for
-  generating the write keys.
-{:br }
 
 
 # Implementation Notes
