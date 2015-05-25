@@ -38,6 +38,11 @@ normative:
   RFC5288:
   RFC5289:
   RFC5869:
+  RFC6209:
+  RFC6367:
+  RFC6655:
+  RFC7251:
+  I-D.ietf-tls-chacha20-poly1305:
   AES:
        title: Specification for the Advanced Encryption Standard (AES)
        date: 2001-11-26
@@ -311,6 +316,8 @@ draft-08
 - Remove support for weak and lesser used named curves.
 
 - Remove support for MD5 and SHA-224 hashes with signatures.
+
+- Revise list of currently available AEAD cipher suites.
 
 
 draft-07
@@ -1862,7 +1869,7 @@ session_id
 cipher_suites
 : This is a list of the cryptographic options supported by the
   client, with the client's first preference first.
-  Values are defined in {{the-cipher-suite}}.
+  Values are defined in {{cipher-suites}}.
 
 compression_methods
 : Versions of TLS before 1.3 supported compression and the list of
@@ -3309,7 +3316,7 @@ other than for computing other secrets.)
 #  Mandatory Cipher Suites
 
 In the absence of an application profile standard specifying otherwise, a
-TLS-compliant application MUST implement the cipher suite [TODO:Needs to be selected](https://github.com/tlswg/tls13-spec/issues/32). (See {{the-cipher-suite}} for the definition.)
+TLS-compliant application MUST implement the cipher suite [TODO:Needs to be selected](https://github.com/tlswg/tls13-spec/issues/32). (See {{cipher-suites}} for the definition.)
 
 
 #  Application Data Protocol
@@ -3321,8 +3328,8 @@ are treated as transparent data to the record layer.
 
 #  Security Considerations
 
-Security issues are discussed throughout this memo, especially in Appendices C,
-D, and E.
+Security issues are discussed throughout this memo, especially in Appendices B,
+C, and D.
 
 
 #  IANA Considerations
@@ -3410,11 +3417,37 @@ This section describes protocol types and constants.
 %%### Handshake Finalization Messages
 %%### Ticket Establishment
 
-## The Cipher Suite
+## Cipher Suites
 
-The following values define the cipher suite codes used in the ClientHello and
-ServerHello messages.
-A cipher suite defines a cipher specification supported in TLS.
+A cipher suite defines a cipher specification supported in TLS and negotiated
+via hello messages in the TLS handshake.
+Cipher suite names follow a general naming convention composed of a series
+of component algorithm names separated by underscores:
+
+       CipherSuite TLS_KEA_SIGN_WITH_CIPHER_HASH = VALUE;
+
+       Component      Contents
+       TLS            The string "TLS"
+       KEA            The key exchange algorithm
+       SIGN           The signature algorithm
+       WITH           The string "WITH"
+       CIPHER         The symmetric cipher used for record protection
+       HASH           The hash algorithm used for the PRF
+       VALUE          The two byte ID assigned for this cipher suite
+
+The "CIPHER" component commonly has sub-components used to designate
+the cipher name, bits, and mode, if applicable. For example, "AES_256_GCM"
+represents 256-bit AES in the GCM mode of operation. Cipher suite names that
+lack a "HASH" value that are defined for use with TLS 1.2 or later use the
+SHA-256 hash algorithm by default.
+
+The primary key exchange algorithm used in TLS is Ephemeral Diffie-Hellman
+{{DH}}. The finite field based version is denoted "DHE" and the elliptic
+curve based version is denoted "ECDHE". Prior versions of TLS supported
+non-ephemeral key exchanges, however these are not supported by TLS 1.3.
+
+See the definitions of each cipher suite in its specification document for
+the full details of each combination of algorithms that is specified.
 
 TLS_NULL_WITH_NULL_NULL is specified and is the initial state of a TLS
 connection during the first handshake on that channel, but MUST NOT be
@@ -3422,52 +3455,73 @@ negotiated, as it provides no more protection than an unsecured connection.
 
        CipherSuite TLS_NULL_WITH_NULL_NULL = {0x00,0x00};
 
-The following cipher suite definitions, defined in {{RFC5288}}, are
-used for server-authenticated (and optionally client-authenticated)
-Diffie-Hellman. DHE denotes ephemeral Diffie-Hellman,
-where the Diffie-Hellman parameters are signed by a signature-capable
-certificate, which has been signed by the CA. The signing algorithm
-used by the server is specified after the DHE component of the
-CipherSuite name. The server can request any signature-capable
-certificate from the client for client authentication.
+The following is a list of server-authenticated (and optionally
+client-authenticated) cipher suites which are currently available in TLS 1.3:
 
-       CipherSuite TLS_DHE_RSA_WITH_AES_128_GCM_SHA256 = {0x00,0x9E};
-       CipherSuite TLS_DHE_RSA_WITH_AES_256_GCM_SHA384 = {0x00,0x9F};
-       CipherSuite TLS_DHE_DSS_WITH_AES_128_GCM_SHA256 = {0x00,0xA2};
-       CipherSuite TLS_DHE_DSS_WITH_AES_256_GCM_SHA384 = {0x00,0xA3};
+              Cipher Suite Name                      Value     Specification
+    TLS_DHE_RSA_WITH_AES_128_GCM_SHA256           {0x00,0x9E}    [RFC5288]
+    TLS_DHE_RSA_WITH_AES_256_GCM_SHA384           {0x00,0x9F}    [RFC5288]
+    TLS_DHE_DSS_WITH_AES_128_GCM_SHA256           {0x00,0xA2}    [RFC5288]
+    TLS_DHE_DSS_WITH_AES_256_GCM_SHA384           {0x00,0xA3}    [RFC5288]
+    TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256       {0xC0,0x2B}    [RFC5289]
+    TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384       {0xC0,0x2C}    [RFC5289]
+    TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256         {0xC0,0x2F}    [RFC5289]
+    TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384         {0xC0,0x30}    [RFC5289]
+    TLS_DHE_RSA_WITH_AES_128_CCM                  {0xC0,0x9E}    [RFC6655]
+    TLS_DHE_RSA_WITH_AES_256_CCM                  {0xC0,0x9F}    [RFC6655]
+    TLS_DHE_RSA_WITH_AES_128_CCM_8                {0xC0,0xA2}    [RFC6655]
+    TLS_DHE_RSA_WITH_AES_256_CCM_8                {0xC0,0xA3}    [RFC6655]
+    TLS_ECDHE_ECDSA_WITH_AES_128_CCM              {0xC0,0xAC}    [RFC7251]
+    TLS_ECDHE_ECDSA_WITH_AES_256_CCM              {0xC0,0xAD}    [RFC7251]
+    TLS_ECDHE_ECDSA_WITH_AES_128_CCM_8            {0xC0,0xAE}    [RFC7251]
+    TLS_ECDHE_ECDSA_WITH_AES_256_CCM_8            {0xC0,0xAF}    [RFC7251]
+    TLS_DHE_RSA_WITH_ARIA_128_GCM_SHA256          {0xC0,0x52}    [RFC6209]
+    TLS_DHE_RSA_WITH_ARIA_256_GCM_SHA384          {0xC0,0x53}    [RFC6209]
+    TLS_DHE_DSS_WITH_ARIA_128_GCM_SHA256          {0xC0,0x56}    [RFC6209]
+    TLS_DHE_DSS_WITH_ARIA_256_GCM_SHA384          {0xC0,0x57}    [RFC6209]
+    TLS_ECDHE_ECDSA_WITH_ARIA_128_GCM_SHA256      {0xC0,0x5C}    [RFC6209]
+    TLS_ECDHE_ECDSA_WITH_ARIA_256_GCM_SHA384      {0xC0,0x5D}    [RFC6209]
+    TLS_ECDHE_RSA_WITH_ARIA_128_GCM_SHA256        {0xC0,0x60}    [RFC6209]
+    TLS_ECDHE_RSA_WITH_ARIA_256_GCM_SHA384        {0xC0,0x61}    [RFC6209]
+    TLS_DHE_RSA_WITH_CAMELLIA_128_GCM_SHA256      {0xC0,0x7C}    [RFC6367]
+    TLS_DHE_RSA_WITH_CAMELLIA_256_GCM_SHA384      {0xC0,0x7D}    [RFC6367]
+    TLS_DHE_DSS_WITH_CAMELLIA_128_GCM_SHA256      {0xC0,0x80}    [RFC6367]
+    TLS_DHE_DSS_WITH_CAMELLIA_256_GCM_SHA384      {0xC0,0x81}    [RFC6367]
+    TLS_ECDHE_ECDSA_WITH_CAMELLIA_128_GCM_SHA256  {0xC0,0x86}    [RFC6367]
+    TLS_ECDHE_ECDSA_WITH_CAMELLIA_256_GCM_SHA384  {0xC0,0x87}    [RFC6367]
+    TLS_ECDHE_RSA_WITH_CAMELLIA_128_GCM_SHA256    {0xC0,0x8A}    [RFC6367]
+    TLS_ECDHE_RSA_WITH_CAMELLIA_256_GCM_SHA384    {0xC0,0x8B}    [RFC6367]
+    TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305          {0xCC,0xA1}  [I-D.ietf-tls-chacha20-poly1305]
+    TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305        {0xCC,0xA2}  [I-D.ietf-tls-chacha20-poly1305]
+    TLS_DHE_RSA_WITH_CHACHA20_POLY1305            {0xCC,0xA3}  [I-D.ietf-tls-chacha20-poly1305]
 
-The following cipher suite definitions, defined in {{RFC5289}}, are
-used for server-authenticated (and optionally client-authenticated)
-Elliptic Curve Diffie-Hellman. ECDHE denotes ephemeral Diffie-Hellman,
-where the Diffie-Hellman parameters are signed by a signature-capable
-certificate, which has been signed by the CA. The signing algorithm
-used by the server is specified after the DHE component of the
-CipherSuite name. The server can request any signature-capable
-certificate from the client for client authentication.
+[[TODO: CHACHA20_POLY1305 cipher suite IDs are TBD. Must update above if
+final versions change.]]
 
-       CipherSuite TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256 = {0xC0,0x2B};
-       CipherSuite TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384 = {0xC0,0x2C};
-       CipherSuite TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256   = {0xC0,0x2F};
-       CipherSuite TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384   = {0xC0,0x30};
+Note: In the case of the CCM mode of AES, two variations exist: "CCM_8" which
+uses an 8-bit authentication tag and "CCM" which uses a 16-bit authentication
+tag. Both use the default hash, SHA-256.
 
+DHE AES GCM & CCM are standards track ([RFC5288] & [RFC6655]),
+as is ChaChaPoly ([I-D.ietf-tls-chacha20-poly1305]).  The ECDHE variants of AES
+and other ciphers above are currently informational, however ECDHE AES GCM
+is widely deployed.
 
-The following ciphers, defined in {{RFC5288}},
-are used for completely anonymous Diffie-Hellman
-communications in which neither party is authenticated. Note that this mode is
-vulnerable to man-in-the-middle attacks. Using this mode therefore is of
-limited use: These cipher suites MUST NOT be used by TLS implementations
-unless the application layer has specifically requested to allow anonymous key
-exchange. (Anonymous key exchange may sometimes be acceptable, for example, to
-support opportunistic encryption when no set-up for authentication is in place,
-or when TLS is used as part of more complex security protocols that have other
-means to ensure authentication.)
+In addition to authenticated cipher suites, completely anonymous Diffie-Hellman
+cipher suites exist to provide communications in which neither party is
+authenticated. This mode is vulnerable to main-in-the-middle attacks and is
+therefore unsafe for general usage. These cipher suites MUST NOT be used by TLS
+implementations unless the application layer has specifically requested to allow
+anonymous key exchange. Anonymous key exchange may sometimes be acceptable, for
+example, to support opportunistic encryption when no set-up for authentication is
+in place, or when TLS is used as part of more complex security protocols that have
+other means to ensure authentication. The following specifications provide "DH_anon"
+key exchange cipher suites:
+AES-GCM [RFC5288], ARIA-GCM [RFC6209], and CAMELLIA-GCM [RFC6367].
 
-       CipherSuite TLS_DH_anon_WITH_AES_128_GCM_SHA256 = {0x00,0xA6};
-       CipherSuite TLS_DH_anon_WITH_AES_256_GCM_SHA384 = {0x00,0xA7};
+All cipher suites in this section are specified for usage with both TLS 1.2
+and TLS 1.3. (see {{backward-compatibility}})
 
-
-[[TODO: Add all the defined AEAD ciphers. This currently only lists
-GCM. https://github.com/tlswg/tls13-spec/issues/53]]
 Note that using non-anonymous key exchange without actually verifying the key
 exchange is essentially equivalent to anonymous key exchange, and the same
 precautions apply. While non-anonymous key exchange will generally involve a
@@ -3483,10 +3537,6 @@ exchange when the application layer is allowing anonymous key exchange.
 
 New cipher suite values are assigned by IANA as described in
 {{iana-considerations}}.
-
-Note: The cipher suite values { 0x00, 0x1C } and { 0x00, 0x1D } are
-reserved to avoid collision with Fortezza-based cipher suites in
-SSL 3.0.
 
 
 ## The Security Parameters
@@ -3519,20 +3569,6 @@ ClientCertificateType (when used by the client). Thus, the restrictions on the
 algorithm used to sign certificates specified in Sections 2 and 3 of RFC 4492
 are also relaxed. As in this document, the restrictions on the keys in the
 end-entity certificate remain.
-
-
-# Cipher Suite Definitions
-
-    Cipher Suite                          Key        Record
-                                          Exchange   Protection   Hash
-
-    TLS_NULL_WITH_NULL_NULL               NULL       NULL_NULL    N/A
-    TLS_DHE_RSA_WITH_AES_128_GCM_SHA256   DHE_RSA    AES_128_GCM  SHA256
-    TLS_DHE_RSA_WITH_AES_256_GCM_SHA384   DHE_RSA    AES_256_GCM  SHA384
-    TLS_DHE_DSS_WITH_AES_128_GCM_SHA256   DHE_DSS    AES_128_GCM  SHA256
-    TLS_DHE_DSS_WITH_AES_256_GCM_SHA384   DHE_DSS    AES_256_GCM  SHA384
-    TLS_DH_anon_WITH_AES_128_GCM_SHA256   DH_anon    AES_128_GCM  SHA256
-    TLS_DH_anon_WITH_AES_256_GCM_SHA384   DH_anon    AES_128_GCM  SHA384
 
 
 # Implementation Notes
