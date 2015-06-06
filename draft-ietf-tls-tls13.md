@@ -1880,7 +1880,7 @@ encoded as a big-endian integer.
 %%% Key Exchange Messages
        opaque dh_Y<1..2^16-1>;
 
-#### ECHDE Parameters {#ecdhe-param}
+#### ECDHE Parameters {#ecdhe-param}
 
 ECDHE parameters for both clients and servers are encoded in the
 opaque key_exchange field of the ClientKeyShareOffer or
