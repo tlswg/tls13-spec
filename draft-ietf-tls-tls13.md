@@ -3472,7 +3472,7 @@ exchange when the application layer is allowing anonymous key exchange.
    o  For cipher suites ending with _SH384, HKDF is used
       with SHA-384 as the hash function.
 
-New cipher suite values are been assigned by IANA as described in
+New cipher suite values are assigned by IANA as described in
 {{iana-considerations}}.
 
 Note: The cipher suite values { 0x00, 0x1C } and { 0x00, 0x1D } are
