@@ -438,7 +438,7 @@ purpose of this presentation language is to document TLS only; it has no
 general application beyond that particular goal.
 
 
-##  Basic Block Size {#basic_block_size}
+##  Basic Block Size
 
 The representation of all data items is explicitly specified. The basic data
 block size is one byte (i.e., 8 bits). Multiple byte data items are
@@ -508,11 +508,11 @@ a 17-byte vector of uint16 would be illegal).
              /* zero to 400 16-bit unsigned integers */
 
 
-##  Numbers {#numbers}
+##  Numbers
 
 The basic numeric data type is an unsigned byte (uint8). All larger numeric
 data types are formed from fixed-length series of bytes concatenated as
-described in {{basic_block_size}} and are also unsigned. The following numeric
+described in {{basic-block-size}} and are also unsigned. The following numeric
 types are predefined.
 
        uint8 uint16[2];
@@ -3622,7 +3622,7 @@ Cryptographic details:
   DSA "k" parameter, and other security-critical values?
 
 
-# Backward Compatibility {#backward-compatibility}
+# Backward Compatibility
 
 The TLS protocol provides a built-in mechanism for version negotiation between
 endpoints potentially supporting different versions of TLS.
