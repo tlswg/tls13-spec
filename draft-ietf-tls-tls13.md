@@ -331,6 +331,10 @@ draft-06
 
 - Remove explicit IV.
 
+- Remove support for weak and lesser used named curves.
+
+- Remove support for MD5 and SHA-224 hashes with signatures.
+
 
 draft-05
 
@@ -2087,16 +2091,20 @@ which signature/hash algorithm pairs may be used in digital signatures. The
 
 %%% Signature Algorithm Extension
        enum {
-           none(0), md5(1), sha1(2), sha224(3), sha256(4), sha384(5),
-           sha512(6), (255)
+           none(0),
+           md5_RESERVED(1),
+           sha1(2),
+           sha224_RESERVED(3),
+           sha256(4), sha384(5), sha512(6),
+           (255)
        } HashAlgorithm;
 
        enum { anonymous(0), rsa(1), dsa(2), ecdsa(3), (255) }
          SignatureAlgorithm;
 
        struct {
-             HashAlgorithm hash;
-             SignatureAlgorithm signature;
+           HashAlgorithm hash;
+           SignatureAlgorithm signature;
        } SignatureAndHashAlgorithm;
 
        SignatureAndHashAlgorithm
@@ -2116,6 +2124,9 @@ hash
   SHA-224, SHA-256, SHA-384, and SHA-512 {{SHS}}, respectively.  The
   "none" value is provided for future extensibility, in case of a
   signature algorithm which does not require hashing before signing.
+  The usage of MD5 and SHA-224 are deprecated. The md5_RESERVED and
+  sha224_RESERVED values MUST NOT be offered or negotiated by any
+  implementation.
 
 signature
 : This field indicates the signature algorithm that may be used.
@@ -2131,23 +2142,23 @@ suite indicates permissible signature algorithms but not hash algorithms.
 appropriate rules.
 
 If the client supports only the default hash and signature algorithms (listed
-in this section), it MAY omit the signature_algorithms extension. If the client
+in this section), it MAY omit the "signature_algorithms" extension. If the client
 does not support the default algorithms, or supports other hash and signature
 algorithms (and it is willing to use them for verifying messages sent by the
 server, i.e., server certificates and server key share), it MUST send the
-signature_algorithms extension, listing the algorithms it is willing to accept.
+"signature_algorithms" extension, listing the algorithms it is willing to accept.
 
-If the client does not send the signature_algorithms extension, the server MUST
+If the client does not send the "signature_algorithms" extension, the server MUST
 do the following:
 
-- If the negotiated key exchange algorithm is one of (DHE_RSA, ECDHE_RSA), behave as if client had sent the value
-{sha1,rsa}.
+- If the negotiated key exchange algorithm is one of (DHE_RSA, ECDHE_RSA),
+  behave as if client had sent the value {sha1,rsa}.
 
-- If the negotiated key exchange algorithm is DHE_DSS, behave
-as if the client had sent the value {sha1,dsa}.
+- If the negotiated key exchange algorithm is DHE_DSS,
+  behave as if the client had sent the value {sha1,dsa}.
 
 - If the negotiated key exchange algorithm is ECDHE_ECDSA,
-behave as if the client had sent value {sha1,ecdsa}.
+  behave as if the client had sent value {sha1,ecdsa}.
 
 Note: This extension is not meaningful for TLS versions prior to 1.2. Clients
 MUST NOT offer it if they are offering prior versions. However, even if clients
@@ -2173,15 +2184,10 @@ The "extension_data" field of this extension SHALL contain a
 %%% Named Group Extension
        enum {
            // Elliptic Curve Groups.
-           sect163k1 (1), sect163r1 (2), sect163r2 (3),
-           sect193r1 (4), sect193r2 (5), sect233k1 (6),
-           sect233r1 (7), sect239k1 (8), sect283k1 (9),
-           sect283r1 (10), sect409k1 (11), sect409r1 (12),
-           sect571k1 (13), sect571r1 (14), secp160k1 (15),
-           secp160r1 (16), secp160r2 (17), secp192k1 (18),
-           secp192r1 (19), secp224k1 (20), secp224r1 (21),
-           secp256k1 (22), secp256r1 (23), secp384r1 (24),
-           secp521r1 (25),
+           obsolete_RESERVED (1..13),
+           sect571r1 (14),
+           obsolete_RESERVED (15..22),
+           secp256r1 (23), secp384r1 (24), secp521r1 (25),
 
            // Finite Field Groups.
            ffdhe2048 (256), ffdhe3072 (257), ffdhe4096 (258),
@@ -2189,9 +2195,8 @@ The "extension_data" field of this extension SHALL contain a
            ffdhe_private_use (0x01FC..0x01FF),
 
            // Reserved Code Points.
-           reserved (0xFE00..0xFEFF),
-           reserved(0xFF01),
-           reserved(0xFF02),
+           ecdhe_private_use (0xFE00..0xFEFF),
+           obsolete_RESERVED (0xFF01..0xFF02),
            (0xFFFF)
        } NamedGroup;
 
@@ -2199,31 +2204,31 @@ The "extension_data" field of this extension SHALL contain a
            NamedGroup named_group_list<1..2^16-1>;
        } NamedGroupList;
 
-sect163k1, etc
-: Indicates support of the corresponding named curve
-  The named curves defined here are those specified in SEC 2 [13].
-  Note that many of these curves are also recommended in ANSI
-  X9.62 {{X962}} and FIPS 186-2 {{DSS}}.  Values 0xFE00 through 0xFEFF are
-  reserved for private use.  Values 0xFF01 and 0xFF02 were used in
-  previous versions of TLS but MUST NOT be offered by TLS 1.3
-  implementations.
-  [[OPEN ISSUE: Triage curve list.]]
+secp256r1, etc.
+: Indicates support of the corresponding named curve.
+  Note that some curves are also recommended in ANSI
+  X9.62 {{X962}} and FIPS 186-2 {{DSS}}.
+  Values 0xFE00 through 0xFEFF are reserved for private use.
 
-ffdhe2432, etc
+ffdhe2048, etc.
 : Indicates support of the corresponding finite field
-  group, defined in {{I-D.ietf-tls-negotiated-ff-dhe}}
+  group, defined in {{I-D.ietf-tls-negotiated-ff-dhe}}.
+  Values 0x01FC through 0x01FF are reserved for private use.
 {:br }
+
+Values within "obsolete_RESERVED" ranges were used in previous versions
+of TLS and MUST NOT be offered or negotiated by TLS 1.3 implementations.
 
 Items in named_curve_list are ordered according to the client's
 preferences (favorite choice first).
 
-As an example, a client that only supports secp192r1 (aka NIST P-192;
-value 19 = 0x0013) and secp224r1 (aka NIST P-224; value 21 = 0x0015)
-and prefers to use secp192r1 would include a TLS extension consisting
+As an example, a client that only supports secp256r1 (aka NIST P-256;
+value 23 = 0x0017) and secp384r1 (aka NIST P-384; value 24 = 0x0018)
+and prefers to use secp256r1 would include a TLS extension consisting
 of the following octets.  Note that the first two octets indicate the
 extension type (Supported Group Extension):
 
-       00 0A 00 06 00 04 00 13 00 15
+       00 0A 00 06 00 04 00 17 00 18
 
 The client MUST supply a "named_groups" extension containing at
 least one group for each key exchange algorithm (currently
