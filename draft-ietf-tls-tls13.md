@@ -111,9 +111,9 @@ informative:
   RFC6066:
   RFC6176:
   RFC7465:
+  RFC7568:
   I-D.ietf-tls-negotiated-ff-dhe:
   I-D.ietf-tls-session-hash:
-  I-D.ietf-tls-sslv3-diediedie:
 
 
   CBCATT:
@@ -3711,7 +3711,7 @@ CLIENT-HELLO in order to negotiate older versions of TLS.
 Implementations MUST NOT send or accept any records with a version less than { 3, 0 }.
 
 The security of SSL 3.0 {{SSL3}} is considered insufficient for the reasons enumerated
-in [I-D.ietf-tls-sslv3-diediedie], and MUST NOT be negotiated for any reason.
+in [RFC7568], and MUST NOT be negotiated for any reason.
 
 Implementations MUST NOT send a ClientHello.client_version or ServerHello.server_version
 set to { 3, 0 } or less. Any endpoint receiving a Hello message with
