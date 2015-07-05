@@ -33,7 +33,6 @@ normative:
   RFC2104:
   RFC2119:
   RFC2434:
-  RFC1321:
   RFC3447:
   RFC5280:
   RFC5288:
@@ -92,6 +91,7 @@ normative:
 
 informative:
   RFC0793:
+  RFC1321:
   RFC1948:
   RFC2246:
   RFC3268:
@@ -309,7 +309,15 @@ server: The endpoint which did not initiate the TLS connection.
 ##  Major Differences from TLS 1.2
 
 
+draft-08
+
+- Remove support for weak and lesser used named curves.
+
+- Remove support for MD5 and SHA-224 hashes with signatures.
+
+
 draft-07
+
 - Integration of semi-ephemeral DH proposal.
 
 - Add initial 0-RTT support
@@ -331,17 +339,12 @@ draft-06
 
 - Remove explicit IV.
 
-- Remove support for weak and lesser used named curves.
-
-- Remove support for MD5 and SHA-224 hashes with signatures.
-
 
 draft-05
 
 - Prohibit SSL negotiation for backwards compatibility.
 
 - Fix which MS is used for exporters.
-
 
 
 draft-04
@@ -357,6 +360,7 @@ draft-04
 - Remove renegotiation.
 
 - Remove point format negotiation.
+
 
 draft-03
 
