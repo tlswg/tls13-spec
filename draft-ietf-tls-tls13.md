@@ -2356,6 +2356,8 @@ certificate and signature, with three potential benefits:
 
 - Allowing the client and server to do a 0-RTT exchange (See {{zero-rtt-exchange}})
 
+The extension is defined as:
+
 %%% Hello Messages
           struct {
             select (Role) {
@@ -2369,7 +2371,6 @@ certificate and signature, with three potential benefits:
 
 identifier
 : An opaque label for the configuration in question.
-
 {:br }
 
 A client which wishes to reuse a known configuration MAY supply a
