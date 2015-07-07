@@ -3432,7 +3432,7 @@ of component algorithm names separated by underscores:
        SIGN           The signature algorithm
        WITH           The string "WITH"
        CIPHER         The symmetric cipher used for record protection
-       HASH           The hash algorithm used for the PRF
+       HASH           The hash algorithm used with HKDF
        VALUE          The two byte ID assigned for this cipher suite
 
 The "CIPHER" component commonly has sub-components used to designate
@@ -3528,12 +3528,6 @@ precautions apply. While non-anonymous key exchange will generally involve a
 higher computational and communicational cost than anonymous key exchange, it
 may be in the interest of interoperability not to disable non-anonymous key
 exchange when the application layer is allowing anonymous key exchange.
-
-   o  For cipher suites ending with _SHA256, HKDF is used
-      with SHA-256 as the hash function.
-
-   o  For cipher suites ending with _SHA384, HKDF is used
-      with SHA-384 as the hash function.
 
 New cipher suite values are assigned by IANA as described in
 {{iana-considerations}}.
