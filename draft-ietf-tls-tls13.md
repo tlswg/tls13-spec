@@ -412,7 +412,7 @@ care has been taken to reduce network activity.
 
 This document and the TLS protocol itself have evolved from the SSL 3.0 Protocol
 Specification as published by Netscape. The differences between this protocol
-and previosu versions are significant enough that the various
+and previous versions are significant enough that the various
 versions of TLS and SSL 3.0 do not interoperate (although each protocol
 incorporates a mechanism by which an implementation can back down to prior
 versions). This document is intended primarily for readers who will be
@@ -438,7 +438,7 @@ purpose of this presentation language is to document TLS only; it has no
 general application beyond that particular goal.
 
 
-##  Basic Block Size {#basic_block_size}
+##  Basic Block Size
 
 The representation of all data items is explicitly specified. The basic data
 block size is one byte (i.e., 8 bits). Multiple byte data items are
@@ -480,7 +480,7 @@ of T.  The length of the vector is not included in the encoded stream.
 In the following example, Datum is defined to be three consecutive bytes that
 the protocol does not interpret, while Data is three consecutive Datum,
 consuming a total of nine bytes.
-          
+
        opaque Datum[3];      /* three uninterpreted bytes */
        Datum Data[9];        /* 3 consecutive 3 byte vectors */
 
@@ -508,11 +508,11 @@ a 17-byte vector of uint16 would be illegal).
              /* zero to 400 16-bit unsigned integers */
 
 
-##  Numbers {#numbers}
+##  Numbers
 
 The basic numeric data type is an unsigned byte (uint8). All larger numeric
 data types are formed from fixed-length series of bytes concatenated as
-described in {{basic_block_size}} and are also unsigned. The following numeric
+described in {{basic-block-size}} and are also unsigned. The following numeric
 types are predefined.
 
        uint8 uint16[2];
@@ -3469,10 +3469,10 @@ exchange when the application layer is allowing anonymous key exchange.
    o  For cipher suites ending with _SHA256, HKDF is used
       with SHA-256 as the hash function.
 
-   o  For cipher suites ending with _SH384, HKDF is used
+   o  For cipher suites ending with _SHA384, HKDF is used
       with SHA-384 as the hash function.
 
-New cipher suite values are been assigned by IANA as described in
+New cipher suite values are assigned by IANA as described in
 {{iana-considerations}}.
 
 Note: The cipher suite values { 0x00, 0x1C } and { 0x00, 0x1D } are
@@ -3496,7 +3496,7 @@ changes some of the structures used in that document. This section details the
 required changes for implementors of both RFC 4492 and TLS 1.2. Implementors of
 TLS 1.2 who are not implementing RFC 4492 do not need to read this section.
 
-This document adds a "signature_algorithm" field to the digitally- signed
+This document adds a "signature_algorithm" field to the digitally-signed
 element in order to identify the signature and digest algorithms used to create
 a signature. This change applies to digital signatures formed using ECDSA as
 well, thus allowing ECDSA signatures to be used with digest algorithms other
@@ -3622,7 +3622,7 @@ Cryptographic details:
   DSA "k" parameter, and other security-critical values?
 
 
-# Backward Compatibility {#backward-compatibility}
+# Backward Compatibility
 
 The TLS protocol provides a built-in mechanism for version negotiation between
 endpoints potentially supporting different versions of TLS.
