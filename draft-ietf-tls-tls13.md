@@ -412,7 +412,7 @@ care has been taken to reduce network activity.
 
 This document and the TLS protocol itself have evolved from the SSL 3.0 Protocol
 Specification as published by Netscape. The differences between this protocol
-and previosu versions are significant enough that the various
+and previous versions are significant enough that the various
 versions of TLS and SSL 3.0 do not interoperate (although each protocol
 incorporates a mechanism by which an implementation can back down to prior
 versions). This document is intended primarily for readers who will be
@@ -480,7 +480,7 @@ of T.  The length of the vector is not included in the encoded stream.
 In the following example, Datum is defined to be three consecutive bytes that
 the protocol does not interpret, while Data is three consecutive Datum,
 consuming a total of nine bytes.
-          
+
        opaque Datum[3];      /* three uninterpreted bytes */
        Datum Data[9];        /* 3 consecutive 3 byte vectors */
 
@@ -3469,7 +3469,7 @@ exchange when the application layer is allowing anonymous key exchange.
    o  For cipher suites ending with _SHA256, HKDF is used
       with SHA-256 as the hash function.
 
-   o  For cipher suites ending with _SH384, HKDF is used
+   o  For cipher suites ending with _SHA384, HKDF is used
       with SHA-384 as the hash function.
 
 New cipher suite values are assigned by IANA as described in
