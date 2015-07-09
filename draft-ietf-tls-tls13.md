@@ -4,7 +4,7 @@ abbrev: TLS
 docname: draft-ietf-tls-tls13-latest
 category: std
 updates: 4492
-obsoletes: 3268, 4346, 4366, 5246, 5077
+obsoletes: 5077, 5246
 
 ipr: pre5378Trust200902
 area: General
