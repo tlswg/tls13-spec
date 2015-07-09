@@ -2177,19 +2177,24 @@ signature_algorithms extension, listing the algorithms it is willing to accept.
 If the client does not send the signature_algorithms extension, the server MUST
 do the following:
 
-- If the negotiated key exchange algorithm is one of (DHE_RSA, ECDHE_RSA), behave as if client had sent the value
-{sha1,rsa}.
+- If the negotiated key exchange algorithm is one of (DHE_RSA, ECDHE_RSA),
+behave as if client had sent the value {sha256,rsa}.
 
 - If the negotiated key exchange algorithm is DHE_DSS, behave
-as if the client had sent the value {sha1,dsa}.
+as if the client had sent the value {sha256,dsa}.
 
 - If the negotiated key exchange algorithm is ECDHE_ECDSA,
-behave as if the client had sent value {sha1,ecdsa}.
+behave as if the client had sent value {sha256,ecdsa}.
 
 Note: This extension is not meaningful for TLS versions prior to 1.2. Clients
 MUST NOT offer it if they are offering prior versions. However, even if clients
 do offer it, the rules specified in {{RFC6066}} require servers to ignore
 extensions they do not understand.
+
+Note: The default values for this extension were changed in TLS 1.3.
+Previously the server was expected to behave as if the client had sent a value
+with sha1 hash algorithm. In case the client is willing to negotiate TLS 1.2
+it MUST include this extension.
 
 Servers MUST NOT send this extension. TLS servers MUST support receiving this
 extension.
