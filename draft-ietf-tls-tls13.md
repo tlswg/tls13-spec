@@ -94,7 +94,6 @@ informative:
   RFC0793:
   RFC1948:
   RFC2246:
-  RFC3268:
   RFC4086:
   RFC4279:
   RFC4302:
@@ -2950,10 +2949,9 @@ Structure of this message:
 The verify_data value is computed as follows:
 
 verify_data
-:      HMAC(finished_secret, finished_label + '\0' + handshake_hash)
-       where HMAC uses the Hash algorithm for the handshake.
-       See {{the-handshake-hash}} for the definition of
-       handshake_hash.
+: HMAC(finished_secret, finished_label + '\0' + handshake_hash)
+  where HMAC {{RFC2104}} uses the Hash algorithm for the handshake.
+  See {{the-handshake-hash}} for the definition of handshake_hash.
 
 finished_label
 : For Finished messages sent by the client, the string
@@ -3154,7 +3152,7 @@ These shared secret values are used to generate cryptographic keys as
 shown below. 
 
 The derivation process is as follows, where L denotes the length of
-the underlying hash function for HKDF.
+the underlying hash function for HKDF {{RFC5869}}.
 
 ~~~
   HKDF-Expand-Label(Secret, Label, HashValue, Length) =
