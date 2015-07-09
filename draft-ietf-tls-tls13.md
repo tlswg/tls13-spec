@@ -1423,11 +1423,14 @@ The basic TLS Handshake for DH is shown in {{tls-full}}:
      {Finished}                -------->
      [Application Data]        <------->      [Application Data]
 
-* Indicates optional or situation-dependent messages that are not always sent.
+            *  Indicates optional or situation-dependent
+               messages that are not always sent.
 
-{} Indicates messages protected using keys derived from the ephemeral secret.
+            {} Indicates messages protected using keys
+               derived from the ephemeral secret.
 
-[] Indicates messages protected using keys derived from the master secret.
+            [] Indicates messages protected using keys
+               derived from the master secret.
 ~~~
 {: #tls-full title="Message flow for full TLS Handshake"}
 
@@ -1611,7 +1614,8 @@ reducing handshake latency, as shown below.
 
        [Application Data]        <------->      [Application Data]
 
-() Indicates messages protected using keys derived from the static secret.
+            () Indicates messages protected using keys
+               derived from the static secret.
 ~~~
 {: #tls-0-rtt title="Message flow for a zero round trip handshake"}
 
