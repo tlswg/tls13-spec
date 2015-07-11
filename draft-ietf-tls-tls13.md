@@ -2243,7 +2243,6 @@ must consider the supported groups in both cases.
 [[TODO: IANA Considerations.]]
 
 
-
 ####  Client Key Share
 
 The client_key_share extension MUST be provided by the client if it
@@ -2343,7 +2342,7 @@ X9.62.]]
 
 ##### Known Configuration Extension
 
-The known_configuration extension allows the client to indicate that
+The "known_configuration" extension allows the client to indicate that
 it wishes to reuse the server's known configuration and semi-static
 (EC)DHE key (see {{server-configuration}} for how to establish these
 configurations. This extension allows the omission of the server
@@ -2359,15 +2358,14 @@ certificate and signature, with three potential benefits:
 The extension is defined as:
 
 %%% Hello Messages
-          struct {
-            select (Role) {
-              case client:
-                opaque identifier<0..2^16-1>;
-
-              case server:
-                struct {};
-            }
-          } KnownConfigurationExtension
+       struct {
+           select (Role) {
+               case client:
+                   opaque identifier<0..2^16-1>;
+               case server:
+                   struct {};
+           }
+       } KnownConfigurationExtension;
 
 identifier
 : An opaque label for the configuration in question.
@@ -2383,34 +2381,33 @@ When the client and server mutually agree upon a known configuration via this
 mechanism, then the Static Secret (SS) is computed based on the server's (EC)DHE
 key from the identified configuration and the client's key found in the
 ClientKeyShare. If no key from an acceptable group is in the ClientKeyShare,
-the server MUST ignore the known_configuration extension. When this
+the server MUST ignore the "known_configuration" extension. When this
 mechanism is used, the server MUST NOT send a Certificate/CertificateVerify
 message unless the ServerConfiguration message is also sent.
 
-When the known_configuration data extension is in use, the handshake hash
+When the "known_configuration" data extension is in use, the handshake hash
 is extended to include the server's configuration data and certificate
 (see {{the-handshake-hash}}) so as to tightly bind them together.
 
 
 ##### Pre-Shared Key Extension
 
-The pre_shared_key extension is used to indicate the identity of the
+The "pre_shared_key" extension is used to indicate the identity of the
 pre-shared key to be used with a given handshake in association
 with a PSK or (EC)DHE-PSK cipher suite (see {{RFC4279}} for background).
 
 %%% Hello Messages
 
-          opaque psk_identity<0..2^16-1>;
+       opaque psk_identity<0..2^16-1>;
 
-          struct {
-            select (Role) {
-              case client:           
-                psk_identity identities<0..2^16-1>;
-
-              case server:
-                psk_identity identity;
-
-          } PreSharedKeyExtension;
+       struct {
+           select (Role) {
+               case client:           
+                   psk_identity identities<0..2^16-1>;
+               case server:
+                   psk_identity identity;
+           }
+       } PreSharedKeyExtension;
 
 identifier
 : An opaque label for the pre-shared key.
@@ -2441,18 +2438,18 @@ extension. This technique MUST only be used along with
 the "known_configuration" extension.
 
 %%% Hello Messages
-          enum { early_handshake(1), early_data(2),
-                 early_handshake_and_data(3), (255) } EarlyDataType;
-               
-          struct {
-            select (Role) {
-              case client:
-                opaque context<0..255>;
-                EarlyDataType type;
-              case server:
-                struct {};                
-            }
-          } EarlyDataIndication;
+       enum { early_handshake(1), early_data(2),
+              early_handshake_and_data(3), (255) } EarlyDataType;
+
+       struct {
+           select (Role) {
+               case client:
+                   opaque context<0..255>;
+                   EarlyDataType type;
+               case server:
+                   struct {};                
+           }
+       } EarlyDataIndication;
 
 context
 : An optional context value that can be used for anti-replay
@@ -3080,7 +3077,7 @@ sends any application data traffic, and is encrypted under the application
 traffic key. This message creates a pre-shared key
 (PSK) binding between the resumption master secret and the ticket
 label. The client MAY use this PSK for future handshakes by including
-it in the pre_shared_key extension in its ClientHello
+it in the "pre_shared_key" extension in its ClientHello
 ({{pre-shared-key-extension}}) and supplying a suitable PSK cipher
 suite.
 
@@ -3092,9 +3089,9 @@ suite.
 
 ticket_lifetime_hint
 : Indicates the lifetime
-in seconds as a 32-bit unsigned integer in network byte order.  A
-value of zero is reserved to indicate that the lifetime of the ticket
-is unspecified.
+  in seconds as a 32-bit unsigned integer in network byte order.  A
+  value of zero is reserved to indicate that the lifetime of the ticket
+  is unspecified.
 
 ticket
 : The value of the ticket to be used as the PSK identifier.
