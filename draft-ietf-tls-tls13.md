@@ -116,6 +116,7 @@ informative:
   RFC6066:
   RFC6176:
   RFC7465:
+  RFC7507:
   RFC7568:
   I-D.ietf-tls-negotiated-ff-dhe:
   I-D.ietf-tls-session-hash:
@@ -318,7 +319,7 @@ draft-08
 
 - Remove support for MD5 and SHA-224 hashes with signatures.
 
-- Revise list of currently available AEAD cipher suites.
+- Update lists of available AEAD cipher suites and error alerts.
  
 - Reduce maximum permitted record expansion for AEAD from 2048 to 256 octets.
 
@@ -1152,31 +1153,37 @@ as specified by the current connection state.
 
        enum {
            close_notify(0),
-           unexpected_message(10),              /* fatal */
-           bad_record_mac(20),                  /* fatal */
-           decryption_failed_RESERVED(21),      /* fatal */
-           record_overflow(22),                 /* fatal */
-           decompression_failure_RESERVED(30),  /* fatal */
-           handshake_failure(40),               /* fatal */
-           no_certificate_RESERVED(41),         /* fatal */
+           unexpected_message(10),               /* fatal */
+           bad_record_mac(20),                   /* fatal */
+           decryption_failed_RESERVED(21),       /* fatal */
+           record_overflow(22),                  /* fatal */
+           decompression_failure_RESERVED(30),   /* fatal */
+           handshake_failure(40),                /* fatal */
+           no_certificate_RESERVED(41),          /* fatal */
            bad_certificate(42),
            unsupported_certificate(43),
            certificate_revoked(44),
            certificate_expired(45),
            certificate_unknown(46),
-           illegal_parameter(47),               /* fatal */
-           unknown_ca(48),                      /* fatal */
-           access_denied(49),                   /* fatal */
-           decode_error(50),                    /* fatal */
-           decrypt_error(51),                   /* fatal */
-           export_restriction_RESERVED(60),     /* fatal */
-           protocol_version(70),                /* fatal */
-           insufficient_security(71),           /* fatal */
-           internal_error(80),                  /* fatal */
+           illegal_parameter(47),                /* fatal */
+           unknown_ca(48),                       /* fatal */
+           access_denied(49),                    /* fatal */
+           decode_error(50),                     /* fatal */
+           decrypt_error(51),                    /* fatal */
+           export_restriction_RESERVED(60),      /* fatal */
+           protocol_version(70),                 /* fatal */
+           insufficient_security(71),            /* fatal */
+           internal_error(80),                   /* fatal */
+           inappropriate_fallback(86),           /* fatal */
            user_canceled(90),
-           no_renegotiation_RESERVED(100),      /* fatal */
-           missing_extension(109),              /* fatal */
-           unsupported_extension(110),          /* fatal */
+           no_renegotiation_RESERVED(100),       /* fatal */
+           missing_extension(109),               /* fatal */
+           unsupported_extension(110),           /* fatal */
+           certificate_unobtainable(111),
+           unrecognized_name(112),
+           bad_certificate_status_response(113), /* fatal */
+           bad_certificate_hash_value(114),      /* fatal */
+           unknown_psk_identity(115),
            (255)
        } AlertDescription;
 
@@ -1366,6 +1373,10 @@ internal_error
   protocol (such as a memory allocation failure) makes it impossible
   to continue.  This alert is always fatal.
 
+inappropriate_fallback
+: Sent by a server in response to an invalid connection retry attempt
+  from a client. (see [RFC7507]) This alert is always fatal.
+
 no_renegotiation_RESERVED
 : This alert was used in previous versions of TLS. TLS 1.3 does not
   include renegotiation and TLS 1.3 implementations MUST NOT send this
@@ -1381,6 +1392,31 @@ unsupported_extension
 : Sent by clients that receive an extended ServerHello containing
   an extension that they did not put in the corresponding ClientHello.
   This alert is always fatal.
+
+certificate_unobtainable
+: Sent by servers when unable to obtain a certificate from a URL
+  provided by the client via the "client_certificate_url" extension
+  [RFC6066].
+
+unrecognized_name
+: Sent by servers when no server exists identified by the name
+  provided by the client via the "server_name" extension
+  [RFC6066].
+
+bad_certificate_status_response
+: Sent by clients when an invalid or unacceptable OCSP response is
+  provided by the server via the "status_request" extension
+  [RFC6066]. This alert is always fatal.
+
+bad_certificate_hash_value
+: Sent by servers when a retreived object does not have the correct hash
+  provided by the client via the "client_certificate_url" extension
+  [RFC6066]. This alert is always fatal.
+
+unknown_psk_identity
+: Sent by servers when an unknown PSK identity is provided by the client.
+  Sending this alert is OPTIONAL; servers MAY instead choose to send a
+  "decrypt_error" alert to merely indicate an invalid PSK identity.
 {:br }
 
 New Alert values are assigned by IANA as described in {{iana-considerations}}.
