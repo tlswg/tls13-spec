@@ -2199,9 +2199,7 @@ The "extension_data" field of this extension SHALL contain a
 %%% Named Group Extension
        enum {
            // Elliptic Curve Groups.
-           obsolete_RESERVED (1..13),
-           sect571r1 (14),
-           obsolete_RESERVED (15..22),
+           obsolete_RESERVED (1..22),
            secp256r1 (23), secp384r1 (24), secp521r1 (25),
 
            // Finite Field Groups.
