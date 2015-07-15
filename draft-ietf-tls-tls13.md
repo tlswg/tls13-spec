@@ -1505,8 +1505,8 @@ Certificate
   client is not authenticating via a certificates. [{{client-certificate}}]
 
 CertificateVerify
-: a signature over the entire handshake using the public key
-  in the Certificate message. This message will be omitted if the
+: a signature over the entire handshake using the private key corresponding
+  to the public key in the Certificate message. This message will be omitted if the
   client is not authenticating via a certificate. [{{client-certificate-verify}}]
 
 Finished
