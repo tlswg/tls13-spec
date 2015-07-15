@@ -3455,7 +3455,7 @@ negotiated, as it provides no more protection than an unsecured connection.
 
        CipherSuite TLS_NULL_WITH_NULL_NULL = {0x00,0x00};
 
-The following is a list of server-authenticated (and optionally
+The following is a list of standards track server-authenticated (and optionally
 client-authenticated) cipher suites which are currently available in TLS 1.3:
 
               Cipher Suite Name                      Value     Specification
@@ -3463,14 +3463,24 @@ client-authenticated) cipher suites which are currently available in TLS 1.3:
     TLS_DHE_RSA_WITH_AES_256_GCM_SHA384           {0x00,0x9F}    [RFC5288]
     TLS_DHE_DSS_WITH_AES_128_GCM_SHA256           {0x00,0xA2}    [RFC5288]
     TLS_DHE_DSS_WITH_AES_256_GCM_SHA384           {0x00,0xA3}    [RFC5288]
-    TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256       {0xC0,0x2B}    [RFC5289]
-    TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384       {0xC0,0x2C}    [RFC5289]
-    TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256         {0xC0,0x2F}    [RFC5289]
-    TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384         {0xC0,0x30}    [RFC5289]
     TLS_DHE_RSA_WITH_AES_128_CCM                  {0xC0,0x9E}    [RFC6655]
     TLS_DHE_RSA_WITH_AES_256_CCM                  {0xC0,0x9F}    [RFC6655]
     TLS_DHE_RSA_WITH_AES_128_CCM_8                {0xC0,0xA2}    [RFC6655]
     TLS_DHE_RSA_WITH_AES_256_CCM_8                {0xC0,0xA3}    [RFC6655]
+    TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305          {TBD,TBD}   [I-D.ietf-tls-chacha20-poly1305]
+    TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305        {TBD,TBD}   [I-D.ietf-tls-chacha20-poly1305]
+    TLS_DHE_RSA_WITH_CHACHA20_POLY1305            {TBD,TBD}   [I-D.ietf-tls-chacha20-poly1305]
+
+[[TODO: CHACHA20_POLY1305 cipher suite IDs are TBD.]]
+
+The following is a list of non-standards track server-authenticated (and optionally
+client-authenticated) cipher suites which are currently available in TLS 1.3:
+
+              Cipher Suite Name                      Value     Specification
+    TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256       {0xC0,0x2B}    [RFC5289]
+    TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384       {0xC0,0x2C}    [RFC5289]
+    TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256         {0xC0,0x2F}    [RFC5289]
+    TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384         {0xC0,0x30}    [RFC5289]
     TLS_ECDHE_ECDSA_WITH_AES_128_CCM              {0xC0,0xAC}    [RFC7251]
     TLS_ECDHE_ECDSA_WITH_AES_256_CCM              {0xC0,0xAD}    [RFC7251]
     TLS_ECDHE_ECDSA_WITH_AES_128_CCM_8            {0xC0,0xAE}    [RFC7251]
@@ -3491,21 +3501,12 @@ client-authenticated) cipher suites which are currently available in TLS 1.3:
     TLS_ECDHE_ECDSA_WITH_CAMELLIA_256_GCM_SHA384  {0xC0,0x87}    [RFC6367]
     TLS_ECDHE_RSA_WITH_CAMELLIA_128_GCM_SHA256    {0xC0,0x8A}    [RFC6367]
     TLS_ECDHE_RSA_WITH_CAMELLIA_256_GCM_SHA384    {0xC0,0x8B}    [RFC6367]
-    TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305          {0xCC,0xA1}  [I-D.ietf-tls-chacha20-poly1305]
-    TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305        {0xCC,0xA2}  [I-D.ietf-tls-chacha20-poly1305]
-    TLS_DHE_RSA_WITH_CHACHA20_POLY1305            {0xCC,0xA3}  [I-D.ietf-tls-chacha20-poly1305]
 
-[[TODO: CHACHA20_POLY1305 cipher suite IDs are TBD. Must update above if
-final versions change.]]
+ECDHE AES GCM is not yet standards track, however it is already widely deployed.
 
 Note: In the case of the CCM mode of AES, two variations exist: "CCM_8" which
 uses an 8-bit authentication tag and "CCM" which uses a 16-bit authentication
 tag. Both use the default hash, SHA-256.
-
-DHE AES GCM & CCM are standards track ([RFC5288] & [RFC6655]),
-as is ChaChaPoly ([I-D.ietf-tls-chacha20-poly1305]).  The ECDHE variants of AES
-and other ciphers above are currently informational, however ECDHE AES GCM
-is widely deployed.
 
 In addition to authenticated cipher suites, completely anonymous Diffie-Hellman
 cipher suites exist to provide communications in which neither party is
@@ -3520,7 +3521,8 @@ key exchange cipher suites:
 AES-GCM [RFC5288], ARIA-GCM [RFC6209], and CAMELLIA-GCM [RFC6367].
 
 All cipher suites in this section are specified for usage with both TLS 1.2
-and TLS 1.3. (see {{backward-compatibility}})
+and TLS 1.3, as well as the corresponding versions of DTLS.
+(see {{backward-compatibility}})
 
 Note that using non-anonymous key exchange without actually verifying the key
 exchange is essentially equivalent to anonymous key exchange, and the same
