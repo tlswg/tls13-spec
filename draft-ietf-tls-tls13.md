@@ -2362,6 +2362,7 @@ The extension is defined as:
            select (Role) {
                case client:
                    opaque identifier<0..2^16-1>;
+
                case server:
                    struct {};
            }
@@ -2404,6 +2405,7 @@ with a PSK or (EC)DHE-PSK cipher suite (see {{RFC4279}} for background).
            select (Role) {
                case client:           
                    psk_identity identities<0..2^16-1>;
+
                case server:
                    psk_identity identity;
            }
@@ -2446,6 +2448,7 @@ the "known_configuration" extension.
                case client:
                    opaque context<0..255>;
                    EarlyDataType type;
+
                case server:
                    struct {};                
            }
