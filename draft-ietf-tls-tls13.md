@@ -2261,7 +2261,7 @@ must consider the supported groups in both cases.
 [[TODO: IANA Considerations.]]
 
 
-####  Client Key Share
+#####  Client Key Share
 
 The client_key_share extension MUST be provided by the client if it
 offers any cipher suites that involve non-PSK (currently DHE or
@@ -2313,7 +2313,7 @@ information.
 [TODO: Recommendation about what the client offers. Presumably which integer
 DH groups and which curves.]
 
-#####  Diffie-Hellman Parameters {#ffdhe-param}
+######  Diffie-Hellman Parameters {#ffdhe-param}
 
 Diffie-Hellman {{DH}} parameters for both clients and servers are encoded in
 the opaque key_exchange field of the ClientKeyShareOffer or
@@ -2324,7 +2324,7 @@ encoded as a big-endian integer.
 %%% Key Exchange Messages
        opaque dh_Y<1..2^16-1>;
 
-##### ECDHE Parameters {#ecdhe-param}
+###### ECDHE Parameters {#ecdhe-param}
 
 ECDHE parameters for both clients and servers are encoded in the
 opaque key_exchange field of the ClientKeyShareOffer or
