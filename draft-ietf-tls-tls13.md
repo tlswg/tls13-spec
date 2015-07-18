@@ -1183,15 +1183,20 @@ as specified by the current connection state.
 ###  Closure Alerts
 
 The client and the server must share knowledge that the connection is ending in
-order to avoid a truncation attack. Either party may initiate a close by sending
-a "close_notify" alert. Any data received after a closure is ignored.
+order to avoid a truncation attack. Failure to properly close a connection does
+not prohibit a session from being resumed.
 
 close_notify
 : This message notifies the recipient that the sender will not send
-  any more messages on this connection.  Note that as of TLS 1.1,
-  failure to properly close a connection no longer requires that a
-  session not be resumed.  This is a change from TLS 1.0 to conform
-  with widespread implementation practice.
+  any more messages on this connection. Any data received after a
+  closure MUST be ignored.
+
+user_canceled
+: This message notifies the recipient that the sender is canceling the
+  handshake for some reason unrelated to a protocol failure. If a user
+  cancels an operation after the handshake is complete, just closing the
+  connection by sending a "close_notify" is more appropriate. This alert
+  SHOULD be followed by a "close_notify". This alert is generally a warning.
 {:br }
 
 Either party MAY initiate a close by sending a "close_notify" alert. Any data
@@ -1199,8 +1204,8 @@ received after a closure alert is ignored. If a transport-level close is
 received prior to a "close_notify", the receiver cannot know that all the
 data that was sent has been received.
 
-Unless some other fatal alert has been transmitted, each party is required to
-send a "close_notify" alert before closing the write side of the connection. The
+Each party is REQUIRED to send a "close_notify" alert before closing the write
+side of the connection, unless some other fatal alert has been transmitted. The
 other party MUST respond with a "close_notify" alert of its own and close down
 the connection immediately, discarding any pending writes. The initiator of the
 close need not wait for the responding "close_notify" alert before closing the
@@ -1355,13 +1360,6 @@ internal_error
 : An internal error unrelated to the peer or the correctness of the
   protocol (such as a memory allocation failure) makes it impossible
   to continue.  This alert is always fatal.
-
-user_canceled
-: This handshake is being canceled for some reason unrelated to a
-  protocol failure.  If the user cancels an operation after the
-  handshake is complete, just closing the connection by sending a
-  "close_notify" is more appropriate.  This alert should be followed
-  by a "close_notify".  This alert is generally a warning.
 
 no_renegotiation
 : Sent by the client in response to a HelloRequest or by the server
