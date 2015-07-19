@@ -1053,7 +1053,7 @@ The per-record nonce for the AEAD construction is formed as follows:
      or server_write_iv, depending on the role.
 
 The resulting quantity (of length iv_length) is used as the per-record
-nonce. 
+nonce.
 
 Note: This is a different construction from that in TLS 1.2, which
 specified a partially explicit nonce.
@@ -1197,7 +1197,7 @@ close_notify
 Either party MAY initiate a close by sending a "close_notify" alert. Any data
 received after a closure alert is ignored. If a transport-level close is
 received prior to a "close_notify", the receiver cannot know that all the
-data that was sent has been received. 
+data that was sent has been received.
 
 Unless some other fatal alert has been transmitted, each party is required to
 send a "close_notify" alert before closing the write side of the connection. The
@@ -1474,10 +1474,10 @@ EncryptedExtensions
 : responses to any extensions which are not required in order to
   determine the cryptographic parameters. [{{encrypted-extensions}}]
 
-Certificate 
+Certificate
 : the server certificate. This message will be omitted if the
   server is not authenticating via a certificates. [{{server-certificate}}]
-  
+
 CertificateRequest
 : if certificate-based client authentication is desired, the
   desired parameters for that certificate. This message will
@@ -1492,7 +1492,7 @@ CertificateVerify
 
 Finished
 : a MAC over the entire handshake computed using the Static Secret.
-  This message provides key confirmation and 
+  This message provides key confirmation and
   In some modes (see {{cached-server-configuration}}) it also authenticates the handshake using the
   the Static Secret. [{{server-finished}}]
 {:br }
@@ -1500,7 +1500,7 @@ Finished
 Upon receiving the server's messages, the client responds with his final
 flight of messages:
 
-Certificate 
+Certificate
 : the client's certificate. This message will be omitted if the
   client is not authenticating via a certificates. [{{client-certificate}}]
 
@@ -1534,7 +1534,7 @@ requirements are and never transmit information over a channel less secure than
 what they require. The TLS protocol is secure in that any cipher suite offers
 its promised level of security: if you negotiate AES-GCM {{GCM}} with
 a 255-bit ECDHE key exchange with a host whose certificate
-chain you have verified, you can expect that to be reasonably "secure" 
+chain you have verified, you can expect that to be reasonably "secure"
 against algorithmic attacks, at least in the year 2015.]]
 
 
@@ -1549,7 +1549,7 @@ ClientKeyShare, as shown in Figure 2:
 ~~~
        Client                                               Server
 
-       ClientHello              
+       ClientHello
          + ClientKeyShare        -------->
                                  <--------       HelloRetryRequest
 
@@ -1653,7 +1653,7 @@ This is especially relevant if the data is authenticated either
 with TLS client authentication or inside the application layer
 protocol. However, 0-RTT data cannot be duplicated within a connection (i.e., the server
 will not process the same data twice for the same connection) and also
-cannot be sent as if it were ordinary TLS data. 
+cannot be sent as if it were ordinary TLS data.
 
 3. If the server key is compromised, and client authentication is used, then
 the attacker can impersonate the client to the server (as it knows the
@@ -1724,7 +1724,7 @@ allows the server to decline resumption and fall back to a full handshake.
 However, because the server is authenticating via a PSK, it does not
 send a Certificate or a CertificateVerify. PSK-based resumption cannot
 be used to provide a new ServerConfiguration.
-                
+
 The contents and significance of each message will be presented in detail in
 the following sections.
 
@@ -1787,7 +1787,7 @@ ClientHello when the server has responded to its ClientHello with a
 ServerHello that selects cryptographic parameters that don't match the
 client's ClientKeyShare. In that case, the client MUST send the same
 ClientHello (without modification) except including a new ClientKeyShare.
-[[OPEN ISSUE: New random values? See: 
+[[OPEN ISSUE: New random values? See:
 https://github.com/tlswg/tls13-spec/issues/185]]
 If a server receives a ClientHello at any other time, it MUST send
 a fatal "no_renegotiation" alert.
@@ -1861,7 +1861,7 @@ session_id
 : Versions of TLS prior to TLS 1.3 supported a session resumption
   feature which has been merged with Pre-Shared Keys in this version
   (see {{resumption-and-psk}}).
-  This field MUST be ignored by a server negotiating TLS 1.3 and 
+  This field MUST be ignored by a server negotiating TLS 1.3 and
   should be set as a zero length vector (i.e., a single zero byte
   length field) by clients which do not have a cached session_id
   set by a pre-TLS 1.3 server.
@@ -2017,7 +2017,7 @@ The extension format is:
        } Extension;
 
        enum {
-           signature_algorithms(13), 
+           signature_algorithms(13),
            early_data(TBD),
            supported_groups(TBD),
            known_configuration(TBD),
@@ -2066,7 +2066,7 @@ current TLS extensions are relevant only when a session is initiated: when an
 older session is resumed, the server does not process these extensions in
 ClientHello, and does not include them in ServerHello. However, some
 extensions may specify different behavior during session resumption.
-[[TODO: update this and the previous paragraph to cover PSK-based resumption.]] 
+[[TODO: update this and the previous paragraph to cover PSK-based resumption.]]
 
 There are subtle (and not so subtle) interactions that may occur in this
 protocol between new features and existing features which may result in a
@@ -2421,7 +2421,7 @@ with a PSK or (EC)DHE-PSK cipher suite (see {{RFC4279}} for background).
 
        struct {
            select (Role) {
-               case client:           
+               case client:
                    psk_identity identities<0..2^16-1>;
 
                case server:
@@ -2449,7 +2449,7 @@ alert.
 
 ##### Early Data Indication
 
-In cases where TLS clients have previously interacted with the 
+In cases where TLS clients have previously interacted with the
 server and the server has supplied a known configuration, the client
 can send application data and its Certificate/CertificateVerify
 messages (if client authentication is required). If the client
@@ -2501,7 +2501,7 @@ the next client message of type "handshake".
 [[OPEN ISSUE: This relies on content types
 not being encrypted. If we had content types that were
 encrypted, this would basically require trial decryption.]]
- 
+
 A server which receives an EarlyDataIndication extension
 can behave in one of two ways:
 
@@ -2517,7 +2517,7 @@ The server MUST first validate that the client's "known_configuration"
 extension is valid and that the client has suppled a valid
 key share in the "client_key_shares" extension. If not, it MUST
 ignore the extension and discard the early handshake data
-and early data. 
+and early data.
 
 [[TODO: How does the client behave if the indication is rejected.]]
 
@@ -3154,10 +3154,10 @@ mode (DHE, ECDHE, PSK, etc.) and is summarized in the table below:
     ------------            ------------------    ---------------------
     (EC)DHE                   Client ephemeral         Client ephemeral
     (full handshake)       w/ server ephemeral      w/ server ephemeral
-    
+
     (EC)DHE                   Client ephemeral         Client ephemeral
     (w/ known_configuration)      w/ Known Key      w/ server ephemeral
-    
+
     PSK                         Pre-Shared Key           Pre-shared key
 
     PSK + (EC)DHE               Pre-Shared Key         Client ephemeral
@@ -3165,7 +3165,7 @@ mode (DHE, ECDHE, PSK, etc.) and is summarized in the table below:
 ~~~
 
 These shared secret values are used to generate cryptographic keys as
-shown below. 
+shown below.
 
 The derivation process is as follows, where L denotes the length of
 the underlying hash function for HKDF {{RFC5869}}.
@@ -3175,30 +3175,30 @@ the underlying hash function for HKDF {{RFC5869}}.
        HKDF-Expand(Secret, Label + '\0' + HashValue, Length)
 
   1. xSS = HKDF(0, SS, "extractedSS", L)
-  
+
   2. xES = HKDF(0, ES, "extractedES", L)
-  
+
   3. master_secret= HKDF(xSS, xES, "master secret", L)
-  
+
   4. finished_secret = HKDF-Expand-Label(xSS,
                                          "finished secret",
                                          handshake_hash, L)
-  
+
   Where handshake_hash includes all the messages in the
   client's first flight and the server's flight, excluding
   the Finished messages (which are never included in the
   hashes).
-  
+
   5. resumption_secret = HKDF-Expand-Label(master_secret,
                                            "resumption master secret"
                                            session_hash, L)
-  
+
   Where session_hash is as defined in {{the-handshake-hash}}.
-  
+
   6. exporter_secret = HKDF-Expand-Label(master_secret,
                                          "exporter master secret",
                                          session_hash, L)
-  
+
   Where session_hash is the session hash as defined in
   {{the-handshake-hash}} (i.e., the entire handshake except
   for Finished).
