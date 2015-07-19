@@ -2006,7 +2006,7 @@ server's ServerHello/ServerKeyShare, the client MUST verify that
 the selected CipherSuite and NamedGroup match that supplied in
 the HelloRetryRequest.
 
-####  Hello Extensions
+###  Hello Extensions
 
 The extension format is:
 
@@ -2097,7 +2097,7 @@ be taken into account when designing new extensions:
   the possibility of version rollback should be a significant consideration in
   any major design change.
 
-#####  Signature Algorithms
+####  Signature Algorithms
 
 The client uses the "signature_algorithms" extension to indicate to the server
 which signature/hash algorithm pairs may be used in digital signatures. The
@@ -2183,7 +2183,7 @@ extensions they do not understand.
 Servers MUST NOT send this extension. TLS servers MUST support receiving this
 extension.
 
-##### Negotiated Groups
+#### Negotiated Groups
 
 When sent by the client, the "named_groups" extension indicates
 the named groups which the client supports, ordered from most
@@ -2261,7 +2261,7 @@ must consider the supported groups in both cases.
 [[TODO: IANA Considerations.]]
 
 
-#####  Client Key Share
+####  Client Key Share
 
 The client_key_share extension MUST be provided by the client if it
 offers any cipher suites that involve non-PSK (currently DHE or
@@ -2313,7 +2313,7 @@ information.
 [TODO: Recommendation about what the client offers. Presumably which integer
 DH groups and which curves.]
 
-######  Diffie-Hellman Parameters {#ffdhe-param}
+#####  Diffie-Hellman Parameters {#ffdhe-param}
 
 Diffie-Hellman {{DH}} parameters for both clients and servers are encoded in
 the opaque key_exchange field of the ClientKeyShareOffer or
@@ -2324,7 +2324,7 @@ encoded as a big-endian integer.
 %%% Key Exchange Messages
        opaque dh_Y<1..2^16-1>;
 
-###### ECDHE Parameters {#ecdhe-param}
+##### ECDHE Parameters {#ecdhe-param}
 
 ECDHE parameters for both clients and servers are encoded in the
 opaque key_exchange field of the ClientKeyShareOffer or
@@ -2358,7 +2358,7 @@ come with defined point formats and that existing curves conform to
 X9.62.]]
 
 
-##### Known Configuration Extension
+#### Known Configuration Extension
 
 The "known_configuration" extension allows the client to indicate that
 it wishes to reuse the server's known configuration and semi-static
@@ -2409,7 +2409,7 @@ is extended to include the server's configuration data and certificate
 (see {{the-handshake-hash}}) so as to tightly bind them together.
 
 
-##### Pre-Shared Key Extension
+#### Pre-Shared Key Extension
 
 The "pre_shared_key" extension is used to indicate the identity of the
 pre-shared key to be used with a given handshake in association
@@ -2447,7 +2447,7 @@ is returned, the client MUST generate a fatal "handshake_failure"
 alert.
 
 
-##### Early Data Indication
+#### Early Data Indication
 
 In cases where TLS clients have previously interacted with the 
 server and the server has supplied a known configuration, the client
@@ -2545,7 +2545,7 @@ These two should match.
 
 
 
-###### Replay Properties
+##### Replay Properties
 
 As noted in {{zero-rtt-exchange}}, TLS does not provide any
 inter-connection mechanism for replay protection for data sent by the
