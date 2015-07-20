@@ -1617,10 +1617,14 @@ reducing handshake latency, as shown below.
 
        ClientHello
          + ClientKeyShare
+         + KnownConfiguration
+         + EarlyDataIndication
        (Certificate*)
        (CertificateVerify*)
        (Application Data)        -------->
                                                        ServerHello
+                                              + KnownConfiguration
+                                             + EarlyDataIndication
                                                     ServerKeyShare
                                  <--------              {Finished}
        {Finished}                -------->
