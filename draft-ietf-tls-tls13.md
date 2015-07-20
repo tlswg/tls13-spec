@@ -1557,7 +1557,7 @@ ClientKeyShare, as shown in Figure 2:
          + ClientKeyShare        -------->
                                                        ServerHello
                                                     ServerKeyShare
-                                            {EncryptedExtensions*}
+                                            {EncryptedExtensions}
                                             {ServerConfiguration*}
                                                     {Certificate*}
                                              {CertificateRequest*}
@@ -1693,8 +1693,8 @@ Initial Handshake:
          + ClientKeyShare       -------->
                                                        ServerHello
                                                     ServerKeyShare
-                                             {EncryptedExtensions}
-                                             {ServerConfiguration*}
+                                            {EncryptedExtensions*}
+                                            {ServerConfiguration*}
                                                     {Certificate*}
                                              {CertificateRequest*}
                                               {CertificateVerify*}
@@ -1712,6 +1712,7 @@ Subsequent Handshake:
            PreSharedKeyExtension -------->
                                                        ServerHello
                                             +PreSharedKeyExtension
+                                            {EncryptedExtensions*}
                                  <--------              {Finished}
        {Certificate*}
        {Finished}                -------->
