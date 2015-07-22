@@ -2901,7 +2901,7 @@ Structure of this message:
             }
        } CertificateVerify;
 
-> Where session_hash is as described in {{the-handshake-hash} and
+> Where session_hash is as described in {{the-handshake-hash}} and
 includes the messages sent or received, starting at ClientHello and up
 to, but not including, this message, including the type and length
 fields of the handshake messages. This is a digest of the
