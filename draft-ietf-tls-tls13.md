@@ -1619,6 +1619,7 @@ reducing handshake latency, as shown below.
          + ClientKeyShare
          + KnownConfiguration
          + EarlyDataIndication
+       (EncryptedExtensions)
        (Certificate*)
        (CertificateVerify*)
        (Application Data)        -------->
@@ -1626,6 +1627,11 @@ reducing handshake latency, as shown below.
                                               + KnownConfiguration
                                              + EarlyDataIndication
                                                     ServerKeyShare
+                                            {EncryptedExtensions*}
+                                            {ServerConfiguration*}
+                                                    {Certificate*}
+                                             {CertificateRequest*}
+                                              {CertificateVerify*}
                                  <--------              {Finished}
        {Finished}                -------->
 
@@ -2025,7 +2031,6 @@ The extension format is:
            signature_algorithms(13),
            early_data(TBD),
            supported_groups(TBD),
-           known_configuration(TBD),
            pre_shared_key(TBD)
            client_key_shares(TBD)
            (65535)
@@ -2363,57 +2368,6 @@ come with defined point formats and that existing curves conform to
 X9.62.]]
 
 
-#### Known Configuration Extension
-
-The "known_configuration" extension allows the client to indicate that
-it wishes to reuse the server's known configuration and semi-static
-(EC)DHE key (see {{server-configuration}} for how to establish these
-configurations. This extension allows the omission of the server
-certificate and signature, with three potential benefits:
-
-- Shortening the handshake because the certificate may be large.
-
-- Reducing cryptographic burden on the server if the server has
-  an RSA certificate, as well as on the client if the server has an ECDSA certificate.
-
-- Allowing the client and server to do a 0-RTT exchange (See {{zero-rtt-exchange}})
-
-The extension is defined as:
-
-%%% Hello Messages
-       struct {
-           select (Role) {
-               case client:
-                   opaque identifier<0..2^16-1>;
-
-               case server:
-                   struct {};
-           }
-       } KnownConfigurationExtension;
-
-identifier
-: An opaque label for the configuration in question.
-{:br }
-
-A client which wishes to reuse a known configuration MAY supply a
-single KnownConfigurationExtension value which indicates the known
-configuration it desires to use. It is a fatal error to supply more
-than one extension. A server which wishes to use the key replies with
-an empty extension (i.e., with a length field of 0) in its ServerHello.
-
-When the client and server mutually agree upon a known configuration via this
-mechanism, then the Static Secret (SS) is computed based on the server's (EC)DHE
-key from the identified configuration and the client's key found in the
-ClientKeyShare. If no key from an acceptable group is in the ClientKeyShare,
-the server MUST ignore the "known_configuration" extension. When this
-mechanism is used, the server MUST NOT send a Certificate/CertificateVerify
-message unless the ServerConfiguration message is also sent.
-
-When the "known_configuration" data extension is in use, the handshake hash
-is extended to include the server's configuration data and certificate
-(see {{the-handshake-hash}}) so as to tightly bind them together.
-
-
 #### Pre-Shared Key Extension
 
 The "pre_shared_key" extension is used to indicate the identity of the
@@ -2455,37 +2409,58 @@ alert.
 #### Early Data Indication
 
 In cases where TLS clients have previously interacted with the
-server and the server has supplied a known configuration, the client
+server and the server has supplied a server configuration, the client
 can send application data and its Certificate/CertificateVerify
 messages (if client authentication is required). If the client
 opts to do so, it MUST supply an Early Data Indication
-extension. This technique MUST only be used along with
-the "known_configuration" extension.
+extension.
 
 %%% Hello Messages
-          enum { early_handshake(1), early_data(2),
-                 early_handshake_and_data(3), (255) } EarlyDataType;
+          enum { client_authentication(1), early_data(2),
+                 client_authentication_and_data(3), (255) } EarlyDataType;
 
           struct {
             select (Role) {
               case client:
+                opaque configuration<0..2^16-1>;
+                CipherSuite cipher_suite;
+                Extension extensions<0..2^16-1>;
                 opaque context<0..255>;
                 EarlyDataType type;
+
               case server:
                 struct {};
             }
           } EarlyDataIndication;
+
+configuration
+: The label for the configuration in question.
+
+cipher_suite
+: The cipher suite which the client is using to encrypt the early data.
+
+extensions
+: The extensions required to define the cryptographic configuration
+  for the clients early data (see below for details)
 
 context
 : An optional context value that can be used for anti-replay
   (see below).
 
 type
-: The type of early data that is being sent. "early_handshake"
+: The type of early data that is being sent. "client_authentication"
   means that only handshake data is being sent. "early_data"
-  means that only data is being sent. "early_handshake_and_data"
+  means that only data is being sent. "client_authentication_and_data"
   means that both are being sent.
 {:br }
+
+The client specifies the cryptographic configuration for the 0-RTT
+data using the "configuration", "cipher_suite", and "extensions"
+values. For configurations received in-band (in a previous TLS connection)
+the client MUST (1) send the same cryptographic determining parameters
+(Section{{cryptographic-determining-parameters}}), 
+with the previous connection and (2) indicate the same parameters
+as the server indicated in that connection.
 
 If TLS client authentication is being used, then either
 "early_handshake" or "early_handshake_and_data" MUST be indicated in
@@ -2503,9 +2478,8 @@ send the handshake messages as content type
 "early_handshake". A server which does not accept the extension
 proceeds by skipping all records after the ClientHello and until
 the next client message of type "handshake".
-[[OPEN ISSUE: This relies on content types
-not being encrypted. If we had content types that were
-encrypted, this would basically require trial decryption.]]
+[[OPEN ISSUE: This needs replacement when we add encrypted content
+types.]]
 
 A server which receives an EarlyDataIndication extension
 can behave in one of two ways:
@@ -2538,17 +2512,27 @@ not the the 0-RTT cryptographic transforms, including:
 What's here now needs a lot of cleanup before it is clear
 and correct.]]
 
-[[TODO: We should really allow early_data to be used with
-PSKs. In order to make this work, we need to either:
-
-(a) explicitly signal the entire cryptographic parameter set
-(b) tie it to the PSK identifier (as is presently done in the
-    known_configuration extension).
-
-These two should match.
-]]
 
 
+##### Cryptographic Determining Parameters
+
+In order to allow the server to decrypt 0-RTT data, the client
+needs to provide enough information to allow the server to
+decrypt the traffic without negotiation. This is accomplished
+by having the client indicate the "cryptographic determining
+parameters" in its ClientHello, which are necessary to decrypt
+the client's packets. This includes the following
+values 
+
+- The cipher suite identifier.
+- If PSK is being used, the server's version of the
+  PreSharedKey extension (indicating the PSK the client is
+  using).
+
+[[TODO: Are there other extensions we need? I've gone over the list and I
+don't see any, but...]]
+[[TODO: This should be the same list as what you need for EncryptedExtensions.
+Consolidate this list.]]
 
 ##### Replay Properties
 
@@ -2637,10 +2621,8 @@ When this message will be sent:
 > The server MUST send a Certificate message whenever the agreed-upon
 key exchange method uses certificates for authentication (this
 includes all key exchange methods defined in this document except
-DH_anon and PSK), unless the KnownKeyExtension is used. This message will
-always immediately follow either the EncryptedExtensions message if
-one is sent or the ServerKeyShare message.
-
+DH_anon and PSK). This message will
+always immediately follow the EncryptedExtensions message.
 
 Meaning of this message:
 
@@ -2846,8 +2828,7 @@ Structure of this Message:
 
 
 configuration_id
-: The configuration identifier to be used with the known configuration
-extension {{known-configuration-extension}}.
+: The configuration identifier to be used in 0-RTT mode.
 
 group
 : The group for the long-term DH key that is being established
@@ -3161,7 +3142,7 @@ mode (DHE, ECDHE, PSK, etc.) and is summarized in the table below:
     (full handshake)       w/ server ephemeral      w/ server ephemeral
 
     (EC)DHE                   Client ephemeral         Client ephemeral
-    (w/ known_configuration)      w/ Known Key      w/ server ephemeral
+    (w/ 0-RTT)                w/ server static      w/ server ephemeral
 
     PSK                         Pre-Shared Key           Pre-shared key
 
@@ -3277,7 +3258,7 @@ handshake_messages
   were encrypted on the wire).
 
 configuration
-: When the known_configuration extension is in use ({{known-configuration-extension}},
+: When 0-RTT is in use ({{early-data-indication}})
 this contains the concatenation of the ServerConfiguration and Certificate
 messages from the handshake where the configuration was established. Note that
 this requires the client and server to memorize these values.
