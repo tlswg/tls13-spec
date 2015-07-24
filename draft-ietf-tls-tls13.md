@@ -2743,7 +2743,8 @@ When this message will be sent:
 
 > A non-anonymous server can optionally request a certificate from the client,
 if appropriate for the selected cipher suite. This message, if sent, will
-immediately follow the server's Certificate message.
+immediately follow the server's Certificate message. The server may also send
+this message at any time after the handshake is complete.
 
 Structure of this message:
 
@@ -2757,10 +2758,16 @@ Structure of this message:
        opaque DistinguishedName<1..2^16-1>;
 
        struct {
+           opaque certificate_extension_oid<0..2^8-1>;
+           opaque certificate_extension_values<0..2^8-1>;
+       } CertificateExtension
+
+       struct {
            ClientCertificateType certificate_types<1..2^8-1>;
            SignatureAndHashAlgorithm
              supported_signature_algorithms<2..2^16-2>;
            DistinguishedName certificate_authorities<0..2^16-1>;
+           CertificateExtension certificate_extensions<0..2^16-1>;
        } CertificateRequest;
 
 certificate_types
@@ -2785,6 +2792,22 @@ certificate_authorities
   the certificate_authorities list is empty, then the client MAY
   send any certificate of the appropriate ClientCertificateType,
   unless there is some external arrangement to the contrary.
+
+certificate_extensions
+: A list of certificate extension OIDs [RFC5280] with their allowed
+  values, represented in DER-encoded format. Some certificate
+  extension OIDs allow multiple values (e.g. Extended Key Usage).
+  If the server has included a non-empty certificate_extensions list,
+  the client certificate MUST contain all of the specified extension
+  OIDs that the client recognizes. For each extension OID recognized
+  by the client, all of the specified values MUST be present in the
+  client certificate. However, the client MUST ignore and skip any
+  unrecognized certificate extension OIDs. If the client has ignored
+  some of the required certificate extension OIDs, and supplied a
+  certificate that does not satisfy the request, the server MAY at
+  its discretion either continue the handshake without client
+  authentication, or respond with a fatal unsupported_certificate
+  alert.
 {:br }
 
 The interaction of the certificate_types and
@@ -2996,9 +3019,11 @@ Certificate and CertificateVerify message.
 When this message will be sent:
 
 > This message is the first handshake message the client can send
-after receiving the server's Finished. This message is only sent if the server requests a
-certificate. If no suitable certificate is available, the client MUST send a
-certificate message containing no certificates. That is, the certificate_list
+after receiving the server's Finished. This message is also sent when the
+client receives a CertificateRequest after the handshake is complete. This
+message is only sent if the server requests a certificate. If no suitable
+certificate is available, the client MUST send a certificate message
+containing no certificates. That is, the certificate_list
 structure has a length of zero. If the client does not send any certificates,
 the server MAY at its discretion either continue the handshake without client
 authentication, or respond with a fatal "handshake_failure" alert. Also, if some
@@ -3060,6 +3085,13 @@ In particular:
   that this relaxes the constraints on certificate-signing
   algorithms found in prior versions of TLS.
 
+- If the certificate_extensions list in the certificate request message
+  was non-empty, the end-entity certificate MUST contain all of the
+  specified extension OIDs that the client recognizes. For each extension
+  OID recognized by the client, all of the specified values MUST be present
+  in the client certificate. However, the client MUST ignore and skip any
+  unrecognized certificate extension OIDs.
+
 Note that, as with the server certificate, there are certificates that use
 algorithms/algorithm combinations that cannot be currently used with TLS.
 
@@ -3102,6 +3134,11 @@ label. The client MAY use this PSK for future handshakes by including
 it in the "pre_shared_key" extension in its ClientHello
 ({{pre-shared-key-extension}}) and supplying a suitable PSK cipher
 suite.
+
+The server MAY also send a NewSessionTicket message after the handshake is
+complete, following the client CertificateVerify message. This allows the
+server to include the newly supplied client credential in the resumable
+session state.
 
 %%% Ticket Establishment
       struct {
