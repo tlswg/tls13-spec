@@ -1467,7 +1467,7 @@ ServerKeyShare
   Secret (in this mode they are the same).  [{{server-key-share}}]
 
 ServerConfiguration
-: supplies a configuration for a future handshake (see {{cached-server-configuration}}).
+: supplies a configuration for zero-rtt handshakes (see {{zero-rtt-exchange}}).
 [{{server-configuration}}]
 
 EncryptedExtensions
@@ -1493,7 +1493,7 @@ CertificateVerify
 Finished
 : a MAC over the entire handshake computed using the Static Secret.
   This message provides key confirmation and
-  In some modes (see {{cached-server-configuration}}) it also authenticates the handshake using the
+  In some modes (see {{zero-rtt-exchange}}) it also authenticates the handshake using the
   the Static Secret. [{{server-finished}}]
 {:br }
 
@@ -1586,31 +1586,15 @@ will send a "handshake_failure" or "insufficient_security" fatal alert
 TLS also allows several optimized variants of the basic handshake, as
 described below.
 
-
-### Cached Server Configuration
-
-During an initial handshake, the server can provide a ServerConfiguration
-message containing a long-term (EC)DH share. On future
-connections, the client can indicate to the server that it knows the
-server's configuration and if that configuration is valid the server
-can omit both the Certificate or CertificateVerify message (provided
-that a new configuration is not supplied in this handshake).
-
-When a known configuration is used, the server's long-term DHE key is
-combined with the client's ClientKeyShare to produce SS. ES is
-computed as above.  This optimization allows the server to amortize
-the transmission of these messages and the server's signature over
-multiple handshakes, thus reducing the server's computational cost for
-cipher suites where signatures are slower than key agreement,
-principally RSA signatures paired with ECDHE.
-
-
 ### Zero-RTT Exchange
 
-When a cached ServerConfiguration is used, the client can also send
-application data as well as its Certificate and CertificateVerify
-(if client authentication is requested) on its first flight, thus
-reducing handshake latency, as shown below.
+TLS 1.3 supports a "0-RTT" mode in which the client can send
+application data as well as its Certificate and CertificateVerify (if
+client authentication is requested) on its first flight, thus reducing
+handshake latency. In order to enable this functionality, the server
+provides a ServerConfiguration message containing a long-term (EC)DH
+share. On future connections, the client uses that share to encrypt
+the first-flight data.
 
 ~~~
        Client                                               Server
@@ -2422,7 +2406,7 @@ extension.
           struct {
             select (Role) {
               case client:
-                opaque configuration<0..2^16-1>;
+                opaque configuration_id<1..2^16-1>;
                 CipherSuite cipher_suite;
                 Extension extensions<0..2^16-1>;
                 opaque context<0..255>;
@@ -2433,7 +2417,7 @@ extension.
             }
           } EarlyDataIndication;
 
-configuration
+configuration_id
 : The label for the configuration in question.
 
 cipher_suite
@@ -2492,11 +2476,18 @@ can behave in one of two ways:
   process the early data. It is not possible for the server
   to accept only a subset of the early data messages.
 
-The server MUST first validate that the client's "known_configuration"
-extension is valid and that the client has suppled a valid
-key share in the "client_key_shares" extension. If not, it MUST
-ignore the extension and discard the early handshake data
-and early data.
+Prior to accepting the EarlyDataIndication extension, the server
+MUST perform the following checks.
+
+- The configuration_id matches a known server configuration.
+- The client's cryptographic determining parameters match the
+  parameters that the server has negotiated based on the
+  rest of the ClientHello.
+
+If any of these checks fail, the server MUST NOT respond
+with the extension and must discard all the remaining first
+flight data (thus falling back to 1-RTT).
+
 
 [[TODO: How does the client behave if the indication is rejected.]]
 
@@ -2531,7 +2522,7 @@ values
 
 [[TODO: Are there other extensions we need? I've gone over the list and I
 don't see any, but...]]
-[[TODO: This should be the same list as what you need for EncryptedExtensions.
+[[TODO: This should be the same list as what you need for !EncryptedExtensions.
 Consolidate this list.]]
 
 ##### Replay Properties
@@ -2817,13 +2808,18 @@ message is sent as the last message before the CertificateVerify.
 Structure of this Message:
 
 %%% Hello Messages
+          struct {
+              ConfigurationExtensionType extension_type;
+              opaque extension_data<0..2^16-1>;
+          } ConfigurationExtension;
 
           struct {
               opaque configuration_id<1..2^16-1>;
               uint32 expiration_date;
               NamedGroup group;
               opaque server_key<1..2^16-1>;
-              Boolean early_data_allowed;
+              EarlyDataType early_data_type;
+              ConfigurationExtension extensions;
           } ServerConfiguration;
 
 
@@ -2845,15 +2841,22 @@ The idea is just to minimize exposure.]]
 server_key
 : The long-term DH key that is being established for this configuration.
 
-early_data_allowed
-: Whether the client may send data in its first flight (see {{early-data-indication}}).
+early_data_type
+: The type of 0-RTT handshake that this configuration is to be used
+for (see {{early-data-indication}}). If "client_authentication"
+or "client_authentication_and_data", then the client should select
+the certificate for future handshakes based on the CertificateRequest
+parameters supplied in this handshake.
+
+extensions
+: This field is a placeholder for future extensions to the
+ServerConfiguration format.
 {:br }
 
 The semantics of this message are to establish a shared state between
 the client and server for use with the "known_configuration" extension
 with the key specified in key and with the handshake parameters negotiated
-by this handshake. [[OPEN ISSUE: Should this allow some sort of parameter
-negotiation?]]
+by this handshake.
 
 When the ServerConfiguration message is sent, the server MUST also
 send a Certificate message and a CertificateVerify message, even
@@ -2869,7 +2872,7 @@ When this message will be sent:
 > This message is used to provide explicit proof that the server
 possesses the private key corresponding to its certificate
 and also provides integrity for the handshake up
-to this point. This message is only sent when the server is
+to this point. This message is sent when the server is
 authenticated via a certificate. When sent, it MUST be the
 last server handshake message prior to the Finished.
 
@@ -4047,7 +4050,3 @@ Archives of the list can be found at:
     Vodafone
     timothy.wright@vodafone.com
 
-
-{::comment}
-Describe key schedule
-{:/comment}
