@@ -1467,7 +1467,7 @@ ServerKeyShare
   Secret (in this mode they are the same).  [{{server-key-share}}]
 
 ServerConfiguration
-: supplies a configuration for zero-rtt handshakes (see {{zero-rtt-exchange}}).
+: supplies a configuration for 0-rtt handshakes (see {{zero-rtt-exchange}}).
 [{{server-configuration}}]
 
 EncryptedExtensions
@@ -1611,7 +1611,7 @@ the first-flight data.
                                               + KnownConfiguration
                                              + EarlyDataIndication
                                                     ServerKeyShare
-                                            {EncryptedExtensions*}
+                                            {EncryptedExtensions}
                                             {ServerConfiguration*}
                                                     {Certificate*}
                                              {CertificateRequest*}
@@ -1687,7 +1687,7 @@ Initial Handshake:
          + ClientKeyShare       -------->
                                                        ServerHello
                                                     ServerKeyShare
-                                            {EncryptedExtensions*}
+                                            {EncryptedExtensions}
                                             {ServerConfiguration*}
                                                     {Certificate*}
                                              {CertificateRequest*}
@@ -1706,7 +1706,7 @@ Subsequent Handshake:
            PreSharedKeyExtension -------->
                                                        ServerHello
                                             +PreSharedKeyExtension
-                                            {EncryptedExtensions*}
+                                            {EncryptedExtensions}
                                  <--------              {Finished}
        {Certificate*}
        {Finished}                -------->
@@ -2393,7 +2393,7 @@ alert.
 #### Early Data Indication
 
 In cases where TLS clients have previously interacted with the
-server and the server has supplied a server configuration, the client
+server and the server has supplied a ServerConfiguration {{server-configuration}}, the client
 can send application data and its Certificate/CertificateVerify
 messages (if client authentication is required). If the client
 opts to do so, it MUST supply an Early Data Indication
@@ -2425,7 +2425,7 @@ cipher_suite
 
 extensions
 : The extensions required to define the cryptographic configuration
-  for the clients early data (see below for details)
+  for the clients early data (see below for details).
 
 context
 : An optional context value that can be used for anti-replay
@@ -2441,10 +2441,11 @@ type
 The client specifies the cryptographic configuration for the 0-RTT
 data using the "configuration", "cipher_suite", and "extensions"
 values. For configurations received in-band (in a previous TLS connection)
-the client MUST (1) send the same cryptographic determining parameters
-(Section{{cryptographic-determining-parameters}}), 
-with the previous connection and (2) indicate the same parameters
-as the server indicated in that connection.
+the client MUST:
+
+- Send the same cryptographic determining parameters (Section {{cryptographic-determining-parameters}})
+with the previous connection 
+- If indicate the same parameters as the server indicated in that connection.
 
 If TLS client authentication is being used, then either
 "early_handshake" or "early_handshake_and_data" MUST be indicated in
@@ -2477,7 +2478,7 @@ can behave in one of two ways:
   to accept only a subset of the early data messages.
 
 Prior to accepting the EarlyDataIndication extension, the server
-MUST perform the following checks.
+MUST perform the following checks:
 
 - The configuration_id matches a known server configuration.
 - The client's cryptographic determining parameters match the
@@ -2513,9 +2514,10 @@ decrypt the traffic without negotiation. This is accomplished
 by having the client indicate the "cryptographic determining
 parameters" in its ClientHello, which are necessary to decrypt
 the client's packets. This includes the following
-values 
+values:
 
 - The cipher suite identifier.
+
 - If PSK is being used, the server's version of the
   PreSharedKey extension (indicating the PSK the client is
   using).
@@ -2808,6 +2810,8 @@ message is sent as the last message before the CertificateVerify.
 Structure of this Message:
 
 %%% Hello Messages
+          enum { (65535) } ConfigurationExtensionType;
+
           struct {
               ConfigurationExtensionType extension_type;
               opaque extension_data<0..2^16-1>;
@@ -2819,7 +2823,7 @@ Structure of this Message:
               NamedGroup group;
               opaque server_key<1..2^16-1>;
               EarlyDataType early_data_type;
-              ConfigurationExtension extensions;
+              ConfigurationExtension extensions<0..2^16-1>;
           } ServerConfiguration;
 
 
@@ -2846,7 +2850,9 @@ early_data_type
 for (see {{early-data-indication}}). If "client_authentication"
 or "client_authentication_and_data", then the client should select
 the certificate for future handshakes based on the CertificateRequest
-parameters supplied in this handshake.
+parameters supplied in this handshake. The server MUST NOT send
+either of these two options unless it also requested a certificate
+on this handshake [[OPEN ISSUE: Shoudl we relax this?]]
 
 extensions
 : This field is a placeholder for future extensions to the
