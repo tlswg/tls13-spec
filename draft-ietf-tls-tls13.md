@@ -1204,8 +1204,8 @@ received after a closure alert is ignored. If a transport-level close is
 received prior to a "close_notify", the receiver cannot know that all the
 data that was sent has been received.
 
-Each party is REQUIRED to send a "close_notify" alert before closing the write
-side of the connection, unless some other fatal alert has been transmitted. The
+Each party MUST send a "close_notify" alert before closing the write side
+of the connection, unless some other fatal alert has been transmitted. The
 other party MUST respond with a "close_notify" alert of its own and close down
 the connection immediately, discarding any pending writes. The initiator of the
 close need not wait for the responding "close_notify" alert before closing the
@@ -2221,12 +2221,15 @@ ffdhe2048, etc.
 
 Values within "obsolete_RESERVED" ranges were used in previous versions
 of TLS and MUST NOT be offered or negotiated by TLS 1.3 implementations.
-The obsolete curves have various known or theoretical weaknesses and are
-no longer considered safe for general use. The supported values are more
-than sufficient for interoperability with existing and future servers.
+The obsolete curves have various known/theoretical weaknesses or have
+had very little usage, in some cases only due to unintentional
+server configuration issues. They are no longer considered appropriate
+for general use and should be assumed to be potentially unsafe. The set
+of curves specified here is sufficient for interoperability with all
+currently deployed and properly configured TLS implementations.
 
 Items in named_curve_list are ordered according to the client's
-preferences (preferred choice first).
+preferences (most preferred choice first).
 
 As an example, a client that only supports secp256r1 (aka NIST P-256;
 value 23 = 0x0017) and secp384r1 (aka NIST P-384; value 24 = 0x0018)
