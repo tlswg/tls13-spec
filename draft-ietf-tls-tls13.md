@@ -2443,9 +2443,15 @@ data using the "configuration", "cipher_suite", and "extensions"
 values. For configurations received in-band (in a previous TLS connection)
 the client MUST:
 
-- Send the same cryptographic determining parameters (Section {{cryptographic-determining-parameters}})
-with the previous connection 
-- If indicate the same parameters as the server indicated in that connection.
+- Send the same cryptographic determining parameters (Section
+{{cryptographic-determining-parameters}}) with the previous
+connection. If a 0-RTT handshake is being used with a PSK
+that was negotiated via a non-PSK handshake,
+then the client MUST use the same symmetric cipher parameters
+as were negotiated on that handshake but with a PSK cipher
+suite.
+
+- Indicate the same parameters as the server indicated in that connection.
 
 If TLS client authentication is being used, then either
 "early_handshake" or "early_handshake_and_data" MUST be indicated in
