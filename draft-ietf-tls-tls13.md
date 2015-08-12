@@ -4,7 +4,7 @@ abbrev: TLS
 docname: draft-ietf-tls-tls13-latest
 category: std
 updates: 4492
-obsoletes: 5077, 5246
+obsoletes: 5077, 5246, 5746
 
 ipr: pre5378Trust200902
 area: General
@@ -324,13 +324,13 @@ draft-07
 
 - Integration of semi-ephemeral DH proposal.
 
-- Add initial 0-RTT support
+- Add initial 0-RTT support.
 
-- Remove resumption and replace with PSK + tickets
+- Remove resumption and replace with PSK + tickets.
 
 - Move ClientKeyShare into an extension.
 
-- Move to HKDF
+- Move to HKDF.
 
 
 draft-06
@@ -385,15 +385,15 @@ draft-02
 
 -  Increment version number.
 
--  Reworked handshake to provide 1-RTT mode.
+-  Rework handshake to provide 1-RTT mode.
 
 -  Remove custom DHE groups.
 
--  Removed support for compression.
+-  Remove support for compression.
 
--  Removed support for static RSA and DH key exchange.
+-  Remove support for static RSA and DH key exchange.
 
--  Removed support for non-AEAD ciphers.
+-  Remove support for non-AEAD ciphers.
 
 
 #  Goals
@@ -1043,7 +1043,7 @@ fragment
 
 The length of the per-record nonce (iv_length) is set to max(8 bytes,
 N_MIN) for the AEAD algorithm (see {{RFC5116}} Section 4). An AEAD
-algorithm where N_MAX is less than 8 bytes MUST not be used with TLS.
+algorithm where N_MAX is less than 8 bytes MUST NOT be used with TLS.
 The per-record nonce for the AEAD construction is formed as follows:
 
   1. The 64-bit record sequence number is padded to the left with zeroes
@@ -1170,7 +1170,7 @@ as specified by the current connection state.
            insufficient_security(71),           /* fatal */
            internal_error(80),                  /* fatal */
            user_canceled(90),
-           no_renegotiation(100),               /* fatal */
+           no_renegotiation_RESERVED(100),      /* fatal */
            unsupported_extension(110),          /* fatal */
            (255)
        } AlertDescription;
@@ -1183,15 +1183,20 @@ as specified by the current connection state.
 ###  Closure Alerts
 
 The client and the server must share knowledge that the connection is ending in
-order to avoid a truncation attack. Either party may initiate a close by sending
-a "close_notify" alert. Any data received after a closure is ignored.
+order to avoid a truncation attack. Failure to properly close a connection does
+not prohibit a session from being resumed.
 
 close_notify
 : This message notifies the recipient that the sender will not send
-  any more messages on this connection.  Note that as of TLS 1.1,
-  failure to properly close a connection no longer requires that a
-  session not be resumed.  This is a change from TLS 1.0 to conform
-  with widespread implementation practice.
+  any more messages on this connection. Any data received after a
+  closure MUST be ignored.
+
+user_canceled
+: This message notifies the recipient that the sender is canceling the
+  handshake for some reason unrelated to a protocol failure. If a user
+  cancels an operation after the handshake is complete, just closing the
+  connection by sending a "close_notify" is more appropriate. This alert
+  SHOULD be followed by a "close_notify". This alert is generally a warning.
 {:br }
 
 Either party MAY initiate a close by sending a "close_notify" alert. Any data
@@ -1199,8 +1204,8 @@ received after a closure alert is ignored. If a transport-level close is
 received prior to a "close_notify", the receiver cannot know that all the
 data that was sent has been received.
 
-Unless some other fatal alert has been transmitted, each party is required to
-send a "close_notify" alert before closing the write side of the connection. The
+Each party MUST send a "close_notify" alert before closing the write side
+of the connection, unless some other fatal alert has been transmitted. The
 other party MUST respond with a "close_notify" alert of its own and close down
 the connection immediately, discarding any pending writes. The initiator of the
 close need not wait for the responding "close_notify" alert before closing the
@@ -1238,7 +1243,7 @@ level.
 
 If an alert with a level of warning is sent and received, generally the
 connection can continue normally. If the receiving party decides not to proceed
-with the connection (e.g., after having received a "no_renegotiation" alert that
+with the connection (e.g., after having received a "user_canceled" alert that
 it is not willing to accept), it SHOULD send a fatal alert to terminate the
 connection. Given this, the sending peer cannot, in general, know how the
 receiving party will behave. Therefore, warning alerts are not very useful when
@@ -1257,7 +1262,7 @@ unexpected_message
 bad_record_mac
 : This alert is returned if a record is received which cannot be
   deprotected. Because AEAD algorithms combine decryption and
-  verification, this message is used for all deprotection failures.
+  verification, this alert is used for all deprotection failures.
   This alert is always fatal and should never be observed in
   communication between proper implementations (except when messages
   were corrupted in the network).
@@ -1356,19 +1361,10 @@ internal_error
   protocol (such as a memory allocation failure) makes it impossible
   to continue.  This alert is always fatal.
 
-user_canceled
-: This handshake is being canceled for some reason unrelated to a
-  protocol failure.  If the user cancels an operation after the
-  handshake is complete, just closing the connection by sending a
-  "close_notify" is more appropriate.  This alert should be followed
-  by a "close_notify".  This alert is generally a warning.
-
-no_renegotiation
-: Sent by the client in response to a HelloRequest or by the server
-  in response to a ClientHello after initial handshaking. Versions
-  of TLS prior to TLS 1.3 supported renegotiation of a previously
-  established connection; TLS 1.3 removes this feature. This
-  alert is always fatal.
+no_renegotiation_RESERVED
+: This alert was used in previous versions of TLS. TLS 1.3 does not
+  include renegotiation and TLS 1.3 implementations MUST NOT send this
+  alert when in TLS 1.3 mode. This alert is always fatal.
 
 unsupported_extension
 : Sent by clients that receive an extended ServerHello containing
@@ -1456,7 +1452,7 @@ cryptographic parameters for the connection. It then responds with
 the following messages:
 
 ServerHello
- : indicates the negotiated connection parameters. [{{server-hello}}]
+: indicates the negotiated connection parameters. [{{server-hello}}]
 
 ServerKeyShare
 : the server's ephemeral Diffie-Hellman Share which must be in the
@@ -1467,7 +1463,7 @@ ServerKeyShare
   Secret (in this mode they are the same).  [{{server-key-share}}]
 
 ServerConfiguration
-: supplies a configuration for 0-rtt handshakes (see {{zero-rtt-exchange}}).
+: supplies a configuration for 0-RTT handshakes (see {{zero-rtt-exchange}}).
 [{{server-configuration}}]
 
 EncryptedExtensions
@@ -1514,11 +1510,10 @@ Finished
   and providing key confirmation. [{{server-finished}}]
 {:br }
 
-At this point, the handshake is complete, and the client and server
-may exchange application layer data. Application data MUST NOT
-be sent prior to sending the Finished message. If client authentication
-is requested, the server MUST NOT send application data
-before it receives the client's Finished.
+At this point, the handshake is complete, and the client and server may exchange
+application layer data. Application data MUST NOT be sent prior to sending the
+Finished message. If client authentication is requested, the server MUST NOT
+send application data before it receives the client's Finished.
 
 [[TODO: Move this elsewhere?
 Note that higher layers should not be overly reliant on whether TLS always
@@ -1669,7 +1664,7 @@ below, this functionality was provided by "session resumption" and
 "session tickets" {{RFC5077}}. Both mechanisms are obsoleted in TLS
 1.3.
 
-PSK ciphersuites can either use PSK in combination with
+PSK cipher suites can either use PSK in combination with
 an (EC)DHE exchange in order to provide forward secrecy in combination
 with shared keys, or can use PSKs alone, at the cost of losing forward
 secrecy.
@@ -1785,7 +1780,7 @@ ClientHello (without modification) except including a new ClientKeyShare.
 [[OPEN ISSUE: New random values? See:
 https://github.com/tlswg/tls13-spec/issues/185]]
 If a server receives a ClientHello at any other time, it MUST send
-a fatal "no_renegotiation" alert.
+a fatal "unexpected_message" alert and close the connection.
 
 Structure of this message:
 
@@ -1900,7 +1895,7 @@ When this message will be sent:
 > The server will send this message in response to a ClientHello message when
 it was able to find an acceptable set of algorithms and the client's
 ClientKeyShare extension was acceptable. If the client proposed groups are not
-acceptable by the server, it will respond with an "insufficient_security" fatal alert.
+acceptable by the server, it will respond with a "handshake_failure" fatal alert.
 
 Structure of this message:
 
@@ -2012,11 +2007,11 @@ The extension format is:
        } Extension;
 
        enum {
+           supported_groups(10),
            signature_algorithms(13),
            early_data(TBD),
-           supported_groups(TBD),
-           pre_shared_key(TBD)
-           client_key_shares(TBD)
+           pre_shared_key(TBD),
+           client_key_shares(TBD),
            (65535)
        } ExtensionType;
 
@@ -2031,11 +2026,11 @@ The initial set of extensions is defined in {{RFC6066}}.
 The list of extension types is maintained by IANA as described in
 {{iana-considerations}}.
 
-An extension type MUST NOT appear in the ServerHello or HelloRetryRequest unless the same extension
-type appeared in the corresponding ClientHello. If a client receives an
-extension type in ServerHello or HelloRetryRequest that it did not request in the associated
-ClientHello, it MUST abort the handshake with an "unsupported_extension" fatal
-alert.
+An extension type MUST NOT appear in the ServerHello or HelloRetryRequest
+unless the same extension type appeared in the corresponding ClientHello.
+If a client receives an extension type in ServerHello or HelloRetryRequest
+that it did not request in the associated ClientHello, it MUST abort the
+handshake with an "unsupported_extension" fatal alert.
 
 Nonetheless, "server-oriented" extensions may be provided in the future within
 this framework. Such an extension (say, of type x) would require the client to
@@ -2094,9 +2089,10 @@ be taken into account when designing new extensions:
 ####  Signature Algorithms
 
 The client uses the "signature_algorithms" extension to indicate to the server
-which signature/hash algorithm pairs may be used in digital signatures. The
-"extension_data" field of this extension contains a
-"supported_signature_algorithms" value.
+which signature/hash algorithm pairs may be used in digital signatures.
+
+The "extension_data" field of this extension contains a
+"supported_signature_algorithms" value:
 
 %%% Signature Algorithm Extension
        enum {
@@ -2133,7 +2129,7 @@ hash
   SHA-224, SHA-256, SHA-384, and SHA-512 {{SHS}}, respectively.  The
   "none" value is provided for future extensibility, in case of a
   signature algorithm which does not require hashing before signing.
-  The usage of MD5 and SHA-224 are deprecated. The md5_RESERVED and
+  The use of MD5 and SHA-224 are deprecated. The md5_RESERVED and
   sha224_RESERVED values MUST NOT be offered or negotiated by any
   implementation.
 
@@ -2179,7 +2175,7 @@ extension.
 
 #### Negotiated Groups
 
-When sent by the client, the "named_groups" extension indicates
+When sent by the client, the "supported_groups" extension indicates
 the named groups which the client supports, ordered from most
 preferred to least preferred.
 
@@ -2187,7 +2183,7 @@ Note: In versions of TLS prior to TLS 1.3, this extension was named
 "elliptic_curves" and only contained elliptic curve groups. See
 {{RFC4492}} and {{I-D.ietf-tls-negotiated-ff-dhe}}.
 
-The "extension_data" field of this extension SHALL contain a
+The "extension_data" field of this extension contains a
 "NamedGroupList" value:
 
 %%% Named Group Extension
@@ -2225,9 +2221,15 @@ ffdhe2048, etc.
 
 Values within "obsolete_RESERVED" ranges were used in previous versions
 of TLS and MUST NOT be offered or negotiated by TLS 1.3 implementations.
+The obsolete curves have various known/theoretical weaknesses or have
+had very little usage, in some cases only due to unintentional
+server configuration issues. They are no longer considered appropriate
+for general use and should be assumed to be potentially unsafe. The set
+of curves specified here is sufficient for interoperability with all
+currently deployed and properly configured TLS implementations.
 
 Items in named_curve_list are ordered according to the client's
-preferences (favorite choice first).
+preferences (most preferred choice first).
 
 As an example, a client that only supports secp256r1 (aka NIST P-256;
 value 23 = 0x0017) and secp384r1 (aka NIST P-384; value 24 = 0x0018)
@@ -2237,10 +2239,10 @@ extension type (Supported Group Extension):
 
        00 0A 00 06 00 04 00 17 00 18
 
-The client MUST supply a "named_groups" extension containing at
+The client MUST supply a "supported_groups" extension containing at
 least one group for each key exchange algorithm (currently
 DHE and ECDHE) for which it offers a cipher suite.
-If the client does not supply a "named_groups" extension with a
+If the client does not supply a "supported_groups" extension with a
 compatible group, the server MUST NOT negotiate a cipher suite of the
 relevant type.  For instance, if a client supplies only ECDHE groups,
 the server MUST NOT negotiate finite field Diffie-Hellman.  If no
@@ -2257,14 +2259,12 @@ must consider the supported groups in both cases.
 
 ####  Client Key Share
 
-The client_key_share extension MUST be provided by the client if it
+The "client_key_share" extension MUST be provided by the client if it
 offers any cipher suites that involve non-PSK (currently DHE or
 ECDHE) key exchange.  It contains the client's cryptographic parameters
 for zero or more key establishment methods. [[OPEN ISSUE: Would it
 be better to omit it if it's empty?.
 https://github.com/tlswg/tls13-spec/issues/190]]
-
-Meaning of this message:
 
 %%% Key Exchange Messages
        struct {
@@ -2285,6 +2285,9 @@ key_exchange
   definition.
 {:br }
 
+The "extension_data" field of this extension contains a
+"ClientKeyShare" value:
+
 %%% Key Exchange Messages
        struct {
            ClientKeyShareOffer offers<0..2^16-1>;
@@ -2292,7 +2295,7 @@ key_exchange
 
 offers
 : A list of ClientKeyShareOffer values in descending order of
-client preference.
+  client preference.
 {:br }
 
 Clients may offer an arbitrary number of ClientKeyShareOffer
@@ -2358,6 +2361,9 @@ The "pre_shared_key" extension is used to indicate the identity of the
 pre-shared key to be used with a given handshake in association
 with a PSK or (EC)DHE-PSK cipher suite (see {{RFC4279}} for background).
 
+The "extension_data" field of this extension contains a
+"PreSharedKeyExtension" value:
+
 %%% Hello Messages
 
        opaque psk_identity<0..2^16-1>;
@@ -2399,23 +2405,26 @@ messages (if client authentication is required). If the client
 opts to do so, it MUST supply an Early Data Indication
 extension.
 
+The "extension_data" field of this extension contains an
+"EarlyDataIndication" value:
+
 %%% Hello Messages
-          enum { client_authentication(1), early_data(2),
-                 client_authentication_and_data(3), (255) } EarlyDataType;
+       enum { client_authentication(1), early_data(2),
+              client_authentication_and_data(3), (255) } EarlyDataType;
 
-          struct {
-            select (Role) {
-              case client:
-                opaque configuration_id<1..2^16-1>;
-                CipherSuite cipher_suite;
-                Extension extensions<0..2^16-1>;
-                opaque context<0..255>;
-                EarlyDataType type;
+       struct {
+           select (Role) {
+               case client:
+                   opaque configuration_id<1..2^16-1>;
+                   CipherSuite cipher_suite;
+                   Extension extensions<0..2^16-1>;
+                   opaque context<0..255>;
+                   EarlyDataType type;
 
-              case server:
-                struct {};
-            }
-          } EarlyDataIndication;
+               case server:
+                  struct {};
+           }
+       } EarlyDataIndication;
 
 configuration_id
 : The label for the configuration in question.
@@ -2457,9 +2466,9 @@ If TLS client authentication is being used, then either
 "early_handshake" or "early_handshake_and_data" MUST be indicated in
 order to send the client authentication data on the first flight. In
 either case, the client Certificate and CertificateVerify (assuming
-that the Certificate is non-empty) MUST be sent on the first flight A
-server which receives an initial flight with only "early_data" and
-which expects certificate-based client authentication MUST not
+that the Certificate is non-empty) MUST be sent on the first flight.
+A server which receives an initial flight with only "early_data" and
+which expects certificate-based client authentication MUST NOT
 accept early data.
 
 In order to allow servers to readily distinguish between messages sent
@@ -2502,8 +2511,8 @@ flight data (thus falling back to 1-RTT).
 not the the 0-RTT cryptographic transforms, including:
 
 - What is in the handshake hash (including potentially some
-  speculative data from the server.)
-- What is signed in the client's CertificateVerify
+  speculative data from the server).
+- What is signed in the client's CertificateVerify.
 - Whether we really want the Finished to not include the
   server's data at all.
 
@@ -2655,7 +2664,6 @@ certificate request message. Note that a client MAY send no certificates if it
 does not have an appropriate certificate to send in response to the server's
 authentication request.
 
-
 Note: PKCS #7 {{PKCS7}} is not used as the format for the certificate vector
 because PKCS #6 {{PKCS6}} extended certificates are not used. Also, PKCS #7
 defines a SET rather than a SEQUENCE, making the task of parsing the list more
@@ -2691,7 +2699,7 @@ The following rules apply to the certificates sent by the server:
                        hash algorithm that will be employed in the
                        ServerKeyShare message.  The public key
                        MUST use a curve and point format supported by
-                       the client, as described in  [RFC4492].
+                       the client, as described in [RFC4492].
 ~~~~
 
 - The "server_name" and "trusted_ca_keys" extensions {{RFC6066}} are used to
@@ -3123,8 +3131,8 @@ or longer period of time than what is stated in the
 ticket_lifetime_hint.
 
 The ticket itself is an opaque label. It MAY either be a database
-lookup key or a self-encrypted and self-authenticated value. Section 4 of {{RFC5077}}
-describes a recommended ticket construction mechanism.
+lookup key or a self-encrypted and self-authenticated value. Section
+4 of {{RFC5077}} describes a recommended ticket construction mechanism.
 
 [[TODO: Should we require that tickets be bound to the existing
 symmetric cipher suite. See the TODO above about early_data and
@@ -3368,7 +3376,7 @@ updated it to reference this document. The registry and its allocation policy
 
 -  TLS ExtensionType Registry: Future values are allocated via IETF
   Consensus {{RFC2434}}.  IANA has updated this registry to include
-  the signature_algorithms extension and its corresponding value
+  the "signature_algorithms" extension and its corresponding value
   (see {{hello-extensions}}).
 
 This document also uses two registries originally created in {{RFC4492}}. IANA
@@ -3510,7 +3518,7 @@ tag. Both use the default hash, SHA-256.
 In addition to authenticated cipher suites, completely anonymous Diffie-Hellman
 cipher suites exist to provide communications in which neither party is
 authenticated. This mode is vulnerable to main-in-the-middle attacks and is
-therefore unsafe for general usage. These cipher suites MUST NOT be used by TLS
+therefore unsafe for general use. These cipher suites MUST NOT be used by TLS
 implementations unless the application layer has specifically requested to allow
 anonymous key exchange. Anonymous key exchange may sometimes be acceptable, for
 example, to support opportunistic encryption when no set-up for authentication is
@@ -3519,7 +3527,7 @@ other means to ensure authentication. The following specifications provide "DH_a
 key exchange cipher suites:
 AES-GCM [RFC5288], ARIA-GCM [RFC6209], and CAMELLIA-GCM [RFC6367].
 
-All cipher suites in this section are specified for usage with both TLS 1.2
+All cipher suites in this section are specified for use with both TLS 1.2
 and TLS 1.3, as well as the corresponding versions of DTLS.
 (see {{backward-compatibility}})
 
@@ -3597,7 +3605,7 @@ always be verified to ensure proper signing by a trusted Certificate Authority
 Users should be able to view information about the certificate and root CA.
 
 
-## Cipher Suites
+## Cipher Suite Support
 
 TLS supports a range of key sizes and security levels, including some that
 provide no or minimal security. A proper implementation will probably not
@@ -3606,6 +3614,7 @@ discouraged because it cannot prevent man-in-the-middle attacks. Applications
 should also enforce minimum and maximum key sizes. For example, certificate
 chains containing keys or signatures weaker than 2048-bit RSA or 224-bit ECDSA
 are not appropriate for secure applications.
+See also {{backwards-compatibility-security-restrictions}}.
 
 
 ## Implementation Pitfalls
@@ -3644,7 +3653,7 @@ TLS protocol issues:
 Cryptographic details:
 
 -  What countermeasures do you use to prevent timing attacks against
-  RSA signing operations {{TIMING}}.
+  RSA signing operations {{TIMING}}?
 
 - When verifying RSA signatures, do you accept both NULL and missing parameters
   (see {{cryptographic-attributes}})? Do you verify that the RSA padding
@@ -3658,8 +3667,8 @@ Cryptographic details:
   {{diffie-hellman-key-exchange-with-authentication}})?
 
 - Do you use a strong and, most importantly, properly seeded random number
-  generator (see {{random-number-generation-and-seeding}}) Diffie-Hellman private values, the
-  DSA "k" parameter, and other security-critical values?
+  generator (see {{random-number-generation-and-seeding}}) Diffie-Hellman
+  private values, the DSA "k" parameter, and other security-critical values?
 
 
 # Backward Compatibility
@@ -3678,7 +3687,7 @@ As of TLS 1.3, this field is deprecated and its value MUST be ignored by all
 implementations. Version negotiation is performed using only the handshake versions.
 (ClientHello.client_version & ServerHello.server_version)
 In order to maximize interoperability with older endpoints, implementations
-that negotiate the usage of TLS 1.0-1.2 SHOULD set the record layer
+that negotiate the use of TLS 1.0-1.2 SHOULD set the record layer
 version number to the negotiated version for the ServerHello and all
 records thereafter.
 
@@ -3729,14 +3738,14 @@ MUST always be ignored.
 
 ## Backwards Compatibility Security Restrictions
 
-If an implementation negotiates usage of TLS 1.2, then negotiation of cipher
+If an implementation negotiates use of TLS 1.2, then negotiation of cipher
 suites also supported by TLS 1.3 SHOULD be preferred, if available.
 
 The security of RC4 cipher suites is considered insufficient for the reasons
 cited in [RFC7465]. Implementations MUST NOT offer or negotiate RC4 cipher suites
 for any version of TLS for any reason.
 
-Old versions of TLS permitted the usage of very low strength ciphers.
+Old versions of TLS permitted the use of very low strength ciphers.
 Ciphers with a strength less than 112 bits MUST NOT be offered or
 negotiated for any version of TLS for any reason.
 
