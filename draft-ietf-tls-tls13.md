@@ -1552,7 +1552,7 @@ ClientKeyShare, as shown in Figure 2:
          + ClientKeyShare        -------->
                                                        ServerHello
                                                     ServerKeyShare
-                                            {EncryptedExtensions}
+                                             {EncryptedExtensions}
                                             {ServerConfiguration*}
                                                     {Certificate*}
                                              {CertificateRequest*}
@@ -1606,7 +1606,7 @@ the first-flight data.
                                               + KnownConfiguration
                                              + EarlyDataIndication
                                                     ServerKeyShare
-                                            {EncryptedExtensions}
+                                             {EncryptedExtensions}
                                             {ServerConfiguration*}
                                                     {Certificate*}
                                              {CertificateRequest*}
@@ -1677,12 +1677,11 @@ a PSK and the second uses it:
 
 
 Initial Handshake:
-
        ClientHello
          + ClientKeyShare       -------->
                                                        ServerHello
                                                     ServerKeyShare
-                                            {EncryptedExtensions}
+                                             {EncryptedExtensions}
                                             {ServerConfiguration*}
                                                     {Certificate*}
                                              {CertificateRequest*}
@@ -1701,7 +1700,7 @@ Subsequent Handshake:
            PreSharedKeyExtension -------->
                                                        ServerHello
                                             +PreSharedKeyExtension
-                                            {EncryptedExtensions}
+                                             {EncryptedExtensions}
                                  <--------              {Finished}
        {Certificate*}
        {Finished}                -------->
@@ -3177,7 +3176,9 @@ These shared secret values are used to generate cryptographic keys as
 shown below.
 
 The derivation process is as follows, where L denotes the length of
-the underlying hash function for HKDF {{RFC5869}}.
+the underlying hash function for HKDF {{RFC5869}}. SS and ES denote
+the sources from the table above. Whilst SS and ES may be the same
+in some cases, the extracted xSS and xES will not.
 
 ~~~
   HKDF-Expand-Label(Secret, Label, HashValue, Length) =
@@ -3187,7 +3188,7 @@ the underlying hash function for HKDF {{RFC5869}}.
 
   2. xES = HKDF(0, ES, "extractedES", L)
 
-  3. master_secret= HKDF(xSS, xES, "master secret", L)
+  3. master_secret = HKDF(xSS, xES, "master secret", L)
 
   4. finished_secret = HKDF-Expand-Label(xSS,
                                          "finished secret",
@@ -3298,7 +3299,7 @@ CertificateVerify.
 ###  Diffie-Hellman
 
 A conventional Diffie-Hellman computation is performed. The negotiated key (Z)
-is used as the shared_secret, and is used in the key schedule as
+is used as the shared secret, and is used in the key schedule as
 specified above. Leading bytes of Z that contain all zero bits are stripped
 before it is used as the input to HKDF.
 
