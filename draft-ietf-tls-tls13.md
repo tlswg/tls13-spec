@@ -1034,7 +1034,7 @@ record_version
 
 length
 : The length (in bytes) of the following TLSCiphertext.fragment.
-  The length MUST NOT exceed 2^14 + 2048.
+  The length MUST NOT exceed 2^14 + 256.
 
 fragment
 : The AEAD encrypted form of TLSPlaintext.fragment.
@@ -1079,7 +1079,7 @@ operation. The length will generally be larger than TLSPlaintext.length, but
 by an amount that varies with the AEAD cipher. Since the ciphers might
 incorporate padding, the amount of overhead could vary with different
 TLSPlaintext.length values. Each AEAD cipher MUST NOT produce an expansion of
-greater than 1024 bytes. Symbolically,
+greater than 256 bytes. Symbolically,
 
        AEADEncrypted = AEAD-Encrypt(write_key, nonce, plaintext,
                                     additional_data)
@@ -1274,7 +1274,7 @@ decryption_failed_RESERVED
 
 record_overflow
 : A TLSCiphertext record was received that had a length more than
-  2^14+2048 bytes, or a record decrypted to a TLSPlaintext record
+  2^14+256 bytes, or a record decrypted to a TLSPlaintext record
   with more than 2^14 bytes.  This alert is always fatal and
   should never be observed in communication between proper
   implementations (except when messages were corrupted in the
@@ -4071,4 +4071,3 @@ Archives of the list can be found at:
     Tim Wright
     Vodafone
     timothy.wright@vodafone.com
-
