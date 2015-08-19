@@ -1037,8 +1037,9 @@ record_version
   the protocol version, so this value is redundant.
 
 length
-: The length (in bytes) of the following TLSCiphertext.fragment.
-  The length MUST NOT exceed 2^14 + 256.
+: The length (in bytes) of the following TLSCiphertext.fragment.  The length
+  MUST NOT exceed 2^14 + 256.  An endpoint that receives a record that exceeds
+  this length MUST generate a fatal "record_overflow" alert.
 
 fragment
 : The AEAD encrypted form of TLSPlaintext.fragment.
@@ -1082,14 +1083,10 @@ The AEAD output consists of the ciphertext output by the AEAD encryption
 operation. The length will generally be larger than TLSPlaintext.length, but
 by an amount that varies with the AEAD cipher. Since the ciphers might
 incorporate padding, the amount of overhead could vary with different
-TLSPlaintext.length values. Each AEAD cipher MUST NOT produce an expansion of
-greater than 256 bytes. Symbolically,
+TLSPlaintext.length values. Symbolically,
 
        AEADEncrypted = AEAD-Encrypt(write_key, nonce, plaintext,
                                     additional_data)
-
-[[OPEN ISSUE: Reduce these values?
-https://github.com/tlswg/tls13-spec/issues/55]]
 
 In order to decrypt and verify, the cipher takes as input the key, nonce, the
 "additional_data", and the AEADEncrypted value. The output is either the
@@ -1101,6 +1098,10 @@ separate integrity check. That is:
                                             additional_data)
 
 If the decryption fails, a fatal "bad_record_mac" alert MUST be generated.
+
+An AEAD cipher MUST NOT produce an expansion of greater than 256 bytes.  An
+endpoint that receives a record that is larger than 2^14+256 octets MUST
+generate a fatal "record_overflow" alert.
 
 As a special case, we define the NULL_NULL AEAD cipher which is simply
 the identity operation and thus provides no security. This cipher
