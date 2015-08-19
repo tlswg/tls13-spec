@@ -311,6 +311,10 @@ server: The endpoint which did not initiate the TLS connection.
 ##  Major Differences from TLS 1.2
 
 
+draft-09
+
+- The maximum permittion record expansion for AEAD has been reduced from 2048 to 256 octets.
+
 draft-08
 
 - Remove support for weak and lesser used named curves.
