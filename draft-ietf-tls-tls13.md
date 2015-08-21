@@ -311,10 +311,6 @@ server: The endpoint which did not initiate the TLS connection.
 ##  Major Differences from TLS 1.2
 
 
-draft-09
-
-- The maximum permittion record expansion for AEAD has been reduced from 2048 to 256 octets.
-
 draft-08
 
 - Remove support for weak and lesser used named curves.
@@ -322,6 +318,8 @@ draft-08
 - Remove support for MD5 and SHA-224 hashes with signatures.
 
 - Revise list of currently available AEAD cipher suites.
+ 
+- Reduce maximum permitted record expansion for AEAD from 2048 to 256 octets.
 
 
 draft-07
@@ -1100,7 +1098,7 @@ separate integrity check. That is:
 If the decryption fails, a fatal "bad_record_mac" alert MUST be generated.
 
 An AEAD cipher MUST NOT produce an expansion of greater than 256 bytes.  An
-endpoint that receives a record that is larger than 2^14+256 octets MUST
+endpoint that receives a record that is larger than 2^14 + 256 octets MUST
 generate a fatal "record_overflow" alert.
 
 As a special case, we define the NULL_NULL AEAD cipher which is simply
@@ -1279,7 +1277,7 @@ decryption_failed_RESERVED
 
 record_overflow
 : A TLSCiphertext record was received that had a length more than
-  2^14+256 bytes, or a record decrypted to a TLSPlaintext record
+  2^14 + 256 bytes, or a record decrypted to a TLSPlaintext record
   with more than 2^14 bytes.  This alert is always fatal and
   should never be observed in communication between proper
   implementations (except when messages were corrupted in the
