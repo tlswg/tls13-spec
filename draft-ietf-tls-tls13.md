@@ -2868,7 +2868,8 @@ or "client_authentication_and_data", then the client should select
 the certificate for future handshakes based on the CertificateRequest
 parameters supplied in this handshake. The server MUST NOT send
 either of these two options unless it also requested a certificate
-on this handshake [[OPEN ISSUE: Shoudl we relax this?]]
+on this handshake.
+[[OPEN ISSUE: Should we relax this?]]
 
 extensions
 : This field is a placeholder for future extensions to the
