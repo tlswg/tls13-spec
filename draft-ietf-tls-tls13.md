@@ -1599,14 +1599,12 @@ the first-flight data.
 
        ClientHello
          + ClientKeyShare
-         + KnownConfiguration
          + EarlyDataIndication
        (EncryptedExtensions)
        (Certificate*)
        (CertificateVerify*)
        (Application Data)        -------->
                                                        ServerHello
-                                              + KnownConfiguration
                                              + EarlyDataIndication
                                                     ServerKeyShare
                                              {EncryptedExtensions}
@@ -3288,7 +3286,8 @@ handshake_messages
 configuration
 : When 0-RTT is in use ({{early-data-indication}})
 this contains the concatenation of the ServerConfiguration and Certificate
-messages from the handshake where the configuration was established. Note that
+messages from the handshake where the configuration was established (including the
+type and length fields). Note that
 this requires the client and server to memorize these values.
 {:br }
 
