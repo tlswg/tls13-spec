@@ -1327,7 +1327,7 @@ unknown_ca
   alert is always fatal.
 
 access_denied
-: A valid certificate was received, but when access control was
+: A valid certificate or PSK was received, but when access control was
   applied, the sender decided not to proceed with negotiation.  This
   alert is always fatal.
 
@@ -1591,8 +1591,8 @@ application data as well as its Certificate and CertificateVerify (if
 client authentication is requested) on its first flight, thus reducing
 handshake latency. In order to enable this functionality, the server
 provides a ServerConfiguration message containing a long-term (EC)DH
-share. On future connections, the client uses that share to encrypt
-the first-flight data.
+share. On future connections to the same server, the client can use
+that share to encrypt the first-flight data.
 
 ~~~
        Client                                               Server
@@ -1625,7 +1625,7 @@ the first-flight data.
 
 Note: because sequence numbers continue to increment between the
 initial (early) application data and the application data sent
-after the handshake has complete, an attacker cannot remove
+after the handshake has completed, an attacker cannot remove
 early application data messages.
 
 IMPORTANT NOTE: The security properties for 0-RTT data (regardless of
@@ -2378,7 +2378,7 @@ The "extension_data" field of this extension contains a
            }
        } PreSharedKeyExtension;
 
-identifier
+identity
 : An opaque label for the pre-shared key.
 {: br}
 
@@ -3521,7 +3521,7 @@ tag. Both use the default hash, SHA-256.
 
 In addition to authenticated cipher suites, completely anonymous Diffie-Hellman
 cipher suites exist to provide communications in which neither party is
-authenticated. This mode is vulnerable to main-in-the-middle attacks and is
+authenticated. This mode is vulnerable to man-in-the-middle attacks and is
 therefore unsafe for general use. These cipher suites MUST NOT be used by TLS
 implementations unless the application layer has specifically requested to allow
 anonymous key exchange. Anonymous key exchange may sometimes be acceptable, for
