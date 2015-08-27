@@ -110,11 +110,13 @@ informative:
   RFC5077:
   RFC5081:
   RFC5116:
+  RFC5246:
   RFC5705:
   RFC5763:
   RFC6066:
   RFC6176:
   RFC7465:
+  RFC7507:
   RFC7568:
   I-D.ietf-tls-negotiated-ff-dhe:
   I-D.ietf-tls-session-hash:
@@ -317,7 +319,7 @@ draft-08
 
 - Remove support for MD5 and SHA-224 hashes with signatures.
 
-- Revise list of currently available AEAD cipher suites.
+- Update lists of available AEAD cipher suites and error alerts.
  
 - Reduce maximum permitted record expansion for AEAD from 2048 to 256 octets.
 
@@ -1158,30 +1160,37 @@ as specified by the current connection state.
 
        enum {
            close_notify(0),
-           unexpected_message(10),              /* fatal */
-           bad_record_mac(20),                  /* fatal */
-           decryption_failed_RESERVED(21),      /* fatal */
-           record_overflow(22),                 /* fatal */
-           decompression_failure_RESERVED(30),  /* fatal */
-           handshake_failure(40),               /* fatal */
-           no_certificate_RESERVED(41),         /* fatal */
+           unexpected_message(10),               /* fatal */
+           bad_record_mac(20),                   /* fatal */
+           decryption_failed_RESERVED(21),       /* fatal */
+           record_overflow(22),                  /* fatal */
+           decompression_failure_RESERVED(30),   /* fatal */
+           handshake_failure(40),                /* fatal */
+           no_certificate_RESERVED(41),          /* fatal */
            bad_certificate(42),
            unsupported_certificate(43),
            certificate_revoked(44),
            certificate_expired(45),
            certificate_unknown(46),
-           illegal_parameter(47),               /* fatal */
-           unknown_ca(48),                      /* fatal */
-           access_denied(49),                   /* fatal */
-           decode_error(50),                    /* fatal */
-           decrypt_error(51),                   /* fatal */
-           export_restriction_RESERVED(60),     /* fatal */
-           protocol_version(70),                /* fatal */
-           insufficient_security(71),           /* fatal */
-           internal_error(80),                  /* fatal */
+           illegal_parameter(47),                /* fatal */
+           unknown_ca(48),                       /* fatal */
+           access_denied(49),                    /* fatal */
+           decode_error(50),                     /* fatal */
+           decrypt_error(51),                    /* fatal */
+           export_restriction_RESERVED(60),      /* fatal */
+           protocol_version(70),                 /* fatal */
+           insufficient_security(71),            /* fatal */
+           internal_error(80),                   /* fatal */
+           inappropriate_fallback(86),           /* fatal */
            user_canceled(90),
-           no_renegotiation_RESERVED(100),      /* fatal */
-           unsupported_extension(110),          /* fatal */
+           no_renegotiation_RESERVED(100),       /* fatal */
+           missing_extension(109),               /* fatal */
+           unsupported_extension(110),           /* fatal */
+           certificate_unobtainable(111),
+           unrecognized_name(112),
+           bad_certificate_status_response(113), /* fatal */
+           bad_certificate_hash_value(114),      /* fatal */
+           unknown_psk_identity(115),
            (255)
        } AlertDescription;
 
@@ -1371,15 +1380,50 @@ internal_error
   protocol (such as a memory allocation failure) makes it impossible
   to continue.  This alert is always fatal.
 
+inappropriate_fallback
+: Sent by a server in response to an invalid connection retry attempt
+  from a client. (see [RFC7507]) This alert is always fatal.
+
 no_renegotiation_RESERVED
 : This alert was used in previous versions of TLS. TLS 1.3 does not
   include renegotiation and TLS 1.3 implementations MUST NOT send this
   alert when in TLS 1.3 mode. This alert is always fatal.
 
+missing_extension
+: Sent by endpoints that receive a hello message not containing an
+  extension that is mandatory to send for the offered TLS version.
+  This message is always fatal.
+[[TODO: IANA Considerations.]]
+
 unsupported_extension
 : Sent by clients that receive an extended ServerHello containing
   an extension that they did not put in the corresponding ClientHello.
   This alert is always fatal.
+
+certificate_unobtainable
+: Sent by servers when unable to obtain a certificate from a URL
+  provided by the client via the "client_certificate_url" extension
+  [RFC6066].
+
+unrecognized_name
+: Sent by servers when no server exists identified by the name
+  provided by the client via the "server_name" extension
+  [RFC6066].
+
+bad_certificate_status_response
+: Sent by clients when an invalid or unacceptable OCSP response is
+  provided by the server via the "status_request" extension
+  [RFC6066]. This alert is always fatal.
+
+bad_certificate_hash_value
+: Sent by servers when a retreived object does not have the correct hash
+  provided by the client via the "client_certificate_url" extension
+  [RFC6066]. This alert is always fatal.
+
+unknown_psk_identity
+: Sent by servers when an unknown PSK identity is provided by the client.
+  Sending this alert is OPTIONAL; servers MAY instead choose to send a
+  "decrypt_error" alert to merely indicate an invalid PSK identity.
 {:br }
 
 New Alert values are assigned by IANA as described in {{iana-considerations}}.
@@ -2148,32 +2192,18 @@ suite indicates permissible signature algorithms but not hash algorithms.
 {{server-certificate}} and {{server-key-share}} describe the
 appropriate rules.
 
-If the client supports only the default hash and signature algorithms (listed
-in this section), it MAY omit the "signature_algorithms" extension. If the client
-does not support the default algorithms, or supports other hash and signature
-algorithms (and it is willing to use them for verifying messages sent by the
-server, i.e., server certificates and server key share), it MUST send the
-"signature_algorithms" extension, listing the algorithms it is willing to accept.
-
-If the client does not send the "signature_algorithms" extension, the server MUST
-do the following:
-
-- If the negotiated key exchange algorithm is one of (DHE_RSA, ECDHE_RSA),
-  behave as if client had sent the value {sha1,rsa}.
-
-- If the negotiated key exchange algorithm is DHE_DSS,
-  behave as if the client had sent the value {sha1,dsa}.
-
-- If the negotiated key exchange algorithm is ECDHE_ECDSA,
-  behave as if the client had sent value {sha1,ecdsa}.
-
-Note: This extension is not meaningful for TLS versions prior to 1.2. Clients
-MUST NOT offer it if they are offering prior versions. However, even if clients
-do offer it, the rules specified in {{RFC6066}} require servers to ignore
-extensions they do not understand.
+All clients MUST send a valid "signature_algorithms" extension in their
+ClientHello when offering certificate authenticated cipher suites.
+Servers receiving a TLS 1.3 ClientHello offering certificate authenticated
+cipher suites without this extension MUST send a "missing_extension" alert
+message and close the connection.
 
 Servers MUST NOT send this extension. TLS servers MUST support receiving this
 extension.
+
+Note: TLS 1.3 servers MAY receive TLS 1.2 ClientHellos which do not contain
+this extension. If those servers are willing to negotiate TLS 1.2, they MUST
+behave in accordance with the requirements of {{RFC5246}}.
 
 #### Negotiated Groups
 
@@ -2249,7 +2279,8 @@ compatible group, the server MUST NOT negotiate a cipher suite of the
 relevant type.  For instance, if a client supplies only ECDHE groups,
 the server MUST NOT negotiate finite field Diffie-Hellman.  If no
 acceptable group can be selected across all cipher suites, then the
-server MUST generate a fatal "handshake_failure" alert.
+server MUST generate a fatal "handshake_failure" alert, or a
+"missing_extension" alert if no extension was provided.
 
 NOTE: A server participating in an ECDHE-ECDSA key exchange may use
 different curves for (i) the ECDSA key in its certificate, and (ii)
@@ -2708,11 +2739,13 @@ The following rules apply to the certificates sent by the server:
   guide certificate selection. As servers MAY require the presence of the server_name
   extension, clients SHOULD send this extension.
 
-If the client provided a "signature_algorithms" extension, then all
-certificates provided by the server MUST be signed by a hash/signature
-algorithm pair that appears in that extension. Note that this implies that a
-certificate containing a key for one signature algorithm MAY be signed using a
-different signature algorithm (for instance, an RSA key signed with a DSA key).
+All certificates provided by the server MUST be signed by a hash/signature
+algorithm pair that appears in the "signature_algorithms" extension provided
+by the client (see {{signature-algorithms}}).
+[[OPEN ISSUE: changing this is under consideration]]
+Note that this implies that a certificate containing a key for one signature
+algorithm MAY be signed using a different signature algorithm (for instance,
+an RSA key signed with a ECDSA key).
 
 If the server has multiple certificates, it chooses one of them based on the
 above-mentioned criteria (in addition to other criteria, such as transport
@@ -2923,8 +2956,8 @@ beginning of the input. Thus, by signing a digest of the messages, an
 implementation need only maintain one running hash per hash type for
 CertificateVerify, Finished and other messages.
 
->If the client has offered the "signature_algorithms" extension, the signature
-algorithm and hash algorithm MUST be a pair listed in that extension. Note that
+> The signature algorithm and hash algorithm MUST be a pair offered in the
+"signature_algorithms" extension (see {{signature-algorithms}}). Note that
 there is a possibility for inconsistencies here. For instance, the client might
 offer DHE_DSS key exchange but omit any DSA pairs from its
 "signature_algorithms" extension. In order to negotiate correctly, the server
@@ -3326,11 +3359,28 @@ because TLS does not directly use this secret for anything
 other than for computing other secrets.)
 
 
-#  Mandatory Cipher Suites
+#  Mandatory Algorithms
+
+##  MTI Cipher Suites
 
 In the absence of an application profile standard specifying otherwise, a
 TLS-compliant application MUST implement the cipher suite [TODO:Needs to be selected](https://github.com/tlswg/tls13-spec/issues/32). (See {{cipher-suites}} for the definition.)
 
+##  MTI Extensions
+
+In the absence of an application profile standard specifying otherwise, a
+TLS-compliant application MUST implement the following TLS extensions:
+
+  * Signature Algorithms ("signature_algorithms"; {{signature-algorithms}})
+  * Negotiated Groups ("supported_groups"; {{negotiated-groups}})
+
+All implementations MUST use the "signature_algorithms" extension when
+offering and negotiating certificate authenticated cipher suites.
+All implementations MUST use the "supported_groups" extension when
+offering and negotiating DHE or ECDHE cipher suites.
+
+[[TODO: also note client_key_share & pre_shared_key extensions]]
+[[OPEN ISSUE: MTI SNI under consideration]]
 
 #  Application Data Protocol
 
@@ -3772,6 +3822,10 @@ Implementations MUST NOT send a ClientHello.client_version or ServerHello.server
 set to { 3, 0 } or less. Any endpoint receiving a Hello message with
 ClientHello.client_version or ServerHello.server_version set to { 3, 0 } MUST respond
 with a "protocol_version" alert message and close the connection.
+
+Implementations MUST NOT use the Truncated HMAC extension, defined in
+Section 7 of [RFC6066], as it is not applicable to AEAD ciphers and has
+been shown to be insecure in some scenarios.
 
 
 #  Security Analysis
