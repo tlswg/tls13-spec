@@ -110,6 +110,7 @@ informative:
   RFC5077:
   RFC5081:
   RFC5116:
+  RFC5246:
   RFC5705:
   RFC5763:
   RFC6066:
@@ -1174,6 +1175,7 @@ as specified by the current connection state.
            internal_error(80),                  /* fatal */
            user_canceled(90),
            no_renegotiation_RESERVED(100),      /* fatal */
+           missing_extension(109),              /* fatal */
            unsupported_extension(110),          /* fatal */
            (255)
        } AlertDescription;
@@ -1368,6 +1370,12 @@ no_renegotiation_RESERVED
 : This alert was used in previous versions of TLS. TLS 1.3 does not
   include renegotiation and TLS 1.3 implementations MUST NOT send this
   alert when in TLS 1.3 mode. This alert is always fatal.
+
+missing_extension
+: Sent by endpoints that receive a hello message not containing an
+  extension that is mandatory to send for the offered TLS version.
+  This message is always fatal.
+[[TODO: IANA Considerations.]]
 
 unsupported_extension
 : Sent by clients that receive an extended ServerHello containing
@@ -2146,32 +2154,18 @@ suite indicates permissible signature algorithms but not hash algorithms.
 {{server-certificate}} and {{server-key-share}} describe the
 appropriate rules.
 
-If the client supports only the default hash and signature algorithms (listed
-in this section), it MAY omit the "signature_algorithms" extension. If the client
-does not support the default algorithms, or supports other hash and signature
-algorithms (and it is willing to use them for verifying messages sent by the
-server, i.e., server certificates and server key share), it MUST send the
-"signature_algorithms" extension, listing the algorithms it is willing to accept.
-
-If the client does not send the "signature_algorithms" extension, the server MUST
-do the following:
-
-- If the negotiated key exchange algorithm is one of (DHE_RSA, ECDHE_RSA),
-  behave as if client had sent the value {sha1,rsa}.
-
-- If the negotiated key exchange algorithm is DHE_DSS,
-  behave as if the client had sent the value {sha1,dsa}.
-
-- If the negotiated key exchange algorithm is ECDHE_ECDSA,
-  behave as if the client had sent value {sha1,ecdsa}.
-
-Note: This extension is not meaningful for TLS versions prior to 1.2. Clients
-MUST NOT offer it if they are offering prior versions. However, even if clients
-do offer it, the rules specified in {{RFC6066}} require servers to ignore
-extensions they do not understand.
+All clients MUST send a valid "signature_algorithms" extension in their
+ClientHello when offering certificate authenticated cipher suites.
+Servers receiving a TLS 1.3 ClientHello offering certificate authenticated
+cipher suites without this extension MUST send a "missing_extension" alert
+message and close the connection.
 
 Servers MUST NOT send this extension. TLS servers MUST support receiving this
 extension.
+
+Note: TLS 1.3 servers MAY receive TLS 1.2 ClientHellos which do not contain
+this extension. If those servers are willing to negotiate TLS 1.2, they MUST
+behave in accordance with the requirements of {{RFC5246}}.
 
 #### Negotiated Groups
 
@@ -2247,7 +2241,8 @@ compatible group, the server MUST NOT negotiate a cipher suite of the
 relevant type.  For instance, if a client supplies only ECDHE groups,
 the server MUST NOT negotiate finite field Diffie-Hellman.  If no
 acceptable group can be selected across all cipher suites, then the
-server MUST generate a fatal "handshake_failure" alert.
+server MUST generate a fatal "handshake_failure" alert, or a
+"missing_extension" alert if no extension was provided.
 
 NOTE: A server participating in an ECDHE-ECDSA key exchange may use
 different curves for (i) the ECDSA key in its certificate, and (ii)
@@ -2706,11 +2701,13 @@ The following rules apply to the certificates sent by the server:
   guide certificate selection. As servers MAY require the presence of the server_name
   extension, clients SHOULD send this extension.
 
-If the client provided a "signature_algorithms" extension, then all
-certificates provided by the server MUST be signed by a hash/signature
-algorithm pair that appears in that extension. Note that this implies that a
-certificate containing a key for one signature algorithm MAY be signed using a
-different signature algorithm (for instance, an RSA key signed with a DSA key).
+All certificates provided by the server MUST be signed by a hash/signature
+algorithm pair that appears in the "signature_algorithms" extension provided
+by the client (see {{signature-algorithms}}).
+[[OPEN ISSUE: changing this is under consideration]]
+Note that this implies that a certificate containing a key for one signature
+algorithm MAY be signed using a different signature algorithm (for instance,
+an RSA key signed with a ECDSA key).
 
 If the server has multiple certificates, it chooses one of them based on the
 above-mentioned criteria (in addition to other criteria, such as transport
@@ -2921,8 +2918,8 @@ beginning of the input. Thus, by signing a digest of the messages, an
 implementation need only maintain one running hash per hash type for
 CertificateVerify, Finished and other messages.
 
->If the client has offered the "signature_algorithms" extension, the signature
-algorithm and hash algorithm MUST be a pair listed in that extension. Note that
+> The signature algorithm and hash algorithm MUST be a pair offered in the
+"signature_algorithms" extension (see {{signature-algorithms}}). Note that
 there is a possibility for inconsistencies here. For instance, the client might
 offer DHE_DSS key exchange but omit any DSA pairs from its
 "signature_algorithms" extension. In order to negotiate correctly, the server
@@ -3324,11 +3321,28 @@ because TLS does not directly use this secret for anything
 other than for computing other secrets.)
 
 
-#  Mandatory Cipher Suites
+#  Mandatory Algorithms
+
+##  MTI Cipher Suites
 
 In the absence of an application profile standard specifying otherwise, a
 TLS-compliant application MUST implement the cipher suite [TODO:Needs to be selected](https://github.com/tlswg/tls13-spec/issues/32). (See {{cipher-suites}} for the definition.)
 
+##  MTI Extensions
+
+In the absence of an application profile standard specifying otherwise, a
+TLS-compliant application MUST implement the following TLS extensions:
+
+  * Signature Algorithms ("signature_algorithms"; {{signature-algorithms}})
+  * Negotiated Groups ("supported_groups"; {{negotiated-groups}})
+
+All implementations MUST use the "signature_algorithms" extension when
+offering and negotiating certificate authenticated cipher suites.
+All implementations MUST use the "supported_groups" extension when
+offering and negotiating DHE or ECDHE cipher suites.
+
+[[TODO: also note client_key_share & pre_shared_key extensions]]
+[[OPEN ISSUE: MTI SNI under consideration]]
 
 #  Application Data Protocol
 
@@ -3770,6 +3784,10 @@ Implementations MUST NOT send a ClientHello.client_version or ServerHello.server
 set to { 3, 0 } or less. Any endpoint receiving a Hello message with
 ClientHello.client_version or ServerHello.server_version set to { 3, 0 } MUST respond
 with a "protocol_version" alert message and close the connection.
+
+Implementations MUST NOT use the Truncated HMAC extension, defined in
+Section 7 of [RFC6066], as it is not applicable to AEAD ciphers and has
+been shown to be insecure in some scenarios.
 
 
 #  Security Analysis
