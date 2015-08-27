@@ -330,6 +330,8 @@ draft-08
 - Change code point for server_configuration to avoid collision with
   server_hello_done.
 
+- Relax certificate_list ordering requirement to match current practice.
+
 
 draft-07
 
@@ -2686,15 +2688,26 @@ Structure of this message:
        } Certificate;
 
 certificate_list
-: This is a sequence (chain) of certificates.  The server's
-  certificate MUST come first in the list.  Each following
-  certificate MUST directly certify the one preceding it.  Because
-  certificate validation requires that root keys be distributed
-  independently, the self-signed certificate that specifies the root
-  certification authority (CA) MAY be omitted from the chain, under the
-  assumption that the client must already possess it in order to
-  validate it in any case.
+: This is a sequence (chain) of certificates. The sender's
+  certificate MUST come first in the list. Each following
+  certificate SHOULD directly certify one preceding it. Because
+  certificate validation requires that trust anchors be distributed
+  independently, a self-signed certificate that specifies a
+  trust anchor MAY be omitted from the chain, provided that
+  supported peers are known to possess any omitted certificates
+  they may require.
 {:br }
+
+Note: Prior to TLS 1.3, "certificate_list" ordering was required to be strict,
+however some implementations already allowed for some flexibility. For maximum
+compatibility, all implementations SHOULD be prepared to handle potentially
+extraneous certificates and arbitrary orderings from any TLS version (with
+the exception of the sender's certificate). Some servers are configured to send
+both a current and deprecated intermediate for transitional purposes, and others
+are simply configured incorrectly, but these cases can nonetheless be validated
+properly by clients capable of doing so. Although the chain MAY be ordered in a
+variety of ways, the peer's end-entity certificate MUST be the first element in
+the vector.
 
 The same message type and structure will be used for the client's response to a
 certificate request message. Note that a client MAY send no certificates if it
@@ -3751,6 +3764,10 @@ that negotiate the use of TLS 1.0-1.2 SHOULD set the record layer
 version number to the negotiated version for the ServerHello and all
 records thereafter.
 
+For maximum compatibility with previously non-standard behavior and misconfigured
+deployments, all implementations SHOULD support validation of certificate chains
+based on the expectations in this document, even when handling prior TLS versions'
+handshakes. (see {{server-certificate}})
 
 ## Negotiating with an older server
 
