@@ -1416,14 +1416,18 @@ bad_certificate_status_response
   [RFC6066]. This alert is always fatal.
 
 bad_certificate_hash_value
-: Sent by servers when a retreived object does not have the correct hash
+: Sent by servers when a retrieved object does not have the correct hash
   provided by the client via the "client_certificate_url" extension
   [RFC6066]. This alert is always fatal.
 
 unknown_psk_identity
-: Sent by servers when an unknown PSK identity is provided by the client.
-  Sending this alert is OPTIONAL; servers MAY instead choose to send a
-  "decrypt_error" alert to merely indicate an invalid PSK identity.
+: Sent by servers when a PSK cipher suite is selected but no
+ acceptable PSK identity is provided by the client. Sending this alert
+ is OPTIONAL; servers MAY instead choose to send a "decrypt_error"
+ alert to merely indicate an invalid PSK identity.
+ [[TODO: This doesn't really make sense with the current PSK
+ negotiation scheme where the client provides multiple PSKs in
+ flight 1. https://github.com/tlswg/tls13-spec/issues/230]]
 {:br }
 
 New Alert values are assigned by IANA as described in {{iana-considerations}}.
