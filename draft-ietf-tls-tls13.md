@@ -1398,9 +1398,10 @@ missing_extension
 [[TODO: IANA Considerations.]]
 
 unsupported_extension
-: Sent by clients that receive an extended ServerHello containing
-  an extension that they did not put in the corresponding ClientHello.
-  This alert is always fatal.
+: Sent by endpoints receiving any hello message containing an extension
+  known to be prohibited for inclusion in the given hello message, including
+  any extensions in a ServerHello not first offered in the corresponding
+  ClientHello. This alert is always fatal.
 
 certificate_unobtainable
 : Sent by servers when unable to obtain a certificate from a URL
@@ -2143,6 +2144,19 @@ be taken into account when designing new extensions:
 The client uses the "signature_algorithms" extension to indicate to the server
 which signature/hash algorithm pairs may be used in digital signatures.
 
+All clients MUST send a valid "signature_algorithms" extension containing
+at least one supported SignatureAndHashAlgorithm when offering any
+certificate authenticated cipher suites.
+Servers MUST NOT negotiate use of a certificate authenticated cipher suite
+unless the client supplies a supported SignatureAndHashAlgorithm.
+If the extension is not provided and no alternative cipher suite is available,
+the server MUST close the connection with a fatal "missing_extension" alert.
+(see {{mti-extensions}})
+
+Servers MUST NOT send this extension. TLS servers MUST support receiving
+this extension. Clients receiving this extension MUST respond with an
+"unsupported_extension" alert and close the connection.
+
 The "extension_data" field of this extension contains a
 "supported_signature_algorithms" value:
 
@@ -2198,15 +2212,6 @@ suite indicates permissible signature algorithms but not hash algorithms.
 {{server-certificate}} and {{server-key-share}} describe the
 appropriate rules.
 
-All clients MUST send a valid "signature_algorithms" extension in their
-ClientHello when offering certificate authenticated cipher suites.
-Servers receiving a TLS 1.3 ClientHello offering certificate authenticated
-cipher suites without this extension MUST send a "missing_extension" alert
-message and close the connection.
-
-Servers MUST NOT send this extension. TLS servers MUST support receiving this
-extension.
-
 Note: TLS 1.3 servers MAY receive TLS 1.2 ClientHellos which do not contain
 this extension. If those servers are willing to negotiate TLS 1.2, they MUST
 behave in accordance with the requirements of {{RFC5246}}.
@@ -2220,6 +2225,25 @@ preferred to least preferred.
 Note: In versions of TLS prior to TLS 1.3, this extension was named
 "elliptic_curves" and only contained elliptic curve groups. See
 {{RFC4492}} and {{I-D.ietf-tls-negotiated-ff-dhe}}.
+
+All clients MUST send a valid "supported_groups" extension containing
+at least one group for each ephemeral key exchange algorithm (currently
+DHE and ECDHE) for which it offers a cipher suite.
+Servers MUST NOT negotiate use of a DHE or ECDHE cipher suites
+unless the client supplies a supported NamedGroup.
+If the extension is not provided and no alternative cipher suite is available,
+the server MUST close the connection with a fatal "missing_extension" alert.
+(see {{mti-extensions}})
+If the extension is provided, but no compatible group is offered, the
+server MUST NOT negotiate a cipher suite of the relevant type. For
+instance, if a client supplies only ECDHE groups, the server MUST NOT
+negotiate finite field Diffie-Hellman. If no acceptable group can be
+selected across all cipher suites, then the server MUST generate a
+fatal "handshake_failure" alert.
+
+Servers MUST NOT send this extension. TLS servers MUST support receiving
+this extension. Clients receiving this extension MUST respond with an
+"unsupported_extension" alert and close the connection.
 
 The "extension_data" field of this extension contains a
 "NamedGroupList" value:
@@ -2277,17 +2301,6 @@ extension type (Supported Group Extension):
 
        00 0A 00 06 00 04 00 17 00 18
 
-The client MUST supply a "supported_groups" extension containing at
-least one group for each key exchange algorithm (currently
-DHE and ECDHE) for which it offers a cipher suite.
-If the client does not supply a "supported_groups" extension with a
-compatible group, the server MUST NOT negotiate a cipher suite of the
-relevant type.  For instance, if a client supplies only ECDHE groups,
-the server MUST NOT negotiate finite field Diffie-Hellman.  If no
-acceptable group can be selected across all cipher suites, then the
-server MUST generate a fatal "handshake_failure" alert, or a
-"missing_extension" alert if no extension was provided.
-
 NOTE: A server participating in an ECDHE-ECDSA key exchange may use
 different curves for (i) the ECDSA key in its certificate, and (ii)
 the ephemeral ECDH key in the ServerKeyShare message.  The server
@@ -2298,10 +2311,23 @@ must consider the supported groups in both cases.
 
 ####  Client Key Share
 
-The "client_key_share" extension MUST be provided by the client if it
-offers any cipher suites that involve non-PSK (currently DHE or
-ECDHE) key exchange.  It contains the client's cryptographic parameters
-for zero or more key establishment methods. [[OPEN ISSUE: Would it
+The "client_key_share" extension contains the client's cryptographic
+parameters for zero or more non-PSK key establishment methods (currently
+DHE or ECDHE).
+
+All clients MUST send a valid "client_key_share" extension when offering
+any DHE or ECDHE cipher suites.
+Servers MUST NOT negotiate use of a DHE or ECDHE cipher suites
+unless the client supplies a (possibly empty) "client_key_share" extension.
+If the extension is not provided and no alternative cipher suite is available,
+the server MUST close the connection with a fatal "missing_extension" alert.
+(see {{mti-extensions}})
+
+Servers MUST NOT send this extension. TLS servers MUST support receiving
+this extension. Clients receiving this extension MUST respond with an
+"unsupported_extension" alert and close the connection.
+
+[[OPEN ISSUE: Would it
 be better to omit it if it's empty?.
 https://github.com/tlswg/tls13-spec/issues/190]]
 
@@ -2343,11 +2369,12 @@ for instance a client might offer shares for several elliptic curves
 or multiple integer DH groups. The shares for each ClientKeyShareOffer
 MUST by generated independently. Clients MUST NOT offer multiple
 ClientKeyShareOffers for the same parameters. It is explicitly
-permitted to send an empty client_key_share extension as this is used
+permitted to send an empty "client_key_share" extension as this is used
 to elicit the server's parameters if the client has no useful
 information.
-[TODO: Recommendation about what the client offers. Presumably which integer
-DH groups and which curves.]
+
+[[TODO: Recommendation about what the client offers.
+Presumably which integer DH groups and which curves.]]
 
 #####  Diffie-Hellman Parameters {#ffdhe-param}
 
@@ -2400,6 +2427,14 @@ The "pre_shared_key" extension is used to indicate the identity of the
 pre-shared key to be used with a given handshake in association
 with a PSK or (EC)DHE-PSK cipher suite (see {{RFC4279}} for background).
 
+All clients MUST send a valid "pre_shared_key" extension when offering
+any PSK cipher suites.
+Servers MUST NOT negotiate use of a PSK cipher suite
+unless the client supplies a "pre_shared_key" extension.
+If the extension is not provided and no alternative cipher suite is available,
+the server MUST close the connection with a fatal "missing_extension" alert.
+(see {{mti-extensions}})
+
 The "extension_data" field of this extension contains a
 "PreSharedKeyExtension" value:
 
@@ -2421,18 +2456,19 @@ identity
 : An opaque label for the pre-shared key.
 {: br}
 
-When the client offers a PSK cipher suite, it MUST also supply a
-PreSharedKeyExtension to indicate the PSK(s) to be used. If no
-such extension is present, the server MUST NOT negotiate
-a PSK cipher suite. If no suitable identity is present, the server
-MUST NOT negotiate a PSK cipher suite.
+If no suitable identity is provided, the server MUST NOT negotiate
+a PSK cipher suite and MAY respond with an "unknown_psk_identity"
+alert message. Sending this alert is OPTIONAL; servers MAY instead
+choose to send a "decrypt_error" alert to merely indicate an
+invalid PSK identity or instead negotiate use of a non-PSK cipher
+suite, if available.
 
 If the server selects a PSK cipher suite, it MUST send a
 PreSharedKeyExtension with the identity that it selected.
 The client MUST verify that the server has selected one of
 the identities that the client supplied. If any other identity
-is returned, the client MUST generate a fatal "handshake_failure"
-alert.
+is returned, the client MUST generate a fatal
+"unknown_psk_identity" alert and close the connection.
 
 
 #### Early Data Indication
@@ -3381,7 +3417,9 @@ other than for computing other secrets.)
 ##  MTI Cipher Suites
 
 In the absence of an application profile standard specifying otherwise, a
-TLS-compliant application MUST implement the cipher suite [TODO:Needs to be selected](https://github.com/tlswg/tls13-spec/issues/32). (See {{cipher-suites}} for the definition.)
+TLS-compliant application MUST implement the cipher suite
+[TODO:Needs to be selected](https://github.com/tlswg/tls13-spec/issues/32).
+(See {{cipher-suites}} for the definition.)
 
 ##  MTI Extensions
 
@@ -3390,14 +3428,29 @@ TLS-compliant application MUST implement the following TLS extensions:
 
   * Signature Algorithms ("signature_algorithms"; {{signature-algorithms}})
   * Negotiated Groups ("supported_groups"; {{negotiated-groups}})
+  * Client Key Share ("client_key_share"; {{client-key-share}})
+  * Pre-Shared Key Extension ("pre_shared_key"; {{pre-shared-key-extension}})
+  * Server Name Indication ("server_name"; Section 3 of {{RFC6066}})
 
-All implementations MUST use the "signature_algorithms" extension when
-offering and negotiating certificate authenticated cipher suites.
-All implementations MUST use the "supported_groups" extension when
-offering and negotiating DHE or ECDHE cipher suites.
+All implementations MUST send and use these extensions when offering
+applicable cipher suites:
 
-[[TODO: also note client_key_share & pre_shared_key extensions]]
-[[OPEN ISSUE: MTI SNI under consideration]]
+  * "signature_algorithms" is REQUIRED for certificate authenticated cipher suites
+  * "supported_groups" and "client_key_share" are REQUIRED for DHE or ECDHE cipher suites
+  * "pre_shared_key" is REQUIRED for PSK cipher suites
+
+When negotiating use of applicable cipher suites, endpoints MUST abort the
+connection with a "missing_extension" alert if the required extension was
+not provided. Any endpoint that receives any invalid combination of cipher
+suites and extensions MAY abort the connection with a "missing_extension"
+alert, regardless of negotiated parameters.
+
+Additionally, all implementations MUST support use of the "server_name"
+extension with applications capable of using it.
+Servers MAY require clients to send a valid "server_name" extension.
+Servers requiring this extension SHOULD respond to a ClientHello
+lacking a "server_name" extension with a fatal "missing_extension" alert.
+
 
 #  Application Data Protocol
 
