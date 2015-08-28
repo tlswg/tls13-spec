@@ -2735,7 +2735,7 @@ certificate_list
 
 Note: Prior to TLS 1.3, "certificate_list" ordering required each certificate
 to certify the one immediately preceding it.
-However some implementations allowed some flexibility, since some servers send
+However some implementations allowed some flexibility since some servers send
 both a current and deprecated intermediate for transitional purposes, and others
 are simply configured incorrectly, but could nonetheless be validated
 properly. For maximum
