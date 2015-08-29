@@ -2734,16 +2734,13 @@ certificate_list
 {:br }
 
 Note: Prior to TLS 1.3, "certificate_list" ordering required each certificate
-to certify the one immediately preceding it.
-However some implementations allowed some flexibility since some servers send
+to certify the one immediately preceding it,
+however some implementations allowed some flexibility. Servers sometimes send
 both a current and deprecated intermediate for transitional purposes, and others
-are simply configured incorrectly, but could nonetheless be validated
-properly. For maximum
-compatibility, all implementations SHOULD be prepared to handle potentially
-extraneous certificates and arbitrary orderings from any TLS version (with
-the exception of the sender's certificate).  Although the chain MAY be ordered in a
-variety of ways, the peer's end-entity certificate MUST be the first element in
-the vector.
+are simply configured incorrectly, but these cases can nonetheless be validated
+properly. For maximum compatibility, all implementations SHOULD be prepared to
+handle potentially extraneous certificates and arbitrary orderings from any TLS
+version, with the exception of the end-entity certificate which MUST be first.
 
 The same message type and structure will be used for the client's response to a
 certificate request message. Note that a client MAY send no certificates if it
