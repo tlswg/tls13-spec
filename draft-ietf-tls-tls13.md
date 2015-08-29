@@ -51,13 +51,6 @@ normative:
          org: National Institute of Standards and Technology
        seriesinfo:
          NIST: FIPS 197
-  DSS:
-       title: Digital Signature Standard
-       date: 2000
-       author:
-         org: National Institute of Standards and Technology, U.S. Department of Commerce
-       seriesinfo:
-         NIST: FIPS PUB 186-2
   SHS:
        title: Secure Hash Standard
        date: 2012-03
@@ -128,13 +121,13 @@ informative:
        author:
          - ins: B. Moeller
        date: 2004-05-20
-  DSS-3:
-       title: "Digital Signature Standard"
-       seriesinfo:
-         NIST: FIPS PUB 186-3 Draft
+  DSS:
+       title: "Digital Signature Standard, version 4"
+       date: 2013
        author:
-         org: National Institute of Standards and Technology, U.S.
-       date: 2006
+         org: National Institute of Standards and Technology, U.S. Department of Commerce
+       seriesinfo:
+         NIST: FIPS PUB 186-4
   ECDSA:
        title: "Public Key Cryptography for the Financial Services Industry: The Elliptic Curve Digital Signature Algorithm (ECDSA)"
        author:
