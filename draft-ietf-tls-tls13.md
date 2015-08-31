@@ -740,7 +740,7 @@ or its successors.  Data to be signed/verified is hashed, and the
 result run directly through the ECDSA algorithm with no additional
 hashing.  The default hash function is SHA-1 {{SHS}}.  However, an
 alternative hash function, such as one of the new SHA hash functions
-specified in FIPS 180-2 may be used instead if the certificate
+specified in FIPS 180-4 {{SHS}} may be used instead if the certificate
 containing the EC public key explicitly requires use of another hash
 function.  (The mechanism for specifying the required hash function
 has not been standardized, but this provision anticipates such
@@ -2263,7 +2263,7 @@ The "extension_data" field of this extension contains a
 secp256r1, etc.
 : Indicates support of the corresponding named curve.
   Note that some curves are also recommended in ANSI
-  X9.62 {{X962}} and FIPS 186-2 {{DSS}}.
+  X9.62 {{X962}} and FIPS 186-4 {{DSS}}.
   Values 0xFE00 through 0xFEFF are reserved for private use.
 
 ffdhe2048, etc.
