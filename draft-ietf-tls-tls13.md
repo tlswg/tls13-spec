@@ -2152,7 +2152,7 @@ The "extension_data" field of this extension contains a
        } HashAlgorithm;
 
        enum { 
-           anonymous(0), 
+           anonymous_RESERVED(0),
            rsa(1), 
            dsa_RESERVED(2), 
            ecdsa(3), 
