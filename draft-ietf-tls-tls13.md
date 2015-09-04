@@ -4201,6 +4201,10 @@ Archives of the list can be found at:
 
     Tom Weinstein
 
+    Hoeteck Wee
+    Ecole Normale Superieure, Paris
+    hoeteck@alum.mit.edu
+
     Tim Wright
     Vodafone
     timothy.wright@vodafone.com
