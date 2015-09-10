@@ -740,7 +740,7 @@ using the RSASSA-PSS signature scheme defined in {{RFC3447}} with
 MGF1. The digest used in the mask generation function MUST be the same
 as the digest which is being signed (i.e., what appears in
 algorithm.signature). Note that previous versions of TLS used
-RSASSA-PKCS-v1_5, not RSASSA-PSS.
+RSASSA-PKCS1-v1_5, not RSASSA-PSS.
 
 In DSA, the 20 bytes of the SHA-1 hash are run directly through the Digital
 Signing Algorithm with no additional hashing. This produces two values, r and
@@ -2205,7 +2205,7 @@ hash
 
 signature
 : This field indicates the signature algorithm that may be used.
-  The values indicate anonymous signatures, RSASSA-PKCS-v1_5,
+  The values indicate anonymous signatures, RSASSA-PKCS1-v1_5,
   {{RFC3447}}, DSA {{DSS}}, ECDSA {{ECDSA}}, and
   RSASSA-PSS respectively. Because all RSA signatures used in the
   TLS protocol itself (as opposed to those in certificates)
@@ -3025,7 +3025,7 @@ designed to minimize changes to the original cipher suite design.
 in the server's end-entity certificate. RSA keys MAY be used with any permitted
 hash algorithm, subject to restrictions in the certificate, if any.
 Only RSA signatures based on RSASSA-PSS MAY be used, regardless of whether
-RSASSA-PKCS-v1_5 appears in "signature_algorithms".
+RSASSA-PKCS1-v1_5 appears in "signature_algorithms".
 
 > Because DSA signatures do not contain any secure indication of hash
 algorithm, there is a risk of hash substitution if multiple hashes may be used
@@ -3179,7 +3179,7 @@ message. In addition, the hash and signature algorithms MUST be compatible with
 the key in the client's end-entity certificate. RSA keys MAY be used with any
 permitted hash algorithm, subject to restrictions in the certificate, if any.
 Only RSA signatures based on RSASSA-PSS MAY be used, regardless of whether
-RSASSA-PKCS-v1_5 appears in supported_signature_algorithms.
+RSASSA-PKCS1-v1_5 appears in supported_signature_algorithms.
 
 > Because DSA signatures do not contain any secure indication of hash
 algorithm, there is a risk of hash substitution if multiple hashes may be used
