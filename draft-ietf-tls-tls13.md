@@ -3024,8 +3024,8 @@ designed to minimize changes to the original cipher suite design.
 > In addition, the hash and signature algorithms MUST be compatible with the key
 in the server's end-entity certificate. RSA keys MAY be used with any permitted
 hash algorithm, subject to restrictions in the certificate, if any.
-Only RSA signatures based on RSASSA-PSS MAY be used, regardless of whether
-RSASSA-PKCS1-v1_5 appears in "signature_algorithms".
+RSA signatures MUST be based on RSASSA-PSS, regardless of whether
+RSASSA-PKCS-v1_5 appears in "signature_algorithms".
 
 > Because DSA signatures do not contain any secure indication of hash
 algorithm, there is a risk of hash substitution if multiple hashes may be used
@@ -3178,8 +3178,8 @@ present in the supported_signature_algorithms field of the CertificateRequest
 message. In addition, the hash and signature algorithms MUST be compatible with
 the key in the client's end-entity certificate. RSA keys MAY be used with any
 permitted hash algorithm, subject to restrictions in the certificate, if any.
-Only RSA signatures based on RSASSA-PSS MAY be used, regardless of whether
-RSASSA-PKCS1-v1_5 appears in supported_signature_algorithms.
+RSA signatures MUST be based on RSASSA-PSS, regardless of whether
+RSASSA-PKCS-v1_5 appears in "signature_algorithms".
 
 > Because DSA signatures do not contain any secure indication of hash
 algorithm, there is a risk of hash substitution if multiple hashes may be used
