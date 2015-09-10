@@ -735,11 +735,12 @@ Finally, the specified contents of the digitally-signed structure follow the
 NUL at the end of the context string. (See the example at the end of this
 section.)
 
-In RSA signing, the opaque vector contains the signature generated using the
-RSASSA-PSS signature scheme defined in {{RFC3447}}. The digest used in
-the mask generation function MUST be the same as the digest which is being
-signed (i.e., what appears in algorithm.signature). Note that previous
-versions of TLS used RSASSA-PKCS-v1_5, not RSASSA-PSS.
+In RSA signing, the opaque vector contains the signature generated
+using the RSASSA-PSS signature scheme defined in {{RFC3447}} with
+MGF1. The digest used in the mask generation function MUST be the same
+as the digest which is being signed (i.e., what appears in
+algorithm.signature). Note that previous versions of TLS used
+RSASSA-PKCS-v1_5, not RSASSA-PSS.
 
 In DSA, the 20 bytes of the SHA-1 hash are run directly through the Digital
 Signing Algorithm with no additional hashing. This produces two values, r and
