@@ -313,6 +313,11 @@ server: The endpoint which did not initiate the TLS connection.
 ##  Major Differences from TLS 1.2
 
 
+draft-09
+
+- Change to RSA-PSS signatures.
+
+
 draft-08
 
 - Remove support for weak and lesser used named curves.
@@ -731,13 +736,10 @@ NUL at the end of the context string. (See the example at the end of this
 section.)
 
 In RSA signing, the opaque vector contains the signature generated using the
-RSASSA-PKCS1-v1_5 signature scheme defined in {{RFC3447}}. As discussed in
-{{RFC3447}}, the DigestInfo MUST be DER-encoded {{X680}} {{X690}}. For hash
-algorithms without parameters (which includes SHA-1), the
-DigestInfo.AlgorithmIdentifier.parameters field MUST be NULL, but
-implementations MUST accept both without parameters and with NULL parameters.
-Note that earlier versions of TLS used a different RSA signature scheme that
-did not include a DigestInfo encoding.
+RSASSA-PSS signature scheme defined in {{RFC3447}}. The digest used in
+the mask generation function MUST be the same as the digest which is being
+signed (i.e., what appears in algorithm.signature). Note that previous
+versions of TLS used RSASSA-PKCS-v1_5, not RSASSA-PSS.
 
 In DSA, the 20 bytes of the SHA-1 hash are run directly through the Digital
 Signing Algorithm with no additional hashing. This produces two values, r and
@@ -2171,7 +2173,7 @@ The "extension_data" field of this extension contains a
            (255)
        } HashAlgorithm;
 
-       enum { anonymous(0), rsa(1), dsa(2), ecdsa(3), (255) }
+       enum { anonymous(0), rsa(1), dsa(2), ecdsa(3), rsa_pss(4), (255) }
          SignatureAlgorithm;
 
        struct {
@@ -2184,7 +2186,7 @@ The "extension_data" field of this extension contains a
 
 Each SignatureAndHashAlgorithm value lists a single hash/signature pair that
 the client is willing to verify. The values are indicated in descending order
-of preference.
+of preference. 
 
 Note: Because not all signature algorithms and hash algorithms may be accepted
 by an implementation (e.g., DSA with SHA-1, but not SHA-256), algorithms here
@@ -2202,9 +2204,13 @@ hash
 
 signature
 : This field indicates the signature algorithm that may be used.
-  The values indicate anonymous signatures, RSASSA-PKCS1-v1_5
-  {{RFC3447}}, DSA {{DSS}}, and ECDSA {{ECDSA}}, respectively.  The
-  "anonymous" value is meaningless in this context but used in
+  The values indicate anonymous signatures, RSASSA-PKCS-v1_5,
+  {{RFC3447}}, DSA {{DSS}}, ECDSA {{ECDSA}}, and
+  RSASSA-PSS respectively. Because all RSA signatures used in the
+  TLS protocol itself (as opposed to those in certificates)
+  are RSASSA-PSS, the "rsa" value refers solely to signatures
+  which appear in certificates.
+  The "anonymous" value is meaningless in this context but used in
   {{server-key-share}}.  It MUST NOT appear in this extension.
 {:br }
 
@@ -2806,11 +2812,6 @@ above-mentioned criteria (in addition to other criteria, such as transport
 layer endpoint, local configuration and preferences, etc.). If the server has a
 single certificate, it SHOULD attempt to validate that it meets these criteria.
 
-Note that there are certificates that use algorithms and/or algorithm
-combinations that cannot be currently used with TLS. For example, a certificate
-with RSASSA-PSS signature key (id-RSASSA-PSS OID in SubjectPublicKeyInfo)
-cannot be used because TLS defines no corresponding signature algorithm.
-
 As cipher suites that specify new key exchange methods are specified for the
 TLS protocol, they will imply the certificate format and the required encoded
 keying information.
@@ -3022,6 +3023,8 @@ designed to minimize changes to the original cipher suite design.
 > In addition, the hash and signature algorithms MUST be compatible with the key
 in the server's end-entity certificate. RSA keys MAY be used with any permitted
 hash algorithm, subject to restrictions in the certificate, if any.
+Only RSA signatures based on RSASSA-PSS MAY be used, regardless of whether
+RSASSA-PKCS-v1_5 appears in "signature_algorithms".
 
 > Because DSA signatures do not contain any secure indication of hash
 algorithm, there is a risk of hash substitution if multiple hashes may be used
@@ -3174,6 +3177,8 @@ present in the supported_signature_algorithms field of the CertificateRequest
 message. In addition, the hash and signature algorithms MUST be compatible with
 the key in the client's end-entity certificate. RSA keys MAY be used with any
 permitted hash algorithm, subject to restrictions in the certificate, if any.
+Only RSA signatures based on RSASSA-PSS MAY be used, regardless of whether
+RSASSA-PKCS-v1_5 appears in supported_signature_algorithms.
 
 > Because DSA signatures do not contain any secure indication of hash
 algorithm, there is a risk of hash substitution if multiple hashes may be used
