@@ -2991,7 +2991,7 @@ Structure of this message:
        struct {
             digitally-signed struct {
                opaque handshake_hash[hash_length];
-            }
+            };
        } CertificateVerify;
 
 > Where session_hash is as described in {{the-handshake-hash}} and
@@ -3010,7 +3010,7 @@ implementation need only maintain one running hash per hash type for
 CertificateVerify, Finished and other messages.
 
 > The signature algorithm and hash algorithm MUST be a pair offered in the
-"signature_algorithms" extension (see {{signature-algorithms}}). Note that
+client's "signature_algorithms" extension (see {{signature-algorithms}}). Note that
 there is a possibility for inconsistencies here. For instance, the client might
 offer DHE_DSS key exchange but omit any DSA pairs from its
 "signature_algorithms" extension. In order to negotiate correctly, the server
