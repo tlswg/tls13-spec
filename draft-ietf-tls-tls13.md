@@ -1789,9 +1789,10 @@ processed and transmitted as specified by the current active session state.
        enum {
            reserved(0), client_hello(1), server_hello(2),
            session_ticket(4), hello_retry_request(6),
-           server_key_share(7), certificate(11), reserved(12),
-           certificate_request(13), server_configuration(17),
-           certificate_verify(15), reserved(16), finished(20), (255)
+           server_key_share(7), encrypted_extensions(8),
+           certificate(11), reserved(12), certificate_request(13),
+           reserved(14), certificate_verify(15), reserved(16),
+           server_configuration(17), finished(20), (255)
        } HandshakeType;
 
        struct {
@@ -1802,6 +1803,7 @@ processed and transmitted as specified by the current active session state.
                case server_hello:        ServerHello;
                case hello_retry_request: HelloRetryRequest;
                case server_key_share:    ServerKeyShare;
+               case encrypted_extensions: EncryptedExtensions;
                case server_configuration:ServerConfiguration;
                case certificate:         Certificate;
                case certificate_request: CertificateRequest;
