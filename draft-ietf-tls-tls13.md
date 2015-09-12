@@ -3204,9 +3204,9 @@ suite.
 
 ticket_lifetime_hint
 : Indicates the lifetime
-  in seconds as a 32-bit unsigned integer in network byte order.  A
-  value of zero is reserved to indicate that the lifetime of the ticket
-  is unspecified.
+  in seconds as a 32-bit unsigned integer in network byte order from
+  the time of ticket issuance. A value of zero is reserved to indicate
+  that the lifetime of the ticket is unspecified.
 
 ticket
 : The value of the ticket to be used as the PSK identifier.
