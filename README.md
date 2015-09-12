@@ -49,6 +49,13 @@ providing a link to the issue in the message body.
   appropriate place to discuss design issues is on the mailing list itself.
 
 
+Building The Draft
+------------------
+
+You will need kramdown-rfc2629 (https://github.com/cabo/kramdown-rfc2629)
+and xml2rfc (http://xml2rfc.tools.ietf.org/).
+
+
 NOTE WELL
 ---------
 
