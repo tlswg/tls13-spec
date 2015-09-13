@@ -2268,8 +2268,8 @@ hash
   The use of MD5, SHA-1, and SHA-224 are deprecated. The md5_RESERVED
   and sha224_RESERVED values MUST NOT be offered by any implementations.
   The sha1_RESERVED value SHOULD NOT be offered, however clients willing
-  to negotiate use of TLS 1.2 MAY offer support for SHA-1 in the near
-  term for backwards compatibility with old servers.
+  to negotiate use of TLS 1.2 MAY offer support for SHA-1 for backwards
+  compatibility with old servers.
 
 signature
 : This field indicates the signature algorithm that may be used.
@@ -2294,8 +2294,8 @@ appropriate rules.
 Clients offering support for SHA-1 for TLS 1.2 servers MUST do so by listing
 those hash/signature pairs as the lowest priority (listed after all other
 pairs in the supported_signature_algorithms vector). TLS 1.3 servers MUST NOT
-use SHA-1 unless no valid certificate chain can be produced without it
-(see {{server-certificate}}).
+offer a SHA-1 signed certificate unless no valid certificate chain can be
+produced without it (see {{server-certificate}}).
 
 Note: TLS 1.3 servers MAY receive TLS 1.2 ClientHellos which do not contain
 this extension. If those servers are willing to negotiate TLS 1.2, they MUST
@@ -2874,12 +2874,13 @@ The following rules apply to the certificates sent by the server:
 
 All certificates provided by the server MUST be signed by a
 hash/signature algorithm pair that appears in the "signature_algorithms"
-extension provided by the client, where possible (see {{signature-algorithms}}).
+extension provided by the client, if they are able to provide such
+a chain (see {{signature-algorithms}}).
 If the server cannot produce a certificate chain that is signed only via the
 indicated supported pairs, then it SHOULD continue the handshake by sending
 the client a certificate chain of its choice that may include algorithms
-that are not known to be supported by the client. This fallback chain MAY use
-the deprecated SHA hash algorithms, SHA-1 or SHA-224, but only if necessary.
+that are not known to be supported by the client. This fallback chain MAY
+use the deprecated SHA hash algorithms, SHA-1 or SHA-224.
 If the client cannot construct an acceptable chain using the provided
 certificates and decides to abort the handshake, then it MUST send an
 "unsupported_certificate" alert message and close the connection.
@@ -2888,11 +2889,12 @@ Any endpoint receiving any certificate signed using any signature algorithm
 using an MD5 hash MUST send a "bad_certificate" alert message and close
 the connection.
 
-Endpoints receiving certificates using SHA-1 hashes MAY send a "bad_certificate"
-alert message and close the connection. All servers are RECOMMENDED to
-transition to SHA-256 or better as soon as possible to maintain
-interoperability with implementations currently in the process of phasing
-out SHA-1 support.
+As SHA-1 and SHA-224 are deprecated, support for them is NOT RECOMMENDED.
+Endpoints that reject chains due to use of a deprecated SHA hash MUST send
+a fatal "bad_certificate" alert message before closing the connection.
+All servers are RECOMMENDED to transition to SHA-256 or better as soon
+as possible to maintain interoperability with implementations
+currently in the process of phasing out SHA-1 support.
 
 Note that a certificate containing a key for one signature algorithm
 MAY be signed using a different signature algorithm (for instance,
