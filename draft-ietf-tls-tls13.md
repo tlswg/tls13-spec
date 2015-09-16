@@ -315,7 +315,7 @@ server: The endpoint which did not initiate the TLS connection.
 
 draft-09
 
-- Change to RSA-PSS signatures.
+- Change to RSA-PSS signatures for handshake messages.
 
 
 draft-08
@@ -2187,7 +2187,7 @@ The "extension_data" field of this extension contains a
 
 Each SignatureAndHashAlgorithm value lists a single hash/signature pair that
 the client is willing to verify. The values are indicated in descending order
-of preference. 
+of preference.
 
 Note: Because not all signature algorithms and hash algorithms may be accepted
 by an implementation (e.g., DSA with SHA-1, but not SHA-256), algorithms here
@@ -2207,8 +2207,9 @@ signature
 : This field indicates the signature algorithm that may be used.
   The values indicate anonymous signatures, RSASSA-PKCS1-v1_5,
   {{RFC3447}}, DSA {{DSS}}, ECDSA {{ECDSA}}, and
-  RSASSA-PSS respectively. Because all RSA signatures used in the
-  TLS protocol itself (as opposed to those in certificates)
+  RSASSA-PSS {{RFC3447}} respectively. Because all RSA signatures used in
+  signed TLS handshake messages (see {{digital-signing}}),
+  as opposed to those in certificates,
   are RSASSA-PSS, the "rsa" value refers solely to signatures
   which appear in certificates.
   The "anonymous" value is meaningless in this context but used in
@@ -3475,6 +3476,8 @@ C, and D.
 #  IANA Considerations
 
 [[TODO: Update https://github.com/tlswg/tls13-spec/issues/62]]
+[[TODO: Rename "RSA" in TLS SignatureAlgorithm Registry
+to RSASSA-PKCS1-v1_5 ]]
 
 This document uses several registries that were originally created in
 {{RFC4346}}. IANA has updated these to reference this document. The registries
