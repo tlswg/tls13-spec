@@ -310,6 +310,7 @@ draft-09
 
 - Change to RSA-PSS signatures for handshake messages.
 
+- Remove support for DSA.
 
 draft-08
 
