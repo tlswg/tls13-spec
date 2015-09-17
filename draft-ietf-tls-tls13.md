@@ -740,7 +740,7 @@ or its successors.  Data to be signed/verified is hashed, and the
 result run directly through the ECDSA algorithm with no additional
 hashing.  The default hash function is SHA-1 {{SHS}}.  However, an
 alternative hash function, such as one of the new SHA hash functions
-specified in FIPS 180-4 {{SHS}} may be used instead if the certificate
+specified in FIPS 180-4 {{SHS}} SHOULD be used instead if the certificate
 containing the EC public key explicitly requires use of another hash
 function.  (The mechanism for specifying the required hash function
 has not been standardized, but this provision anticipates such
