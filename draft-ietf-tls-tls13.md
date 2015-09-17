@@ -38,6 +38,7 @@ normative:
   RFC5288:
   RFC5289:
   RFC5869:
+  RFC6066:
   RFC6209:
   RFC6367:
   RFC6655:
@@ -113,7 +114,6 @@ informative:
   RFC5246:
   RFC5705:
   RFC5763:
-  RFC6066:
   RFC6176:
   RFC7465:
   RFC7507:
