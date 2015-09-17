@@ -2188,14 +2188,16 @@ hash
 signature
 : This field indicates the signature algorithm that may be used.
   The values indicate anonymous signatures, RSASSA-PKCS1-v1_5,
-  {{RFC3447}}, DSA {{DSS}}, ECDSA {{ECDSA}}, and
-  RSASSA-PSS {{RFC3447}} respectively. Because all RSA signatures used in
+  {{RFC3447}}, DSA {{DSS}}, ECDSA {{ECDSA}}, and RSASSA-PSS
+  {{RFC3447}} respectively. Because all RSA signatures used in
   signed TLS handshake messages (see {{digital-signing}}),
-  as opposed to those in certificates,
-  are RSASSA-PSS, the "rsa" value refers solely to signatures
-  which appear in certificates.
-  The "anonymous" value is meaningless in this context but used in
-  {{server-key-share}}.  It MUST NOT appear in this extension.
+  as opposed to those in certificates, are RSASSA-PSS, the "rsa"
+  value refers solely to signatures which appear in certificates.
+  The use of DSA and anonymous is deprecated. The anonymous_RESERVED
+  value was used internally in prior versions of TLS and MUST NOT
+  be offered or negotiated by any implementation of any TLS version.
+  The dsa_RESERVED value is deprecated as of TLS 1.3 and
+  SHOULD NOT be offered or negotiated by any implementation.
 {:br }
 
 The semantics of this extension are somewhat complicated because the cipher
