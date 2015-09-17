@@ -3052,9 +3052,6 @@ Hash used for the handshake.
 Note: Alerts and any other record types are not handshake messages
 and are not included in the hash computations. Also, HelloRequest
 messages and the Finished message are omitted from handshake hashes.
-The input to the client and server Finished messages may not be
-the same because the server's Finished does not include the client's
-Certificate and CertificateVerify message.
 
 
 ###  Client Certificate
