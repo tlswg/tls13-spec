@@ -111,8 +111,8 @@ informative:
   RFC7465:
   RFC7507:
   RFC7568:
+  RFC7627:
   I-D.ietf-tls-negotiated-ff-dhe:
-  I-D.ietf-tls-session-hash:
 
 
   CBCATT:
@@ -319,11 +319,11 @@ draft-08
 - Remove support for MD5 and SHA-224 hashes with signatures.
 
 - Update lists of available AEAD cipher suites and error alerts.
- 
+
 - Reduce maximum permitted record expansion for AEAD from 2048 to 256 octets.
 
 - Require digital signatures even when a previous configuration is used.
-  
+
 - Merge EarlyDataIndication and KnownConfiguration.
 
 - Change code point for server_configuration to avoid collision with
@@ -1751,7 +1751,7 @@ Subsequent Handshake:
 As the server is authenticating via a PSK, it does not
 send a Certificate or a CertificateVerify. PSK-based resumption cannot
 be used to provide a new ServerConfiguration. Note that the client supplies a ClientKeyShare to the server as well, which
-allows the server to decline resumption and fall back to a full handshake. 
+allows the server to decline resumption and fall back to a full handshake.
 
 The contents and significance of each message will be presented in detail in
 the following sections.
@@ -4036,17 +4036,17 @@ Archives of the list can be found at:
 
     Benjamin Beurdouche
 
-    Karthikeyan Bhargavan (co-author of [I-D.ietf-tls-session-hash])
+    Karthikeyan Bhargavan (co-author of [RFC7627])
     INRIA
     karthikeyan.bhargavan@inria.fr
 
-    Simon Blake-Wilson (co-author of RFC4492)
+    Simon Blake-Wilson (co-author of [RFC4492])
     BCI
     sblakewilson@bcisse.com
 
     Nelson Bolyard
     Sun Microsystems, Inc.
-    nelson@bolyard.com (co-author of RFC4492)
+    nelson@bolyard.com (co-author of [RFC4492])
 
     Ran Canetti
     IBM
@@ -4056,7 +4056,7 @@ Archives of the list can be found at:
     Skygate Technology Ltd
     pc@skygate.co.uk
 
-    Antoine Delignat-Lavaud (co-author of [I-D.ietf-tls-session-hash])
+    Antoine Delignat-Lavaud (co-author of [RFC7627])
     INRIA
     antoine.delignat-lavaud@inria.fr
 
@@ -4077,11 +4077,11 @@ Archives of the list can be found at:
 
     David M. Garrett
 
-    Vipul Gupta (co-author of RFC4492)
+    Vipul Gupta (co-author of [RFC4492])
     Sun Microsystems Laboratories
     vipul.gupta@sun.com
 
-    Chris Hawk (co-author of RFC4492)
+    Chris Hawk (co-author of [RFC4492])
     Corriente Networks LLC
     chris@corriente.net
 
@@ -4107,7 +4107,7 @@ Archives of the list can be found at:
     IBM
     hugo@ee.technion.ac.il
 
-    Adam Langley (co-author of [I-D.ietf-tls-session-hash])
+    Adam Langley (co-author of [RFC7627])
     Google
     agl@google.com
 
@@ -4118,7 +4118,7 @@ Archives of the list can be found at:
     Transactionware
     janm@transactionware.com
 
-    Bodo Moeller (co-author of RFC4492)
+    Bodo Moeller (co-author of [RFC4492])
     Google
     bodo@openssl.org
 
@@ -4130,11 +4130,11 @@ Archives of the list can be found at:
     RSA Security
     magnus@rsasecurity.com
 
-    Alfredo Pironti (co-author of [I-D.ietf-tls-session-hash])
+    Alfredo Pironti (co-author of [RFC7627])
     INRIA
     alfredo.pironti@inria.fr
 
-    Marsh Ray (co-author of [I-D.ietf-tls-session-hash])
+    Marsh Ray (co-author of [RFC7627])
     Microsoft
     maray@microsoft.com
 
