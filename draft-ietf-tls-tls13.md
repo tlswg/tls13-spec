@@ -2181,7 +2181,7 @@ hash
   SHA-224, SHA-256, SHA-384, and SHA-512 {{SHS}}, respectively.  The
   "none" value is provided for future extensibility, in case of a
   signature algorithm which does not require hashing before signing.
-  The use of MD5 and SHA-224 are deprecated. The md5_RESERVED and
+  The use of MD5 and SHA-224 is deprecated. The md5_RESERVED and
   sha224_RESERVED values MUST NOT be offered or negotiated by any
   implementation.
 
