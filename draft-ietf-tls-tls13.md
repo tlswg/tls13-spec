@@ -51,13 +51,6 @@ normative:
          org: National Institute of Standards and Technology
        seriesinfo:
          NIST: FIPS 197
-  DSS:
-       title: Digital Signature Standard
-       date: 2000
-       author:
-         org: National Institute of Standards and Technology, U.S. Department of Commerce
-       seriesinfo:
-         NIST: FIPS PUB 186-2
   SHS:
        title: Secure Hash Standard
        date: 2012-03
@@ -128,13 +121,13 @@ informative:
        author:
          - ins: B. Moeller
        date: 2004-05-20
-  DSS-3:
-       title: "Digital Signature Standard"
-       seriesinfo:
-         NIST: FIPS PUB 186-3 Draft
+  DSS:
+       title: "Digital Signature Standard, version 4"
+       date: 2013
        author:
-         org: National Institute of Standards and Technology, U.S.
-       date: 2006
+         org: National Institute of Standards and Technology, U.S. Department of Commerce
+       seriesinfo:
+         NIST: FIPS PUB 186-4
   ECDSA:
        title: "Public Key Cryptography for the Financial Services Industry: The Elliptic Curve Digital Signature Algorithm (ECDSA)"
        author:
@@ -262,7 +255,7 @@ security that has three basic properties:
 
 
 - The peer's identity can be authenticated using asymmetric, or
-  public key, cryptography (e.g., RSA {{RSA}}, DSA {{DSS}}, etc.).  This
+  public key, cryptography (e.g., RSA {{RSA}}, ECDSA {{ECDSA}}, etc.).  This
   authentication can be made optional, but is generally required for
   at least one of the peers.
 
@@ -742,28 +735,12 @@ as the digest which is being signed (i.e., what appears in
 algorithm.signature). Note that previous versions of TLS used
 RSASSA-PKCS1-v1_5, not RSASSA-PSS.
 
-In DSA, the 20 bytes of the SHA-1 hash are run directly through the Digital
-Signing Algorithm with no additional hashing. This produces two values, r and
-s. The DSA signature is an opaque vector, as above, the contents of which are
-the DER encoding of:
-
-       Dss-Sig-Value ::= SEQUENCE {
-           r INTEGER,
-           s INTEGER
-       }
-
-Note: In current terminology, DSA refers to the Digital Signature Algorithm and
-DSS refers to the NIST standard. In the original SSL and TLS specs, "DSS" was
-used universally. This document uses "DSA" to refer to the algorithm, "DSS" to
-refer to the standard, and it uses "DSS" in the code point definitions for
-historical continuity.
-
 All ECDSA computations MUST be performed according to ANSI X9.62 {{X962}}
 or its successors.  Data to be signed/verified is hashed, and the
 result run directly through the ECDSA algorithm with no additional
 hashing.  The default hash function is SHA-1 {{SHS}}.  However, an
 alternative hash function, such as one of the new SHA hash functions
-specified in FIPS 180-2 may be used instead if the certificate
+specified in FIPS 180-4 {{SHS}} SHOULD be used instead if the certificate
 containing the EC public key explicitly requires use of another hash
 function.  (The mechanism for specifying the required hash function
 has not been standardized, but this provision anticipates such
@@ -2174,7 +2151,12 @@ The "extension_data" field of this extension contains a
            (255)
        } HashAlgorithm;
 
-       enum { anonymous(0), rsa(1), dsa(2), ecdsa(3), rsa_pss(4), (255) }
+       enum { 
+           anonymous_RESERVED(0),
+           rsa(1), 
+           dsa_RESERVED(2), 
+           ecdsa(3), 
+           (255) }
          SignatureAlgorithm;
 
        struct {
@@ -2190,7 +2172,7 @@ the client is willing to verify. The values are indicated in descending order
 of preference.
 
 Note: Because not all signature algorithms and hash algorithms may be accepted
-by an implementation (e.g., DSA with SHA-1, but not SHA-256), algorithms here
+by an implementation (e.g., ECDSA with SHA-256, but not SHA-384), algorithms here
 are listed in pairs.
 
 hash
@@ -2199,21 +2181,23 @@ hash
   SHA-224, SHA-256, SHA-384, and SHA-512 {{SHS}}, respectively.  The
   "none" value is provided for future extensibility, in case of a
   signature algorithm which does not require hashing before signing.
-  The use of MD5 and SHA-224 are deprecated. The md5_RESERVED and
+  The use of MD5 and SHA-224 is deprecated. The md5_RESERVED and
   sha224_RESERVED values MUST NOT be offered or negotiated by any
   implementation.
 
 signature
 : This field indicates the signature algorithm that may be used.
   The values indicate anonymous signatures, RSASSA-PKCS1-v1_5,
-  {{RFC3447}}, DSA {{DSS}}, ECDSA {{ECDSA}}, and
-  RSASSA-PSS {{RFC3447}} respectively. Because all RSA signatures used in
+  {{RFC3447}}, DSA {{DSS}}, ECDSA {{ECDSA}}, and RSASSA-PSS
+  {{RFC3447}} respectively. Because all RSA signatures used in
   signed TLS handshake messages (see {{digital-signing}}),
-  as opposed to those in certificates,
-  are RSASSA-PSS, the "rsa" value refers solely to signatures
-  which appear in certificates.
-  The "anonymous" value is meaningless in this context but used in
-  {{server-key-share}}.  It MUST NOT appear in this extension.
+  as opposed to those in certificates, are RSASSA-PSS, the "rsa"
+  value refers solely to signatures which appear in certificates.
+  The use of DSA and anonymous is deprecated. The anonymous_RESERVED
+  value was used internally in prior versions of TLS and MUST NOT
+  be offered or negotiated by any implementation of any TLS version.
+  The dsa_RESERVED value is deprecated as of TLS 1.3 and
+  SHOULD NOT be offered or negotiated by any implementation.
 {:br }
 
 The semantics of this extension are somewhat complicated because the cipher
@@ -2281,7 +2265,7 @@ The "extension_data" field of this extension contains a
 secp256r1, etc.
 : Indicates support of the corresponding named curve.
   Note that some curves are also recommended in ANSI
-  X9.62 {{X962}} and FIPS 186-2 {{DSS}}.
+  X9.62 {{X962}} and FIPS 186-4 {{DSS}}.
   Values 0xFE00 through 0xFEFF are reserved for private use.
 
 ffdhe2048, etc.
@@ -2784,11 +2768,6 @@ The following rules apply to the certificates sent by the server:
                        in the ServerKeyShare message.
                        Note: ECDHE_RSA is defined in [RFC4492].
 
-    DHE_DSS            DSA public key; the certificate MUST allow the
-                       key to be used for signing with the hash
-                       algorithm that will be employed in the server
-                       key exchange message.
-
     ECDHE_ECDSA        ECDSA-capable public key; the certificate MUST
                        allow the key to be used for signing with the
                        hash algorithm that will be employed in the
@@ -2830,8 +2809,12 @@ Structure of this message:
 
 %%% Authentication Messages
        enum {
-           rsa_sign(1), dss_sign(2), rsa_fixed_dh(3), dss_fixed_dh(4),
-           rsa_ephemeral_dh_RESERVED(5), dss_ephemeral_dh_RESERVED(6),
+           rsa_sign(1), 
+           dss_sign_RESERVED(2), 
+           rsa_fixed_dh(3), 
+           dss_fixed_dh_RESERVED(4),
+           rsa_ephemeral_dh_RESERVED(5), 
+           dss_ephemeral_dh_RESERVED(6),
            fortezza_dms_RESERVED(20), (255)
        } ClientCertificateType;
 
@@ -2849,9 +2832,7 @@ certificate_types
   offer.
 
           rsa_sign        a certificate containing an RSA key
-          dss_sign        a certificate containing a DSA key
           rsa_fixed_dh    a certificate containing a static DH key.
-          dss_fixed_dh    a certificate containing a static DH key
 
 supported_signature_algorithms
 : A list of the hash/signature algorithm pairs that the server is
@@ -2890,10 +2871,9 @@ supported_signature_algorithms.  The following rules apply:
   functionality has been obsoleted by the
   supported_signature_algorithms, and the certificate type no longer
   restricts the algorithm used to sign the certificate.  For
-  example, if the server sends dss_fixed_dh certificate type and
-  \{\{sha1, dsa\}, \{sha1, rsa\}\} signature types, the client MAY reply
-  with a certificate containing a static DH key, signed with RSA-
-  SHA1.
+  example, if the server sends rsa_fixed_dh certificate type and
+  \{\{sha256, ecdsa\}, \{sha1, rsa\}\} signature types, the client MAY reply
+  with a certificate signed with ECDSA-SHA256.
 
 New ClientCertificateType values are assigned by IANA as described in
 {{iana-considerations}}.
@@ -3016,7 +2996,7 @@ CertificateVerify, Finished and other messages.
 > The signature algorithm and hash algorithm MUST be a pair offered in the
 client's "signature_algorithms" extension (see {{signature-algorithms}}). Note that
 there is a possibility for inconsistencies here. For instance, the client might
-offer DHE_DSS key exchange but omit any DSA pairs from its
+offer ECDHE_ECDSA key exchange but omit any ECDSA pairs from its
 "signature_algorithms" extension. In order to negotiate correctly, the server
 MUST check any candidate cipher suites against the "signature_algorithms"
 extension before selecting them. This is somewhat inelegant but is a compromise
@@ -3028,17 +3008,6 @@ hash algorithm, subject to restrictions in the certificate, if any.
 RSA signatures MUST be based on RSASSA-PSS, regardless of whether
 RSASSA-PKCS-v1_5 appears in "signature_algorithms".
 
-> Because DSA signatures do not contain any secure indication of hash
-algorithm, there is a risk of hash substitution if multiple hashes may be used
-with any key. Currently, DSA {{DSS}} may only be used with SHA-1. Future
-revisions of DSS {{DSS-3}} are expected to allow the use of other digest
-algorithms with DSA, as well as guidance as to which digest algorithms should
-be used with each key size. In addition, future revisions of {{RFC5280}} may
-specify mechanisms for certificates to indicate which digest algorithms are to
-be used with DSA.
-[[TODO: Update this to deal with DSS-3 and DSS-4.
-https://github.com/tlswg/tls13-spec/issues/59]]
-
 ###  Server Finished
 
 When this message will be sent:
@@ -3046,7 +3015,6 @@ When this message will be sent:
 > The Server's Finished message is the final message sent by the
 server and is essential for providing authentication of the server
 side of the handshake and computed keys.
-
 
 Meaning of this message:
 
@@ -3086,9 +3054,7 @@ Hash used for the handshake.
 Note: Alerts and any other record types are not handshake messages
 and are not included in the hash computations. Also, HelloRequest
 messages and the Finished message are omitted from handshake hashes.
-The input to the client and server Finished messages may not be
-the same because the server's Finished does not include the client's
-Certificate and CertificateVerify message.
+
 
 ###  Client Certificate
 
@@ -3131,11 +3097,6 @@ In particular:
                            scheme and hash algorithm that will be
                            employed in the CertificateVerify message.
 
-       dss_sign            DSA public key; the certificate MUST allow the
-                           key to be used for signing with the hash
-                           algorithm that will be employed in the
-                           CertificateVerify message.
-
        ecdsa_sign          ECDSA-capable public key; the certificate MUST
                            allow the key to be used for signing with the
                            hash algorithm that will be employed in the
@@ -3144,7 +3105,7 @@ In particular:
                            the server.
 
        rsa_fixed_dh        Diffie-Hellman public key; MUST use the same
-       dss_fixed_dh        parameters as server's key.
+                           parameters as server's key.
 
        rsa_fixed_ecdh      ECDH-capable public key; MUST use the
        ecdsa_fixed_ecdh    same curve as the server's key, and MUST use a
@@ -3181,15 +3142,6 @@ the key in the client's end-entity certificate. RSA keys MAY be used with any
 permitted hash algorithm, subject to restrictions in the certificate, if any.
 RSA signatures MUST be based on RSASSA-PSS, regardless of whether
 RSASSA-PKCS-v1_5 appears in "signature_algorithms".
-
-> Because DSA signatures do not contain any secure indication of hash
-algorithm, there is a risk of hash substitution if multiple hashes may be used
-with any key. Currently, DSA {{DSS}} may only be used with SHA-1. Future
-revisions of DSS {{DSS-3}} are expected to allow the use of other digest
-algorithms with DSA, as well as guidance as to which digest algorithms should
-be used with each key size. In addition, future revisions of {{RFC5280}} may
-specify mechanisms for certificates to indicate which digest algorithms are to
-be used with DSA.
 
 
 ### New Session Ticket Message
@@ -3604,8 +3556,6 @@ client-authenticated) cipher suites which are currently available in TLS 1.3:
               Cipher Suite Name                      Value     Specification
     TLS_DHE_RSA_WITH_AES_128_GCM_SHA256           {0x00,0x9E}    [RFC5288]
     TLS_DHE_RSA_WITH_AES_256_GCM_SHA384           {0x00,0x9F}    [RFC5288]
-    TLS_DHE_DSS_WITH_AES_128_GCM_SHA256           {0x00,0xA2}    [RFC5288]
-    TLS_DHE_DSS_WITH_AES_256_GCM_SHA384           {0x00,0xA3}    [RFC5288]
     TLS_DHE_RSA_WITH_AES_128_CCM                  {0xC0,0x9E}    [RFC6655]
     TLS_DHE_RSA_WITH_AES_256_CCM                  {0xC0,0x9F}    [RFC6655]
     TLS_DHE_RSA_WITH_AES_128_CCM_8                {0xC0,0xA2}    [RFC6655]
@@ -3630,16 +3580,12 @@ client-authenticated) cipher suites which are currently available in TLS 1.3:
     TLS_ECDHE_ECDSA_WITH_AES_256_CCM_8            {0xC0,0xAF}    [RFC7251]
     TLS_DHE_RSA_WITH_ARIA_128_GCM_SHA256          {0xC0,0x52}    [RFC6209]
     TLS_DHE_RSA_WITH_ARIA_256_GCM_SHA384          {0xC0,0x53}    [RFC6209]
-    TLS_DHE_DSS_WITH_ARIA_128_GCM_SHA256          {0xC0,0x56}    [RFC6209]
-    TLS_DHE_DSS_WITH_ARIA_256_GCM_SHA384          {0xC0,0x57}    [RFC6209]
     TLS_ECDHE_ECDSA_WITH_ARIA_128_GCM_SHA256      {0xC0,0x5C}    [RFC6209]
     TLS_ECDHE_ECDSA_WITH_ARIA_256_GCM_SHA384      {0xC0,0x5D}    [RFC6209]
     TLS_ECDHE_RSA_WITH_ARIA_128_GCM_SHA256        {0xC0,0x60}    [RFC6209]
     TLS_ECDHE_RSA_WITH_ARIA_256_GCM_SHA384        {0xC0,0x61}    [RFC6209]
     TLS_DHE_RSA_WITH_CAMELLIA_128_GCM_SHA256      {0xC0,0x7C}    [RFC6367]
     TLS_DHE_RSA_WITH_CAMELLIA_256_GCM_SHA384      {0xC0,0x7D}    [RFC6367]
-    TLS_DHE_DSS_WITH_CAMELLIA_128_GCM_SHA256      {0xC0,0x80}    [RFC6367]
-    TLS_DHE_DSS_WITH_CAMELLIA_256_GCM_SHA384      {0xC0,0x81}    [RFC6367]
     TLS_ECDHE_ECDSA_WITH_CAMELLIA_128_GCM_SHA256  {0xC0,0x86}    [RFC6367]
     TLS_ECDHE_ECDSA_WITH_CAMELLIA_256_GCM_SHA384  {0xC0,0x87}    [RFC6367]
     TLS_ECDHE_RSA_WITH_CAMELLIA_128_GCM_SHA256    {0xC0,0x8A}    [RFC6367]
@@ -3804,7 +3750,7 @@ Cryptographic details:
 
 - Do you use a strong and, most importantly, properly seeded random number
   generator (see {{random-number-generation-and-seeding}}) Diffie-Hellman
-  private values, the DSA "k" parameter, and other security-critical values?
+  private values, the ECDSA "k" parameter, and other security-critical values?
 
 
 # Backward Compatibility
