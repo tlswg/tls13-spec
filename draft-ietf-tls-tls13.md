@@ -3250,7 +3250,7 @@ in some cases, the extracted xSS and xES will not.
   4. mES = HKDF-Expand-Label(xES, "expanded ephemeral secret",
                              handshake_hash, L)
 
-  5. master_secret = HKDF-Extract(mSS, mES, "master secret")
+  5. master_secret = HKDF-Extract(mSS, mES)
 
   6. finished_secret = HKDF-Expand-Label(xSS,
                                          "finished secret",
