@@ -797,7 +797,9 @@ delivered to higher-level clients.
 
 Three protocols that use the TLS Record Protocol are described in this document: the TLS
 Handshake Protocol, the Alert Protocol, and
-the application data protocol. In order to allow extension of the TLS protocol,
+the application data protocol.
+Additionally, a padded variant of the application data protocol is provided.
+In order to allow extension of the TLS protocol,
 additional record content types can be supported by the TLS Record Protocol. New
 record content type values are assigned by IANA in the TLS Content Type
 Registry as described in {{iana-considerations}}.
@@ -811,10 +813,15 @@ all possible attacks against it. As a practical matter, this means that the
 protocol designer must be aware of what security properties TLS does and does
 not provide and cannot safely rely on the latter.
 
-Note in particular that type and length of a record are not protected by
-encryption. If this information is itself sensitive, application designers may
-wish to take steps (e.g., padding, cover traffic) to minimize information leakage.
+The padded variant of the application data protocol is designed to
+obscure the length of the exact data transmitted. However, padding
+cannot provide perfect security, and statistical attacks on padding
+may reveal some information regardless. Without using padding, the
+exact length of the application data may be visible on the network.
 
+Additionally, the record type is not protected by encryption. So even
+if the padded variant is used, the type of record and whether or not
+it uses padding is visible.
 
 ##  Connection States
 
@@ -955,6 +962,7 @@ message MAY be fragmented across several records).
        enum {
            reserved(20), alert(21), handshake(22),
            application_data(23), early_handshake(25),
+           application_data_padded(26),
            (255)
        } ContentType;
 
@@ -1014,6 +1022,10 @@ of {{RFC5116}}. The key is either the client_write_key or the server_write_key.
            ProtocolVersion record_version = { 3, 1 };    /* TLS v1.x */
            uint16 length;
            aead-ciphered struct {
+              select(type) {
+                  case application_data_padded:
+                       opaque padding<0..2^16-1>;
+              }
               opaque content[TLSPlaintext.length];
            } fragment;
        } TLSCiphertext;
@@ -1032,7 +1044,7 @@ length
   this length MUST generate a fatal "record_overflow" alert.
 
 fragment
-: The AEAD encrypted form of TLSPlaintext.fragment.
+: The AEAD encrypted form of the (possibly padded) TLSPlaintext.fragment.
 {:br }
 
 
@@ -1069,13 +1081,15 @@ data-dependent padding (such as CBC). TLS 1.3 removes the length
 field and relies on the AEAD cipher to provide integrity for the
 length of the data.
 
-The AEAD output consists of the ciphertext output by the AEAD encryption
-operation. The length will generally be larger than TLSPlaintext.length, but
-by an amount that varies with the AEAD cipher. Since the ciphers might
-incorporate padding, the amount of overhead could vary with different
-TLSPlaintext.length values. Symbolically,
+The AEAD output consists of the ciphertext output by the AEAD
+encryption operation. The length will generally be larger than the
+TLSPlaintext.length plus (in application_data_padded
+records) any included padding, but by an amount that varies with the
+AEAD cipher. Since the ciphers themselves might incorporate padding,
+the amount of overhead could vary with different sizes of TLSPlaintext
+and (if present) padding. Symbolically,
 
-       AEADEncrypted = AEAD-Encrypt(write_key, nonce, plaintext,
+       AEADEncrypted = AEAD-Encrypt(write_key, nonce, cleartext of fragment,
                                     additional_data)
 
 In order to decrypt and verify, the cipher takes as input the key, nonce, the
@@ -1083,9 +1097,8 @@ In order to decrypt and verify, the cipher takes as input the key, nonce, the
 plaintext or an error indicating that the decryption failed. There is no
 separate integrity check. That is:
 
-       TLSPlaintext.fragment = AEAD-Decrypt(write_key, nonce,
-                                            AEADEncrypted,
-                                            additional_data)
+       cleartext of fragment = AEAD-Decrypt(write_key, nonce,
+                                            AEADEncrypted, additional_data)
 
 If the decryption fails, a fatal "bad_record_mac" alert MUST be generated.
 
@@ -1097,6 +1110,45 @@ As a special case, we define the NULL_NULL AEAD cipher which is simply
 the identity operation and thus provides no security. This cipher
 MUST ONLY be used with the initial TLS_NULL_WITH_NULL_NULL cipher suite.
 
+### Record Padding
+
+The application_data_padded record type allows padding to be specified
+to inflate the size of the encrypted record.
+
+When generating a TLSCiphertext record for the application_data_padded
+record types, implementations SHOULD set the padding octets to all
+zeros before encrypting.  In particular, implementations MUST NOT
+encrypt uninitialized memory.
+
+The padding sent will be authenticated by the record protection
+mechanism but receiving peers MUST NOT try to validate the padding
+data against any particular algorithm.  This is to prevent timing
+attacks that may be able to distinguish amount of padding present.
+
+The presence of padding does not adjust the record size limitations,
+except to decrease the maximum size of the cleartext content from 2^14
+to 2^14 - 2 (because of the additional two octets used to specify the
+padding length.)
+
+Implementations MUST accept application_data_padded records, and MAY
+send them.  Implementations MAY send application_data_padded records
+containing only padding and no underlying data. The length of the
+padding field in an application_data_padded record MAY be zero, in
+which case the cleartext is padded only by the two octets used to
+specify the length of the padding.
+
+If the length of the padding claims to be larger than size of the
+decrypted segment, the receiving peer MUST treat the entire segment as
+padding and ignore its contents.
+
+Selecting a padding policy that suggests when and how much to pad is
+outside the scope of this specification. Later documents may define
+padding selection algorithms, or define a padding policy request
+mechanism through TLS extensions or some other means.
+
+Throughout the document, when the application_data records are
+mentioned, they are interchangable with application_data_padded
+records unless otherwise specified.
 
 #  The TLS Handshaking Protocols
 
