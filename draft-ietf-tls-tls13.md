@@ -1772,7 +1772,8 @@ processed and transmitted as specified by the current active session state.
            server_key_share(7), encrypted_extensions(8),
            certificate(11), reserved(12), certificate_request(13),
            reserved(14), certificate_verify(15), reserved(16),
-           server_configuration(17), finished(20), (255)
+           server_configuration(17), finished(20),
+           padding(21), (255)
        } HandshakeType;
 
        struct {
@@ -1790,6 +1791,7 @@ processed and transmitted as specified by the current active session state.
                case certificate_verify:  CertificateVerify;
                case finished:            Finished;
                case session_ticket:      NewSessionTicket;
+               case padding:             HandshakePadding;
            } body;
        } Handshake;
 
@@ -3188,6 +3190,44 @@ lookup key or a self-encrypted and self-authenticated value. Section
 symmetric cipher suite. See the TODO above about early_data and
 PSK.??]
 
+###  Handshake Padding Message
+
+Some handshake messages are sent encrypted within a TLSCiphertext.
+Because of the structure of TLSCiphertext itself, the size of these
+handshake messages is still visible on the network even though their
+content is hidden.  This information leak may be undesirable (e.g., the
+size of the client certificate may leak information about the identity
+of the client).
+
+A peer may mask the size of its handshake messages by bundling them
+togther with a HandshakePadding message inside a single TLSCiphertext
+record.  HandshakePadding messages may appear anywhere within the
+encrypted part of the handshake.
+
+%%% Handshake Padding
+      struct {
+          opaque padding[padding_length];
+      } HandshakePadding;
+
+The content of a HandshakePadding message SHOULD be all zeros.  In
+particular, implementations MUST NOT encrypt uninitialized memory.
+
+Any HandshakePadding messages which appear before Finished MUST be
+included in the calculation of the handshake hash.
+
+Aside from inclusion in the handshake hash, a peer receiving a
+HandshakePadding message should ignore the contents of the message.
+
+Selecting a padding policy that suggests whether and how much to pad a
+flight of Handshake records is outside the scope of this
+specification. Later documents may define guidance for handshake
+padding selection algorithms.
+
+A TLS peer which receives a HandshakePadding message under the initial
+TLS_NULL_WITH_NULL_NULL "cipher" MUST end the connection with a fatal
+"unexpected_message" alert.  A TLS peer MUST NOT send a
+HandshakePadding message under the initial TLS_NULL_WITH_NULL_NULL
+"cipher".
 
 #  Cryptographic Computations
 
