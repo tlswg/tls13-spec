@@ -1024,7 +1024,7 @@ of {{RFC5116}}. The key is either the client_write_key or the server_write_key.
            aead-ciphered struct {
               select(type) {
                   case application_data_padded:
-                       opaque padding<0..2^16-1>;
+                       opaque padding[up to and including the first 0x01];
               }
               opaque content[TLSPlaintext.length];
            } fragment;
@@ -1116,9 +1116,11 @@ The application_data_padded record type allows padding to be specified
 to inflate the size of the encrypted record.
 
 When generating a TLSCiphertext record for the application_data_padded
-record types, implementations SHOULD set the padding octets to all
-zeros before encrypting.  In particular, implementations MUST NOT
-encrypt uninitialized memory.
+record types, implementations MUST ensure that the final padding octet
+for the record is set to 0x01, and that all other padding octets are
+not set to 0x01.  Implementations SHOULD set all but the final padding
+octets to 0x00 before encrypting.  In particular, implementations MUST
+NOT encrypt uninitialized memory.
 
 The padding sent will be authenticated by the record protection
 mechanism but receiving peers MUST NOT try to validate the padding
@@ -1127,18 +1129,15 @@ attacks that may be able to distinguish amount of padding present.
 
 The presence of padding does not adjust the record size limitations,
 except to decrease the maximum size of the cleartext content from 2^14
-to 2^14 - 2 (because of the additional two octets used to specify the
-padding length.)
+to 2^14 - 1 (because the smallest amount of padding available is a
+single octet set to 0x01).
 
 Implementations MUST accept application_data_padded records, and MAY
 send them.  Implementations MAY send application_data_padded records
-containing only padding and no underlying data. The length of the
-padding field in an application_data_padded record MAY be zero, in
-which case the cleartext is padded only by the two octets used to
-specify the length of the padding.
+containing only padding and no underlying data.
 
-If the length of the padding claims to be larger than size of the
-decrypted segment, the receiving peer MUST treat the entire segment as
+If a scan of the cleartext of an application_data_padded record finds
+no 0x01 at all, the receiving peer MUST treat the entire segment as
 padding and ignore its contents.
 
 Selecting a padding policy that suggests when and how much to pad is
@@ -3824,6 +3823,16 @@ TLS protocol issues:
   suitable certificate is available, do you correctly send an empty
   Certificate message, instead of omitting the whole message (see
   {{client-certificate}})?
+
+- When processing the cleartext extracted from an
+  application_data_padded packet and scanning for the 0x01 boundary
+  octet between padding and content, do you avoid reading past the end
+  of the cleartext in the event that the sender sent malformed
+  padding?
+
+- When generating an application_data_padded packet do you initialize
+  the padding data to 0x00 and set the final padding octet to 0x01
+  before handing padding and content to the AEAD algorithm?
 
 Cryptographic details:
 
