@@ -749,14 +749,7 @@ standardization and obviates the need to update this document in
 response.  Future PKIX RFCs may choose, for example, to specify the
 hash function to be used with a public key in the parameters field of
 subjectPublicKeyInfo.) [[OPEN ISSUE: This needs updating per 4492-bis
-https://github.com/tlswg/tls13-spec/issues/59]]
-
-### Authenticated Encryption with Additional Data (AEAD)
-
-In AEAD encryption, the plaintext is simultaneously encrypted and integrity
-protected. The input may be of any length, and aead-ciphered output is
-generally larger than the input in order to accommodate the integrity check
-value.
+https://github.com/tlswg/tls13-spec/issues/59]].
 
 In the following example
 
@@ -784,6 +777,14 @@ algorithm, plus two bytes for the length of the signature, plus the length of
 the output of the signing algorithm. The length of the signature is known
 because the algorithm and key used for the signing are known prior to encoding
 or decoding this structure.
+
+
+### Authenticated Encryption with Additional Data (AEAD)
+
+In AEAD encryption, the plaintext is simultaneously encrypted and integrity
+protected. The input may be of any length, and aead-ciphered output is
+generally larger than the input in order to accommodate the integrity check
+value.
 
 
 #  The TLS Record Protocol
