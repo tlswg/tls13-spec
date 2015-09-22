@@ -812,9 +812,9 @@ all possible attacks against it. As a practical matter, this means that the
 protocol designer must be aware of what security properties TLS does and does
 not provide and cannot safely rely on the latter.
 
-Note in particular that the length of a record is not protected by
-encryption. If this information is itself sensitive, application designers may
-wish to take steps (e.g., padding, cover traffic) to minimize information leakage.
+Note in particular that the length of a record or absence of traffic
+itself is not protected by encryption unless the sender uses the
+supplied padding mechanism -- see {{record-padding}} for more details.
 
 
 ##  Connection States
@@ -954,6 +954,7 @@ message MAY be fragmented across several records).
        } ProtocolVersion;
 
        enum {
+           reserved(0),
            reserved(20), alert(21), handshake(22),
            application_data(23), early_handshake(25),
            (255)
@@ -991,9 +992,10 @@ compatibility, the record layer version identifies as simply TLS 1.0.
 Endpoints supporting other versions negotiate the version to use
 by following the procedure and requirements in {{backward-compatibility}}.
 
-Implementations MUST NOT send zero-length fragments of Handshake or Alert
-types. Zero-length fragments of Application data MAY
-be sent as they are potentially useful as a traffic analysis countermeasure.
+Implementations MUST NOT send zero-length fragments of Handshake or
+Alert types, even if those fragments contain padding. Zero-length
+fragments of Application data MAY be sent as they are potentially
+useful as a traffic analysis countermeasure.
 
 ###  Record Payload Protection
 
@@ -1017,6 +1019,7 @@ of {{RFC5116}}. The key is either the client_write_key or the server_write_key.
            aead-ciphered struct {
               opaque content[TLSPlaintext.length];
               ContentType type;
+              uint8 zeros[length_of_padding];
            } fragment;
        } TLSCiphertext;
 
@@ -1043,8 +1046,15 @@ fragment.content
 fragment.type
 : The actual content type of the record.
 
+fragment.zeros
+: An arbitrary-length run of null bytes (uint8 with value 0) may
+  appear in the cleartext after the type field.  This provides an
+  opportunity for senders to pad any TLS record by a chosen amount as
+  long as the total stays within record size limits.  See
+  {{record-padding}} for more details.
+
 fragment
-: The AEAD encrypted form of TLSPlaintext.fragment + TLSPlaintext.type,
+: The AEAD encrypted form of TLSPlaintext.fragment + TLSPlaintext.type + zeros,
   where "+" denotes concatenation.
 {:br }
 
@@ -1081,15 +1091,16 @@ data-dependent padding (such as CBC). TLS 1.3 removes the length
 field and relies on the AEAD cipher to provide integrity for the
 length of the data.
 
-The AEAD output consists of the ciphertext output by the AEAD encryption
-operation. The length of the plaintext is one greater than
-TLSPlaintext.length due to the inclusion of TLSPlaintext.type.  The
-length of aead_output will generally be larger than the plaintext, but
-by an amount that varies with the AEAD cipher. Since the ciphers might
+The AEAD output consists of the ciphertext output by the AEAD
+encryption operation. The length of the plaintext is greater than
+TLSPlaintext.length due to the inclusion of TLSPlaintext.type and
+however much padding is supplied by the sender.  The length of
+aead_output will generally be larger than the plaintext, but by an
+amount that varies with the AEAD cipher. Since the ciphers might
 incorporate padding, the amount of overhead could vary with different
-TLSPlaintext.length values. Symbolically,
+lengths of plaintext. Symbolically,
 
-       AEADEncrypted = AEAD-Encrypt(write_key, nonce, plaintext,
+       AEADEncrypted = AEAD-Encrypt(write_key, nonce, plaintext of fragment,
                                     additional_data)
 
 In order to decrypt and verify, the cipher takes as input the key, nonce, the
@@ -1097,10 +1108,9 @@ In order to decrypt and verify, the cipher takes as input the key, nonce, the
 plaintext or an error indicating that the decryption failed. There is no
 separate integrity check. That is:
 
-       (TLSPlaintext.fragment +
-        TLSPlaintext.ContentType) = AEAD-Decrypt(write_key, nonce,
-                                                 AEADEncrypted,
-                                                 additional_data)
+       plaintext of fragment = AEAD-Decrypt(write_key, nonce,
+                                            AEADEncrypted,
+                                            additional_data)
 
 If the decryption fails, a fatal "bad_record_mac" alert MUST be generated.
 
@@ -1115,6 +1125,54 @@ TODO: explain how TLS_NULL_WITH_NULL_NULL is not actually a cipher at
 all, and that in that state we should send raw TLSPlaintext instead of
 sending a phony TLSCiphertext
 
+### Record Padding
+
+All encrypted TLS records can be padded to inflate the size of the
+TLSCipherText.  This allows the sender to hide the size of the
+traffic from an observer.
+
+When generating a TLSCiphertext record, implementations MAY choose to
+pad.  An unpadded record is just a record with a padding length of
+zero.  Padding is a string of null bytes (uint8 with value 0) appended
+to the ContentType field before encryption.  Implementations MUST set
+the padding octets to all zeros before encrypting.
+
+Application Data records can be all padding if the sender desires.
+This permits generation of plausibly-sized cover traffic in contexts
+where the presence or absence of activity may be sensitive.
+Implementations MUST NOT send Handshake or Alert records that are all
+padding.
+
+The padding sent will be authenticated by the record protection
+mechanism.  Upon successful decryption of a TLSCiphertext.fragment,
+the receiving implementation scans the field from the end toward the
+beginning until it finds a non-zero uint8.  This non-zero octet is the
+content type of the message.
+
+Implementations MUST limit their scanning to the cleartext returned
+from the AEAD decryption.  If a receiving implementation does not find
+a non-zero octet in the cleartext, it should treat the record as
+having an unexpected ContentType, sending an "unexpected_message"
+alert.
+
+The presence of padding does not change the overall record size
+limitations -- the full fragment plaintext may not exceed 2^14 octets.
+
+Versions of TLS prior to 1.3 did not enable padding of any record at
+the TLS level.  The padding scheme introduced in TLS 1.3 was selected
+because it allows padding of any encrypted TLS record by an arbitrary
+size (from zero up to TLS record size limits) without introducing new
+content types.  The design also enforces all-zero padding octets,
+which should avoid any risk of sending uninitialized memory as padding.
+
+Selecting a padding policy that suggests when and how much to pad is a
+complex topic, and is beyond the scope of this specification. If the
+application layer protocol atop TLS permits padding, it may be
+preferable to pad application_data TLS records within the application
+layer.  Padding for encrypted handshake and alert TLS records must
+still be handled at the TLS layer, though.  Later documents may define
+padding selection algorithms, or define a padding policy request
+mechanism through TLS extensions or some other means.
 
 #  The TLS Handshaking Protocols
 
@@ -3750,6 +3808,11 @@ TLS protocol issues:
   suitable certificate is available, do you correctly send an empty
   Certificate message, instead of omitting the whole message (see
   {{client-certificate}})?
+
+- When processing the plaintext fragment produced by AEAD-Decrypt and
+  scanning from the end for the ContentType, do you avoid scanning
+  past the start of the cleartext in the event that the peer has sent
+  a malformed plaintext of all-zeros?
 
 Cryptographic details:
 
