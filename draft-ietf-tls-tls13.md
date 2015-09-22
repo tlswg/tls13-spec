@@ -3320,7 +3320,7 @@ in some cases, the extracted xSS and xES will not.
   struct HkdfLabel {
     uint16 length;
     opaque hash_value<0..255>;
-    opaque label<8..255>;
+    opaque label<9..255>;
   };
 
   Where:
