@@ -1215,8 +1215,11 @@ description of the alert. Alert messages with a level of fatal result in the
 immediate termination of the connection. In this case, other connections
 corresponding to the session may continue, but the session identifier MUST be
 invalidated, preventing the failed session from being used to establish new
-connections. Like other messages, alert messages are encrypted
-as specified by the current connection state.
+connections.
+
+Like other messages, alert messages are encrypted as specified by the current
+connection state.  An alert message MUST NOT be split between multiple records;
+doing so is known to cause compatibility issues.
 
 %%% Alert Messages
        enum { warning(1), fatal(2), (255) } AlertLevel;
