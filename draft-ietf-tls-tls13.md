@@ -812,7 +812,7 @@ all possible attacks against it. As a practical matter, this means that the
 protocol designer must be aware of what security properties TLS does and does
 not provide and cannot safely rely on the latter.
 
-Note in particular that type and length of a record are not protected by
+Note in particular that the length of a record is not protected by
 encryption. If this information is itself sensitive, application designers may
 wish to take steps (e.g., padding, cover traffic) to minimize information leakage.
 
@@ -1011,16 +1011,21 @@ of {{RFC5116}}. The key is either the client_write_key or the server_write_key.
 
 %%% Record Layer
        struct {
-           ContentType type;
+           ContentType opaque_type = application_data(23); /* see fragment.type */
            ProtocolVersion record_version = { 3, 1 };    /* TLS v1.x */
            uint16 length;
            aead-ciphered struct {
               opaque content[TLSPlaintext.length];
+              ContentType type;
            } fragment;
        } TLSCiphertext;
 
-type
-: The type field is identical to TLSPlaintext.type.
+opaque_type
+: The outer opaque_type field of a TLSCiphertext record is always set to the
+  value 23 (application_data) for outward compatibility with
+  middleboxes used to parsing previous versions of TLS.  The
+  actual content type of the record is found in fragment.type after
+  decryption.
 
 record_version
 : The record_version field is identical to TLSPlaintext.record_version and is always { 3, 1 }.
@@ -1032,8 +1037,15 @@ length
   MUST NOT exceed 2^14 + 256.  An endpoint that receives a record that exceeds
   this length MUST generate a fatal "record_overflow" alert.
 
+fragment.content
+: The cleartext of TLSPlaintext.fragment.
+
+fragment.type
+: The actual content type of the record.
+
 fragment
-: The AEAD encrypted form of TLSPlaintext.fragment.
+: The AEAD encrypted form of TLSPlaintext.fragment + TLSPlaintext.type,
+  where "+" denotes concatenation.
 {:br }
 
 
@@ -1054,13 +1066,12 @@ nonce.
 Note: This is a different construction from that in TLS 1.2, which
 specified a partially explicit nonce.
 
-The plaintext is the TLSPlaintext.fragment.
+The plaintext is the concatenation of TLSPlaintext.fragment and TLSPlaintext.type.
 
 The additional authenticated data, which we denote as additional_data, is
 defined as follows:
 
-       additional_data = seq_num + TLSPlaintext.type +
-                         TLSPlaintext.record_version
+       additional_data = seq_num + TLSPlaintext.record_version
 
 where "+" denotes concatenation.
 
@@ -1071,7 +1082,9 @@ field and relies on the AEAD cipher to provide integrity for the
 length of the data.
 
 The AEAD output consists of the ciphertext output by the AEAD encryption
-operation. The length will generally be larger than TLSPlaintext.length, but
+operation. The length of the plaintext is one greater than
+TLSPlaintext.length due to the inclusion of TLSPlaintext.type.  The
+length of aead_output will generally be larger than the plaintext, but
 by an amount that varies with the AEAD cipher. Since the ciphers might
 incorporate padding, the amount of overhead could vary with different
 TLSPlaintext.length values. Symbolically,
@@ -1084,19 +1097,23 @@ In order to decrypt and verify, the cipher takes as input the key, nonce, the
 plaintext or an error indicating that the decryption failed. There is no
 separate integrity check. That is:
 
-       TLSPlaintext.fragment = AEAD-Decrypt(write_key, nonce,
-                                            AEADEncrypted,
-                                            additional_data)
+       (TLSPlaintext.fragment +
+        TLSPlaintext.ContentType) = AEAD-Decrypt(write_key, nonce,
+                                                 AEADEncrypted,
+                                                 additional_data)
 
 If the decryption fails, a fatal "bad_record_mac" alert MUST be generated.
 
-An AEAD cipher MUST NOT produce an expansion of greater than 256 bytes.  An
-endpoint that receives a record that is larger than 2^14 + 256 octets MUST
-generate a fatal "record_overflow" alert.
+An AEAD cipher MUST NOT produce an expansion of greater than 255
+bytes.  An endpoint that receives a record from its peer with
+TLSCipherText.length larger than 2^14 + 256 octets MUST generate a
+fatal "record_overflow" alert.  This limit is derived from the maximum
+TLSPlaintext length of 2^14 octets + 1 octet for ContentType + the
+maximum AEAD expansion of 255 octets.
 
-As a special case, we define the NULL_NULL AEAD cipher which is simply
-the identity operation and thus provides no security. This cipher
-MUST ONLY be used with the initial TLS_NULL_WITH_NULL_NULL cipher suite.
+TODO: explain how TLS_NULL_WITH_NULL_NULL is not actually a cipher at
+all, and that in that state we should send raw TLSPlaintext instead of
+sending a phony TLSCiphertext
 
 
 #  The TLS Handshaking Protocols
