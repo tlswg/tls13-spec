@@ -1011,7 +1011,7 @@ of {{RFC5116}}. The key is either the client_write_key or the server_write_key.
 
 %%% Record Layer
        struct {
-           ContentType type = application_data(23);      /* see fragment.type */
+           ContentType opaque_type = application_data(23); /* see fragment.type */
            ProtocolVersion record_version = { 3, 1 };    /* TLS v1.x */
            uint16 length;
            aead-ciphered struct {
@@ -1020,8 +1020,8 @@ of {{RFC5116}}. The key is either the client_write_key or the server_write_key.
            } fragment;
        } TLSCiphertext;
 
-type
-: The outer type field of a TLSCiphertext record is always set to the
+opaque_type
+: The outer opaque_type field of a TLSCiphertext record is always set to the
   value 23 (application_data) for outward compatibility with
   middleboxes used to parsing previous versions of TLS.  The
   actual content type of the record is found in fragment.type after
@@ -1036,6 +1036,12 @@ length
 : The length (in bytes) of the following TLSCiphertext.fragment.  The length
   MUST NOT exceed 2^14 + 256.  An endpoint that receives a record that exceeds
   this length MUST generate a fatal "record_overflow" alert.
+
+fragment.content
+: The cleartext of TLSPlaintext.fragment.
+
+fragment.type
+: The actual content type of the record.
 
 fragment
 : The AEAD encrypted form of TLSPlaintext.fragment + TLSPlaintext.type,
