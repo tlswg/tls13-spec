@@ -3313,7 +3313,20 @@ in some cases, the extracted xSS and xES will not.
 
 ~~~
   HKDF-Expand-Label(Secret, Label, HashValue, Length) =
-       HKDF-Expand(Secret, Label + '\0' + HashValue, Length)
+       HKDF-Expand(Secret, HkdfLabel, Length)
+ 
+  Where HkdfLabel is specified as:
+
+  struct HkdfLabel {
+    uint16 length;
+    opaque hash_value<0..255>;
+    opaque label<8..255>;
+  };
+
+  Where:
+  - HkdfLabel.length is Length
+  - HkdfLabel.hash_value is HashValue.
+  - HkdfLabel.label is "TLS 1.3, " + Label
 
   1. xSS = HKDF-Extract(0, SS). Note that HKDF-Extract always
      produces a value the same length as the underlying hash
