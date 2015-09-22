@@ -3313,7 +3313,9 @@ in some cases, the extracted xSS and xES will not.
 
 ~~~
   HKDF-Expand-Label(Secret, Label, HashValue, Length) =
-       HKDF-Expand(Secret, Label + '\0' + HashValue, Length)
+       HKDF-Expand(Secret,
+                   Length + "TLS 1.3, " + Label + '\0' + 
+                   HashValue, Length)
 
   1. xSS = HKDF-Extract(0, SS). Note that HKDF-Extract always
      produces a value the same length as the underlying hash
