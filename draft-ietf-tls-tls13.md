@@ -946,6 +946,7 @@ carrying data in chunks of 2^14 bytes or less. Client message boundaries are
 not preserved in the record layer (i.e., multiple client messages of the same
 ContentType MAY be coalesced into a single TLSPlaintext record, or a single
 message MAY be fragmented across several records).
+Alert messages {{alert-protocol}} MUST NOT be fragmented across records.
 
 %%% Record Layer
        struct {
