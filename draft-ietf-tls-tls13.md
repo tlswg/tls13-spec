@@ -3321,9 +3321,9 @@ in some cases, the extracted xSS and xES will not.
     uint16 Length;
     opaque HashValue<0..255>;
     opaque Label<8..255>;
-   };
+  };
 
-  Where Hkdf.label is "TLS 1.3, " + Label and Hkdf.HashValue
+  Where HkdfLabel.label is "TLS 1.3, " + Label and HkdfLabel.HashValue
   is HashValue.
 
   1. xSS = HKDF-Extract(0, SS). Note that HKDF-Extract always
