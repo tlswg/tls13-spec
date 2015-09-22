@@ -1047,7 +1047,7 @@ fragment.type
 : The actual content type of the record.
 
 fragment.zeros
-: An arbitrary-length run of null bytes (uint8 with value 0) may
+: An arbitrary-length run of zero-valued bytes may
   appear in the cleartext after the type field.  This provides an
   opportunity for senders to pad any TLS record by a chosen amount as
   long as the total stays within record size limits.  See
@@ -1133,20 +1133,20 @@ traffic from an observer.
 
 When generating a TLSCiphertext record, implementations MAY choose to
 pad.  An unpadded record is just a record with a padding length of
-zero.  Padding is a string of null bytes (uint8 with value 0) appended
+zero.  Padding is a string of zero-valued bytes appended
 to the ContentType field before encryption.  Implementations MUST set
 the padding octets to all zeros before encrypting.
 
-Application Data records can be all padding if the sender desires.
-This permits generation of plausibly-sized cover traffic in contexts
-where the presence or absence of activity may be sensitive.
-Implementations MUST NOT send Handshake or Alert records that are all
-padding.
+Application Data records may contain a zero-length fragment.content if
+the sender desires.  This permits generation of plausibly-sized cover
+traffic in contexts where the presence or absence of activity may be
+sensitive.  Implementations MUST NOT send Handshake or Alert records
+that have a zero-length fragment.content.
 
-The padding sent will be authenticated by the record protection
-mechanism.  Upon successful decryption of a TLSCiphertext.fragment,
+The padding sent is automatically verified by the record protection
+mechanism: Upon successful decryption of a TLSCiphertext.fragment,
 the receiving implementation scans the field from the end toward the
-beginning until it finds a non-zero uint8.  This non-zero octet is the
+beginning until it finds a non-zero octet. This non-zero octet is the
 content type of the message.
 
 Implementations MUST limit their scanning to the cleartext returned
@@ -1158,12 +1158,12 @@ alert.
 The presence of padding does not change the overall record size
 limitations -- the full fragment plaintext may not exceed 2^14 octets.
 
-Versions of TLS prior to 1.3 did not enable padding of any record at
-the TLS level.  The padding scheme introduced in TLS 1.3 was selected
-because it allows padding of any encrypted TLS record by an arbitrary
-size (from zero up to TLS record size limits) without introducing new
-content types.  The design also enforces all-zero padding octets,
-which should avoid any risk of sending uninitialized memory as padding.
+Versions of TLS prior to 1.3 had limited support for padding.  This
+padding scheme was selected because it allows padding of any encrypted
+TLS record by an arbitrary size (from zero up to TLS record size
+limits) without introducing new content types.  The design also
+enforces all-zero padding octets, which allows for quick detection of
+padding errors.
 
 Selecting a padding policy that suggests when and how much to pad is a
 complex topic, and is beyond the scope of this specification. If the
