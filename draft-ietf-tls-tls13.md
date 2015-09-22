@@ -312,6 +312,9 @@ draft-09
 
 - Remove support for DSA.
 
+- Update key schedule per suggestions by Hugo, Hoeteck, and Bjoern Tackmann.
+
+
 draft-08
 
 - Remove support for weak and lesser used named curves.
@@ -3312,13 +3315,21 @@ in some cases, the extracted xSS and xES will not.
   HKDF-Expand-Label(Secret, Label, HashValue, Length) =
        HKDF-Expand(Secret, Label + '\0' + HashValue, Length)
 
-  1. xSS = HKDF(0, SS, "extractedSS", L)
+  1. xSS = HKDF-Extract(0, SS). Note that HKDF-Extract always
+     produces a value the same length as the underlying hash
+     function.
 
-  2. xES = HKDF(0, ES, "extractedES", L)
+  2. xES = HKDF-Extract(0, ES)
 
-  3. master_secret = HKDF(xSS, xES, "master secret", L)
+  3. mSS = HKDF-Expand-Label(xSS, "expanded static secret",
+                             handshake_hash, L)
 
-  4. finished_secret = HKDF-Expand-Label(xSS,
+  4. mES = HKDF-Expand-Label(xES, "expanded ephemeral secret",
+                             handshake_hash, L)
+
+  5. master_secret = HKDF-Extract(mSS, mES)
+
+  6. finished_secret = HKDF-Expand-Label(xSS,
                                          "finished secret",
                                          handshake_hash, L)
 
@@ -3344,6 +3355,12 @@ in some cases, the extracted xSS and xES will not.
 
 The traffic keys are computed from xSS, xES, and the master_secret
 as described in {{traffic-key-calculation}} below.
+
+Note: although the steps above are phrased as individual HKDF-Extract
+and HKDF-Expand operations, because each HKDF-Expand operation is
+paired with an HKDF-Extract, it is possible to implement this key
+schedule with a black-box HKDF API, albeit at some loss of efficiency
+as some HKDF-Extract operations will be repeated.
 
 
 ## Traffic Key Calculation
