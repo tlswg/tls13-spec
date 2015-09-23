@@ -314,6 +314,12 @@ draft-09
 
 - Update key schedule per suggestions by Hugo, Hoeteck, and Bjoern Tackmann.
 
+- Add support for per-record padding.
+
+- Switch to encrypted record ContentType.
+
+- Change HKDF labeling to include protocol version and value lengths.
+
 
 draft-08
 
