@@ -2808,22 +2808,19 @@ certificate_list
   certificate MUST come first in the list. Each following
   certificate SHOULD directly certify one preceding it. Because
   certificate validation requires that trust anchors be distributed
-  independently, a self-signed certificate that specifies a
+  independently, a certificate that specifies a
   trust anchor MAY be omitted from the chain, provided that
-  supported peers are known to possess any omitted certificates
-  they may require.
+  supported peers are known to possess any omitted certificates.
 {:br }
 
-Note: Prior to TLS 1.3, "certificate_list" ordering was required to be strict,
-however some implementations already allowed for some flexibility. For maximum
-compatibility, all implementations SHOULD be prepared to handle potentially
-extraneous certificates and arbitrary orderings from any TLS version (with
-the exception of the sender's certificate). Some servers are configured to send
+Note: Prior to TLS 1.3, "certificate_list" ordering required each certificate
+to certify the one immediately preceding it,
+however some implementations allowed some flexibility. Servers sometimes send
 both a current and deprecated intermediate for transitional purposes, and others
 are simply configured incorrectly, but these cases can nonetheless be validated
-properly by clients capable of doing so. Although the chain MAY be ordered in a
-variety of ways, the peer's end-entity certificate MUST be the first element in
-the vector.
+properly. For maximum compatibility, all implementations SHOULD be prepared to
+handle potentially extraneous certificates and arbitrary orderings from any TLS
+version, with the exception of the end-entity certificate which MUST be first.
 
 The same message type and structure will be used for the client's response to a
 certificate request message. Note that a client MAY send no certificates if it
