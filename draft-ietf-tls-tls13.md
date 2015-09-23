@@ -2883,7 +2883,7 @@ If the server cannot produce a certificate chain that is signed only via the
 indicated supported pairs, then it SHOULD continue the handshake by sending
 the client a certificate chain of its choice that may include algorithms
 that are not known to be supported by the client. This fallback chain MAY
-use the deprecated SHA hash algorithms, SHA-1 or SHA-224.
+use the deprecated SHA-1 hash algorithm.
 If the client cannot construct an acceptable chain using the provided
 certificates and decides to abort the handshake, then it MUST send an
 "unsupported_certificate" alert message and close the connection.
@@ -2893,7 +2893,7 @@ using an MD5 hash MUST send a "bad_certificate" alert message and close
 the connection.
 
 As SHA-1 and SHA-224 are deprecated, support for them is NOT RECOMMENDED.
-Endpoints that reject chains due to use of a deprecated SHA hash MUST send
+Endpoints that reject chains due to use of a deprecated hash MUST send
 a fatal "bad_certificate" alert message before closing the connection.
 All servers are RECOMMENDED to transition to SHA-256 or better as soon
 as possible to maintain interoperability with implementations
