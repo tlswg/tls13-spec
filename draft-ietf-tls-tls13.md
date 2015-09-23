@@ -2246,6 +2246,7 @@ The "extension_data" field of this extension contains a
            rsa(1),
            dsa_RESERVED(2),
            ecdsa(3),
+           rsapss(4),
            (255)
        } SignatureAlgorithm;
 
@@ -2256,6 +2257,8 @@ The "extension_data" field of this extension contains a
 
        SignatureAndHashAlgorithm
          supported_signature_algorithms<2..2^16-2>;
+
+[[TODO: IANA considerations for new SignatureAlgorithm value]]
 
 Each SignatureAndHashAlgorithm value lists a single hash/signature pair that
 the client is willing to verify. The values are indicated in descending order
