@@ -1141,11 +1141,14 @@ zero.  Padding is a string of zero-valued bytes appended
 to the ContentType field before encryption.  Implementations MUST set
 the padding octets to all zeros before encrypting.
 
-Application Data records may contain a zero-length fragment.content if
-the sender desires.  This permits generation of plausibly-sized cover
-traffic in contexts where the presence or absence of activity may be
-sensitive.  Implementations MUST NOT send Handshake or Alert records
-that have a zero-length fragment.content.
+Application Data records MAY contain a zero-length fragment.content
+if the sender desires.  This permits generation of plausibly-sized
+cover traffic in contexts where the presence or absence of activity
+might be sensitive.  Implementations MUST NOT send Handshake or Alert
+records that have a zero-length fragment.content.  While there are
+legitimate reasons to send Application Data records with zero-length
+content, implementations that do not track such empty records could
+be unable to identify a denial of service attack that uses them.
 
 The padding sent is automatically verified by the record protection
 mechanism: Upon successful decryption of a TLSCiphertext.fragment,
