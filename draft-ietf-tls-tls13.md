@@ -320,6 +320,11 @@ draft-09
 
 - Change HKDF labeling to include protocol version and value lengths.
 
+- Shift the final decision to abort a handshake due to incompatible
+  certificates to the client rather than having servers abort early.
+
+- Deprecate SHA-1 with signatures.
+
 
 draft-08
 
@@ -2231,9 +2236,7 @@ The "extension_data" field of this extension contains a
 %%% Signature Algorithm Extension
        enum {
            none(0),
-           md5_RESERVED(1),
-           sha1(2),
-           sha224_RESERVED(3),
+           md5_RESERVED(1), sha1_RESERVED(2), sha224_RESERVED(3),
            sha256(4), sha384(5), sha512(6),
            (255)
        } HashAlgorithm;
@@ -2268,9 +2271,11 @@ hash
   SHA-224, SHA-256, SHA-384, and SHA-512 {{SHS}}, respectively.  The
   "none" value is provided for future extensibility, in case of a
   signature algorithm which does not require hashing before signing.
-  The use of MD5 and SHA-224 is deprecated. The md5_RESERVED and
-  sha224_RESERVED values MUST NOT be offered or negotiated by any
-  implementation.
+  The use of MD5, SHA-1, and SHA-224 are deprecated. The md5_RESERVED
+  and sha224_RESERVED values MUST NOT be offered by any implementations.
+  The sha1_RESERVED value SHOULD NOT be offered, however clients willing
+  to negotiate use of TLS 1.2 MAY offer support for SHA-1 for backwards
+  compatibility with old servers.
 
 signature
 : This field indicates the signature algorithm that may be used.
@@ -2291,6 +2296,12 @@ The semantics of this extension are somewhat complicated because the cipher
 suite indicates permissible signature algorithms but not hash algorithms.
 {{server-certificate}} and {{server-key-share}} describe the
 appropriate rules.
+
+Clients offering support for SHA-1 for TLS 1.2 servers MUST do so by listing
+those hash/signature pairs as the lowest priority (listed after all other
+pairs in the supported_signature_algorithms vector). TLS 1.3 servers MUST NOT
+offer a SHA-1 signed certificate unless no valid certificate chain can be
+produced without it (see {{server-certificate}}).
 
 Note: TLS 1.3 servers MAY receive TLS 1.2 ClientHellos which do not contain
 this extension. If those servers are willing to negotiate TLS 1.2, they MUST
@@ -2864,12 +2875,32 @@ The following rules apply to the certificates sent by the server:
   guide certificate selection. As servers MAY require the presence of the server_name
   extension, clients SHOULD send this extension.
 
-All certificates provided by the server MUST be signed by a hash/signature
-algorithm pair that appears in the "signature_algorithms" extension provided
-by the client (see {{signature-algorithms}}).
-[[OPEN ISSUE: changing this is under consideration]]
-Note that this implies that a certificate containing a key for one signature
-algorithm MAY be signed using a different signature algorithm (for instance,
+All certificates provided by the server MUST be signed by a
+hash/signature algorithm pair that appears in the "signature_algorithms"
+extension provided by the client, if they are able to provide such
+a chain (see {{signature-algorithms}}).
+If the server cannot produce a certificate chain that is signed only via the
+indicated supported pairs, then it SHOULD continue the handshake by sending
+the client a certificate chain of its choice that may include algorithms
+that are not known to be supported by the client. This fallback chain MAY
+use the deprecated SHA-1 hash algorithm.
+If the client cannot construct an acceptable chain using the provided
+certificates and decides to abort the handshake, then it MUST send an
+"unsupported_certificate" alert message and close the connection.
+
+Any endpoint receiving any certificate signed using any signature algorithm
+using an MD5 hash MUST send a "bad_certificate" alert message and close
+the connection.
+
+As SHA-1 and SHA-224 are deprecated, support for them is NOT RECOMMENDED.
+Endpoints that reject chains due to use of a deprecated hash MUST send
+a fatal "bad_certificate" alert message before closing the connection.
+All servers are RECOMMENDED to transition to SHA-256 or better as soon
+as possible to maintain interoperability with implementations
+currently in the process of phasing out SHA-1 support.
+
+Note that a certificate containing a key for one signature algorithm
+MAY be signed using a different signature algorithm (for instance,
 an RSA key signed with a ECDSA key).
 
 If the server has multiple certificates, it chooses one of them based on the
@@ -3078,7 +3109,8 @@ implementation need only maintain one running hash per hash type for
 CertificateVerify, Finished and other messages.
 
 > The signature algorithm and hash algorithm MUST be a pair offered in the
-client's "signature_algorithms" extension (see {{signature-algorithms}}). Note that
+client's "signature_algorithms" extension unless no valid certificate chain can be
+produced without unsupported algorithms (see {{signature-algorithms}}). Note that
 there is a possibility for inconsistencies here. For instance, the client might
 offer ECDHE_ECDSA key exchange but omit any ECDSA pairs from its
 "signature_algorithms" extension. In order to negotiate correctly, the server
@@ -3777,7 +3809,7 @@ provides several recommendations to assist implementors.
 
 TLS requires a cryptographically secure pseudorandom number generator (PRNG).
 Care must be taken in designing and seeding PRNGs. PRNGs based on secure hash
-operations, most notably SHA-1, are acceptable, but cannot provide more
+operations, most notably SHA-256, are acceptable, but cannot provide more
 security than the size of the random number generator state.
 
 To estimate the amount of seed material being produced, add the number of bits
@@ -3830,10 +3862,11 @@ TLS protocol issues:
 -  Do you ignore the TLS record layer version number in all TLS
   records? (see {{backward-compatibility}})
 
--  Have you ensured that all support for SSL, RC4, and EXPORT ciphers
-  is completely removed from all possible configurations that support
-  TLS 1.3 or later, and that attempts to use these obsolete capabilities
-  fail correctly? (see {{backward-compatibility}})
+-  Have you ensured that all support for SSL, RC4, EXPORT ciphers, and
+  MD5 (via the Signature Algorithms extension) is completely removed from
+  all possible configurations that support TLS 1.3 or later, and that
+  attempts to use these obsolete capabilities fail correctly?
+  (see {{backward-compatibility}})
 
 -  Do you handle TLS extensions in ClientHello correctly, including
   omitting the extensions field completely?
