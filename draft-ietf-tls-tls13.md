@@ -44,6 +44,8 @@ normative:
   RFC6655:
   RFC7251:
   I-D.ietf-tls-chacha20-poly1305:
+  I-D.irtf-cfrg-curves:
+
   AES:
        title: Specification for the Advanced Encryption Standard (AES)
        date: 2001-11-26
@@ -3518,9 +3520,23 @@ other than for computing other secrets.)
 ##  MTI Cipher Suites
 
 In the absence of an application profile standard specifying otherwise, a
-TLS-compliant application MUST implement the cipher suite
-[TODO:Needs to be selected](https://github.com/tlswg/tls13-spec/issues/32).
-(See {{cipher-suites}} for the definition.)
+TLS-compliant application MUST implement the following cipher suites:
+
+~~~~
+    TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256 
+    TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+~~~~
+
+These cipher suites MUST support both digital signatures and key agreement
+with secp256r1 (NIST P-256) and SHOULD support key agrement with X25519
+{{I-D.irtf-cfrg-curves}}.
+
+A TLS-compliant application SHOULD implement the following cipher suites:
+
+~~~~
+    TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305
+    TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+~~~~
 
 ##  MTI Extensions
 
