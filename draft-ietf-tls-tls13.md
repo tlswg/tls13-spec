@@ -2451,7 +2451,7 @@ offers
 {:br }
 
 Clients may offer an arbitrary number of ClientKeyShareOffer
-values, each representing a single set of key agreement parameters;
+values, each representing a single set of key exchange parameters;
 for instance a client might offer shares for several elliptic curves
 or multiple integer DH groups. The shares for each ClientKeyShareOffer
 MUST by generated independently. Clients MUST NOT offer multiple
@@ -3309,7 +3309,7 @@ PSK.??]
 In order to begin connection protection, the TLS Record Protocol
 requires specification of a suite of algorithms, a master secret, and
 the client and server random values. The authentication, key
-agreement, and record protection algorithms are determined by the
+exchange, and record protection algorithms are determined by the
 cipher_suite selected by the server and revealed in the ServerHello
 message. The random values are exchanged in the hello messages. All
 that remains is to calculate the key schedule.
@@ -3523,11 +3523,11 @@ In the absence of an application profile standard specifying otherwise, a
 TLS-compliant application MUST implement the following cipher suites:
 
 ~~~~
-    TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256 
     TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+    TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256 
 ~~~~
 
-These cipher suites MUST support both digital signatures and key agreement
+These cipher suites MUST support both digital signatures and key exchange
 with secp256r1 (NIST P-256) and SHOULD support key agrement with X25519
 {{I-D.irtf-cfrg-curves}}.
 
