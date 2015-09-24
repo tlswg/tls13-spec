@@ -753,17 +753,8 @@ RSASSA-PKCS1-v1_5, not RSASSA-PSS.
 All ECDSA computations MUST be performed according to ANSI X9.62 {{X962}}
 or its successors.  Data to be signed/verified is hashed, and the
 result run directly through the ECDSA algorithm with no additional
-hashing.  The default hash function is SHA-1 {{SHS}}.  However, an
-alternative hash function, such as one of the new SHA hash functions
-specified in FIPS 180-4 {{SHS}} SHOULD be used instead if the certificate
-containing the EC public key explicitly requires use of another hash
-function.  (The mechanism for specifying the required hash function
-has not been standardized, but this provision anticipates such
-standardization and obviates the need to update this document in
-response.  Future PKIX RFCs may choose, for example, to specify the
-hash function to be used with a public key in the parameters field of
-subjectPublicKeyInfo.) [[OPEN ISSUE: This needs updating per 4492-bis
-https://github.com/tlswg/tls13-spec/issues/59]].
+hashing.  The SignatureAndHashAlgorithm parameter in the DigitallySigned
+object indicates the digest algorithm which was used in the signature.
 
 In the following example
 
@@ -3126,6 +3117,8 @@ in the server's end-entity certificate. RSA keys MAY be used with any permitted
 hash algorithm, subject to restrictions in the certificate, if any.
 RSA signatures MUST be based on RSASSA-PSS, regardless of whether
 RSASSA-PKCS-v1_5 appears in "signature_algorithms".
+SHA-1 MUST NOT be used in any signatures in CertificateVerify,
+regardless of whether SHA-1 appears in "signature_algorithms".
 
 ###  Server Finished
 
@@ -3260,7 +3253,9 @@ message. In addition, the hash and signature algorithms MUST be compatible with
 the key in the client's end-entity certificate. RSA keys MAY be used with any
 permitted hash algorithm, subject to restrictions in the certificate, if any.
 RSA signatures MUST be based on RSASSA-PSS, regardless of whether
-RSASSA-PKCS-v1_5 appears in "signature_algorithms".
+RSASSA-PKCS-v1_5 appears in "signature_algorithms". SHA-1 MUST NOT be used
+in any signatures in CertificateVerify, regardless of whether
+SHA-1 appears in "signature_algorithms".
 
 
 ### New Session Ticket Message
