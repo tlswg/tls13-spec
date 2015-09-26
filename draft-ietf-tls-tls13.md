@@ -3530,7 +3530,7 @@ TLS-compliant application MUST implement the following cipher suites:
 ~~~~
 
 These cipher suites MUST support both digital signatures and key exchange
-with secp256r1 (NIST P-256) and SHOULD support key agrement with X25519
+with secp256r1 (NIST P-256) and SHOULD support key exchange with X25519
 {{I-D.irtf-cfrg-curves}}.
 
 A TLS-compliant application SHOULD implement the following cipher suites:
