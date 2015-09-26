@@ -327,6 +327,8 @@ draft-09
 
 - Deprecate SHA-1 with signatures.
 
+- Add MTI algorithms.
+
 
 draft-08
 
