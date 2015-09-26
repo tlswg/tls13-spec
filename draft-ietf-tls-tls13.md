@@ -44,6 +44,8 @@ normative:
   RFC6655:
   RFC7251:
   I-D.ietf-tls-chacha20-poly1305:
+  I-D.irtf-cfrg-curves:
+
   AES:
        title: Specification for the Advanced Encryption Standard (AES)
        date: 2001-11-26
@@ -324,6 +326,8 @@ draft-09
   certificates to the client rather than having servers abort early.
 
 - Deprecate SHA-1 with signatures.
+
+- Add MTI algorithms.
 
 
 draft-08
@@ -2449,7 +2453,7 @@ offers
 {:br }
 
 Clients may offer an arbitrary number of ClientKeyShareOffer
-values, each representing a single set of key agreement parameters;
+values, each representing a single set of key exchange parameters;
 for instance a client might offer shares for several elliptic curves
 or multiple integer DH groups. The shares for each ClientKeyShareOffer
 MUST by generated independently. Clients MUST NOT offer multiple
@@ -3307,7 +3311,7 @@ PSK.??]
 In order to begin connection protection, the TLS Record Protocol
 requires specification of a suite of algorithms, a master secret, and
 the client and server random values. The authentication, key
-agreement, and record protection algorithms are determined by the
+exchange, and record protection algorithms are determined by the
 cipher_suite selected by the server and revealed in the ServerHello
 message. The random values are exchanged in the hello messages. All
 that remains is to calculate the key schedule.
@@ -3518,9 +3522,25 @@ other than for computing other secrets.)
 ##  MTI Cipher Suites
 
 In the absence of an application profile standard specifying otherwise, a
-TLS-compliant application MUST implement the cipher suite
-[TODO:Needs to be selected](https://github.com/tlswg/tls13-spec/issues/32).
-(See {{cipher-suites}} for the definition.)
+TLS-compliant application MUST implement the following cipher suites:
+
+~~~~
+    TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+    TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256 
+~~~~
+
+These cipher suites MUST support both digital signatures and key exchange
+with secp256r1 (NIST P-256) and SHOULD support key agrement with X25519
+{{I-D.irtf-cfrg-curves}}.
+
+A TLS-compliant application SHOULD implement the following cipher suites:
+
+~~~~
+    TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305
+    TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+    TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+    TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+~~~~
 
 ##  MTI Extensions
 
