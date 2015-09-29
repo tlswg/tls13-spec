@@ -1948,12 +1948,7 @@ cipher suites, and process the remaining ones as usual.
            SessionID session_id;
            CipherSuite cipher_suites<2..2^16-2>;
            CompressionMethod compression_methods<1..2^8-1>;
-           select (extensions_present) {
-               case false:
-                   struct {};
-               case true:
-                   Extension extensions<0..2^16-1>;
-           };
+           Extension extensions<0..2^16-1>;
        } ClientHello;
 
 TLS allows extensions to follow the compression_methods field in an extensions
