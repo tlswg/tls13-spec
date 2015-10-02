@@ -2919,11 +2919,13 @@ Structure of this message:
        enum {
            rsa_sign(1), 
            dss_sign_RESERVED(2), 
-           rsa_fixed_dh(3), 
+           rsa_fixed_dh_RESERVED(3), 
            dss_fixed_dh_RESERVED(4),
            rsa_ephemeral_dh_RESERVED(5), 
            dss_ephemeral_dh_RESERVED(6),
-           fortezza_dms_RESERVED(20), (255)
+           fortezza_dms_RESERVED(20),
+           ecdsa_sign(64),
+           (255)
        } ClientCertificateType;
 
        opaque DistinguishedName<1..2^16-1>;
