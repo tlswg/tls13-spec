@@ -37,7 +37,9 @@ for l in sys.stdin:
             else:
                 print l,
     else:
-        print l,
+        # Strip out everything marked as RESERVED
+        if l.find("RESERVED") == -1:
+            print l,
         m = re.match("\S", l)
         if m is None:
             CURRENT += l
