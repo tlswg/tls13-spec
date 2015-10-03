@@ -3063,7 +3063,11 @@ When the ServerConfiguration message is sent, the server MUST also
 send a Certificate message and a CertificateVerify message, even
 if the "known_configuration" extension was used for this handshake,
 thus requiring a signature over the configuration before it can
-be used by the client.
+be used by the client. Clients MUST not rely on the
+ServerConfiguration message until successfully receiving and
+processing the server's Certificate, CertificateVerify, and
+Finished. If there is a failure in processing those messages, the
+client MUST discard the ServerConfiguration.
 
 
 ###  Server Certificate Verify
