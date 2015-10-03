@@ -2249,8 +2249,8 @@ hash
 
 signature
 : This field indicates the signature algorithm that may be used.
-  The values indicate RSASSA-PKCS1-v1_5,
-  {{RFC3447}}, ECDSA {{ECDSA}}, and RSASSA-PSS
+  The values indicate RSASSA-PKCS1-v1_5 {{RFC3447}}, 
+  DSA {{DSS}}, ECDSA {{ECDSA}}, and RSASSA-PSS
   {{RFC3447}} respectively. Because all RSA signatures used in
   signed TLS handshake messages (see {{digital-signing}}),
   as opposed to those in certificates, are RSASSA-PSS, the "rsa"
