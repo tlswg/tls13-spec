@@ -1428,10 +1428,6 @@ decrypt_error
   to correctly verify a signature or validate a Finished message.
   This alert is always fatal.
 
-export_restriction_RESERVED
-: This alert was used in some earlier versions of TLS. It MUST NOT
-  be sent by compliant implementations. This alert is always fatal.
-
 protocol_version
 : The protocol version the peer has attempted to negotiate is
   recognized but not supported.  (For example, old protocol versions
@@ -1663,11 +1659,11 @@ against algorithmic attacks, at least in the year 2015.]]
 
 ### Incorrect DHE Share
 
-If the client has not provided an appropriate ClientKeyShare (e.g. it
-includes only DHE or ECDHE groups unacceptable or unsupported by the
-server), the server corrects the mismatch with a HelloRetryRequest and
-the client will need to restart the handshake with an appropriate
-ClientKeyShare, as shown in Figure 2:
+If the client has not provided an appropriate ClientKeyShare (e.g., it
+is not included or includes only DHE or ECDHE groups unacceptable or
+unsupported by the server), the server corrects the mismatch with a
+HelloRetryRequest and the client will need to restart the handshake
+with an appropriate ClientKeyShare, as shown in Figure 2:
 
 ~~~
        Client                                               Server
@@ -2396,16 +2392,10 @@ must consider the supported groups in both cases.
 ####  Client Key Share
 
 The "client_key_share" extension contains the client's cryptographic
-parameters for zero or more non-PSK key establishment methods (currently
-DHE or ECDHE).
-
-All clients MUST send a valid "client_key_share" extension when offering
-any DHE or ECDHE cipher suites.
-Servers MUST NOT negotiate use of a DHE or ECDHE cipher suites
-unless the client supplies a (possibly empty) "client_key_share" extension.
-If the extension is not provided and no alternative cipher suite is available,
-the server MUST close the connection with a fatal "missing_extension" alert.
-(see {{mti-extensions}})
+parameters for one or more non-PSK key establishment methods
+(currently DHE or ECDHE). It is explicitly permitted to omit the
+"client_key_share" extension in order to elicit the server's
+parameters if the client has no useful information.
 
 Servers MUST NOT send this extension. TLS servers MUST support receiving
 this extension. Clients receiving this extension MUST respond with an
@@ -2439,7 +2429,7 @@ The "extension_data" field of this extension contains a
 
 %%% Key Exchange Messages
        struct {
-           ClientKeyShareOffer offers<0..2^16-1>;
+           ClientKeyShareOffer offers<4..2^16-1>;
        } ClientKeyShare;
 
 offers
@@ -2447,15 +2437,12 @@ offers
   client preference.
 {:br }
 
-Clients may offer an arbitrary number of ClientKeyShareOffer
-values, each representing a single set of key exchange parameters;
-for instance a client might offer shares for several elliptic curves
-or multiple integer DH groups. The shares for each ClientKeyShareOffer
-MUST by generated independently. Clients MUST NOT offer multiple
-ClientKeyShareOffers for the same parameters. It is explicitly
-permitted to send an empty "client_key_share" extension as this is used
-to elicit the server's parameters if the client has no useful
-information.
+Clients may offer one or many ClientKeyShareOffer values, each
+representing a single set of key exchange parameters; for instance a
+client might offer shares for several elliptic curves or multiple
+integer DH groups. The shares for each ClientKeyShareOffer MUST by
+generated independently. Clients MUST NOT offer multiple
+ClientKeyShareOffers for the same parameters.
 
 [[TODO: Recommendation about what the client offers.
 Presumably which integer DH groups and which curves.]]
