@@ -1355,11 +1355,6 @@ bad_record_mac
   communication between proper implementations (except when messages
   were corrupted in the network).
 
-decryption_failed_RESERVED
-: This alert was used in some earlier versions of TLS, and may have
-  permitted certain attacks against the CBC mode {{CBCATT}}.  It MUST
-  NOT be sent by compliant implementations. This alert is always fatal.
-
 record_overflow
 : A TLSCiphertext record was received that had a length more than
   2^14 + 256 bytes, or a record decrypted to a TLSPlaintext record
@@ -1368,20 +1363,10 @@ record_overflow
   implementations (except when messages were corrupted in the
   network).
 
-decompression_failure_RESERVED
-: This alert was used in previous versions of TLS. TLS 1.3 does not
-  include compression and TLS 1.3 implementations MUST NOT send this
-  alert when in TLS 1.3 mode. This alert is always fatal.
-
 handshake_failure
 : Reception of a "handshake_failure" alert message indicates that the
   sender was unable to negotiate an acceptable set of security
   parameters given the options available.
-  This alert is always fatal.
-
-no_certificate_RESERVED
-: This alert was used in SSL 3.0 but not any version of TLS.  It MUST
-  NOT be sent by compliant implementations.
   This alert is always fatal.
 
 bad_certificate
@@ -1428,11 +1413,6 @@ decrypt_error
   to correctly verify a signature or validate a Finished message.
   This alert is always fatal.
 
-export_restriction_RESERVED
-: This alert was used in some earlier versions of TLS. It MUST NOT
-  be sent by compliant implementations. This alert is always fatal.
-
-protocol_version
 : The protocol version the peer has attempted to negotiate is
   recognized but not supported.  (For example, old protocol versions
   might be avoided for security reasons.)  This alert is always
@@ -1452,11 +1432,6 @@ internal_error
 inappropriate_fallback
 : Sent by a server in response to an invalid connection retry attempt
   from a client. (see [RFC7507]) This alert is always fatal.
-
-no_renegotiation_RESERVED
-: This alert was used in previous versions of TLS. TLS 1.3 does not
-  include renegotiation and TLS 1.3 implementations MUST NOT send this
-  alert when in TLS 1.3 mode. This alert is always fatal.
 
 missing_extension
 : Sent by endpoints that receive a hello message not containing an
@@ -2226,7 +2201,9 @@ The "extension_data" field of this extension contains a
 %%% Signature Algorithm Extension
        enum {
            none(0),
-           md5_RESERVED(1), sha1_RESERVED(2), sha224_RESERVED(3),
+           md5_RESERVED(1),
+           sha1,
+           sha224_RESERVED(3),
            sha256(4), sha384(5), sha512(6),
            (255)
        } HashAlgorithm;
@@ -2234,7 +2211,7 @@ The "extension_data" field of this extension contains a
        enum {
            anonymous_RESERVED(0),
            rsa(1),
-           dsa_RESERVED(2),
+           dsa(2),
            ecdsa(3),
            rsapss(4),
            (255)
@@ -2260,28 +2237,26 @@ are listed in pairs.
 
 hash
 : This field indicates the hash algorithms which may be used.  The
-  values indicate support for unhashed data, MD5 {{RFC1321}}, SHA-1,
-  SHA-224, SHA-256, SHA-384, and SHA-512 {{SHS}}, respectively.  The
-  "none" value is provided for future extensibility, in case of a
-  signature algorithm which does not require hashing before signing.
-  The use of MD5, SHA-1, and SHA-224 are deprecated. The md5_RESERVED
-  and sha224_RESERVED values MUST NOT be offered by any implementations.
-  The sha1_RESERVED value SHOULD NOT be offered, however clients willing
-  to negotiate use of TLS 1.2 MAY offer support for SHA-1 for backwards
-  compatibility with old servers.
+  values indicate support for unhashed data, SHA-1, SHA-256, SHA-384,
+  and SHA-512 {{SHS}}, respectively. The "none" value is provided for
+  future extensibility, in case of a signature algorithm which does
+  not require hashing before signing.  Previous versions of TLS
+  supported MD5 and SHA-1. These algorithms are now deprecated and
+  MUST NOT be offered by TLS 1.3 implementations.  SHA-1 SHOULD NOT be
+  offered, however clients willing to negotiate use of TLS 1.2 MAY
+  offer support for SHA-1 for backwards compatibility with old
+  servers.
 
 signature
 : This field indicates the signature algorithm that may be used.
-  The values indicate anonymous signatures, RSASSA-PKCS1-v1_5,
-  {{RFC3447}}, DSA {{DSS}}, ECDSA {{ECDSA}}, and RSASSA-PSS
+  The values indicate RSASSA-PKCS1-v1_5,
+  {{RFC3447}}, ECDSA {{ECDSA}}, and RSASSA-PSS
   {{RFC3447}} respectively. Because all RSA signatures used in
   signed TLS handshake messages (see {{digital-signing}}),
   as opposed to those in certificates, are RSASSA-PSS, the "rsa"
   value refers solely to signatures which appear in certificates.
-  The use of DSA and anonymous is deprecated. The anonymous_RESERVED
-  value was used internally in prior versions of TLS and MUST NOT
-  be offered or negotiated by any implementation of any TLS version.
-  The dsa_RESERVED value is deprecated as of TLS 1.3 and
+  The use of DSA and anonymous is deprecated. Previous versions
+  of TLS supported DSA. DSA is deprecated as of TLS 1.3 and
   SHOULD NOT be offered or negotiated by any implementation.
 {:br }
 
@@ -2364,15 +2339,6 @@ ffdhe2048, etc.
   group, defined in {{I-D.ietf-tls-negotiated-ff-dhe}}.
   Values 0x01FC through 0x01FF are reserved for private use.
 {:br }
-
-Values within "obsolete_RESERVED" ranges were used in previous versions
-of TLS and MUST NOT be offered or negotiated by TLS 1.3 implementations.
-The obsolete curves have various known/theoretical weaknesses or have
-had very little usage, in some cases only due to unintentional
-server configuration issues. They are no longer considered appropriate
-for general use and should be assumed to be potentially unsafe. The set
-of curves specified here is sufficient for interoperability with all
-currently deployed and properly configured TLS implementations.
 
 Items in named_curve_list are ordered according to the client's
 preferences (most preferred choice first).
@@ -2974,21 +2940,8 @@ supported_signature_algorithms.  The following rules apply:
   signature key, it MUST be usable with some hash/signature
   algorithm pair in supported_signature_algorithms.
 
--  For historical reasons, the names of some client certificate types
-  include the algorithm used to sign the certificate.  For example,
-  in earlier versions of TLS, rsa_fixed_dh meant a certificate
-  signed with RSA and containing a static DH key.  In TLS 1.2, this
-  functionality has been obsoleted by the
-  supported_signature_algorithms, and the certificate type no longer
-  restricts the algorithm used to sign the certificate.  For
-  example, if the server sends rsa_fixed_dh certificate type and
-  \{\{sha256, ecdsa\}, \{sha1, rsa\}\} signature types, the client MAY reply
-  with a certificate signed with ECDSA-SHA256.
-
 New ClientCertificateType values are assigned by IANA as described in
 {{iana-considerations}}.
-
-Note: Values listed as RESERVED MUST NOT be used. They were used in SSL 3.0.
 
 Note: It is a fatal "handshake_failure" alert for an anonymous server to request
 client authentication.
@@ -3657,7 +3610,10 @@ In addition, this document defines two new registries to be maintained by IANA:
 
 # Protocol Data Structures and Constant Values
 
-This section describes protocol types and constants.
+This section describes protocol types and constants. Values listed as
+_RESERVED were used in previous versions of TLS and are listed here
+for completeness. TLS 1.3 implementations MUST NOT send them but
+may receive them from older TLS implementations.
 
 %%## Record Layer
 %%## Alert Messages
@@ -3665,6 +3621,16 @@ This section describes protocol types and constants.
 %%### Hello Messages
 %%#### Signature Algorithm Extension
 %%#### Named Group Extension
+
+Values within "obsolete_RESERVED" ranges were used in previous versions
+of TLS and MUST NOT be offered or negotiated by TLS 1.3 implementations.
+The obsolete curves have various known/theoretical weaknesses or have
+had very little usage, in some cases only due to unintentional
+server configuration issues. They are no longer considered appropriate
+for general use and should be assumed to be potentially unsafe. The set
+of curves specified here is sufficient for interoperability with all
+currently deployed and properly configured TLS implementations.
+
 %%### Key Exchange Messages
 %%### Authentication Messages
 %%### Handshake Finalization Messages
