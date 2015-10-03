@@ -1413,6 +1413,7 @@ decrypt_error
   to correctly verify a signature or validate a Finished message.
   This alert is always fatal.
 
+protocol_version
 : The protocol version the peer has attempted to negotiate is
   recognized but not supported.  (For example, old protocol versions
   might be avoided for security reasons.)  This alert is always
