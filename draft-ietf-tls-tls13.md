@@ -119,7 +119,6 @@ informative:
   I-D.ietf-tls-negotiated-ff-dhe:
 
 
-
   CBCATT:
        title: "Security of CBC Ciphersuites in SSL/TLS: Problems and Countermeasures"
        target: https://www.openssl.org/~bodo/tls-cbc.txt
@@ -3779,10 +3778,10 @@ Either technique used alone is are vulnerable to man-in-the-middle attacks
 and therefore unsafe for general use. However, it is also possible to
 bind such connections to an external authentication mechanism via
 out-of-band validation of the server's public key, trust on first
-use, or channel bindings {{RFC5929}} [[NOTE: TLS 1.3 needs a new
+use, or channel bindings {{RFC5929}}. [[NOTE: TLS 1.3 needs a new
 channel binding definition that has not yet been defined.]]
 If no such mechanism is used, then the connection has no protection
-against active mon-in-the-middle attack; applications MUST NOT use TLS
+against active man-in-the-middle attack; applications MUST NOT use TLS
 in such a way absent explicit configuration or a specific application
 profile.
 
@@ -3853,7 +3852,7 @@ Users should be able to view information about the certificate and root CA.
 
 TLS supports a range of key sizes and security levels, including some that
 provide no or minimal security. A proper implementation will probably not
-support many cipher suites. Applications should also enforce minimum and
+support many cipher suites. Applications SHOULD also enforce minimum and
 maximum key sizes. For example, certificate chains containing keys or
 signatures weaker than 2048-bit RSA or 224-bit ECDSA are not appropriate
 for secure applications.
