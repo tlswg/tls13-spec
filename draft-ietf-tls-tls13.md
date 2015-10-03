@@ -1428,6 +1428,10 @@ decrypt_error
   to correctly verify a signature or validate a Finished message.
   This alert is always fatal.
 
+export_restriction_RESERVED
+: This alert was used in some earlier versions of TLS. It MUST NOT
+  be sent by compliant implementations. This alert is always fatal.
+
 protocol_version
 : The protocol version the peer has attempted to negotiate is
   recognized but not supported.  (For example, old protocol versions
