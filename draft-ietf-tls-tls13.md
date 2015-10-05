@@ -2068,8 +2068,8 @@ When this message will be sent:
 
 > Servers send this message in response to a ClientHello message when it
 was able to find an acceptable set of algorithms and groups that are
-mutually supported, but the client's ClientKeyShare did not contain an
-acceptable value. If it cannot find such a match, it will respond with a
+mutually supported, but the client's ClientKeyShare offer did not contain an
+acceptable value. If it cannot find such a match, it MUST respond with a
 fatal "handshake_failure" alert.
 
 Structure of this message:
@@ -2117,8 +2117,8 @@ information previously included in the initial ClientHello introduces
 the risk of downgrade attack, as this retry exchange is unauthenticated.
 
 After sending the new ClientHello and receiving a new ServerHello,
-the client MUST verify that the same ProtocolVersion, CipherSuite, and
-NamedGroup specified in the server's HelloRetryRequest are selected in the
+the client MUST verify that the same server_version, cipher_suite, and
+selected_group specified in the server's HelloRetryRequest are selected in the
 server's new ServerHello/ServerKeyShare. If any of these values differ,
 the client MUST abort the connection with a fatal "handshake_failure"
 alert.
