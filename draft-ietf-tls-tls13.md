@@ -1009,6 +1009,11 @@ Alert types, even if those fragments contain padding. Zero-length
 fragments of Application data MAY be sent as they are potentially
 useful as a traffic analysis countermeasure.
 
+When record protection has not yet been engaged, TLSPlaintext
+structures are written directly onto the wire. Once record protection
+has started, TLSPlaintext records are protected and sent as
+described in the following section.
+
 ###  Record Payload Protection
 
 The record protection functions translate a TLSPlaintext structure into a
@@ -1132,10 +1137,6 @@ TLSCipherText.length larger than 2^14 + 256 octets MUST generate a
 fatal "record_overflow" alert.  This limit is derived from the maximum
 TLSPlaintext length of 2^14 octets + 1 octet for ContentType + the
 maximum AEAD expansion of 255 octets.
-
-TODO: explain how TLS_NULL_WITH_NULL_NULL is not actually a cipher at
-all, and that in that state we should send raw TLSPlaintext instead of
-sending a phony TLSCiphertext
 
 ### Record Padding
 
@@ -3670,12 +3671,6 @@ non-ephemeral key exchanges, however these are not supported by TLS 1.3.
 
 See the definitions of each cipher suite in its specification document for
 the full details of each combination of algorithms that is specified.
-
-TLS_NULL_WITH_NULL_NULL is specified and is the initial state of a TLS
-connection during the first handshake on that channel, but MUST NOT be
-negotiated, as it provides no more protection than an unsecured connection.
-
-       CipherSuite TLS_NULL_WITH_NULL_NULL = {0x00,0x00};
 
 The following is a list of standards track server-authenticated (and optionally
 client-authenticated) cipher suites which are currently available in TLS 1.3:
