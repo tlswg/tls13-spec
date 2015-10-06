@@ -1807,7 +1807,6 @@ Subsequent Handshake:
                                             +PreSharedKeyExtension
                                              {EncryptedExtensions}
                                  <--------              {Finished}
-       {Certificate*}
        {Finished}                -------->
        [Application Data]        <------->      [Application Data]
 ~~~
