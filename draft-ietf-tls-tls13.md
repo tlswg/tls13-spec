@@ -2823,9 +2823,9 @@ Structure of this message:
        opaque DistinguishedName<1..2^16-1>;
 
        struct {
-           opaque certificate_extension_oid<0..2^8-1>;
-           opaque certificate_extension_values<0..2^8-1>;
-       } CertificateExtension
+           opaque certificate_extension_oid<1..2^8-1>;
+           opaque certificate_extension_values<0..2^16-1>;
+       } CertificateExtension;
 
        struct {
            ClientCertificateType certificate_types<1..2^8-1>;
@@ -2864,13 +2864,20 @@ certificate_extensions
   the client certificate MUST contain all of the specified extension
   OIDs that the client recognizes. For each extension OID recognized
   by the client, all of the specified values MUST be present in the
-  client certificate. However, the client MUST ignore and skip any
-  unrecognized certificate extension OIDs. If the client has ignored
-  some of the required certificate extension OIDs, and supplied a
-  certificate that does not satisfy the request, the server MAY at
-  its discretion either continue the handshake without client
-  authentication, or respond with a fatal unsupported_certificate
-  alert.
+  client certificate (but the certificate MAY have other values as 
+  well). However, the client MUST ignore and skip any unrecognized 
+  certificate extension OIDs. If the client has ignored some of the 
+  required certificate extension OIDs, and supplied a  certificate 
+  that does not satisfy the request, the server MAY at its discretion 
+  either continue the session without client authentication, or 
+  terminate the session with a fatal unsupported_certificate alert.
+
+  PKIX RFCs define a variety of certificate extension OIDs and their 
+  corresponding value types. Depending on the type, matching 
+  certificate extension values are not necessarily bitwise-equal. It 
+  is expected that TLS implementations will rely on their PKI 
+  libraries to perform certificate selection using certificate 
+  extension OIDs.
 {:br }
 
 The interaction of the certificate_types and
