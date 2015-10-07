@@ -44,6 +44,8 @@ normative:
   RFC6655:
   RFC7251:
   I-D.ietf-tls-chacha20-poly1305:
+  I-D.irtf-cfrg-curves:
+
   AES:
        title: Specification for the Advanced Encryption Standard (AES)
        date: 2001-11-26
@@ -107,7 +109,9 @@ informative:
   RFC5246:
   RFC5705:
   RFC5763:
+  RFC5929:
   RFC6176:
+  RFC7250:
   RFC7465:
   RFC7507:
   RFC7568:
@@ -311,6 +315,22 @@ draft-09
 - Change to RSA-PSS signatures for handshake messages.
 
 - Remove support for DSA.
+
+- Update key schedule per suggestions by Hugo, Hoeteck, and Bjoern Tackmann.
+
+- Add support for per-record padding.
+
+- Switch to encrypted record ContentType.
+
+- Change HKDF labeling to include protocol version and value lengths.
+
+- Shift the final decision to abort a handshake due to incompatible
+  certificates to the client rather than having servers abort early.
+
+- Deprecate SHA-1 with signatures.
+
+- Add MTI algorithms.
+
 
 draft-08
 
@@ -739,24 +759,8 @@ RSASSA-PKCS1-v1_5, not RSASSA-PSS.
 All ECDSA computations MUST be performed according to ANSI X9.62 {{X962}}
 or its successors.  Data to be signed/verified is hashed, and the
 result run directly through the ECDSA algorithm with no additional
-hashing.  The default hash function is SHA-1 {{SHS}}.  However, an
-alternative hash function, such as one of the new SHA hash functions
-specified in FIPS 180-4 {{SHS}} SHOULD be used instead if the certificate
-containing the EC public key explicitly requires use of another hash
-function.  (The mechanism for specifying the required hash function
-has not been standardized, but this provision anticipates such
-standardization and obviates the need to update this document in
-response.  Future PKIX RFCs may choose, for example, to specify the
-hash function to be used with a public key in the parameters field of
-subjectPublicKeyInfo.) [[OPEN ISSUE: This needs updating per 4492-bis
-https://github.com/tlswg/tls13-spec/issues/59]]
-
-### Authenticated Encryption with Additional Data (AEAD)
-
-In AEAD encryption, the plaintext is simultaneously encrypted and integrity
-protected. The input may be of any length, and aead-ciphered output is
-generally larger than the input in order to accommodate the integrity check
-value.
+hashing.  The SignatureAndHashAlgorithm parameter in the DigitallySigned
+object indicates the digest algorithm which was used in the signature.
 
 In the following example
 
@@ -786,6 +790,14 @@ because the algorithm and key used for the signing are known prior to encoding
 or decoding this structure.
 
 
+### Authenticated Encryption with Additional Data (AEAD)
+
+In AEAD encryption, the plaintext is simultaneously encrypted and integrity
+protected. The input may be of any length, and aead-ciphered output is
+generally larger than the input in order to accommodate the integrity check
+value.
+
+
 #  The TLS Record Protocol
 
 The TLS Record Protocol is a layered protocol. At each layer, messages
@@ -811,9 +823,9 @@ all possible attacks against it. As a practical matter, this means that the
 protocol designer must be aware of what security properties TLS does and does
 not provide and cannot safely rely on the latter.
 
-Note in particular that type and length of a record are not protected by
-encryption. If this information is itself sensitive, application designers may
-wish to take steps (e.g., padding, cover traffic) to minimize information leakage.
+Note in particular that the length of a record or absence of traffic
+itself is not protected by encryption unless the sender uses the
+supplied padding mechanism -- see {{record-padding}} for more details.
 
 
 ##  Connection States
@@ -945,6 +957,7 @@ carrying data in chunks of 2^14 bytes or less. Client message boundaries are
 not preserved in the record layer (i.e., multiple client messages of the same
 ContentType MAY be coalesced into a single TLSPlaintext record, or a single
 message MAY be fragmented across several records).
+Alert messages {{alert-protocol}} MUST NOT be fragmented across records.
 
 %%% Record Layer
        struct {
@@ -953,6 +966,7 @@ message MAY be fragmented across several records).
        } ProtocolVersion;
 
        enum {
+           reserved(0),
            reserved(20), alert(21), handshake(22),
            application_data(23), early_handshake(25),
            (255)
@@ -990,9 +1004,15 @@ compatibility, the record layer version identifies as simply TLS 1.0.
 Endpoints supporting other versions negotiate the version to use
 by following the procedure and requirements in {{backward-compatibility}}.
 
-Implementations MUST NOT send zero-length fragments of Handshake or Alert
-types. Zero-length fragments of Application data MAY
-be sent as they are potentially useful as a traffic analysis countermeasure.
+Implementations MUST NOT send zero-length fragments of Handshake or
+Alert types, even if those fragments contain padding. Zero-length
+fragments of Application data MAY be sent as they are potentially
+useful as a traffic analysis countermeasure.
+
+When record protection has not yet been engaged, TLSPlaintext
+structures are written directly onto the wire. Once record protection
+has started, TLSPlaintext records are protected and sent as
+described in the following section.
 
 ###  Record Payload Protection
 
@@ -1010,16 +1030,22 @@ of {{RFC5116}}. The key is either the client_write_key or the server_write_key.
 
 %%% Record Layer
        struct {
-           ContentType type;
+           ContentType opaque_type = application_data(23); /* see fragment.type */
            ProtocolVersion record_version = { 3, 1 };    /* TLS v1.x */
            uint16 length;
            aead-ciphered struct {
               opaque content[TLSPlaintext.length];
+              ContentType type;
+              uint8 zeros[length_of_padding];
            } fragment;
        } TLSCiphertext;
 
-type
-: The type field is identical to TLSPlaintext.type.
+opaque_type
+: The outer opaque_type field of a TLSCiphertext record is always set to the
+  value 23 (application_data) for outward compatibility with
+  middleboxes used to parsing previous versions of TLS.  The
+  actual content type of the record is found in fragment.type after
+  decryption.
 
 record_version
 : The record_version field is identical to TLSPlaintext.record_version and is always { 3, 1 }.
@@ -1031,8 +1057,22 @@ length
   MUST NOT exceed 2^14 + 256.  An endpoint that receives a record that exceeds
   this length MUST generate a fatal "record_overflow" alert.
 
+fragment.content
+: The cleartext of TLSPlaintext.fragment.
+
+fragment.type
+: The actual content type of the record.
+
+fragment.zeros
+: An arbitrary-length run of zero-valued bytes may
+  appear in the cleartext after the type field.  This provides an
+  opportunity for senders to pad any TLS record by a chosen amount as
+  long as the total stays within record size limits.  See
+  {{record-padding}} for more details.
+
 fragment
-: The AEAD encrypted form of TLSPlaintext.fragment.
+: The AEAD encrypted form of TLSPlaintext.fragment + TLSPlaintext.type + zeros,
+  where "+" denotes concatenation.
 {:br }
 
 
@@ -1053,13 +1093,12 @@ nonce.
 Note: This is a different construction from that in TLS 1.2, which
 specified a partially explicit nonce.
 
-The plaintext is the TLSPlaintext.fragment.
+The plaintext is the concatenation of TLSPlaintext.fragment and TLSPlaintext.type.
 
 The additional authenticated data, which we denote as additional_data, is
 defined as follows:
 
-       additional_data = seq_num + TLSPlaintext.type +
-                         TLSPlaintext.record_version
+       additional_data = seq_num + TLSPlaintext.record_version
 
 where "+" denotes concatenation.
 
@@ -1069,13 +1108,16 @@ data-dependent padding (such as CBC). TLS 1.3 removes the length
 field and relies on the AEAD cipher to provide integrity for the
 length of the data.
 
-The AEAD output consists of the ciphertext output by the AEAD encryption
-operation. The length will generally be larger than TLSPlaintext.length, but
-by an amount that varies with the AEAD cipher. Since the ciphers might
+The AEAD output consists of the ciphertext output by the AEAD
+encryption operation. The length of the plaintext is greater than
+TLSPlaintext.length due to the inclusion of TLSPlaintext.type and
+however much padding is supplied by the sender.  The length of
+aead_output will generally be larger than the plaintext, but by an
+amount that varies with the AEAD cipher. Since the ciphers might
 incorporate padding, the amount of overhead could vary with different
-TLSPlaintext.length values. Symbolically,
+lengths of plaintext. Symbolically,
 
-       AEADEncrypted = AEAD-Encrypt(write_key, nonce, plaintext,
+       AEADEncrypted = AEAD-Encrypt(write_key, nonce, plaintext of fragment,
                                     additional_data)
 
 In order to decrypt and verify, the cipher takes as input the key, nonce, the
@@ -1083,20 +1125,67 @@ In order to decrypt and verify, the cipher takes as input the key, nonce, the
 plaintext or an error indicating that the decryption failed. There is no
 separate integrity check. That is:
 
-       TLSPlaintext.fragment = AEAD-Decrypt(write_key, nonce,
+       plaintext of fragment = AEAD-Decrypt(write_key, nonce,
                                             AEADEncrypted,
                                             additional_data)
 
 If the decryption fails, a fatal "bad_record_mac" alert MUST be generated.
 
-An AEAD cipher MUST NOT produce an expansion of greater than 256 bytes.  An
-endpoint that receives a record that is larger than 2^14 + 256 octets MUST
-generate a fatal "record_overflow" alert.
+An AEAD cipher MUST NOT produce an expansion of greater than 255
+bytes.  An endpoint that receives a record from its peer with
+TLSCipherText.length larger than 2^14 + 256 octets MUST generate a
+fatal "record_overflow" alert.  This limit is derived from the maximum
+TLSPlaintext length of 2^14 octets + 1 octet for ContentType + the
+maximum AEAD expansion of 255 octets.
 
-As a special case, we define the NULL_NULL AEAD cipher which is simply
-the identity operation and thus provides no security. This cipher
-MUST ONLY be used with the initial TLS_NULL_WITH_NULL_NULL cipher suite.
+### Record Padding
 
+All encrypted TLS records can be padded to inflate the size of the
+TLSCipherText.  This allows the sender to hide the size of the
+traffic from an observer.
+
+When generating a TLSCiphertext record, implementations MAY choose to
+pad.  An unpadded record is just a record with a padding length of
+zero.  Padding is a string of zero-valued bytes appended
+to the ContentType field before encryption.  Implementations MUST set
+the padding octets to all zeros before encrypting.
+
+Application Data records may contain a zero-length fragment.content if
+the sender desires.  This permits generation of plausibly-sized cover
+traffic in contexts where the presence or absence of activity may be
+sensitive.  Implementations MUST NOT send Handshake or Alert records
+that have a zero-length fragment.content.
+
+The padding sent is automatically verified by the record protection
+mechanism: Upon successful decryption of a TLSCiphertext.fragment,
+the receiving implementation scans the field from the end toward the
+beginning until it finds a non-zero octet. This non-zero octet is the
+content type of the message.
+
+Implementations MUST limit their scanning to the cleartext returned
+from the AEAD decryption.  If a receiving implementation does not find
+a non-zero octet in the cleartext, it should treat the record as
+having an unexpected ContentType, sending an "unexpected_message"
+alert.
+
+The presence of padding does not change the overall record size
+limitations -- the full fragment plaintext may not exceed 2^14 octets.
+
+Versions of TLS prior to 1.3 had limited support for padding.  This
+padding scheme was selected because it allows padding of any encrypted
+TLS record by an arbitrary size (from zero up to TLS record size
+limits) without introducing new content types.  The design also
+enforces all-zero padding octets, which allows for quick detection of
+padding errors.
+
+Selecting a padding policy that suggests when and how much to pad is a
+complex topic, and is beyond the scope of this specification. If the
+application layer protocol atop TLS permits padding, it may be
+preferable to pad application_data TLS records within the application
+layer.  Padding for encrypted handshake and alert TLS records must
+still be handled at the TLS layer, though.  Later documents may define
+padding selection algorithms, or define a padding policy request
+mechanism through TLS extensions or some other means.
 
 #  The TLS Handshaking Protocols
 
@@ -1269,11 +1358,6 @@ bad_record_mac
   communication between proper implementations (except when messages
   were corrupted in the network).
 
-decryption_failed_RESERVED
-: This alert was used in some earlier versions of TLS, and may have
-  permitted certain attacks against the CBC mode {{CBCATT}}.  It MUST
-  NOT be sent by compliant implementations. This alert is always fatal.
-
 record_overflow
 : A TLSCiphertext record was received that had a length more than
   2^14 + 256 bytes, or a record decrypted to a TLSPlaintext record
@@ -1282,20 +1366,10 @@ record_overflow
   implementations (except when messages were corrupted in the
   network).
 
-decompression_failure_RESERVED
-: This alert was used in previous versions of TLS. TLS 1.3 does not
-  include compression and TLS 1.3 implementations MUST NOT send this
-  alert when in TLS 1.3 mode. This alert is always fatal.
-
 handshake_failure
 : Reception of a "handshake_failure" alert message indicates that the
   sender was unable to negotiate an acceptable set of security
   parameters given the options available.
-  This alert is always fatal.
-
-no_certificate_RESERVED
-: This alert was used in SSL 3.0 but not any version of TLS.  It MUST
-  NOT be sent by compliant implementations.
   This alert is always fatal.
 
 bad_certificate
@@ -1342,10 +1416,6 @@ decrypt_error
   to correctly verify a signature or validate a Finished message.
   This alert is always fatal.
 
-export_restriction_RESERVED
-: This alert was used in some earlier versions of TLS. It MUST NOT
-  be sent by compliant implementations. This alert is always fatal.
-
 protocol_version
 : The protocol version the peer has attempted to negotiate is
   recognized but not supported.  (For example, old protocol versions
@@ -1366,11 +1436,6 @@ internal_error
 inappropriate_fallback
 : Sent by a server in response to an invalid connection retry attempt
   from a client. (see [RFC7507]) This alert is always fatal.
-
-no_renegotiation_RESERVED
-: This alert was used in previous versions of TLS. TLS 1.3 does not
-  include renegotiation and TLS 1.3 implementations MUST NOT send this
-  alert when in TLS 1.3 mode. This alert is always fatal.
 
 missing_extension
 : Sent by endpoints that receive a hello message not containing an
@@ -1742,7 +1807,6 @@ Subsequent Handshake:
                                             +PreSharedKeyExtension
                                              {EncryptedExtensions}
                                  <--------              {Finished}
-       {Certificate*}
        {Finished}                -------->
        [Application Data]        <------->      [Application Data]
 ~~~
@@ -1862,12 +1926,7 @@ cipher suites, and process the remaining ones as usual.
            SessionID session_id;
            CipherSuite cipher_suites<2..2^16-2>;
            CompressionMethod compression_methods<1..2^8-1>;
-           select (extensions_present) {
-               case false:
-                   struct {};
-               case true:
-                   Extension extensions<0..2^16-1>;
-           };
+           Extension extensions<0..2^16-1>;
        } ClientHello;
 
 TLS allows extensions to follow the compression_methods field in an extensions
@@ -2146,7 +2205,7 @@ The "extension_data" field of this extension contains a
        enum {
            none(0),
            md5_RESERVED(1),
-           sha1(2),
+           sha1,
            sha224_RESERVED(3),
            sha256(4), sha384(5), sha512(6),
            (255)
@@ -2155,8 +2214,9 @@ The "extension_data" field of this extension contains a
        enum {
            anonymous_RESERVED(0),
            rsa(1),
-           dsa_RESERVED(2),
+           dsa(2),
            ecdsa(3),
+           rsapss(4),
            (255)
        } SignatureAlgorithm;
 
@@ -2168,6 +2228,8 @@ The "extension_data" field of this extension contains a
        SignatureAndHashAlgorithm
          supported_signature_algorithms<2..2^16-2>;
 
+[[TODO: IANA considerations for new SignatureAlgorithm value]]
+
 Each SignatureAndHashAlgorithm value lists a single hash/signature pair that
 the client is willing to verify. The values are indicated in descending order
 of preference.
@@ -2178,26 +2240,26 @@ are listed in pairs.
 
 hash
 : This field indicates the hash algorithms which may be used.  The
-  values indicate support for unhashed data, MD5 {{RFC1321}}, SHA-1,
-  SHA-224, SHA-256, SHA-384, and SHA-512 {{SHS}}, respectively.  The
-  "none" value is provided for future extensibility, in case of a
-  signature algorithm which does not require hashing before signing.
-  The use of MD5 and SHA-224 is deprecated. The md5_RESERVED and
-  sha224_RESERVED values MUST NOT be offered or negotiated by any
-  implementation.
+  values indicate support for unhashed data, SHA-1, SHA-256, SHA-384,
+  and SHA-512 {{SHS}}, respectively. The "none" value is provided for
+  future extensibility, in case of a signature algorithm which does
+  not require hashing before signing.  Previous versions of TLS
+  supported MD5 and SHA-1. These algorithms are now deprecated and
+  MUST NOT be offered by TLS 1.3 implementations.  SHA-1 SHOULD NOT be
+  offered, however clients willing to negotiate use of TLS 1.2 MAY
+  offer support for SHA-1 for backwards compatibility with old
+  servers.
 
 signature
 : This field indicates the signature algorithm that may be used.
-  The values indicate anonymous signatures, RSASSA-PKCS1-v1_5,
-  {{RFC3447}}, DSA {{DSS}}, ECDSA {{ECDSA}}, and RSASSA-PSS
+  The values indicate RSASSA-PKCS1-v1_5 {{RFC3447}}, 
+  DSA {{DSS}}, ECDSA {{ECDSA}}, and RSASSA-PSS
   {{RFC3447}} respectively. Because all RSA signatures used in
   signed TLS handshake messages (see {{digital-signing}}),
   as opposed to those in certificates, are RSASSA-PSS, the "rsa"
   value refers solely to signatures which appear in certificates.
-  The use of DSA and anonymous is deprecated. The anonymous_RESERVED
-  value was used internally in prior versions of TLS and MUST NOT
-  be offered or negotiated by any implementation of any TLS version.
-  The dsa_RESERVED value is deprecated as of TLS 1.3 and
+  The use of DSA and anonymous is deprecated. Previous versions
+  of TLS supported DSA. DSA is deprecated as of TLS 1.3 and
   SHOULD NOT be offered or negotiated by any implementation.
 {:br }
 
@@ -2205,6 +2267,12 @@ The semantics of this extension are somewhat complicated because the cipher
 suite indicates permissible signature algorithms but not hash algorithms.
 {{server-certificate}} and {{server-key-share}} describe the
 appropriate rules.
+
+Clients offering support for SHA-1 for TLS 1.2 servers MUST do so by listing
+those hash/signature pairs as the lowest priority (listed after all other
+pairs in the supported_signature_algorithms vector). TLS 1.3 servers MUST NOT
+offer a SHA-1 signed certificate unless no valid certificate chain can be
+produced without it (see {{server-certificate}}).
 
 Note: TLS 1.3 servers MAY receive TLS 1.2 ClientHellos which do not contain
 this extension. If those servers are willing to negotiate TLS 1.2, they MUST
@@ -2274,15 +2342,6 @@ ffdhe2048, etc.
   group, defined in {{I-D.ietf-tls-negotiated-ff-dhe}}.
   Values 0x01FC through 0x01FF are reserved for private use.
 {:br }
-
-Values within "obsolete_RESERVED" ranges were used in previous versions
-of TLS and MUST NOT be offered or negotiated by TLS 1.3 implementations.
-The obsolete curves have various known/theoretical weaknesses or have
-had very little usage, in some cases only due to unintentional
-server configuration issues. They are no longer considered appropriate
-for general use and should be assumed to be potentially unsafe. The set
-of curves specified here is sufficient for interoperability with all
-currently deployed and properly configured TLS implementations.
 
 Items in named_curve_list are ordered according to the client's
 preferences (most preferred choice first).
@@ -2358,7 +2417,7 @@ offers
 {:br }
 
 Clients may offer an arbitrary number of ClientKeyShareOffer
-values, each representing a single set of key agreement parameters;
+values, each representing a single set of key exchange parameters;
 for instance a client might offer shares for several elliptic curves
 or multiple integer DH groups. The shares for each ClientKeyShareOffer
 MUST by generated independently. Clients MUST NOT offer multiple
@@ -2697,9 +2756,9 @@ When this message will be sent:
 
 > The server MUST send a Certificate message whenever the agreed-upon
 key exchange method uses certificates for authentication (this
-includes all key exchange methods defined in this document except
-DH_anon and PSK). This message will
-always immediately follow the EncryptedExtensions message.
+includes all key exchange methods defined in this document except PSK).
+This message will always immediately follow the EncryptedExtensions 
+message.
 
 Meaning of this message:
 
@@ -2722,22 +2781,19 @@ certificate_list
   certificate MUST come first in the list. Each following
   certificate SHOULD directly certify one preceding it. Because
   certificate validation requires that trust anchors be distributed
-  independently, a self-signed certificate that specifies a
+  independently, a certificate that specifies a
   trust anchor MAY be omitted from the chain, provided that
-  supported peers are known to possess any omitted certificates
-  they may require.
+  supported peers are known to possess any omitted certificates.
 {:br }
 
-Note: Prior to TLS 1.3, "certificate_list" ordering was required to be strict,
-however some implementations already allowed for some flexibility. For maximum
-compatibility, all implementations SHOULD be prepared to handle potentially
-extraneous certificates and arbitrary orderings from any TLS version (with
-the exception of the sender's certificate). Some servers are configured to send
+Note: Prior to TLS 1.3, "certificate_list" ordering required each certificate
+to certify the one immediately preceding it,
+however some implementations allowed some flexibility. Servers sometimes send
 both a current and deprecated intermediate for transitional purposes, and others
 are simply configured incorrectly, but these cases can nonetheless be validated
-properly by clients capable of doing so. Although the chain MAY be ordered in a
-variety of ways, the peer's end-entity certificate MUST be the first element in
-the vector.
+properly. For maximum compatibility, all implementations SHOULD be prepared to
+handle potentially extraneous certificates and arbitrary orderings from any TLS
+version, with the exception of the end-entity certificate which MUST be first.
 
 The same message type and structure will be used for the client's response to a
 certificate request message. Note that a client MAY send no certificates if it
@@ -2781,12 +2837,32 @@ The following rules apply to the certificates sent by the server:
   guide certificate selection. As servers MAY require the presence of the server_name
   extension, clients SHOULD send this extension.
 
-All certificates provided by the server MUST be signed by a hash/signature
-algorithm pair that appears in the "signature_algorithms" extension provided
-by the client (see {{signature-algorithms}}).
-[[OPEN ISSUE: changing this is under consideration]]
-Note that this implies that a certificate containing a key for one signature
-algorithm MAY be signed using a different signature algorithm (for instance,
+All certificates provided by the server MUST be signed by a
+hash/signature algorithm pair that appears in the "signature_algorithms"
+extension provided by the client, if they are able to provide such
+a chain (see {{signature-algorithms}}).
+If the server cannot produce a certificate chain that is signed only via the
+indicated supported pairs, then it SHOULD continue the handshake by sending
+the client a certificate chain of its choice that may include algorithms
+that are not known to be supported by the client. This fallback chain MAY
+use the deprecated SHA-1 hash algorithm.
+If the client cannot construct an acceptable chain using the provided
+certificates and decides to abort the handshake, then it MUST send an
+"unsupported_certificate" alert message and close the connection.
+
+Any endpoint receiving any certificate signed using any signature algorithm
+using an MD5 hash MUST send a "bad_certificate" alert message and close
+the connection.
+
+As SHA-1 and SHA-224 are deprecated, support for them is NOT RECOMMENDED.
+Endpoints that reject chains due to use of a deprecated hash MUST send
+a fatal "bad_certificate" alert message before closing the connection.
+All servers are RECOMMENDED to transition to SHA-256 or better as soon
+as possible to maintain interoperability with implementations
+currently in the process of phasing out SHA-1 support.
+
+Note that a certificate containing a key for one signature algorithm
+MAY be signed using a different signature algorithm (for instance,
 an RSA key signed with a ECDSA key).
 
 If the server has multiple certificates, it chooses one of them based on the
@@ -2813,11 +2889,13 @@ Structure of this message:
        enum {
            rsa_sign(1), 
            dss_sign_RESERVED(2), 
-           rsa_fixed_dh(3), 
+           rsa_fixed_dh_RESERVED(3), 
            dss_fixed_dh_RESERVED(4),
            rsa_ephemeral_dh_RESERVED(5), 
            dss_ephemeral_dh_RESERVED(6),
-           fortezza_dms_RESERVED(20), (255)
+           fortezza_dms_RESERVED(20),
+           ecdsa_sign(64),
+           (255)
        } ClientCertificateType;
 
        opaque DistinguishedName<1..2^16-1>;
@@ -2895,21 +2973,8 @@ supported_signature_algorithms.  The following rules apply:
   signature key, it MUST be usable with some hash/signature
   algorithm pair in supported_signature_algorithms.
 
--  For historical reasons, the names of some client certificate types
-  include the algorithm used to sign the certificate.  For example,
-  in earlier versions of TLS, rsa_fixed_dh meant a certificate
-  signed with RSA and containing a static DH key.  In TLS 1.2, this
-  functionality has been obsoleted by the
-  supported_signature_algorithms, and the certificate type no longer
-  restricts the algorithm used to sign the certificate.  For
-  example, if the server sends rsa_fixed_dh certificate type and
-  \{\{sha256, ecdsa\}, \{sha1, rsa\}\} signature types, the client MAY reply
-  with a certificate signed with ECDSA-SHA256.
-
 New ClientCertificateType values are assigned by IANA as described in
 {{iana-considerations}}.
-
-Note: Values listed as RESERVED MUST NOT be used. They were used in SSL 3.0.
 
 Note: It is a fatal "handshake_failure" alert for an anonymous server to request
 client authentication.
@@ -2986,7 +3051,11 @@ When the ServerConfiguration message is sent, the server MUST also
 send a Certificate message and a CertificateVerify message, even
 if the "known_configuration" extension was used for this handshake,
 thus requiring a signature over the configuration before it can
-be used by the client.
+be used by the client. Clients MUST not rely on the
+ServerConfiguration message until successfully receiving and
+processing the server's Certificate, CertificateVerify, and
+Finished. If there is a failure in processing those messages, the
+client MUST discard the ServerConfiguration.
 
 
 ###  Server Certificate Verify
@@ -3025,7 +3094,8 @@ implementation need only maintain one running hash per hash type for
 CertificateVerify, Finished and other messages.
 
 > The signature algorithm and hash algorithm MUST be a pair offered in the
-client's "signature_algorithms" extension (see {{signature-algorithms}}). Note that
+client's "signature_algorithms" extension unless no valid certificate chain can be
+produced without unsupported algorithms (see {{signature-algorithms}}). Note that
 there is a possibility for inconsistencies here. For instance, the client might
 offer ECDHE_ECDSA key exchange but omit any ECDSA pairs from its
 "signature_algorithms" extension. In order to negotiate correctly, the server
@@ -3038,6 +3108,8 @@ in the server's end-entity certificate. RSA keys MAY be used with any permitted
 hash algorithm, subject to restrictions in the certificate, if any.
 RSA signatures MUST be based on RSASSA-PSS, regardless of whether
 RSASSA-PKCS-v1_5 appears in "signature_algorithms".
+SHA-1 MUST NOT be used in any signatures in CertificateVerify,
+regardless of whether SHA-1 appears in "signature_algorithms".
 
 ###  Server Finished
 
@@ -3181,7 +3253,9 @@ message. In addition, the hash and signature algorithms MUST be compatible with
 the key in the client's end-entity certificate. RSA keys MAY be used with any
 permitted hash algorithm, subject to restrictions in the certificate, if any.
 RSA signatures MUST be based on RSASSA-PSS, regardless of whether
-RSASSA-PKCS-v1_5 appears in "signature_algorithms".
+RSASSA-PKCS-v1_5 appears in "signature_algorithms". SHA-1 MUST NOT be used
+in any signatures in CertificateVerify, regardless of whether
+SHA-1 appears in "signature_algorithms".
 
 
 ### New Session Ticket Message
@@ -3238,7 +3312,7 @@ PSK.??]
 In order to begin connection protection, the TLS Record Protocol
 requires specification of a suite of algorithms, a master secret, and
 the client and server random values. The authentication, key
-agreement, and record protection algorithms are determined by the
+exchange, and record protection algorithms are determined by the
 cipher_suite selected by the server and revealed in the ServerHello
 message. The random values are exchanged in the hello messages. All
 that remains is to calculate the key schedule.
@@ -3277,15 +3351,36 @@ in some cases, the extracted xSS and xES will not.
 
 ~~~
   HKDF-Expand-Label(Secret, Label, HashValue, Length) =
-       HKDF-Expand(Secret, Label + '\0' + HashValue, Length)
+       HKDF-Expand(Secret, HkdfLabel, Length)
+ 
+  Where HkdfLabel is specified as:
 
-  1. xSS = HKDF(0, SS, "extractedSS", L)
+  struct HkdfLabel {
+    uint16 length;
+    opaque hash_value<0..255>;
+    opaque label<9..255>;
+  };
 
-  2. xES = HKDF(0, ES, "extractedES", L)
+  Where:
+  - HkdfLabel.length is Length
+  - HkdfLabel.hash_value is HashValue.
+  - HkdfLabel.label is "TLS 1.3, " + Label
 
-  3. master_secret = HKDF(xSS, xES, "master secret", L)
+  1. xSS = HKDF-Extract(0, SS). Note that HKDF-Extract always
+     produces a value the same length as the underlying hash
+     function.
 
-  4. finished_secret = HKDF-Expand-Label(xSS,
+  2. xES = HKDF-Extract(0, ES)
+
+  3. mSS = HKDF-Expand-Label(xSS, "expanded static secret",
+                             handshake_hash, L)
+
+  4. mES = HKDF-Expand-Label(xES, "expanded ephemeral secret",
+                             handshake_hash, L)
+
+  5. master_secret = HKDF-Extract(mSS, mES)
+
+  6. finished_secret = HKDF-Expand-Label(xSS,
                                          "finished secret",
                                          handshake_hash, L)
 
@@ -3311,6 +3406,12 @@ in some cases, the extracted xSS and xES will not.
 
 The traffic keys are computed from xSS, xES, and the master_secret
 as described in {{traffic-key-calculation}} below.
+
+Note: although the steps above are phrased as individual HKDF-Extract
+and HKDF-Expand operations, because each HKDF-Expand operation is
+paired with an HKDF-Extract, it is possible to implement this key
+schedule with a black-box HKDF API, albeit at some loss of efficiency
+as some HKDF-Extract operations will be repeated.
 
 
 ## Traffic Key Calculation
@@ -3422,9 +3523,25 @@ other than for computing other secrets.)
 ##  MTI Cipher Suites
 
 In the absence of an application profile standard specifying otherwise, a
-TLS-compliant application MUST implement the cipher suite
-[TODO:Needs to be selected](https://github.com/tlswg/tls13-spec/issues/32).
-(See {{cipher-suites}} for the definition.)
+TLS-compliant application MUST implement the following cipher suites:
+
+~~~~
+    TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256 
+    TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+~~~~
+
+These cipher suites MUST support both digital signatures and key exchange
+with secp256r1 (NIST P-256) and SHOULD support key exchange with X25519
+{{I-D.irtf-cfrg-curves}}.
+
+A TLS-compliant application SHOULD implement the following cipher suites:
+
+~~~~
+    TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+    TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+    TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+    TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305
+~~~~
 
 ##  MTI Extensions
 
@@ -3544,7 +3661,10 @@ In addition, this document defines two new registries to be maintained by IANA:
 
 # Protocol Data Structures and Constant Values
 
-This section describes protocol types and constants.
+This section describes protocol types and constants. Values listed as
+_RESERVED were used in previous versions of TLS and are listed here
+for completeness. TLS 1.3 implementations MUST NOT send them but
+may receive them from older TLS implementations.
 
 %%## Record Layer
 %%## Alert Messages
@@ -3552,6 +3672,16 @@ This section describes protocol types and constants.
 %%### Hello Messages
 %%#### Signature Algorithm Extension
 %%#### Named Group Extension
+
+Values within "obsolete_RESERVED" ranges were used in previous versions
+of TLS and MUST NOT be offered or negotiated by TLS 1.3 implementations.
+The obsolete curves have various known/theoretical weaknesses or have
+had very little usage, in some cases only due to unintentional
+server configuration issues. They are no longer considered appropriate
+for general use and should be assumed to be potentially unsafe. The set
+of curves specified here is sufficient for interoperability with all
+currently deployed and properly configured TLS implementations.
+
 %%### Key Exchange Messages
 %%### Authentication Messages
 %%### Handshake Finalization Messages
@@ -3588,12 +3718,6 @@ non-ephemeral key exchanges, however these are not supported by TLS 1.3.
 
 See the definitions of each cipher suite in its specification document for
 the full details of each combination of algorithms that is specified.
-
-TLS_NULL_WITH_NULL_NULL is specified and is the initial state of a TLS
-connection during the first handshake on that channel, but MUST NOT be
-negotiated, as it provides no more protection than an unsecured connection.
-
-       CipherSuite TLS_NULL_WITH_NULL_NULL = {0x00,0x00};
 
 The following is a list of standards track server-authenticated (and optionally
 client-authenticated) cipher suites which are currently available in TLS 1.3:
@@ -3642,32 +3766,35 @@ Note: In the case of the CCM mode of AES, two variations exist: "CCM_8" which
 uses an 8-bit authentication tag and "CCM" which uses a 16-bit authentication
 tag. Both use the default hash, SHA-256.
 
-In addition to authenticated cipher suites, completely anonymous Diffie-Hellman
-cipher suites exist to provide communications in which neither party is
-authenticated. This mode is vulnerable to man-in-the-middle attacks and is
-therefore unsafe for general use. These cipher suites MUST NOT be used by TLS
-implementations unless the application layer has specifically requested to allow
-anonymous key exchange. Anonymous key exchange may sometimes be acceptable, for
-example, to support opportunistic encryption when no set-up for authentication is
-in place, or when TLS is used as part of more complex security protocols that have
-other means to ensure authentication. The following specifications provide "DH_anon"
-key exchange cipher suites:
-AES-GCM [RFC5288], ARIA-GCM [RFC6209], and CAMELLIA-GCM [RFC6367].
-
 All cipher suites in this section are specified for use with both TLS 1.2
 and TLS 1.3, as well as the corresponding versions of DTLS.
 (see {{backward-compatibility}})
 
-Note that using non-anonymous key exchange without actually verifying the key
-exchange is essentially equivalent to anonymous key exchange, and the same
-precautions apply. While non-anonymous key exchange will generally involve a
-higher computational and communicational cost than anonymous key exchange, it
-may be in the interest of interoperability not to disable non-anonymous key
-exchange when the application layer is allowing anonymous key exchange.
-
 New cipher suite values are assigned by IANA as described in
 {{iana-considerations}}.
 
+### Unauthenticated Operation
+
+Previous versions of TLS offered explicitly unauthenticated cipher suites
+base on anonymous Diffie-Hellman. These cipher suites have been deprecated
+in TLS 1.3. However, it is still possible to negotiate cipher suites
+that do not provide verifiable server authentication by serveral methods,
+including:
+
+- Raw public keys {{RFC7250}}.
+- Using a public key contained in a certificate but without
+  validation of the certificate chain or any of its contents.
+
+Either technique used alone is are vulnerable to man-in-the-middle attacks
+and therefore unsafe for general use. However, it is also possible to
+bind such connections to an external authentication mechanism via
+out-of-band validation of the server's public key, trust on first
+use, or channel bindings {{RFC5929}}. [[NOTE: TLS 1.3 needs a new
+channel binding definition that has not yet been defined.]]
+If no such mechanism is used, then the connection has no protection
+against active man-in-the-middle attack; applications MUST NOT use TLS
+in such a way absent explicit configuration or a specific application
+profile.
 
 ## The Security Parameters
 
@@ -3711,7 +3838,7 @@ provides several recommendations to assist implementors.
 
 TLS requires a cryptographically secure pseudorandom number generator (PRNG).
 Care must be taken in designing and seeding PRNGs. PRNGs based on secure hash
-operations, most notably SHA-1, are acceptable, but cannot provide more
+operations, most notably SHA-256, are acceptable, but cannot provide more
 security than the size of the random number generator state.
 
 To estimate the amount of seed material being produced, add the number of bits
@@ -3736,11 +3863,10 @@ Users should be able to view information about the certificate and root CA.
 
 TLS supports a range of key sizes and security levels, including some that
 provide no or minimal security. A proper implementation will probably not
-support many cipher suites. For instance, anonymous Diffie-Hellman is strongly
-discouraged because it cannot prevent man-in-the-middle attacks. Applications
-should also enforce minimum and maximum key sizes. For example, certificate
-chains containing keys or signatures weaker than 2048-bit RSA or 224-bit ECDSA
-are not appropriate for secure applications.
+support many cipher suites. Applications SHOULD also enforce minimum and
+maximum key sizes. For example, certificate chains containing keys or
+signatures weaker than 2048-bit RSA or 224-bit ECDSA are not appropriate
+for secure applications.
 See also {{backwards-compatibility-security-restrictions}}.
 
 
@@ -3764,10 +3890,11 @@ TLS protocol issues:
 -  Do you ignore the TLS record layer version number in all TLS
   records? (see {{backward-compatibility}})
 
--  Have you ensured that all support for SSL, RC4, and EXPORT ciphers
-  is completely removed from all possible configurations that support
-  TLS 1.3 or later, and that attempts to use these obsolete capabilities
-  fail correctly? (see {{backward-compatibility}})
+-  Have you ensured that all support for SSL, RC4, EXPORT ciphers, and
+  MD5 (via the Signature Algorithms extension) is completely removed from
+  all possible configurations that support TLS 1.3 or later, and that
+  attempts to use these obsolete capabilities fail correctly?
+  (see {{backward-compatibility}})
 
 -  Do you handle TLS extensions in ClientHello correctly, including
   omitting the extensions field completely?
@@ -3776,6 +3903,11 @@ TLS protocol issues:
   suitable certificate is available, do you correctly send an empty
   Certificate message, instead of omitting the whole message (see
   {{client-certificate}})?
+
+- When processing the plaintext fragment produced by AEAD-Decrypt and
+  scanning from the end for the ContentType, do you avoid scanning
+  past the start of the cleartext in the event that the peer has sent
+  a malformed plaintext of all-zeros?
 
 Cryptographic details:
 
@@ -3947,19 +4079,6 @@ Finished messages and record protection keys (see {{server-finished}} and
 {{traffic-key-calculation}}). By sending a correct Finished message, parties thus prove
 that they know the correct master_secret.
 
-####  Anonymous Key Exchange
-
-Completely anonymous sessions can be established using Diffie-Hellman for key
-exchange. The server's public parameters are contained in the server key
-share message, and the client's are sent in the client key share message.
-Eavesdroppers who do not know the private values should not be able to find the
-Diffie-Hellman result.
-
-Warning: Completely anonymous connections only provide protection against
-passive eavesdropping. Unless an independent tamper-proof channel is used to
-verify that the Finished messages were not replaced by an attacker, server
-authentication is required in environments where active man-in-the-middle
-attacks are a concern.
 
 ####  Diffie-Hellman Key Exchange with Authentication
 
@@ -4196,6 +4315,10 @@ Archives of the list can be found at:
     Microsoft, Inc.
     dansimon@microsoft.com
 
+    Bjoern Tackmann
+    University of California, San Diego
+    btackmann@eng.ucsd.edu
+            
     Martin Thomson
     Mozilla
     mt@mozilla.com
