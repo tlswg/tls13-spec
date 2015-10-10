@@ -2205,7 +2205,7 @@ The "extension_data" field of this extension contains a
        enum {
            none(0),
            md5_RESERVED(1),
-           sha1,
+           sha1(2),
            sha224_RESERVED(3),
            sha256(4), sha384(5), sha512(6),
            (255)
