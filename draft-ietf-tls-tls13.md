@@ -966,7 +966,7 @@ Alert messages {{alert-protocol}} MUST NOT be fragmented across records.
        } ProtocolVersion;
 
        enum {
-           RESERVED(0),
+           invalid_RESERVED(0),
            change_cipher_spec_RESERVED(20),
            alert(21),
            handshake(22),
