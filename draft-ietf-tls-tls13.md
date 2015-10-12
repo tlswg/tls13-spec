@@ -966,9 +966,12 @@ Alert messages {{alert-protocol}} MUST NOT be fragmented across records.
        } ProtocolVersion;
 
        enum {
-           reserved(0),
-           reserved(20), alert(21), handshake(22),
-           application_data(23), early_handshake(25),
+           invalid_RESERVED(0),
+           change_cipher_spec_RESERVED(20),
+           alert(21),
+           handshake(22),
+           application_data(23),
+           early_handshake(25),
            (255)
        } ContentType;
 
@@ -1831,12 +1834,22 @@ processed and transmitted as specified by the current active session state.
 
 %%% Handshake Protocol
        enum {
-           reserved(0), client_hello(1), server_hello(2),
-           session_ticket(4), hello_retry_request(6),
-           server_key_share(7), encrypted_extensions(8),
-           certificate(11), reserved(12), certificate_request(13),
-           reserved(14), certificate_verify(15), reserved(16),
-           server_configuration(17), finished(20), (255)
+           hello_request_RESERVED(0),
+           client_hello(1),
+           server_hello(2),
+           session_ticket(4),
+           hello_retry_request(6),
+           server_key_share(7),
+           encrypted_extensions(8),
+           certificate(11),
+           server_key_exchange_RESERVED(12),
+           certificate_request(13),
+           server_hello_done_RESERVED(14),
+           certificate_verify(15),
+           client_key_exchange_RESERVED(16),
+           server_configuration(17),
+           finished(20),
+           (255)
        } HandshakeType;
 
        struct {
