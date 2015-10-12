@@ -2357,10 +2357,10 @@ parameters for zero or more non-PSK key establishment methods (currently
 DHE or ECDHE).
 
 Clients which offer one or more (EC)DHE cipher suites 
-SHOULD send at least one supported ClientKeyShareOffer value and
+MUST send at least one supported ClientKeyShareOffer value and
 servers MUST NOT negotiate any of these cipher suites unless a supported
 value was provided.
-It is explicitly permitted for a client to omit this extension in order
+It is explicitly permitted for a client to send an empty extension in order
 to request a group from the server, at the cost of an additional round trip.
 (see {{hello-retry-request}})
 If this extension is not provided in a retried ClientHello, the server
