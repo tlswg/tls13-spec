@@ -3846,7 +3846,7 @@ TLS protocol issues:
 -  Do you ignore the TLS record layer version number in all TLS
   records? (see {{backward-compatibility}})
 
--  Have you ensured that all support for SSL, RC4, EXPORT ciphers, and
+-  Have you ensured that all support for SSL 2.0 (other than SSL 2.0-style ClientHello processing), SSL 3.0, RC4, EXPORT ciphers, and
   MD5 (via the Signature Algorithms extension) is completely removed from
   all possible configurations that support TLS 1.3 or later, and that
   attempts to use these obsolete capabilities fail correctly?
