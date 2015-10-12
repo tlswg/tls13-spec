@@ -310,6 +310,11 @@ server: The endpoint which did not initiate the TLS connection.
 ##  Major Differences from TLS 1.2
 
 
+draft-10
+
+- Completely prohibit use of deprecated hashes with signatures.
+
+
 draft-09
 
 - Change to RSA-PSS signatures for handshake messages.
@@ -2243,12 +2248,14 @@ hash
   values indicate support for unhashed data, SHA-1, SHA-256, SHA-384,
   and SHA-512 {{SHS}}, respectively. The "none" value is provided for
   future extensibility, in case of a signature algorithm which does
-  not require hashing before signing.  Previous versions of TLS
-  supported MD5 and SHA-1. These algorithms are now deprecated and
-  MUST NOT be offered by TLS 1.3 implementations.  SHA-1 SHOULD NOT be
-  offered, however clients willing to negotiate use of TLS 1.2 MAY
+  not require hashing before signing. Previous versions of TLS
+  supported MD5, SHA-1, and SHA-224. These algorithms are now deprecated
+  and MUST NOT be negotiated by TLS 1.3 implementations. SHA-1 SHOULD NOT
+  be offered, however clients willing to negotiate use of TLS 1.2 MAY
   offer support for SHA-1 for backwards compatibility with old
-  servers.
+  servers. Regardless of offered support, SHA-1 MUST NOT be negotiated
+  for TLS 1.3 or later. MD5 and SHA-224 MUST NOT be offered or negotiated
+  for any reason.
 
 signature
 : This field indicates the signature algorithm that may be used.
@@ -2269,10 +2276,12 @@ suite indicates permissible signature algorithms but not hash algorithms.
 appropriate rules.
 
 Clients offering support for SHA-1 for TLS 1.2 servers MUST do so by listing
-those hash/signature pairs as the lowest priority (listed after all other
-pairs in the supported_signature_algorithms vector). TLS 1.3 servers MUST NOT
-offer a SHA-1 signed certificate unless no valid certificate chain can be
-produced without it (see {{server-certificate}}).
+those hash/signature pairs as the lowest priority, after one or more
+hash/signature pairs which are not deprecated.
+Endpoints negotiating use of TLS 1.3 MUST NOT trust any signature that uses
+any of the deprecated hash algorithms (MD5, SHA-1, & SHA-224) or send any
+certificate relying on any deprecated hash to its peer.
+(see {{server-certificate}})
 
 Note: TLS 1.3 servers MAY receive TLS 1.2 ClientHellos which do not contain
 this extension. If those servers are willing to negotiate TLS 1.2, they MUST
@@ -2843,23 +2852,25 @@ extension provided by the client, if they are able to provide such
 a chain (see {{signature-algorithms}}).
 If the server cannot produce a certificate chain that is signed only via the
 indicated supported pairs, then it SHOULD continue the handshake by sending
-the client a certificate chain of its choice that may include algorithms
-that are not known to be supported by the client. This fallback chain MAY
-use the deprecated SHA-1 hash algorithm.
+the client a certificate chain of its choice that MAY include algorithms
+that are not known to be supported by the client.
 If the client cannot construct an acceptable chain using the provided
-certificates and decides to abort the handshake, then it MUST send an
-"unsupported_certificate" alert message and close the connection.
+certificates and decides to abort the handshake, then it MUST send a
+fatal alert message and close the connection. If the chain is untrustworthy
+because a certificate cannot be parsed correctly or due to use of a
+deprecated hash algorithm (MD5, SHA-1, & SHA-224), then it SHOULD produce
+a "bad_certificate" alert; otherwise it MUST produce an
+"unsupported_certificate" alert.
 
-Any endpoint receiving any certificate signed using any signature algorithm
-using an MD5 hash MUST send a "bad_certificate" alert message and close
-the connection.
+Servers supporting both TLS 1.2 and TLS 1.3 MAY negotiate TLS 1.2 with
+support for SHA-1 hashes, however servers MUST NOT downgrade to use an
+older version in response to a TLS 1.3 client offering support for only
+deprecated or unsupported hashes. All clients offering TLS 1.3 are REQUIRED
+to offer support for at least one hash/signature pair which is not deprecated
+(see {{signature-algorithms}}).
 
-As SHA-1 and SHA-224 are deprecated, support for them is NOT RECOMMENDED.
-Endpoints that reject chains due to use of a deprecated hash MUST send
-a fatal "bad_certificate" alert message before closing the connection.
-All servers are RECOMMENDED to transition to SHA-256 or better as soon
-as possible to maintain interoperability with implementations
-currently in the process of phasing out SHA-1 support.
+MD5 hashes MUST NOT be used in any certificate in any TLS version, and any
+implementation MAY reject any such certificate, without further inspection.
 
 Note that a certificate containing a key for one signature algorithm
 MAY be signed using a different signature algorithm (for instance,
@@ -3852,6 +3863,9 @@ TLS protocol issues:
   attempts to use these obsolete capabilities fail correctly?
   (see {{backward-compatibility}})
 
+-  Have you ensured that certificate chains using SHA-1 or SHA-224
+  are only used with TLS 1.2 or older, or are prohibited completely?
+
 -  Do you handle TLS extensions in ClientHello correctly, including
   omitting the extensions field completely?
 
@@ -3859,6 +3873,11 @@ TLS protocol issues:
   suitable certificate is available, do you correctly send an empty
   Certificate message, instead of omitting the whole message (see
   {{client-certificate}})?
+
+-  When the client has requested a server certificate, but no
+  suitable certificate chain is available, do you correctly send a
+  valid fallback chain using whatever TLS 1.3 permitted algorithms
+  are necessary, instead of immediately aborting the connection?
 
 - When processing the plaintext fragment produced by AEAD-Decrypt and
   scanning from the end for the ContentType, do you avoid scanning
