@@ -2180,21 +2180,13 @@ be taken into account when designing new extensions:
   the possibility of version rollback should be a significant consideration in
   any major design change.
 
-Note: As of TLS 1.3, some extensions are REQUIRED to be sent in order to
-negotiate certain classes of cipher suites, as opposed to prior versions
-where extensions were generally optional. See {{mti-extensions}} for a list
-as well as details about how to respond in the event that any of these core
-extensions are mishandled.
-
 ####  Signature Algorithms
 
 The client uses the "signature_algorithms" extension to indicate to the server
 which signature/hash algorithm pairs may be used in digital signatures.
 
-This extension is REQUIRED to negotiate certificate authenticated cipher suites.
-Clients MUST send at least one supported SignatureAndHashAlgorithm value and
-servers MUST NOT negotiate any of these cipher suites unless a supported
-value was provided.
+Clients which offer one or more cipher suites which use certificate authentication
+(i.e., any non-PSK cipher suite) MUST send the "signature_algorithms" extension.
 If this extension is not provided and no alternative cipher suite is available,
 the server MUST close the connection with a fatal "missing_extension" alert.
 (see {{mti-extensions}})
@@ -2290,10 +2282,9 @@ Note: In versions of TLS prior to TLS 1.3, this extension was named
 "elliptic_curves" and only contained elliptic curve groups. See
 {{RFC4492}} and {{I-D.ietf-tls-negotiated-ff-dhe}}.
 
-This extension is REQUIRED to negotiate (EC)DHE cipher suites.
-Clients MUST send at least one supported NamedGroup value and
-servers MUST NOT negotiate any of these cipher suites unless a supported
-value was provided.
+Clients which offer one or more (EC)DHE cipher suites MUST send at least one
+supported NamedGroup value and servers MUST NOT negotiate any of these
+cipher suites unless a supported value was provided.
 If this extension is not provided and no alternative cipher suite is available,
 the server MUST close the connection with a fatal "missing_extension" alert.
 (see {{mti-extensions}})
@@ -2365,8 +2356,8 @@ The "client_key_share" extension contains the client's cryptographic
 parameters for zero or more non-PSK key establishment methods (currently
 DHE or ECDHE).
 
-This extension is REQUIRED to negotiate (EC)DHE cipher suites.
-Clients SHOULD send at least one supported ClientKeyShareOffer value and
+Clients which offer one or more (EC)DHE cipher suites 
+SHOULD send at least one supported ClientKeyShareOffer value and
 servers MUST NOT negotiate any of these cipher suites unless a supported
 value was provided.
 It is explicitly permitted for a client to omit this extension in order
@@ -2469,7 +2460,7 @@ The "pre_shared_key" extension is used to indicate the identity of the
 pre-shared key to be used with a given handshake in association
 with a PSK or (EC)DHE-PSK cipher suite (see {{RFC4279}} for background).
 
-This extension is REQUIRED to negotiate PSK cipher suites.
+Clients which offer one or more PSK cipher suites
 Clients MUST send at least one supported psk_identity value and
 servers MUST NOT negotiate any of these cipher suites unless a supported
 value was provided.
