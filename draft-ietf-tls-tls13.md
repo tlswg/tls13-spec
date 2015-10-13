@@ -2388,7 +2388,7 @@ Clients which offer one or more (EC)DHE cipher suites
 MUST send at least one supported KeyShare value and
 servers MUST NOT negotiate any of these cipher suites unless a supported
 value was provided.
-It is explicitly permitted for a client to send an empty extension in order
+It is explicitly permitted for a client to send an empty offers vector in order
 to request a group from the server, at the cost of an additional round trip.
 (see {{hello-retry-request}})
 If this extension is not provided in a ServerHello or retried ClientHello,
@@ -2420,35 +2420,24 @@ The "extension_data" field of this extension contains a
 
 %%% Key Exchange Messages
        struct {
-           select (role) {
-               case client:
-                   KeyShare client_offers<4..2^16-1>;
-
-               case server:
-                   KeyShare server_offer;
-           }
+           KeyShare offers<0..2^16-1>;
        } KeyShareOffer;
 
-client_offers
-: A list of offered KeyShare values in descending order of client preference.
-  This vector MUST NOT be empty. Clients not providing a KeyShare MUST instead
-  omit this extension from the ClientHello.
-
-server_offer
-: A single KeyShare value for the negotiated cipher suite.
-  Servers MUST NOT send a KeyShare for a group not offered
-  by the client.
+offers
+: A list of KeyShare values offered by this endpoint, in descending order
+  of preference. Clients MAY send an empty vector to request a
+  HelloRetryRequest (if this is not in response to one).
 {:br }
 
-Servers offer exactly one KeyShare value, which corresponds to the
-key exchange used for the negotiated cipher suite.
+Servers MUST offer exactly one KeyShare value which is supported by the client
+and corresponds to the key exchange used for the negotiated cipher suite.
 
 Clients offer an arbitrary number of KeyShare values, each representing
 a single set of key exchange parameters. For instance, a client might
 offer shares for several elliptic curves or multiple integer DH groups.
 The key_exchange values for each KeyShare MUST by generated independently.
 Clients MUST NOT offer multiple KeyShare values for the same parameters.
-Clients MAY omit this extension from the ClientHello, and in response to this,
+Clients MAY send an empty offers vector, and in response to this,
 servers MUST send a HelloRetryRequest requesting use of one of the
 groups the client offered support for in its "supported_groups"
 extension. If no common supported group is available, the server MUST
