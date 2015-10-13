@@ -2320,9 +2320,9 @@ The "extension_data" field of this extension contains a
            // Finite Field Groups.
            ffdhe2048 (256), ffdhe3072 (257), ffdhe4096 (258),
            ffdhe6144 (259), ffdhe8192 (260),
-           ffdhe_private_use (0x01FC..0x01FF),
 
            // Reserved Code Points.
+           ffdhe_private_use (0x01FC..0x01FF),
            ecdhe_private_use (0xFE00..0xFEFF),
            obsolete_RESERVED (0xFF01..0xFF02),
            (0xFFFF)
