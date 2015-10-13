@@ -2474,7 +2474,7 @@ pre-shared key to be used with a given handshake in association
 with a PSK or (EC)DHE-PSK cipher suite (see {{RFC4279}} for background).
 
 Clients which offer one or more PSK cipher suites
-Clients MUST send at least one supported psk_identity value and
+MUST send at least one supported psk_identity value and
 servers MUST NOT negotiate any of these cipher suites unless a supported
 value was provided.
 If this extension is not provided and no alternative cipher suite is available,
