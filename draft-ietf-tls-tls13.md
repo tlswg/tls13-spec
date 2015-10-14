@@ -2911,7 +2911,7 @@ certificate_authorities
   to the contrary.
 
 certificate_extensions
-: A list of certificate extension OIDs [RFC5280] with their allowed
+: A list of certificate extension OIDs {{RFC5280}} with their allowed
   values, represented in DER-encoded format. Some certificate
   extension OIDs allow multiple values (e.g. Extended Key Usage).
   If the server has included a non-empty certificate_extensions list,
@@ -2934,15 +2934,15 @@ certificate_extensions
   extension OIDs.
 
   This document defines matching rules for two standard certificate 
-  extensions defined in [RFC5280]:
+  extensions defined in {{RFC5280}}:
 
-  - Key Usage extension in a certificate matches the request when all 
-  key usage bits asserted in the request are also asserted in the Key 
-  Usage certificate extension.
+  - The Key Usage extension in a certificate matches the request when 
+  all key usage bits asserted in the request are also asserted in the 
+  Key Usage certificate extension.
 
-  - Extended Key Usage extension in a certificate matches the request 
-  when all key purpose OIDs present in the request are also found in 
-  the Extended Key Usage certificate extension. The special 
+  - The Extended Key Usage extension in a certificate matches the 
+  request when all key purpose OIDs present in the request are also 
+  found in the Extended Key Usage certificate extension. The special 
   anyExtendedKeyUsage OID MUST NOT be used in the request.
 
   Separate specifications may define matching rules for other certificate 
@@ -3162,31 +3162,6 @@ In particular:
 - The certificate type MUST be X.509v3 {{RFC5280}}, unless explicitly negotiated
   otherwise (e.g., {{RFC5081}}).
 
-- The end-entity certificate's public key (and associated
-  restrictions) has to be compatible with the certificate types
-  listed in CertificateRequest:
-
-       Client Cert. Type   Certificate Key Type
-
-       rsa_sign            RSA public key; the certificate MUST allow the
-                           key to be used for signing with the signature
-                           scheme and hash algorithm that will be
-                           employed in the CertificateVerify message.
-
-       ecdsa_sign          ECDSA-capable public key; the certificate MUST
-                           allow the key to be used for signing with the
-                           hash algorithm that will be employed in the
-                           CertificateVerify message; the public key
-                           MUST use a curve and point format supported by
-                           the server.
-
-       rsa_fixed_dh        Diffie-Hellman public key; MUST use the same
-                           parameters as server's key.
-
-       rsa_fixed_ecdh      ECDH-capable public key; MUST use the
-       ecdsa_fixed_ecdh    same curve as the server's key, and MUST use a
-                           point format supported by the server.
-
 - If the certificate_authorities list in the certificate request
   message was non-empty, one of the certificates in the certificate
   chain SHOULD be issued by one of the listed CAs.
@@ -3197,11 +3172,8 @@ In particular:
   algorithms found in prior versions of TLS.
 
 - If the certificate_extensions list in the certificate request message
-  was non-empty, the end-entity certificate MUST contain all of the
-  specified extension OIDs that the client recognizes. For each extension
-  OID recognized by the client, all of the specified values MUST be present
-  in the client certificate. However, the client MUST ignore and skip any
-  unrecognized certificate extension OIDs.
+  was non-empty, the end-entity certificate MUST match the extension OIDs 
+  recognized by the client, as described in {{certificate-request}}.
 
 Note that, as with the server certificate, there are certificates that use
 algorithms/algorithm combinations that cannot be currently used with TLS.
