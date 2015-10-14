@@ -966,9 +966,12 @@ Alert messages {{alert-protocol}} MUST NOT be fragmented across records.
        } ProtocolVersion;
 
        enum {
-           reserved(0),
-           reserved(20), alert(21), handshake(22),
-           application_data(23), early_handshake(25),
+           invalid_RESERVED(0),
+           change_cipher_spec_RESERVED(20),
+           alert(21),
+           handshake(22),
+           application_data(23),
+           early_handshake(25),
            (255)
        } ContentType;
 
@@ -1831,12 +1834,22 @@ processed and transmitted as specified by the current active session state.
 
 %%% Handshake Protocol
        enum {
-           reserved(0), client_hello(1), server_hello(2),
-           session_ticket(4), hello_retry_request(6),
-           server_key_share(7), encrypted_extensions(8),
-           certificate(11), reserved(12), certificate_request(13),
-           reserved(14), certificate_verify(15), reserved(16),
-           server_configuration(17), finished(20), (255)
+           hello_request_RESERVED(0),
+           client_hello(1),
+           server_hello(2),
+           session_ticket(4),
+           hello_retry_request(6),
+           server_key_share(7),
+           encrypted_extensions(8),
+           certificate(11),
+           server_key_exchange_RESERVED(12),
+           certificate_request(13),
+           server_hello_done_RESERVED(14),
+           certificate_verify(15),
+           client_key_exchange_RESERVED(16),
+           server_configuration(17),
+           finished(20),
+           (255)
        } HandshakeType;
 
        struct {
@@ -2307,9 +2320,9 @@ The "extension_data" field of this extension contains a
            // Finite Field Groups.
            ffdhe2048 (256), ffdhe3072 (257), ffdhe4096 (258),
            ffdhe6144 (259), ffdhe8192 (260),
-           ffdhe_private_use (0x01FC..0x01FF),
 
            // Reserved Code Points.
+           ffdhe_private_use (0x01FC..0x01FF),
            ecdhe_private_use (0xFE00..0xFEFF),
            obsolete_RESERVED (0xFF01..0xFF02),
            (0xFFFF)
@@ -2461,7 +2474,7 @@ pre-shared key to be used with a given handshake in association
 with a PSK or (EC)DHE-PSK cipher suite (see {{RFC4279}} for background).
 
 Clients which offer one or more PSK cipher suites
-Clients MUST send at least one supported psk_identity value and
+MUST send at least one supported psk_identity value and
 servers MUST NOT negotiate any of these cipher suites unless a supported
 value was provided.
 If this extension is not provided and no alternative cipher suite is available,
@@ -3038,7 +3051,7 @@ Structure of this message:
             };
        } CertificateVerify;
 
-> Where session_hash is as described in {{the-handshake-hash}} and
+> Where handshake_hash is as described in {{the-handshake-hash}} and
 includes the messages sent or received, starting at ClientHello and up
 to, but not including, this message, including the type and length
 fields of the handshake messages. This is a digest of the
