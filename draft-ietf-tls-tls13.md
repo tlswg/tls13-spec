@@ -2879,37 +2879,26 @@ immediately follow the server's Certificate message.
 Structure of this message:
 
 %%% Authentication Messages
-       enum {
-           rsa_sign(1), 
-           dss_sign_RESERVED(2), 
-           rsa_fixed_dh_RESERVED(3), 
-           dss_fixed_dh_RESERVED(4),
-           rsa_ephemeral_dh_RESERVED(5), 
-           dss_ephemeral_dh_RESERVED(6),
-           fortezza_dms_RESERVED(20),
-           ecdsa_sign(64),
-           (255)
-       } ClientCertificateType;
-
        opaque DistinguishedName<1..2^16-1>;
 
        struct {
-           ClientCertificateType certificate_types<1..2^8-1>;
+           opaque certificate_extension_oid<1..2^8-1>;
+           opaque certificate_extension_values<0..2^16-1>;
+       } CertificateExtension;
+
+       struct {
            SignatureAndHashAlgorithm
              supported_signature_algorithms<2..2^16-2>;
            DistinguishedName certificate_authorities<0..2^16-1>;
+           CertificateExtension certificate_extensions<0..2^16-1>;
        } CertificateRequest;
-
-certificate_types
-: A list of the types of certificate types that the client may
-  offer.
-
-          rsa_sign        a certificate containing an RSA key
-          rsa_fixed_dh    a certificate containing a static DH key.
 
 supported_signature_algorithms
 : A list of the hash/signature algorithm pairs that the server is
-  able to verify, listed in descending order of preference.
+  able to verify, listed in descending order of preference. Any 
+  certificates provided by the client MUST be signed using a
+  hash/signature algorithm pair found in 
+  supported_signature_algorithms.
 
 certificate_authorities
 : A list of the distinguished names {{X501}} of acceptable
@@ -2918,27 +2907,48 @@ certificate_authorities
   root CA or for a subordinate CA; thus, this message can be used to
   describe known roots as well as a desired authorization space.  If
   the certificate_authorities list is empty, then the client MAY
-  send any certificate of the appropriate ClientCertificateType,
-  unless there is some external arrangement to the contrary.
+  send any certificate that meets the rest of the selection criteria 
+  in the CertificateRequest, unless there is some external arrangement 
+  to the contrary.
+
+certificate_extensions
+: A list of certificate extension OIDs {{RFC5280}} with their allowed
+  values, represented in DER-encoded format. Some certificate
+  extension OIDs allow multiple values (e.g. Extended Key Usage).
+  If the server has included a non-empty certificate_extensions list,
+  the client certificate MUST contain all of the specified extension
+  OIDs that the client recognizes. For each extension OID recognized
+  by the client, all of the specified values MUST be present in the
+  client certificate (but the certificate MAY have other values as 
+  well). However, the client MUST ignore and skip any unrecognized 
+  certificate extension OIDs. If the client has ignored some of the 
+  required certificate extension OIDs, and supplied a certificate 
+  that does not satisfy the request, the server MAY at its discretion 
+  either continue the session without client authentication, or 
+  terminate the session with a fatal unsupported_certificate alert.
+
+  PKIX RFCs define a variety of certificate extension OIDs and their 
+  corresponding value types. Depending on the type, matching 
+  certificate extension values are not necessarily bitwise-equal. It 
+  is expected that TLS implementations will rely on their PKI 
+  libraries to perform certificate selection using certificate 
+  extension OIDs.
+
+  This document defines matching rules for two standard certificate 
+  extensions defined in {{RFC5280}}:
+
+  - The Key Usage extension in a certificate matches the request when 
+  all key usage bits asserted in the request are also asserted in the 
+  Key Usage certificate extension.
+
+  - The Extended Key Usage extension in a certificate matches the 
+  request when all key purpose OIDs present in the request are also 
+  found in the Extended Key Usage certificate extension. The special 
+  anyExtendedKeyUsage OID MUST NOT be used in the request.
+
+  Separate specifications may define matching rules for other certificate 
+  extensions.
 {:br }
-
-The interaction of the certificate_types and
-supported_signature_algorithms fields is somewhat complicated.
-certificate_types has been present in TLS since SSL 3.0, but was
-somewhat underspecified.  Much of its functionality is superseded by
-supported_signature_algorithms.  The following rules apply:
-
--  Any certificates provided by the client MUST be signed using a
-  hash/signature algorithm pair found in
-  supported_signature_algorithms.
-
--  The end-entity certificate provided by the client MUST contain a
-  key that is compatible with certificate_types.  If the key is a
-  signature key, it MUST be usable with some hash/signature
-  algorithm pair in supported_signature_algorithms.
-
-New ClientCertificateType values are assigned by IANA as described in
-{{iana-considerations}}.
 
 Note: It is a fatal "handshake_failure" alert for an anonymous server to request
 client authentication.
@@ -3153,31 +3163,6 @@ In particular:
 - The certificate type MUST be X.509v3 {{RFC5280}}, unless explicitly negotiated
   otherwise (e.g., {{RFC5081}}).
 
-- The end-entity certificate's public key (and associated
-  restrictions) has to be compatible with the certificate types
-  listed in CertificateRequest:
-
-       Client Cert. Type   Certificate Key Type
-
-       rsa_sign            RSA public key; the certificate MUST allow the
-                           key to be used for signing with the signature
-                           scheme and hash algorithm that will be
-                           employed in the CertificateVerify message.
-
-       ecdsa_sign          ECDSA-capable public key; the certificate MUST
-                           allow the key to be used for signing with the
-                           hash algorithm that will be employed in the
-                           CertificateVerify message; the public key
-                           MUST use a curve and point format supported by
-                           the server.
-
-       rsa_fixed_dh        Diffie-Hellman public key; MUST use the same
-                           parameters as server's key.
-
-       rsa_fixed_ecdh      ECDH-capable public key; MUST use the
-       ecdsa_fixed_ecdh    same curve as the server's key, and MUST use a
-                           point format supported by the server.
-
 - If the certificate_authorities list in the certificate request
   message was non-empty, one of the certificates in the certificate
   chain SHOULD be issued by one of the listed CAs.
@@ -3186,6 +3171,10 @@ In particular:
   signature algorithm pair, as described in {{certificate-request}}.  Note
   that this relaxes the constraints on certificate-signing
   algorithms found in prior versions of TLS.
+
+- If the certificate_extensions list in the certificate request message
+  was non-empty, the end-entity certificate MUST match the extension OIDs 
+  recognized by the client, as described in {{certificate-request}}.
 
 Note that, as with the server certificate, there are certificates that use
 algorithms/algorithm combinations that cannot be currently used with TLS.
@@ -3555,13 +3544,6 @@ This document uses several registries that were originally created in
 {{RFC4346}}. IANA has updated these to reference this document. The registries
 and their allocation policies (unchanged from {{RFC4346}}) are listed below.
 
--  TLS ClientCertificateType Identifiers Registry: Future values in
-  the range 0-63 (decimal) inclusive are assigned via Standards
-  Action {{RFC2434}}.  Values in the range 64-223 (decimal) inclusive
-  are assigned via Specification Required {{RFC2434}}.  Values from
-  224-255 (decimal) inclusive are reserved for Private Use
-  {{RFC2434}}.
-
 -  TLS Cipher Suite Registry: Future values with the first byte in
   the range 0-191 (decimal) inclusive are assigned via Standards
   Action {{RFC2434}}.  Values with the first byte in the range 192-254
@@ -3777,13 +3759,11 @@ well, thus allowing ECDSA signatures to be used with digest algorithms other
 than SHA-1, provided such use is compatible with the certificate and any
 restrictions imposed by future revisions of {{RFC5280}}.
 
-As described in {{server-certificate}} and {{client-certificate}}, the
-restrictions on the signature algorithms used to sign certificates are no
-longer tied to the cipher suite (when used by the server) or the
-ClientCertificateType (when used by the client). Thus, the restrictions on the
-algorithm used to sign certificates specified in Sections 2 and 3 of RFC 4492
-are also relaxed. As in this document, the restrictions on the keys in the
-end-entity certificate remain.
+As described in {{server-certificate}}, the restrictions on the signature 
+algorithms used to sign certificates are no longer tied to the cipher suite. 
+Thus, the restrictions on the algorithm used to sign certificates specified in 
+Sections 2 and 3 of RFC 4492 are also relaxed. As in this document, the 
+restrictions on the keys in the end-entity certificate remain.
 
 
 # Implementation Notes
