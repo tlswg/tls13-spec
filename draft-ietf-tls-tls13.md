@@ -309,6 +309,10 @@ server: The endpoint which did not initiate the TLS connection.
 
 ##  Major Differences from TLS 1.2
 
+draft-10
+
+- Remove ClientCertificateTypes field from CertificateRequest
+  and add extensions.
 
 draft-09
 
