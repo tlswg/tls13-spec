@@ -1535,7 +1535,7 @@ The basic TLS Handshake for DH is shown in {{tls-full}}:
      Client                                               Server
 
      ClientHello
-     + KeyShare               -------->
+       + KeyShare              -------->
                                                      ServerHello
                                                       + KeyShare
                                            {EncryptedExtensions}
@@ -2433,7 +2433,7 @@ client_shares
 
 server_shares
 : A single KeyShareEntry value for the negotiated cipher suite.  Servers
-  MUST NOT send a KeyShare for a group not offered by the client.
+  MUST NOT send a KeyShareEntry value for a group not offered by the client.
 {:br }
 
 Servers offer exactly one KeyShareEntry value, which corresponds to the
