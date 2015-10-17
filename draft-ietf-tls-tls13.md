@@ -1828,8 +1828,8 @@ Subsequent Handshake:
 As the server is authenticating via a PSK, it does not
 send a Certificate or a CertificateVerify. PSK-based resumption cannot
 be used to provide a new ServerConfiguration. Note that the client
-supplies a KeyShare to the server as well, which
-allows the server to decline resumption and fall back to a full handshake.
+supplies a KeyShare to the server as well, which allows (EC)DHE + PSK
+or the server to decline resumption and fall back to a full handshake.
 
 The contents and significance of each message will be presented in detail in
 the following sections.
