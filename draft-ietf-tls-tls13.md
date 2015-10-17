@@ -2496,6 +2496,23 @@ different curves for (i) the ECDSA or EdDSA key in its certificate,
 and (ii) the ephemeral ECDH key in its "key_share" extension.  The server
 must consider the supported groups in both cases.
 
+Servers SHOULD avoid negotiation of groups for key exchange that have
+an estimated security level significantly higher or lower than that of
+the negotiated symmetric bulk cipher key size. The RECOMMENDED groups
+are as follows:
+
+  * 128-bit level:
+    X25519, secp256r1, ffdhe3072, ffdhe4096
+
+  * 192/256-bit level:
+    X448, secp384r1, secp521r1, ffdhe8192
+
+The estimated symmetric-equivalent strength of ffdhe2048 is only 103-bit,
+and thus MUST NOT be negotiated for TLS 1.3 or later, however it MAY
+be offered for use with prior TLS versions supporting this extension.
+
+[[TODO: Priority recommendations]]
+
 [[TODO: IANA Considerations.]]
 
 
@@ -2570,7 +2587,9 @@ offer shares for several elliptic curves or multiple integer DH groups.
 The key_exchange values for each KeyShareEntry MUST by generated independently.
 Clients MUST NOT offer multiple KeyShareEntry values for the same parameters.
 Clients and servers MUST NOT offer any KeyShareEntry values for groups not
-listed in the client's "supported_groups" extension.
+listed in the client's "supported_groups" extension or for key exchange
+methods not specified in the offered cipher suite(s)
+(e.g. ffdhe3072 is not applicable if not offering any DHE cipher suites).
 Servers MUST NOT offer a KeyShareEntry value for a group not offered by the
 client in its corresponding KeyShare.
 Implementations receiving any KeyShare containing any of these prohibited
@@ -2583,8 +2602,23 @@ the "supported_groups" extension, then the server MUST reply with a
 HelloRetryRequest.  If there is no mutually supported group at all,
 the server MUST NOT negotiate an (EC)DHE cipher suite.
 
-[[TODO: Recommendation about what the client offers.
-Presumably which integer DH groups and which curves.]]
+Clients are RECOMMENDED to send a selection of KeyShareEntry values
+to avoid the round trip time incurred with a HelloRetryRequest.
+In general, it is RECOMMENDED to send at least one group of each security
+level corresponding to the key lengths of the offered bulk ciphers (see
+{{negotiated-groups}}), preferably the highest priority supported groups
+applicable to the highest priority supported cipher suites.
+Groups stated as mandatory to implement for ciphers offered by the client
+are RECOMMENDED to be sent in most, if not all, offers.
+(see {{mti-cipher-suites}}) Clients with prior expectations of what groups
+are likely to be accepted by the server will generally want to include
+those groups in addition to, or instead of, this general set of
+recommendations.
+
+Detailed recommendations on what to offer for specific scenarios,
+as well as recommendations that might change over time, are outside
+the scope of this document.
+
 
 #####  Diffie-Hellman Parameters {#ffdhe-param}
 
