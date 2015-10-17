@@ -1,4 +1,4 @@
----
+ ---
 title: The Transport Layer Security (TLS) Protocol Version 1.3
 abbrev: TLS
 docname: draft-ietf-tls-tls13-latest
@@ -1494,55 +1494,68 @@ derivation scheme for all cipher modes.
 The basic TLS Handshake for DH is shown in {{tls-full}}:
 
 ~~~
-     Client                                               Server
-
-     ClientHello
-       + KeyShare              -------->
-                                                     ServerHello
-                                                      + KeyShare
-                                           {EncryptedExtensions}
-                                          {ServerConfiguration*}
-                                                  {Certificate*}
-                                           {CertificateRequest*}
-                                            {CertificateVerify*}
-                               <--------              {Finished}
-     {Certificate*}
-     {CertificateVerify*}
-     {Finished}                -------->
-     [Application Data]        <------->      [Application Data]
-
-            +  Indicates extensions sent in the
-               previously noted message.
-
-            *  Indicates optional or situation-dependent
-               messages that are not always sent.
-
-            {} Indicates messages protected using keys
-               derived from the ephemeral secret.
-
-            [] Indicates messages protected using keys
-               derived from the master secret.
+       Client                                               Server
+  
+Key  ^ ClientHello                                                  
+Exch v  + KeyShare               -------->                           
+                                                       ServerHello  ^ Key
+                                                        + KeyShare  v Exch
+                                             {EncryptedExtensions}  ^ 
+                                            {ServerConfiguration*}  | Server
+                                             {CertificateRequest*}  v Params
+                                                    {Certificate*}  ^
+                                              {CertificateVerify*}  | Auth
+                                 <--------              {Finished}  v
+     ^ {Certificate*}
+Auth | {CertificateVerify*}
+     v {Finished}                -------->
+       [Application Data]        <------->      [Application Data]
+  
+              +  Indicates extensions sent in the
+                 previously noted message.
+  
+              *  Indicates optional or situation-dependent
+                 messages that are not always sent.
+  
+              {} Indicates messages protected using keys
+                 derived from the ephemeral secret.
+  
+              [] Indicates messages protected using keys
+                 derived from the master secret.
 ~~~
 {: #tls-full title="Message flow for full TLS Handshake"}
 
+The handshake can be thought of as having three phases, indicated
+in the diagram above.
 
-The first message sent by the client is the ClientHello {{client-hello}} which contains
+Key Exchange: establish shared keying material and select the
+   cryptographic parameters. Everything after this phase is
+   encrypted.
+
+Server Parameters: establish other handshake parameters 
+(whether the client is authenticated, support for 0-RTT, etc.)
+
+Authentication: authenticate the server (and optionally the client)
+   and provide key confirmation and handshake integrity.
+
+In the Key Exchange phase, the client sends the ClientHello ({{client-hello}})
+message, which contains
 a random nonce (ClientHello.random), its offered protocol version,
 cipher suite, and extensions, and one or more Diffie-Hellman key
 shares in the KeyShare extension {{key-share}}.
 
 The server processes the ClientHello and determines the appropriate
 cryptographic parameters for the connection. It then responds with
-the following messages:
+its own ServerHello which indicates the negotiated connection parameters. [{{server-hello}}]
+If DH is in use, this will contain a KeyShare extension with the
+server's ephemeral Diffie-Hellman share which MUST be in the same group
+as one of the shares offered by the client. The server's KeyShare and
+the client's KeyShare corresponding to the negotiated key exchange
+are used together to derive the Static Secret and Ephemeral
+ Secret (in this mode they are the same).  [{{key-share}}]
 
-ServerHello
-: indicates the negotiated connection parameters. [{{server-hello}}]
-  If DH is in use, this will contain a KeyShare extension with the
-  server's ephemeral Diffie-Hellman share which MUST be in the same group
-  as one of the shares offered by the client. The server's KeyShare and
-  the client's KeyShare corresponding to the negotiated key exchange
-  are used together to derive the Static Secret and Ephemeral
-  Secret (in this mode they are the same).  [{{key-share}}]
+
+The server then sends three messages to establish the Server Parameters:
 
 ServerConfiguration
 : supplies a configuration for 0-RTT handshakes (see {{zero-rtt-exchange}}).
@@ -1552,10 +1565,6 @@ EncryptedExtensions
 : responses to any extensions which are not required in order to
   determine the cryptographic parameters. [{{encrypted-extensions}}]
 
-Certificate
-: the server certificate. This message will be omitted if the
-  server is not authenticating via a certificates. [{{server-certificate}}]
-
 CertificateRequest
 : if certificate-based client authentication is desired, the
   desired parameters for that certificate. This message will
@@ -1563,39 +1572,34 @@ CertificateRequest
   [[OPEN ISSUE: See https://github.com/tlswg/tls13-spec/issues/184]].
   [{{certificate-request}}]
 
+
+Finally, the client and server exchange Authentication messages. TLS
+uses the same set of messages every time that authentication is needed.
+Specifically:
+
+Certificate
+: the certificate of the endpoint. This message is omitted if certificate
+  authentication is not being used. [{{certificate}}]
+
 CertificateVerify
 : a signature over the entire handshake using the public key
   in the Certificate message. This message will be omitted if the
-  server is not authenticating via a certificate. [{{server-certificate-verify}}]
+  server is not authenticating via a certificate. [{{certificate-verify}}]
 
 Finished
-: a MAC over the entire handshake computed using the Static Secret.
-  This message provides key confirmation and
-  In some modes (see {{zero-rtt-exchange}}) it also authenticates the handshake using the
-  the Static Secret. [{{server-finished}}]
+: a MAC over the entire handshake. This message provides key confirmation, binds the endpoint's identity
+  to the exchanged keys, and in some modes (see {{zero-rtt-exchange}}) 
+  also authenticates the handshake using the the Static Secret. [{{finished}}]
 {:br }
 
-Upon receiving the server's messages, the client responds with his final
-flight of messages:
-
-Certificate
-: the client's certificate. This message will be omitted if the
-  client is not authenticating via a certificates. [{{client-certificate}}]
-
-CertificateVerify
-: a signature over the entire handshake using the private key corresponding
-  to the public key in the Certificate message. This message will be omitted if the
-  client is not authenticating via a certificate. [{{client-certificate-verify}}]
-
-Finished
-: a MAC over the entire handshake computed using the Static Secret
-  and providing key confirmation. [{{server-finished}}]
-{:br }
+Upon receiving the server's messages, the client responds with its Authentication
+messages, namely Certificate and CertificateVerify (if requested), and Finished.
 
 At this point, the handshake is complete, and the client and server may exchange
 application layer data. Application data MUST NOT be sent prior to sending the
-Finished message. If client authentication is requested, the server MUST NOT
-send application data before it receives the client's Finished.
+Finished message. Note that while the server may send application data
+prior to receiving the client's Authentication messages, any data sent at
+that point is of course being sent to an unauthenticated peer.
 
 [[TODO: Move this elsewhere?
 Note that higher layers should not be overly reliant on whether TLS always
@@ -1624,26 +1628,26 @@ the client will need to restart the handshake with an appropriate
 KeyShare extension, as shown in Figure 2:
 
 ~~~
-       Client                                               Server
-
-       ClientHello
-         + KeyShare              -------->
-                                 <--------       HelloRetryRequest
-
-       ClientHello
-         + KeyShare              -------->
-                                                       ServerHello
-                                                        + KeyShare
-                                             {EncryptedExtensions}
-                                            {ServerConfiguration*}
-                                                    {Certificate*}
-                                             {CertificateRequest*}
-                                              {CertificateVerify*}
-                                 <--------              {Finished}
-       {Certificate*}
-       {CertificateVerify*}
-       {Finished}                -------->
-       [Application Data]        <------->     [Application Data]
+         Client                                               Server
+  
+         ClientHello
+           + KeyShare              -------->
+                                   <--------       HelloRetryRequest
+  
+         ClientHello
+           + KeyShare              -------->
+                                                         ServerHello
+                                                          + KeyShare
+                                               {EncryptedExtensions}
+                                              {ServerConfiguration*}
+                                               {CertificateRequest*}
+                                                      {Certificate*}
+                                                {CertificateVerify*}
+                                   <--------              {Finished}
+         {Certificate*}
+         {CertificateVerify*}
+         {Finished}                -------->
+         [Application Data]        <------->     [Application Data]
 ~~~
 {: #tls-restart title="Message flow for a full handshake with mismatched parameters"}
 
@@ -1665,42 +1669,62 @@ described below.
 
 ### Zero-RTT Exchange
 
-TLS 1.3 supports a "0-RTT" mode in which the client can send
-application data as well as its Certificate and CertificateVerify (if
-client authentication is requested) on its first flight, thus reducing
+TLS 1.3 supports a "0-RTT" mode in which the client can both
+authenticate and send application on its first flight, thus reducing
 handshake latency. In order to enable this functionality, the server
 provides a ServerConfiguration message containing a long-term (EC)DH
 share. On future connections to the same server, the client can use
-that share to encrypt the first-flight data.
+that share to protect the first-flight data.
 
 ~~~
-       Client                                               Server
-
-       ClientHello
-         + KeyShare
-         + EarlyDataIndication
-       (EncryptedExtensions)
-       (Certificate*)
-       (CertificateVerify*)
-       (Application Data)        -------->
-                                                       ServerHello
-                                                        + KeyShare
-                                             + EarlyDataIndication
-                                             {EncryptedExtensions}
-                                            {ServerConfiguration*}
-                                                    {Certificate*}
-                                             {CertificateRequest*}
-                                              {CertificateVerify*}
-                                 <--------              {Finished}
-       {Finished}                -------->
-
-       [Application Data]        <------->      [Application Data]
-
-            () Indicates messages protected using keys
-               derived from the static secret.
+         Client                                               Server
+        
+         ClientHello
+           + KeyShare
+           + EarlyDataIndication
+      ^  (Certificate*)
+0-RTT |  (CertificateVerify*)
+Data  |  (Finished)
+      v (Application Data)         -------->
+                                                         ServerHello
+                                               + EarlyDataIndication
+                                                          + KeyShare
+                                               {EncryptedExtensions}
+                                              {ServerConfiguration*}
+                                               {CertificateRequest*}
+                                                      {Certificate*}
+                                                {CertificateVerify*}
+                                   <--------              {Finished}
+         {Certificate*}
+         {CertificateVerify*}
+         {Finished}                -------->
+        
+         [Application Data]        <------->      [Application Data]
+        
+               *  Indicates optional or situation-dependent
+                  messages that are not always sent.
+   
+               () Indicates messages protected using keys
+                  derived from the static secret.
+   
+               {} Indicates messages protected using keys
+                  derived from the ephemeral secret.
+   
+               [] Indicates messages protected using keys
+                  derived from the master secret.
 ~~~
 {: #tls-0-rtt title="Message flow for a zero round trip handshake"}
 
+As shown in Figure {{tls-0-rtt}}, the Zero-RTT data is just added
+to the 1-RTT handshake in the first flight. Specifically, the
+client sends its Authentication messages after the ClientHello,
+followed by any application data. The rest of the handshake
+messages are the same as with Figure {{tls-full}}. This implies
+that the server can request client authentication even if the
+client offers a certificate on its first flight. This isn't
+necessarily useful but is consistent with the server being
+able to ask for client authentication after the handshake is
+complete. See {{post-handshake-authentication}}.
 
 Note: because sequence numbers continue to increment between the
 initial (early) application data and the application data sent
@@ -1724,9 +1748,9 @@ protocol. However, 0-RTT data cannot be duplicated within a connection (i.e., th
 will not process the same data twice for the same connection) and also
 cannot be sent as if it were ordinary TLS data.
 
-3. If the server key is compromised, and client authentication is used, then
-the attacker can impersonate the client to the server (as it knows the
-traffic key).
+3. If the server key is compromised, then the attacker can tamper with
+the 0-RTT data without detection.
+
 
 ### Resumption and PSK
 
@@ -1763,8 +1787,8 @@ Initial Handshake:
                                                         + KeyShare
                                              {EncryptedExtensions}
                                             {ServerConfiguration*}
-                                                    {Certificate*}
                                              {CertificateRequest*}
+                                                    {Certificate*}
                                               {CertificateVerify*}
                                  <--------              {Finished}
        {Certificate*}
@@ -1787,11 +1811,11 @@ Subsequent Handshake:
 ~~~
 {: #tls-resumption-psk title="Message flow for resumption and PSK"}
 
-As the server is authenticating via a PSK, it does not
-send a Certificate or a CertificateVerify. PSK-based resumption cannot
-be used to provide a new ServerConfiguration. Note that the client
-supplies a KeyShare to the server as well, which
-allows the server to decline resumption and fall back to a full handshake.
+As the server is authenticating via a PSK, it does not send a
+Certificate or a CertificateVerify. PSK-based resumption cannot be
+used to provide a new ServerConfiguration. Note that the client
+supplies a KeyShare to the server as well, which allows the
+server to decline resumption and fall back to a full handshake.
 
 The contents and significance of each message will be presented in detail in
 the following sections.
@@ -1833,8 +1857,8 @@ processed and transmitted as specified by the current active session state.
                case hello_retry_request: HelloRetryRequest;
                case encrypted_extensions: EncryptedExtensions;
                case server_configuration:ServerConfiguration;
-               case certificate:         Certificate;
                case certificate_request: CertificateRequest;
+               case certificate:         Certificate;
                case certificate_verify:  CertificateVerify;
                case finished:            Finished;
                case session_ticket:      NewSessionTicket;
@@ -1849,7 +1873,7 @@ messages can be omitted, however.
 New handshake message types are assigned by IANA as described in
 {{iana-considerations}}.
 
-###  Hello Messages
+### Key Exchange Messages
 
 The hello phase messages are used to exchange security enhancement capabilities
 between the client and server. When a new session begins, the record layer's
@@ -1876,6 +1900,7 @@ Structure of this message:
 > The ClientHello message includes a random structure, which is used later in
 the protocol.
 
+%%% Key Exchange Messages
        struct {
            opaque random_bytes[32];
        } Random;
@@ -1889,7 +1914,6 @@ Note: Versions of TLS prior to TLS 1.3 used the top 32 bits of
 the Random value to encode the time since the UNIX epoch.
 
 
-%%% Hello Messages
 The cipher suite list, passed from the client to the server in the ClientHello
 message, contains the combinations of cryptographic algorithms supported by the
 client in order of the client's preference (favorite choice first). Each cipher
@@ -1900,7 +1924,7 @@ alert and close the connection. If the list contains cipher suites the server
 does not recognize, support, or wish to use, the server MUST ignore those
 cipher suites, and process the remaining ones as usual.
 
-%%% Hello Messages
+%%% Key Exchange Messages
        uint8 CipherSuite[2];    /* Cryptographic suite selector */
 
        enum { null(0), (255) } CompressionMethod;
@@ -1983,7 +2007,7 @@ acceptable by the server, it will respond with a "handshake_failure" fatal alert
 
 Structure of this message:
 
-%%% Hello Messages
+%%% Key Exchange Messages
        struct {
            ProtocolVersion server_version;
            Random random;
@@ -2041,7 +2065,7 @@ offer. If it cannot find such a match, it will respond with a
 
 Structure of this message:
 
-%%% Hello Messages
+%%% Key Exchange Messages
        struct {
            ProtocolVersion server_version;
            CipherSuite cipher_suite;
@@ -2088,7 +2112,7 @@ the HelloRetryRequest.
 
 The extension format is:
 
-%%% Hello Messages
+%%% Key Exchange Messages
        struct {
            ExtensionType extension_type;
            opaque extension_data<0..2^16-1>;
@@ -2252,14 +2276,14 @@ signature
 
 The semantics of this extension are somewhat complicated because the cipher
 suite indicates permissible signature algorithms but not hash algorithms.
-{{server-certificate}} and {{key-share}} describe the
+{{server-certificate-selection}} and {{key-share}} describe the
 appropriate rules.
 
 Clients offering support for SHA-1 for TLS 1.2 servers MUST do so by listing
 those hash/signature pairs as the lowest priority (listed after all other
 pairs in the supported_signature_algorithms vector). TLS 1.3 servers MUST NOT
 offer a SHA-1 signed certificate unless no valid certificate chain can be
-produced without it (see {{server-certificate}}).
+produced without it (see {{server-certificate-selection}}).
 
 Note: TLS 1.3 servers MAY receive TLS 1.2 ClientHellos which do not contain
 this extension. If those servers are willing to negotiate TLS 1.2, they MUST
@@ -2480,7 +2504,7 @@ the server MUST close the connection with a fatal "missing_extension" alert.
 The "extension_data" field of this extension contains a
 "PreSharedKeyExtension" value:
 
-%%% Hello Messages
+%%% Key Exchange Messages
 
        opaque psk_identity<0..2^16-1>;
 
@@ -2525,7 +2549,8 @@ extension.
 The "extension_data" field of this extension contains an
 "EarlyDataIndication" value:
 
-%%% Hello Messages
+%%% Key Exchange Messages
+       [[TODO(ekr@rtfm.com): Remove this?]]
        enum { client_authentication(1), early_data(2),
               client_authentication_and_data(3), (255) } EarlyDataType;
 
@@ -2668,7 +2693,9 @@ configuration identifier for each connection, thus preventing
 replay. Implementations are responsible for ensuring uniqueness of the
 identifier in this case.
 
-###  Encrypted Extensions
+### Server Parameters
+
+####  Encrypted Extensions
 
 When this message will be sent:
 
@@ -2695,7 +2722,7 @@ a "illegal_parameter" alert.
 
 Structure of this message:
 
-%%% Hello Messages
+%%% Server Parameters Messages
        struct {
            Extension extensions<0..2^16-1>;
        } EncryptedExtensions;
@@ -2704,9 +2731,6 @@ extensions
 : A list of extensions.
 {:br }
 
-###  Server Certificate
-
-When this message will be sent:
 
 > The server MUST send a Certificate message whenever the agreed-upon
 key exchange method uses certificates for authentication (this
@@ -2834,11 +2858,11 @@ When this message will be sent:
 
 > A non-anonymous server can optionally request a certificate from the client,
 if appropriate for the selected cipher suite. This message, if sent, will
-immediately follow the server's Certificate message.
+immediately precede the server's Certificate message.
 
 Structure of this message:
 
-%%% Authentication Messages
+%%% Server Parameters Messages
        opaque DistinguishedName<1..2^16-1>;
 
        struct {
@@ -2852,6 +2876,8 @@ Structure of this message:
            DistinguishedName certificate_authorities<0..2^16-1>;
            CertificateExtension certificate_extensions<0..2^16-1>;
        } CertificateRequest;
+
+[[TODO: We agreed to add a context string here.]]
 
 supported_signature_algorithms
 : A list of the hash/signature algorithm pairs that the server is
@@ -2914,7 +2940,7 @@ Note: It is a fatal "handshake_failure" alert for an anonymous server to request
 client authentication.
 
 
-###  Server Configuration
+#### Server Configuration
 
 When this message will be sent:
 
@@ -2925,7 +2951,7 @@ message is sent as the last message before the CertificateVerify.
 
 Structure of this Message:
 
-%%% Hello Messages
+%%% Server Parameters Messages
           enum { (65535) } ConfigurationExtensionType;
 
           struct {
@@ -2991,132 +3017,185 @@ processing the server's Certificate, CertificateVerify, and
 Finished. If there is a failure in processing those messages, the
 client MUST discard the ServerConfiguration.
 
+### Authentication Messages
 
-###  Server Certificate Verify
+As discussed in {{handshake-protocol-overview}}, TLS uses a common
+set of messages for authentication, key confirmation, and handshake
+integrity: Certificate, CertificateVerify, and Finished. These
+messages are always sent as the last messages in their handshake
+flight. The Certificate and CertificateVerify messages are only
+sent under certain circumstances, as defined below. The Finished
+message is always sent as part of the Authentication block.
+
+The computations for the Authentication messages all uniformly
+take the following inputs:
+
+- The certificate and signing key to be used.
+- A Handshake Context based on the handshake hash (see {{the-handshake-hash}}).
+- A base key to be used to compute a MAC key.
+
+Based on these inputs, the messages then contain:
+
+Certificate
+: The certificate to be used for authentication and any
+supporting certificates in the chain.
+
+CertificateVerify
+: A signature over Handshake Context + Certificate.
+
+Finished
+: A MAC over Handshake Context + Certificate + CertificateVerify using
+  a MAC key derived from the base key.
+{:br}
+
+Because the CertificateVerify signs the Handshake Context +
+Certificate and the Finished MACs the Handshake Context + Certificate
++ CertificateVerify, this is mostly equivalent keeping a running hash
+of the handshake messages (exactly so in the pure 1-RTT cases). Note,
+however, the subsequent post-handshake authentications do not include
+each other, just the messages through the end of the main handshake.
+
+The following table defines the Handshake Context and MAC Key
+for each scenario:
+
+~~~~
+Mode             Handshake Context                        Base Key
+----             -----------------                        --------
+0-RTT            ClientHello + ServerConfiguration        xSS
+                             + Server Certificate
+                             + CertificateRequest
+                            
+1-RTT (Server)   ClientHello ... ServerConfiguration      master_secret
+                 
+1-RTT (Client)   ClientHello ... ServerFinished           master_secret
+
+Post-Handshake   ClientHello ... ClientFinished +         master_secret
+                 CertificateRequest
+~~~~
+Note 1: The ServerConfiguration, CertificateRequest, and Server Certificate
+in the 0-RTT case are the messages from the handshake where the
+ServerConfiguration was established.
+
+Note 2: The Handshake Context for the last three rows does not include
+any 0-RTT handshake messages, regardless of whether 0-RTT is used.
+
+
+
+####  Certificate
 
 When this message will be sent:
 
-> This message is used to provide explicit proof that the server
-possesses the private key corresponding to its certificate
-and also provides integrity for the handshake up
-to this point. This message is sent when the server is
-authenticated via a certificate. When sent, it MUST be the
-last server handshake message prior to the Finished.
+> The server MUST send a Certificate message whenever the agreed-upon
+key exchange method uses certificates for authentication (this
+includes all key exchange methods defined in this document except PSK).
+
+> The client MUST send a Certificate message whenever the server has
+requested client authentication via a CertificateRequest message
+({{certificate-request}}) or when the EarlyDataIndication indicates
+client authentication. This message is only sent if the server
+requests a certificate. If no suitable certificate is available, the
+client MUST send a Certificate message containing no certificates.
+
+Meaning of this message:
+
+> This message conveys the endpoint's certificate chain to the peer.
+
+> The certificate MUST be appropriate for the negotiated cipher suite's key
+exchange algorithm and any negotiated extensions.
 
 Structure of this message:
 
 %%% Authentication Messages
-       struct {
-            digitally-signed struct {
-               opaque handshake_hash[hash_length];
-            };
-       } CertificateVerify;
-
-> Where handshake_hash is as described in {{the-handshake-hash}} and
-includes the messages sent or received, starting at ClientHello and up
-to, but not including, this message, including the type and length
-fields of the handshake messages. This is a digest of the
-concatenation of all the Handshake structures (as defined in
-{{handshake-protocol}}) exchanged thus far. The digest MUST be the
-Hash used as the basis for HKDF.
-
-> The context string for the signature is "TLS 1.3, server CertificateVerify". A
-hash of the handshake messages is signed rather than the messages themselves
-because the digitally-signed format requires padding and context bytes at the
-beginning of the input. Thus, by signing a digest of the messages, an
-implementation need only maintain one running hash per hash type for
-CertificateVerify, Finished and other messages.
-
-> The signature algorithm and hash algorithm MUST be a pair offered in the
-client's "signature_algorithms" extension unless no valid certificate chain can be
-produced without unsupported algorithms (see {{signature-algorithms}}). Note that
-there is a possibility for inconsistencies here. For instance, the client might
-offer ECDHE_ECDSA key exchange but omit any ECDSA pairs from its
-"signature_algorithms" extension. In order to negotiate correctly, the server
-MUST check any candidate cipher suites against the "signature_algorithms"
-extension before selecting them. This is somewhat inelegant but is a compromise
-designed to minimize changes to the original cipher suite design.
-
-> In addition, the hash and signature algorithms MUST be compatible with the key
-in the server's end-entity certificate. RSA keys MAY be used with any permitted
-hash algorithm, subject to restrictions in the certificate, if any.
-RSA signatures MUST be based on RSASSA-PSS, regardless of whether
-RSASSA-PKCS-v1_5 appears in "signature_algorithms".
-SHA-1 MUST NOT be used in any signatures in CertificateVerify,
-regardless of whether SHA-1 appears in "signature_algorithms".
-
-###  Server Finished
-
-When this message will be sent:
-
-> The Server's Finished message is the final message sent by the
-server and is essential for providing authentication of the server
-side of the handshake and computed keys.
-
-Meaning of this message:
-
-> Recipients of Finished messages MUST verify that the contents are
-correct. Once a side has sent its Finished message and received and
-validated the Finished message from its peer, it may begin to send and
-receive application data over the connection. This data will be
-protected under keys derived from the ephemeral secret (see
-{{cryptographic-computations}}).
-
-Structure of this message:
-
-%%% Handshake Finalization Messages
+       opaque ASN1Cert<1..2^24-1>;
 
        struct {
-           opaque verify_data[verify_data_length];
-       } Finished;
+           ASN1Cert certificate_list<0..2^24-1>;
+       } Certificate;
 
-
-The verify_data value is computed as follows:
-
-verify_data
-: HMAC(finished_secret, finished_label + '\0' + handshake_hash)
-  where HMAC {{RFC2104}} uses the Hash algorithm for the handshake.
-  See {{the-handshake-hash}} for the definition of handshake_hash.
-
-finished_label
-: For Finished messages sent by the client, the string
-  "client finished".  For Finished messages sent by the server,
-  the string "server finished".
+certificate_list
+: This is a sequence (chain) of certificates. The sender's
+  certificate MUST come first in the list. Each following
+  certificate SHOULD directly certify one preceding it. Because
+  certificate validation requires that trust anchors be distributed
+  independently, a certificate that specifies a
+  trust anchor MAY be omitted from the chain, provided that
+  supported peers are known to possess any omitted certificates.
 {:br }
 
-> In previous versions of TLS, the verify_data was always 12 octets long. In
-the current version of TLS, it is the size of the HMAC output for the
-Hash used for the handshake.
+Note: Prior to TLS 1.3, "certificate_list" ordering required each certificate
+to certify the one immediately preceding it,
+however some implementations allowed some flexibility. Servers sometimes send
+both a current and deprecated intermediate for transitional purposes, and others
+are simply configured incorrectly, but these cases can nonetheless be validated
+properly. For maximum compatibility, all implementations SHOULD be prepared to
+handle potentially extraneous certificates and arbitrary orderings from any TLS
+version, with the exception of the end-entity certificate which MUST be first.
 
-Note: Alerts and any other record types are not handshake messages
-and are not included in the hash computations. Also, HelloRequest
-messages and the Finished message are omitted from handshake hashes.
+The server's certificate list MUST always be non-empty. A client MAY
+MAY send no certificates if it does not have an appropriate
+certificate to send in response to the server's authentication
+request.
+
+##### Server Certificate Selection
+
+The following rules apply to the certificates sent by the server:
+
+-  The certificate type MUST be X.509v3 {{RFC5280}}, unless explicitly negotiated
+  otherwise (e.g., {{RFC5081}}).
+
+-  The server's end-entity certificate's public key (and associated
+  restrictions) MUST be compatible with the selected key exchange
+  algorithm.
+
+~~~~
+    Key Exchange Alg.  Certificate Key Type
+
+    DHE_RSA            RSA public key; the certificate MUST allow the
+    ECDHE_RSA          key to be used for signing (i.e., the
+                       digitalSignature bit MUST be set if the key
+                       usage extension is present) with the signature
+                       scheme and hash algorithm that will be employed
+                       in the server's KeyShare extension.
+                       Note: ECDHE_RSA is defined in [RFC4492].
+
+    ECDHE_ECDSA        ECDSA-capable public key; the certificate MUST
+                       allow the key to be used for signing with the
+                       hash algorithm that will be employed in the
+                       server's KeyShare extension.  The public key
+                       MUST use a curve and point format supported by
+                       the client, as described in [RFC4492].
+~~~~
+
+- The "server_name" and "trusted_ca_keys" extensions {{RFC6066}} are used to
+  guide certificate selection. As servers MAY require the presence of the server_name
+  extension, clients SHOULD send this extension.
+
+All certificates provided by the server MUST be signed by a
+hash/signature algorithm pair that appears in the "signature_algorithms"
+extension provided by the client, if they are able to provide such
+a chain (see {{signature-algorithms}}).
+If the server cannot produce a certificate chain that is signed only via the
+indicated supported pairs, then it SHOULD continue the handshake by sending
+the client a certificate chain of its choice that may include algorithms
+that are not known to be supported by the client. This fallback chain MAY
+use the deprecated SHA-1 hash algorithm.
+If the client cannot construct an acceptable chain using the provided
+certificates and decides to abort the handshake, then it MUST send an
+"unsupported_certificate" alert message and close the connection.
+
+If the server has multiple certificates, it chooses one of them based on the
+above-mentioned criteria (in addition to other criteria, such as transport
+layer endpoint, local configuration and preferences, etc.). If the server has a
+single certificate, it SHOULD attempt to validate that it meets these criteria.
+
+As cipher suites that specify new key exchange methods are specified for the
+TLS protocol, they will imply the certificate format and the required encoded
+keying information.
 
 
-###  Client Certificate
+##### Client Certificate Selection
 
-When this message will be sent:
-
-> This message is the first handshake message the client can send
-after receiving the server's Finished. This message is only sent if the server requests a
-certificate. If no suitable certificate is available, the client MUST send a
-certificate message containing no certificates. That is, the certificate_list
-structure has a length of zero. If the client does not send any certificates,
-the server MAY at its discretion either continue the handshake without client
-authentication, or respond with a fatal "handshake_failure" alert. Also, if some
-aspect of the certificate chain was unacceptable (e.g., it was not signed by a
-known, trusted CA), the server MAY at its discretion either continue the
-handshake (considering the client unauthenticated) or send a fatal alert.
-
-> Client certificates are sent using the Certificate structure defined in
-{{server-certificate}}.
-
-Meaning of this message:
-
-> This message conveys the client's certificate chain to the server; the server
-will use it when verifying the CertificateVerify message (when the client
-authentication is based on signing). The certificate MUST be appropriate for the
-negotiated cipher suite's key exchange algorithm, and any negotiated extensions.
+The following rules apply to certificates sent by the client:
 
 In particular:
 
@@ -3139,35 +3218,180 @@ In particular:
 Note that, as with the server certificate, there are certificates that use
 algorithms/algorithm combinations that cannot be currently used with TLS.
 
-###  Client Certificate Verify
+
+##### Receiving a Certificate Message
+
+In general, detailed certificate validation procedures are out of scope for
+TLS (see {{RFC5280}}). This section provides TLS-specific requirements.
+      
+If server supplies an empty Certificate message, the client MUST terminate
+the handshake with a fatal "decode_error" alert.
+
+If the client does not send any certificates,
+the server MAY at its discretion either continue the handshake without client
+authentication, or respond with a fatal "handshake_failure" alert. Also, if some
+aspect of the certificate chain was unacceptable (e.g., it was not signed by a
+known, trusted CA), the server MAY at its discretion either continue the
+handshake (considering the client unauthenticated) or send a fatal alert.
+
+Any endpoint receiving any certificate signed using any signature algorithm
+using an MD5 hash MUST send a "bad_certificate" alert message and close
+the connection.
+
+As SHA-1 and SHA-224 are deprecated, support for them is NOT RECOMMENDED.
+Endpoints that reject chains due to use of a deprecated hash MUST send
+a fatal "bad_certificate" alert message before closing the connection.
+All endpoints are RECOMMENDED to transition to SHA-256 or better as soon
+as possible to maintain interoperability with implementations
+currently in the process of phasing out SHA-1 support.
+
+Note that a certificate containing a key for one signature algorithm
+MAY be signed using a different signature algorithm (for instance,
+an RSA key signed with a ECDSA key).
+
+
+####  Certificate Verify
 
 When this message will be sent:
 
-> This message is used to provide explicit verification of a client
-certificate. This message is only sent following a client certificate that has
-signing capability (i.e., all certificates except those containing fixed
-Diffie-Hellman parameters). When sent, it MUST immediately follow the client's
-Certificate message. The contents of the message are computed as described
-in {{server-certificate-verify}}, except that the context string is
-"TLS 1.3, client CertificateVerify".
+> This message is used to provide explicit proof that an endpoint
+possesses the private key corresponding to its certificate
+and also provides integrity for the handshake up 
+to this point. Servers MUST send this message when using
+a cipher suite which is authenticated via a certificate.
+When sent, it MUST occur immediately Clients MUST send this
+message whenever authenticating via a Certificate (i.e., when
+the Certificate messageis non-empty). When sent, this message MUST appear immediately
+after the Certificate Message and immediately prior to the Finished
+message.
 
-> The hash and signature algorithms used in the signature MUST be one of those
-present in the supported_signature_algorithms field of the CertificateRequest
-message. In addition, the hash and signature algorithms MUST be compatible with
-the key in the client's end-entity certificate. RSA keys MAY be used with any
-permitted hash algorithm, subject to restrictions in the certificate, if any.
+Structure of this message:
+
+%%% Authentication Messages
+       struct {
+            digitally-signed struct {
+               opaque handshake_hash[hash_length];
+            };
+       } CertificateVerify;
+
+> Where handshake_hash is as described in {{the-handshake-hash}} and
+includes the messages sent or received, starting at ClientHello and up
+to, but not including, this message, including the type and length
+fields of the handshake messages. This is a digest of the
+concatenation of all the Handshake structures (as defined in
+{{handshake-protocol}}) exchanged thus far. The digest MUST be the
+Hash used as the basis for HKDF.
+
+> The context string for a server signature is "TLS 1.3, server CertificateVerify"
+and for a client signature is "TLS 1.3, client CertificateVerify". A
+hash of the handshake messages is signed rather than the messages themselves
+because the digitally-signed format requires padding and context bytes at the
+beginning of the input. Thus, by signing a digest of the messages, an
+implementation need only maintain one running hash per hash type for
+CertificateVerify, Finished and other messages.
+
+> If sent by a server, the signature algorithm and hash algorithm MUST be a pair offered in the
+client's "signature_algorithms" extension unless no valid certificate chain can be
+produced without unsupported algorithms (see {{signature-algorithms}}). Note that
+there is a possibility for inconsistencies here. For instance, the client might
+offer ECDHE_ECDSA key exchange but omit any ECDSA pairs from its
+"signature_algorithms" extension. In order to negotiate correctly, the server
+MUST check any candidate cipher suites against the "signature_algorithms"
+extension before selecting them. This is somewhat inelegant but is a compromise
+designed to minimize changes to the original cipher suite design.
+
+> If sent by a server, the hash and signature algorithms used in the
+signature MUST be one of those present in the
+supported_signature_algorithms field of the CertificateRequest
+message.
+
+> In addition, the hash and signature algorithms MUST be compatible with the key
+in the sender's end-entity certificate. RSA keys MAY be used with any permitted
+hash algorithm, subject to restrictions in the certificate, if any.
 RSA signatures MUST be based on RSASSA-PSS, regardless of whether
-RSASSA-PKCS-v1_5 appears in "signature_algorithms". SHA-1 MUST NOT be used
-in any signatures in CertificateVerify, regardless of whether
-SHA-1 appears in "signature_algorithms".
+RSASSA-PKCS-v1_5 appears in "signature_algorithms".
+SHA-1 MUST NOT be used in any signatures in CertificateVerify,
+regardless of whether SHA-1 appears in "signature_algorithms".
+
+####  Finished
+
+When this message will be sent:
+
+> The Finished message is the final message in the authentication
+block. It is server and is essential for providing authentication of the
+the handshake and of the computed keys.
+
+Meaning of this message:
+
+> Recipients of Finished messages MUST verify that the contents are
+correct. Once a side has sent its Finished message and received and
+validated the Finished message from its peer, it may begin to send and
+receive application data over the connection. This data will be
+protected under keys derived from the ephemeral secret (see
+{{cryptographic-computations}}).
+
+The key used to compute the finished message is computed from the
+Base key defined in {{authentication-messages}} using HKDF (see
+{{key-schedule}}). Specifically:
+
+~~~
+client_finished_key =
+    HKDF-Expand-Label(BaseKey, "client_finished", "", L)
+
+server_finished_key =
+    HKDF-Expand-Label(BaseKey, "server_finished", "", L)
+~~~
+
+Structure of this message:
+
+%%% Authentication Messages
+
+       struct {
+           opaque verify_data[verify_data_length];
+       } Finished;
 
 
-### New Session Ticket Message
+The verify_data value is computed as follows:
+
+~~~
+verify_data =
+  HMAC(finished_key, finished_label + '\0' + Handshake Context +
+                     Certificate + CertificateVerify)
+~~~
+
+Where:
+
+HMAC
+: HMAC {{RFC2104}} using the Hash algorithm for the handshake.
+
+finished_label
+: For Finished messages sent by the client, the string
+  "client finished".  For Finished messages sent by the server,
+  the string "server finished" [[OPEN ISSUE: Do we still need these?
+  labels? Should we expand them to indicate which phase we are
+  sending the messages in?]]
+~~~
+
+As noted above: the HMAC input can generally be implemented by a running
+hash.
+
+> In previous versions of TLS, the verify_data was always 12 octets long. In
+the current version of TLS, it is the size of the HMAC output for the
+Hash used for the handshake.
+
+Note: Alerts and any other record types are not handshake messages
+and are not included in the hash computations.
+
+### Post-Handshake Messages
+
+TLS also allows other messages to be sent after the main handshake.
+These message use a handshake content type and are encrypted under the application
+traffic key.
+
+#### New Session Ticket Message
 
 After the server has received the client Finished message, it MAY send
-a NewSessionTicket message. This message MUST be sent before the server
-sends any application data traffic, and is encrypted under the application
-traffic key. This message creates a pre-shared key
+a NewSessionTicket message.  This message creates a pre-shared key
 (PSK) binding between the resumption master secret and the ticket
 label. The client MAY use this PSK for future handshakes by including
 it in the "pre_shared_key" extension in its ClientHello
@@ -3204,6 +3428,19 @@ lookup key or a self-encrypted and self-authenticated value. Section
 [[TODO: Should we require that tickets be bound to the existing
 symmetric cipher suite. See the TODO above about early_data and
 PSK.??]
+
+
+#### Post-Handshake Authentication
+
+The server is permitted to request client authentication at any time
+after the handshake has completed by sending a CertificateRequest
+message. The client SHOULD respond with the appropriate Authentication
+messages. If the client chooses to authenticate, it MUST send
+Certificate, CertificateVerify, and Finished. If it declines, it
+MUST send an empty Certificate message followed by Finished.
+Note: because there may already be application data messages in
+flight, the server MUST be prepared to receive an arbitrary number
+of such messages before receiving the Authentication messages.
 
 
 #  Cryptographic Computations
@@ -3277,30 +3514,24 @@ in some cases, the extracted xSS and xES will not.
   4. mES = HKDF-Expand-Label(xES, "expanded ephemeral secret",
                              handshake_hash, L)
 
+  Where handshake_hash includes all messages up through the
+  server CertificateVerify message.
+
   5. master_secret = HKDF-Extract(mSS, mES)
 
-  6. finished_secret = HKDF-Expand-Label(xSS,
-                                         "finished secret",
-                                         handshake_hash, L)
 
-  Where handshake_hash includes all the messages in the
-  client's first flight and the server's flight, excluding
-  the Finished messages (which are never included in the
-  hashes).
-
-  5. resumption_secret = HKDF-Expand-Label(master_secret,
+  6. resumption_secret = HKDF-Expand-Label(master_secret,
                                            "resumption master secret"
                                            session_hash, L)
 
-  Where session_hash is as defined in {{the-handshake-hash}}.
-
-  6. exporter_secret = HKDF-Expand-Label(master_secret,
+  7. exporter_secret = HKDF-Expand-Label(master_secret,
                                          "exporter master secret",
                                          session_hash, L)
 
   Where session_hash is the session hash as defined in
-  {{the-handshake-hash}} (i.e., the entire handshake except
-  for Finished).
+  {{the-handshake-hash}}. I.e., the entire handshake up to
+  and including the client's Finished, but not including
+  any 0-RTT handshake messages.
 ~~~
 
 The traffic keys are computed from xSS, xES, and the master_secret
@@ -3333,7 +3564,7 @@ of sufficient size to produce the needed traffic keys:
 The keying material is computed using:
 
        key_block = HKDF-Expand-Label(Secret, Label,
-                                     handshake_hash,
+                                     handshake_context,
                                      total_length)
 
 The key_block is partitioned as follows:
@@ -3347,50 +3578,36 @@ The following table describes the inputs to the key calculation for
 each class of traffic keys:
 
 ~~~
-  Record Type Secret  Label                              Handshake Hash
-  ----------- ------  -----                             ---------------
-  Early data     xSS  "early data key expansion"            ClientHello
+  Record Type Secret  Label                           Handshake Context
+  ----------- ------  -----                           -----------------
+  0-RTT          xSS  "early handshake                     ClientHello
+  Handshake            key expansion              + ServerConfiguration
+                                                   + Server Certificate  
 
+  0-RTT          xSS  "early application                    ClientHello
+  Application          data key expansion"        + ServerConfiguration
+                                                   + Server Certificate
+                                                   
   Handshake      xES  "handshake key expansion"          ClientHello...
                                                             ServerHello
 
-  Application  master "application data key expansion"    All handshake
-               secret                                      messages but
-                                                               Finished
-                                                         (session_hash)
+  Application  master "application data key expansion"   ClientHello...
+               secret                                   Server Finished
 ~~~
 
 ###  The Handshake Hash
 
 
-       handshake_hash = Hash(
-                             Hash(handshake_messages) ||
-                             Hash(configuration)
-                            )
-
-handshake_messages
-: All handshake messages sent or
-  received, starting at ClientHello up to the present time, with the
-  exception of the Finished message, including the type and length
-  fields of the handshake messages. This is the concatenation of all the
-  exchanged Handshake structures in plaintext form (even if they
-  were encrypted on the wire).
-
-configuration
-: When 0-RTT is in use ({{early-data-indication}})
-this contains the concatenation of the ServerConfiguration and Certificate
-messages from the handshake where the configuration was established (including the
-type and length fields). Note that
-this requires the client and server to memorize these values.
-{:br }
+The handshake hash is defined as the hash of all handshake messages
+sent or received, starting at ClientHello up to the present time,
+with the exception of the Finished message, including the type and
+length fields of the handshake messages. This is the concatenation
+of all the exchanged Handshake structures in plaintext form (even if
+they were encrypted on the wire).
 
 This final value of the handshake hash is referred to as the "session
-hash" because it contains all the handshake messages required to
-establish the session. Note that if client authentication is not used,
-then the session hash is complete at the point when the server has
-sent its first flight. Otherwise, it is only complete when the client
-has sent its first flight, as it covers the client's Certificate and
-CertificateVerify.
+hash" because it contains all the handshake messages involved in
+establishing the session, up to and including the client's Finished.
 
 ###  Diffie-Hellman
 
@@ -3575,7 +3792,7 @@ may receive them from older TLS implementations.
 %%## Record Layer
 %%## Alert Messages
 %%## Handshake Protocol
-%%### Hello Messages
+%%### Key Exchange Messages
 %%#### Signature Algorithm Extension
 %%#### Named Group Extension
 
@@ -3606,7 +3823,6 @@ and renegotiation_info {{RFC5746}}.
 
 %%### Key Exchange Messages
 %%### Authentication Messages
-%%### Handshake Finalization Messages
 %%### Ticket Establishment
 
 ## Cipher Suites
@@ -3741,7 +3957,7 @@ well, thus allowing ECDSA signatures to be used with digest algorithms other
 than SHA-1, provided such use is compatible with the certificate and any
 restrictions imposed by future revisions of {{RFC5280}}.
 
-As described in {{server-certificate}}, the restrictions on the signature 
+As described in {{server-certificate-selection}}, the restrictions on the signature 
 algorithms used to sign certificates are no longer tied to the cipher suite. 
 Thus, the restrictions on the algorithm used to sign certificates specified in 
 Sections 2 and 3 of RFC 4492 are also relaxed. As in this document, the 
@@ -3822,7 +4038,7 @@ TLS protocol issues:
 -  When the server has requested a client certificate, but no
   suitable certificate is available, do you correctly send an empty
   Certificate message, instead of omitting the whole message (see
-  {{client-certificate}})?
+  {{client-certificate-selection}})?
 
 - When processing the plaintext fragment produced by AEAD-Decrypt and
   scanning from the end for the ContentType, do you avoid scanning
@@ -3873,7 +4089,7 @@ records thereafter.
 For maximum compatibility with previously non-standard behavior and misconfigured
 deployments, all implementations SHOULD support validation of certificate chains
 based on the expectations in this document, even when handling prior TLS versions'
-handshakes. (see {{server-certificate}})
+handshakes. (see {{server-certificate-selection}})
 
 ## Negotiating with an older server
 
@@ -3995,7 +4211,7 @@ more after Hugo's changes.]]
 The general goal of the key exchange process is to create a master_secret
 known to the communicating parties and not to attackers (see
 {{key-schedule}}). The master_secret is required to generate the
-Finished messages and record protection keys (see {{server-finished}} and
+Finished messages and record protection keys (see {{finished}} and
 {{traffic-key-calculation}}). By sending a correct Finished message, parties thus prove
 that they know the correct master_secret.
 
