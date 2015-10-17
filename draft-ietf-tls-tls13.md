@@ -315,7 +315,7 @@ draft-10
 - Remove ClientCertificateTypes field from CertificateRequest
   and add extensions.
 
-- Merge client and server key sharing into a single extension.
+- Merge client and server key shares into a single extension.
 
 
 draft-09
@@ -1535,9 +1535,9 @@ The basic TLS Handshake for DH is shown in {{tls-full}}:
      Client                                               Server
 
      ClientHello
-       + KeyShareOffer         -------->
+     + KeyShare               -------->
                                                      ServerHello
-                                                + KeyShareOffer*
+                                                      + KeyShare
                                            {EncryptedExtensions}
                                           {ServerConfiguration*}
                                                   {Certificate*}
@@ -1553,7 +1553,7 @@ The basic TLS Handshake for DH is shown in {{tls-full}}:
                previously noted message.
 
             *  Indicates optional or situation-dependent
-               messages/extensions that are not always sent.
+               messages that are not always sent.
 
             {} Indicates messages protected using keys
                derived from the ephemeral secret.
@@ -1567,7 +1567,7 @@ The basic TLS Handshake for DH is shown in {{tls-full}}:
 The first message sent by the client is the ClientHello {{client-hello}} which contains
 a random nonce (ClientHello.random), its offered protocol version,
 cipher suite, and extensions, and one or more Diffie-Hellman key
-shares in the KeyShareOffer extension {{key-share-offer}}.
+shares in the KeyShare extension {{key-share}}.
 
 The server processes the ClientHello and determines the appropriate
 cryptographic parameters for the connection. It then responds with
@@ -1575,12 +1575,12 @@ the following messages:
 
 ServerHello
 : indicates the negotiated connection parameters. [{{server-hello}}]
-  If DH is in use, this will contain a KeyShareOffer extension with the
+  If DH is in use, this will contain a KeyShare extension with the
   server's ephemeral Diffie-Hellman share which MUST be in the same group
   as one of the shares offered by the client. The server's KeyShare and
   the client's KeyShare corresponding to the negotiated key exchange
   are used together to derive the Static Secret and Ephemeral
-  Secret (in this mode they are the same).  [{{key-share-offer}}]
+  Secret (in this mode they are the same).  [{{key-share}}]
 
 ServerConfiguration
 : supplies a configuration for 0-RTT handshakes (see {{zero-rtt-exchange}}).
@@ -1655,23 +1655,23 @@ against algorithmic attacks, at least in the year 2015.]]
 
 ### Incorrect DHE Share
 
-If the client has not provided an appropriate KeyShareOffer (e.g. it
+If the client has not provided an appropriate KeyShare extension (e.g. it
 includes only DHE or ECDHE groups unacceptable or unsupported by the
 server), the server corrects the mismatch with a HelloRetryRequest and
 the client will need to restart the handshake with an appropriate
-KeyShareOffer, as shown in Figure 2:
+KeyShare extension, as shown in Figure 2:
 
 ~~~
        Client                                               Server
 
        ClientHello
-         + KeyShareOffer         -------->
+         + KeyShare              -------->
                                  <--------       HelloRetryRequest
 
        ClientHello
-         + KeyShareOffer         -------->
+         + KeyShare              -------->
                                                        ServerHello
-                                                   + KeyShareOffer
+                                                        + KeyShare
                                              {EncryptedExtensions}
                                             {ServerConfiguration*}
                                                     {Certificate*}
@@ -1715,14 +1715,14 @@ that share to encrypt the first-flight data.
        Client                                               Server
 
        ClientHello
-         + KeyShareOffer
+         + KeyShare
          + EarlyDataIndication
        (EncryptedExtensions)
        (Certificate*)
        (CertificateVerify*)
        (Application Data)        -------->
                                                        ServerHello
-                                                   + KeyShareOffer
+                                                        + KeyShare
                                              + EarlyDataIndication
                                              {EncryptedExtensions}
                                             {ServerConfiguration*}
@@ -1796,9 +1796,9 @@ a PSK and the second uses it:
 
 Initial Handshake:
        ClientHello
-         + KeyShareOffer         -------->
+        + KeyShare               -------->
                                                        ServerHello
-                                                   + KeyShareOffer
+                                                        + KeyShare
                                              {EncryptedExtensions}
                                             {ServerConfiguration*}
                                                     {Certificate*}
@@ -1814,7 +1814,7 @@ Initial Handshake:
 
 Subsequent Handshake:
        ClientHello
-         + KeyShareOffer
+         + KeyShare
          + PreSharedKeyExtension -------->
                                                        ServerHello
                                            + PreSharedKeyExtension
@@ -1828,7 +1828,7 @@ Subsequent Handshake:
 As the server is authenticating via a PSK, it does not
 send a Certificate or a CertificateVerify. PSK-based resumption cannot
 be used to provide a new ServerConfiguration. Note that the client
-supplies a KeyShareOffer to the server as well, which
+supplies a KeyShare to the server as well, which
 allows the server to decline resumption and fall back to a full handshake.
 
 The contents and significance of each message will be presented in detail in
@@ -1850,7 +1850,7 @@ processed and transmitted as specified by the current active session state.
            server_hello(2),
            session_ticket(4),
            hello_retry_request(6),
-           encrypted_extensions(7),
+           encrypted_extensions(8),
            certificate(11),
            server_key_exchange_RESERVED(12),
            certificate_request(13),
@@ -1901,9 +1901,10 @@ When this message will be sent:
 ClientHello as its first message. The client will also send a
 ClientHello when the server has responded to its ClientHello with a
 ServerHello that selects cryptographic parameters that don't match the
-client's KeyShareOffer. In that case, the client MUST send the same
-ClientHello (without modification) except including a new KeyShareOffer.
-[[OPEN ISSUE: New random values? See:
+client's KeyShare extension. In that case, the client MUST send the same
+ClientHello (without modification) except including a new KeyShareEntry
+as the lowest priority share (i.e., appended to the list of shares in
+the KeyShare message). [[OPEN ISSUE: New random values? See:
 https://github.com/tlswg/tls13-spec/issues/185]]
 If a server receives a ClientHello at any other time, it MUST send
 a fatal "unexpected_message" alert and close the connection.
@@ -2015,7 +2016,7 @@ When this message will be sent:
 
 > The server will send this message in response to a ClientHello message when
 it was able to find an acceptable set of algorithms and the client's
-KeyShareOffer extension was acceptable. If the client proposed groups are not
+KeyShare extension was acceptable. If the client proposed groups are not
 acceptable by the server, it will respond with a "handshake_failure" fatal alert.
 
 Structure of this message:
@@ -2069,7 +2070,7 @@ When this message will be sent:
 > Servers send this message in response to a ClientHello
 message when it was able to find an acceptable set of algorithms and
 groups that are mutually supported, but
-the client's KeyShareOffer did not contain an acceptable
+the client's KeyShare did not contain an acceptable
 offer. If it cannot find such a match, it will respond with a
 "handshake_failure" alert.
 
@@ -2094,25 +2095,25 @@ same meanings as their corresponding values in the ServerHello. The
 server SHOULD send only the extensions necessary for the client to
 generate a correct ClientHello pair.
 
-Upon receipt of a HelloRetryRequest, the client MUST first verify
-that the "selected_group" field does not identify a group which
-was not in the original ClientHello. If it was present, then
-the client MUST abort the handshake with a fatal "handshake_failure"
-alert. Clients SHOULD also abort with "handshake_failure" in response to any second
-HelloRetryRequest which was sent in the same connection (i.e.,
-where the ClientHello was itself in response to a HelloRetryRequest).
+Upon receipt of a HelloRetryRequest, the client MUST first verify that
+the "selected_group" field corresponds to a group which was provided
+in the "supported_groups" extension in the original ClientHello.  It
+MUST then verify that the "selected_group" field does not correspond
+to a group which was provided in the "key_share" extension in the
+original ClientHello. If either of these checks fails, then the client
+MUST abort the handshake with a fatal "handshake_failure"
+alert. Clients SHOULD also abort with "handshake_failure" in response
+to any second HelloRetryRequest which was sent in the same connection
+(i.e., where the ClientHello was itself in response to a
+HelloRetryRequest).
 
-[[OPEN ISSUE: Ambiguous/confusing language ("in the original ClientHello" could
-refer to either in the "supported_groups" or "key_share" extension);
-separate PR pending with revisions to clarify]]
-
-Otherwise, the client MUST send a ClientHello with a new
-KeyShareOffer extension to the server. The KeyShareOffer MUST append
-a new KeyShare which is consistent with the
-"selected_group" field to the groups in its original KeyShareOffer.
+Otherwise, the client MUST send a ClientHello with a new KeyShare
+extension to the server. The client MUST append a new KeyShareEntry
+list which is consistent with the "selected_group" field to the groups
+in its original KeyShare.
 
 Upon re-sending the ClientHello and receiving the
-server's ServerHello/KeyShareOffer, the client MUST verify that
+server's ServerHello/KeyShare, the client MUST verify that
 the selected CipherSuite and NamedGroup match that supplied in
 the HelloRetryRequest.
 
@@ -2286,7 +2287,7 @@ signature
 
 The semantics of this extension are somewhat complicated because the cipher
 suite indicates permissible signature algorithms but not hash algorithms.
-{{server-certificate}} and {{key-share-offer}} describe the
+{{server-certificate}} and {{key-share}} describe the
 appropriate rules.
 
 Clients offering support for SHA-1 for TLS 1.2 servers MUST do so by listing
@@ -2372,13 +2373,13 @@ extension type (Supported Group Extension):
 
 NOTE: A server participating in an ECDHE-ECDSA key exchange may use
 different curves for (i) the ECDSA key in its certificate, and (ii)
-the ephemeral ECDH key in its KeyShareOffer extension.  The server
+the ephemeral ECDH key in its KeyShare extension.  The server
 must consider the supported groups in both cases.
 
 [[TODO: IANA Considerations.]]
 
 
-#### Key Share Offer
+#### Key Share
 
 The "key_share" extension contains the endpoint's cryptographic parameters
 for non-PSK key establishment methods (currently DHE or ECDHE).
@@ -2387,9 +2388,6 @@ Clients which offer one or more (EC)DHE cipher suites
 MUST send at least one supported KeyShare value and
 servers MUST NOT negotiate any of these cipher suites unless a supported
 value was provided.
-It is explicitly permitted for a client to send an empty extension in order
-to request a group from the server, at the cost of an additional round trip.
-(see {{hello-retry-request}})
 If this extension is not provided in a ServerHello or retried ClientHello,
 and the peer is offering (EC)DHE cipher suites, then the endpoint MUST close
 the connection with a fatal "missing_extension" alert.
@@ -2399,7 +2397,7 @@ the connection with a fatal "missing_extension" alert.
        struct {
            NamedGroup group;
            opaque key_exchange<1..2^16-1>;
-       } KeyShare;
+       } KeyShareEntry;
 
 group
 : The named group for the key being exchanged.
@@ -2415,38 +2413,37 @@ key_exchange
 {:br }
 
 The "extension_data" field of this extension contains a
-"KeyShareOffer" value:
+"KeyShare" value:
 
 %%% Key Exchange Messages
        struct {
            select (role) {
                case client:
-                   KeyShare client_offers<4..2^16-1>;
+                   KeyShareEntry client_shares<4..2^16-1>;
 
                case server:
-                   KeyShare server_offer;
+                   KeyShareEntry server_share;
            }
-       } KeyShareOffer;
+       } KeyShare;
 
-client_offers
-: A list of offered KeyShare values in descending order of client preference.
+client_shares
+: A list of offered KeyShareEntry values in descending order of client preference.
   This vector MUST NOT be empty. Clients not providing a KeyShare MUST instead
   omit this extension from the ClientHello.
 
-server_offer
-: A single KeyShare value for the negotiated cipher suite.
-  Servers MUST NOT send a KeyShare for a group not offered
-  by the client.
+server_shares
+: A single KeyShareEntry value for the negotiated cipher suite.  Servers
+  MUST NOT send a KeyShare for a group not offered by the client.
 {:br }
 
-Servers offer exactly one KeyShare value, which corresponds to the
+Servers offer exactly one KeyShareEntry value, which corresponds to the
 key exchange used for the negotiated cipher suite.
 
-Clients offer an arbitrary number of KeyShare values, each representing
+Clients offer an arbitrary number of KeyShareEntry values, each representing
 a single set of key exchange parameters. For instance, a client might
 offer shares for several elliptic curves or multiple integer DH groups.
-The key_exchange values for each KeyShare MUST by generated independently.
-Clients MUST NOT offer multiple KeyShare values for the same parameters.
+The key_exchange values for each KeyShareEntry MUST by generated independently.
+Clients MUST NOT offer multiple KeyShareEntry values for the same parameters.
 Clients MAY omit this extension from the ClientHello, and in response to this,
 servers MUST send a HelloRetryRequest requesting use of one of the
 groups the client offered support for in its "supported_groups"
@@ -2459,7 +2456,7 @@ Presumably which integer DH groups and which curves.]]
 #####  Diffie-Hellman Parameters {#ffdhe-param}
 
 Diffie-Hellman {{DH}} parameters for both clients and servers are encoded in
-the opaque key_exchange field of a KeyShare in a KeyShareOffer structure.
+the opaque key_exchange field of a KeyShareEntry in a KeyShare structure.
 The opaque value contains the
 Diffie-Hellman public value (dh_Y = g^X mod p),
 encoded as a big-endian integer.
@@ -2470,7 +2467,7 @@ encoded as a big-endian integer.
 ##### ECDHE Parameters {#ecdhe-param}
 
 ECDHE parameters for both clients and servers are encoded in the
-the opaque key_exchange field of a KeyShare in a KeyShareOffer structure.
+the opaque key_exchange field of a KeyShareEntry in a KeyShare structure.
 The opaque value conveys the Elliptic
 Curve Diffie-Hellman public value (ecdh_Y) represented as a byte
 string ECPoint.point.
@@ -2813,13 +2810,13 @@ The following rules apply to the certificates sent by the server:
                        digitalSignature bit MUST be set if the key
                        usage extension is present) with the signature
                        scheme and hash algorithm that will be employed
-                       in the server's KeyShareOffer extension.
+                       in the server's KeyShare extension.
                        Note: ECDHE_RSA is defined in [RFC4492].
 
     ECDHE_ECDSA        ECDSA-capable public key; the certificate MUST
                        allow the key to be used for signing with the
                        hash algorithm that will be employed in the
-                       server's KeyShareOffer extension.  The public key
+                       server's KeyShare extension.  The public key
                        MUST use a curve and point format supported by
                        the client, as described in [RFC4492].
 ~~~~
@@ -3486,7 +3483,7 @@ TLS-compliant application MUST implement the following TLS extensions:
 
   * Signature Algorithms ("signature_algorithms"; {{signature-algorithms}})
   * Negotiated Groups ("supported_groups"; {{negotiated-groups}})
-  * Key Share Offer ("key_share"; {{key-share-offer}})
+  * Key Share Offer ("key_share"; {{key-share}})
   * Pre-Shared Key Extension ("pre_shared_key"; {{pre-shared-key-extension}})
   * Server Name Indication ("server_name"; Section 3 of {{RFC6066}})
 
@@ -4017,7 +4014,7 @@ that they know the correct master_secret.
 ####  Diffie-Hellman Key Exchange with Authentication
 
 When Diffie-Hellman key exchange is used, the client and server use
-the KeyShareOffer extension to send
+the KeyShare extension to send
 temporary Diffie-Hellman parameters. The signature in the certificate
 verify message (if present) covers the entire handshake up to that
 point and thus attests the certificate holder's desire to use the
