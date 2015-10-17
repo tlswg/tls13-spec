@@ -4239,6 +4239,10 @@ Archives of the list can be found at:
     INRIA
     alfredo.pironti@inria.fr
 
+    Andrei Popov
+    Microsoft
+    andrei.popov@microsoft.com
+
     Marsh Ray (co-author of [RFC7627])
     Microsoft
     maray@microsoft.com
