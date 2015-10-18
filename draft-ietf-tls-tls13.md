@@ -3363,6 +3363,8 @@ Where:
 
 HMAC
 : HMAC {{RFC2104}} using the Hash algorithm for the handshake.
+As noted above: the HMAC input can generally be implemented by a running
+hash.
 
 finished_label
 : For Finished messages sent by the client, the string
@@ -3372,10 +3374,8 @@ finished_label
   sending the messages in?]]
 {: br}
 
-As noted above: the HMAC input can generally be implemented by a running
-hash.
 
-> In previous versions of TLS, the verify_data was always 12 octets long. In
+In previous versions of TLS, the verify_data was always 12 octets long. In
 the current version of TLS, it is the size of the HMAC output for the
 Hash used for the handshake.
 
