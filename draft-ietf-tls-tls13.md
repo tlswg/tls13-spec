@@ -3079,12 +3079,12 @@ RSASSA-PKCS-v1_5 appears in "signature_algorithms".
 SHA-1 MUST NOT be used in any signatures in CertificateVerify,
 regardless of whether SHA-1 appears in "signature_algorithms".
 
-###  Server Finished
+###  Finished
 
 When this message will be sent:
 
-> The Server's Finished message is the final message sent by the
-server and is essential for providing authentication of the server
+> The Finished message is the final message sent by the
+endpoint and is essential for providing authentication of the peer's
 side of the handshake and computed keys.
 
 Meaning of this message:
