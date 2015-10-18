@@ -3483,7 +3483,7 @@ TLS-compliant application MUST implement the following TLS extensions:
 
   * Signature Algorithms ("signature_algorithms"; {{signature-algorithms}})
   * Negotiated Groups ("supported_groups"; {{negotiated-groups}})
-  * Key Share Offer ("key_share"; {{key-share}})
+  * Key Share ("key_share"; {{key-share}})
   * Pre-Shared Key Extension ("pre_shared_key"; {{pre-shared-key-extension}})
   * Server Name Indication ("server_name"; Section 3 of {{RFC6066}})
 
