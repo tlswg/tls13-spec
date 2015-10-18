@@ -238,7 +238,7 @@ the TLS Record Protocol. The TLS Record Protocol provides connection security
 that has two basic properties:
 
 - The connection is private.  Symmetric cryptography is used for
-  data encryption (e.g., AES {{AES}}, etc.).  The keys for
+  data encryption (e.g., AES {{AES}}).  The keys for
   this symmetric encryption are generated uniquely for each
   connection and are based on a secret negotiated by another
   protocol (such as the TLS Handshake Protocol).
@@ -259,7 +259,7 @@ security that has three basic properties:
 
 
 - The peer's identity can be authenticated using asymmetric, or
-  public key, cryptography (e.g., RSA {{RSA}}, ECDSA {{ECDSA}}, etc.).  This
+  public key, cryptography (e.g., RSA {{RSA}}, ECDSA {{ECDSA}}).  This
   authentication can be made optional, but is generally required for
   at least one of the peers.
 
@@ -2855,7 +2855,7 @@ an RSA key signed with a ECDSA key).
 
 If the server has multiple certificates, it chooses one of them based on the
 above-mentioned criteria (in addition to other criteria, such as transport
-layer endpoint, local configuration and preferences, etc.). If the server has a
+layer endpoint, local configuration and preferences). If the server has a
 single certificate, it SHOULD attempt to validate that it meets these criteria.
 
 As cipher suites that specify new key exchange methods are specified for the
