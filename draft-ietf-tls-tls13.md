@@ -1,4 +1,4 @@
- ---
+---
 title: The Transport Layer Security (TLS) Protocol Version 1.3
 abbrev: TLS
 docname: draft-ietf-tls-tls13-latest
@@ -3370,7 +3370,7 @@ finished_label
   the string "server finished" [[OPEN ISSUE: Do we still need these?
   labels? Should we expand them to indicate which phase we are
   sending the messages in?]]
-~~~
+{: br}
 
 As noted above: the HMAC input can generally be implemented by a running
 hash.
