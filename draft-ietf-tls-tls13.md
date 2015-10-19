@@ -118,13 +118,6 @@ informative:
   RFC7627:
   I-D.ietf-tls-negotiated-ff-dhe:
 
-
-  CBCATT:
-       title: "Security of CBC Ciphersuites in SSL/TLS: Problems and Countermeasures"
-       target: https://www.openssl.org/~bodo/tls-cbc.txt
-       author:
-         - ins: B. Moeller
-       date: 2004-05-20
   DSS:
        title: "Digital Signature Standard, version 4"
        date: 2013
