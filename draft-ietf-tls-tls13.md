@@ -870,10 +870,7 @@ record protection algorithm
 
 : The algorithm to be used for record protection. This algorithm must
   be of the AEAD type and thus provides integrity and confidentiality
-  as a single primitive. It is possible to have AEAD algorithms which
-  do not provide any confidentiality and
-  {{record-payload-protection}} defines a special NULL_NULL AEAD
-  algorithm for use only in the initial handshake. This specification
+  as a single primitive. This specification
   includes the key size of this algorithm and of the nonce for
   the AEAD algorithm.
 
