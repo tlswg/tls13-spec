@@ -60,13 +60,6 @@ normative:
          org: National Institute of Standards and Technology, U.S. Department of Commerce
        seriesinfo:
          NIST: FIPS PUB 180-4
-  X680:
-       title: "Information technology - Abstract Syntax Notation One (ASN.1): Specification of basic notation"
-       date: 2002
-       author:
-         org: ITU-T
-       seriesinfo:
-         ISO/IEC: 8824-1:2002
   X690:
        title: "Information technology - ASN.1 encoding Rules: Specification of Basic Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished Encoding Rules (DER)"
        date: 2002
@@ -92,9 +85,7 @@ normative:
 
 informative:
   RFC0793:
-  RFC1321:
   RFC1948:
-  RFC2246:
   RFC4086:
   RFC4279:
   RFC4302:
@@ -107,13 +98,11 @@ informative:
   RFC5081:
   RFC5116:
   RFC5246:
-  RFC5705:
   RFC5763:
   RFC5929:
   RFC6176:
   RFC7250:
   RFC7465:
-  RFC7507:
   RFC7568:
   RFC7627:
   I-D.ietf-tls-negotiated-ff-dhe:
@@ -2886,7 +2875,7 @@ supported_signature_algorithms
 
 certificate_authorities
 : A list of the distinguished names {{X501}} of acceptable
-  certificate_authorities, represented in DER-encoded format.  These
+  certificate_authorities, represented in DER-encoded {{X690}} format.  These
   distinguished names may specify a desired distinguished name for a
   root CA or for a subordinate CA; thus, this message can be used to
   describe known roots as well as a desired authorization space.  If
@@ -3927,7 +3916,7 @@ If an implementation negotiates use of TLS 1.2, then negotiation of cipher
 suites also supported by TLS 1.3 SHOULD be preferred, if available.
 
 The security of RC4 cipher suites is considered insufficient for the reasons
-cited in [RFC7465]. Implementations MUST NOT offer or negotiate RC4 cipher suites
+cited in {{RFC7465}}. Implementations MUST NOT offer or negotiate RC4 cipher suites
 for any version of TLS for any reason.
 
 Old versions of TLS permitted the use of very low strength ciphers.
@@ -3935,7 +3924,7 @@ Ciphers with a strength less than 112 bits MUST NOT be offered or
 negotiated for any version of TLS for any reason.
 
 The security of SSL 2.0 {{SSL2}} is considered insufficient for the reasons enumerated
-in [RFC6176], and MUST NOT be negotiated for any reason.
+in {{RFC6176}}, and MUST NOT be negotiated for any reason.
 
 Implementations MUST NOT send an SSL version 2.0 compatible CLIENT-HELLO.
 Implementations MUST NOT negotiate TLS 1.3 or later using an SSL version 2.0 compatible
@@ -3945,7 +3934,7 @@ CLIENT-HELLO in order to negotiate older versions of TLS.
 Implementations MUST NOT send or accept any records with a version less than { 3, 0 }.
 
 The security of SSL 3.0 {{SSL3}} is considered insufficient for the reasons enumerated
-in [RFC7568], and MUST NOT be negotiated for any reason.
+in {{RFC7568}}, and MUST NOT be negotiated for any reason.
 
 Implementations MUST NOT send a ClientHello.client_version or ServerHello.server_version
 set to { 3, 0 } or less. Any endpoint receiving a Hello message with
