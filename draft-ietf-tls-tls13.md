@@ -2988,7 +2988,7 @@ expiration_date
 : The last time when this configuration is expected to be valid
 (in seconds since the Unix epoch). Servers MUST NOT use any value
 more than 604800 seconds (7 days) in the future. Clients MUST
-not cache configurations for longer than 7 days, regardless of
+NOT cache configurations for longer than 7 days, regardless of
 the expiration_date. [[OPEN ISSUE: Is this the right value?
 The idea is just to minimize exposure.]]
 
@@ -3019,7 +3019,7 @@ When the ServerConfiguration message is sent, the server MUST also
 send a Certificate message and a CertificateVerify message, even
 if the "known_configuration" extension was used for this handshake,
 thus requiring a signature over the configuration before it can
-be used by the client. Clients MUST not rely on the
+be used by the client. Clients MUST NOT rely on the
 ServerConfiguration message until successfully receiving and
 processing the server's Certificate, CertificateVerify, and
 Finished. If there is a failure in processing those messages, the
