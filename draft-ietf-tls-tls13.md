@@ -3595,6 +3595,16 @@ for general use and should be assumed to be potentially unsafe. The set
 of curves specified here is sufficient for interoperability with all
 currently deployed and properly configured TLS implementations.
 
+#### Deprecated Extensions
+
+The following extensions are no longer applicable to TLS 1.3, although
+TLS 1.3 clients MAY send them if they are willing to negotiate them
+with prior versions of TLS. TLS 1.3 servers MUST ignore these
+extensions if they are negotiating TLS 1.3: max_fragment_length,
+truncated_hmac, srp, encrypt_then_mac, extended_master_secret,
+SessionTicket, and renegotiation_info.
+
+
 %%### Key Exchange Messages
 %%### Authentication Messages
 %%### Handshake Finalization Messages
