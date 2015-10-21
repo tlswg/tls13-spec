@@ -2255,11 +2255,13 @@ hash
   and SHA-512 {{SHS}}, respectively. The "none" value is provided for
   future extensibility, in case of a signature algorithm which does
   not require hashing before signing.  Previous versions of TLS
-  supported MD5 and SHA-1. These algorithms are now deprecated and
-  MUST NOT be offered by TLS 1.3 implementations.  SHA-1 SHOULD NOT be
-  offered, however clients willing to negotiate use of TLS 1.2 MAY
-  offer support for SHA-1 for backwards compatibility with old
-  servers.
+  supported MD5 and SHA-1.  These algorithms are now deprecated.
+  MD5 MUST NOT be offered by TLS 1.3 implementations; SHA-1 SHOULD
+  NOT be offered.
+
+  Clients MAY offer support for SHA-1 for backwards compatibility,
+  either with TLS 1.2 servers or for servers that have certificate
+  chains with signatures based on SHA-1.
 
 signature
 : This field indicates the signature algorithm that may be used.
@@ -2279,7 +2281,7 @@ suite indicates permissible signature algorithms but not hash algorithms.
 {{server-certificate-selection}} and {{key-share}} describe the
 appropriate rules.
 
-Clients offering support for SHA-1 for TLS 1.2 servers MUST do so by listing
+Clients offering support for SHA-1 for backwards compatibility MUST do so by listing
 those hash/signature pairs as the lowest priority (listed after all other
 pairs in the supported_signature_algorithms vector). TLS 1.3 servers MUST NOT
 offer a SHA-1 signed certificate unless no valid certificate chain can be
@@ -3183,7 +3185,8 @@ If the server cannot produce a certificate chain that is signed only via the
 indicated supported pairs, then it SHOULD continue the handshake by sending
 the client a certificate chain of its choice that may include algorithms
 that are not known to be supported by the client. This fallback chain MAY
-use the deprecated SHA-1 hash algorithm.
+use the deprecated SHA-1 hash algorithm only if the "signature_algorithms"
+extension provided by the client permits it.
 If the client cannot construct an acceptable chain using the provided
 certificates and decides to abort the handshake, then it MUST send an
 "unsupported_certificate" alert message and close the connection.
