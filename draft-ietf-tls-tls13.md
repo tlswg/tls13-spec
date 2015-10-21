@@ -3441,7 +3441,10 @@ MUST send an empty Certificate message followed by Finished.
 Note: because there may already be application data messages in
 flight, the server MUST be prepared to receive an arbitrary number
 of such messages before receiving the Authentication messages.
-
+[[TODO: We need to add a context value here to allow the server
+to ensure freshness of the signature and to correlate requests
+and responses. See:
+https://github.com/tlswg/tls13-spec/issues/262.]]
 
 #  Cryptographic Computations
 
