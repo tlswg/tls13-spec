@@ -1715,14 +1715,14 @@ Data  |  (Finished)
 ~~~
 {: #tls-0-rtt title="Message flow for a zero round trip handshake"}
 
-As shown in Figure {{tls-0-rtt}}, the Zero-RTT data is just added
+As shown in {{tls-0-rtt}}, the Zero-RTT data is just added
 to the 1-RTT handshake in the first flight. Specifically, the
 client sends its Authentication messages after the ClientHello,
 followed by any application data. The rest of the handshake
 messages are the same as with Figure {{tls-full}}. This implies
 that the server can request client authentication even if the
-client offers a certificate on its first flight. This isn't
-necessarily useful but is consistent with the server being
+client offers a certificate on its first flight. This
+is consistent with the server being
 able to ask for client authentication after the handshake is
 complete. See {{post-handshake-authentication}}.
 
@@ -2877,7 +2877,10 @@ Structure of this message:
            CertificateExtension certificate_extensions<0..2^16-1>;
        } CertificateRequest;
 
-[[TODO: We agreed to add a context string here.]]
+[[TODO: We agreed to allow the server to provide a
+context string here and we should require that to be fresh
+in the post-handshake context.
+https://github.com/tlswg/tls13-spec/issues/262.]]
 
 supported_signature_algorithms
 : A list of the hash/signature algorithm pairs that the server is
@@ -3064,7 +3067,9 @@ Mode             Handshake Context                        Base Key
 0-RTT            ClientHello + ServerConfiguration        xSS
                              + Server Certificate
                              + CertificateRequest
-                            
+                 (ServerConfiguration, etc. are
+                 from previous handshake).
+
 1-RTT (Server)   ClientHello ... ServerConfiguration      master_secret
                  
 1-RTT (Client)   ClientHello ... ServerFinished           master_secret
@@ -3353,27 +3358,17 @@ Structure of this message:
 
 The verify_data value is computed as follows:
 
-~~~
-verify_data =
-  HMAC(finished_key, finished_label + '\0' + Handshake Context +
-                     Certificate + CertificateVerify)
-~~~
 
-Where:
+       verify_data =
+           HMAC(finished_key,
+                Handshake Context + Certificate* + CertificateVerify*)
 
-HMAC
-: HMAC {{RFC2104}} using the Hash algorithm for the handshake.
+       * Only included if present.
+
+
+Where HMAC {{RFC2104}} uses the Hash algorithm for the handshake.
 As noted above: the HMAC input can generally be implemented by a running
 hash.
-
-finished_label
-: For Finished messages sent by the client, the string
-  "client finished".  For Finished messages sent by the server,
-  the string "server finished" [[OPEN ISSUE: Do we still need these?
-  labels? Should we expand them to indicate which phase we are
-  sending the messages in?]]
-{: br}
-
 
 In previous versions of TLS, the verify_data was always 12 octets long. In
 the current version of TLS, it is the size of the HMAC output for the
