@@ -94,14 +94,17 @@ informative:
   RFC4366:
   RFC4492:
   RFC4506:
+  RFC5054:
   RFC5077:
   RFC5081:
   RFC5116:
   RFC5246:
+  RFC5746:
   RFC5763:
   RFC5929:
   RFC6176:
   RFC7250:
+  RFC7366:
   RFC7465:
   RFC7568:
   RFC7627:
@@ -3594,6 +3597,22 @@ server configuration issues. They are no longer considered appropriate
 for general use and should be assumed to be potentially unsafe. The set
 of curves specified here is sufficient for interoperability with all
 currently deployed and properly configured TLS implementations.
+
+#### Deprecated Extensions
+
+The following extensions are no longer applicable to TLS 1.3, although
+TLS 1.3 clients MAY send them if they are willing to negotiate them
+with prior versions of TLS. TLS 1.3 servers MUST ignore these
+extensions if they are negotiating TLS 1.3: 
+ max_fragment_length {{RFC6066},
+truncated_hmac {{RFC6066}},
+srp {{RFC5054}},
+encrypt_then_mac {{RFC7366}},
+extended_master_secret {{RFC7627}},
+SessionTicket {{RFC5077}},
+and renegotiation_info {{RFC5746}}.
+
+
 
 %%### Key Exchange Messages
 %%### Authentication Messages
