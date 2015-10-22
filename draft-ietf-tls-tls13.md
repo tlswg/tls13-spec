@@ -2254,9 +2254,11 @@ hash
   values indicate support for unhashed data, SHA-1, SHA-256, SHA-384,
   and SHA-512 {{SHS}}, respectively. The "none" value is provided for
   future extensibility, in case of a signature algorithm which does
-  not require hashing before signing.  Previous versions of TLS
-  supported MD5 and SHA-1.  These algorithms are now deprecated.
-  MD5 MUST NOT be offered by TLS 1.3 implementations; SHA-1 SHOULD
+  not require hashing before signing.
+
+  Previous versions of TLS
+  supported MD5, SHA-1 and SHA-224.  These algorithms are now deprecated.
+  MD5 and SHA-224 MUST NOT be offered by TLS 1.3 implementations; SHA-1 SHOULD
   NOT be offered.
 
   Clients MAY offer support for SHA-1 for backwards compatibility,
@@ -3246,7 +3248,7 @@ Any endpoint receiving any certificate signed using any signature algorithm
 using an MD5 hash MUST send a "bad_certificate" alert message and close
 the connection.
 
-As SHA-1 and SHA-224 are deprecated, support for them is NOT RECOMMENDED.
+As SHA-1 is deprecated, support for them is NOT RECOMMENDED.
 Endpoints that reject chains due to use of a deprecated hash MUST send
 a fatal "bad_certificate" alert message before closing the connection.
 All endpoints are RECOMMENDED to transition to SHA-256 or better as soon
