@@ -45,6 +45,7 @@ normative:
   RFC7251:
   I-D.ietf-tls-chacha20-poly1305:
   I-D.irtf-cfrg-curves:
+  I-D.irtf-cfrg-eddsa:
 
   AES:
        title: Specification for the Advanced Encryption Standard (AES)
@@ -294,6 +295,9 @@ server: The endpoint which did not initiate the TLS connection.
 
 ##  Major Differences from TLS 1.2
 
+draft-11
+
+- Port the CFRG curves&signatures work from RFC4492bis.
 
 draft-10
 
@@ -751,6 +755,14 @@ or its successors.  Data to be signed/verified is hashed, and the
 result run directly through the ECDSA algorithm with no additional
 hashing.  The SignatureAndHashAlgorithm parameter in the DigitallySigned
 object indicates the digest algorithm which was used in the signature.
+Special signature-only curves MUST NOT be used for ECDSA unless otherwise
+noted.
+
+All EdDSA computations MUST be performed according to CFRG EdDSA document
+{{I-D.irtf-cfrg-eddsa}} or its successors. Data to be signed/verifies is
+passed as-is to the EdDSA algorithm with no hashing. And the signature
+output is placed as-is to the signature field. The SignatureAndHashAlgorithm
+MUST have hash algorithm of none(0).
 
 In the following example
 
@@ -2207,6 +2219,7 @@ The "extension_data" field of this extension contains a
            dsa(2),
            ecdsa(3),
            rsapss(4),
+           eddsa(5),
            (255)
        } SignatureAlgorithm;
 
@@ -2232,20 +2245,19 @@ hash
 : This field indicates the hash algorithms which may be used.  The
   values indicate support for unhashed data, SHA-1, SHA-256, SHA-384,
   and SHA-512 {{SHS}}, respectively. The "none" value is provided for
-  future extensibility, in case of a signature algorithm which does
-  not require hashing before signing.  Previous versions of TLS
-  supported MD5 and SHA-1. These algorithms are now deprecated and
-  MUST NOT be offered by TLS 1.3 implementations.  SHA-1 SHOULD NOT be
-  offered, however clients willing to negotiate use of TLS 1.2 MAY
-  offer support for SHA-1 for backwards compatibility with old
-  servers.
+  signature algorithms which do not require hashing before signing,
+  such as EdDSA.  Previous versions of TLS supported MD5 and SHA-1.
+  These algorithms are now deprecated and MUST NOT be offered by TLS
+  1.3 implementations.  SHA-1 SHOULD NOT be offered, however clients
+  willing to negotiate use of TLS 1.2 MAY offer support for SHA-1 for
+  backwards compatibility with old servers.
 
 signature
 : This field indicates the signature algorithm that may be used.
   The values indicate RSASSA-PKCS1-v1_5 {{RFC3447}}, 
-  DSA {{DSS}}, ECDSA {{ECDSA}}, and RSASSA-PSS
-  {{RFC3447}} respectively. Because all RSA signatures used in
-  signed TLS handshake messages (see {{digital-signing}}),
+  DSA {{DSS}}, ECDSA {{ECDSA}}, RSASSA-PSS {{RFC3447}}, and
+  EdDSA {{I-D.irtf-cfrg-eddsa}} respectively. Because all RSA signatures
+  used in signed TLS handshake messages (see {{digital-signing}}),
   as opposed to those in certificates, are RSASSA-PSS, the "rsa"
   value refers solely to signatures which appear in certificates.
   The use of DSA and anonymous is deprecated. Previous versions
@@ -2301,6 +2313,12 @@ The "extension_data" field of this extension contains a
            obsolete_RESERVED (1..22),
            secp256r1 (23), secp384r1 (24), secp521r1 (25),
 
+           // ECDH functions.
+           x25519 (29), x448 (30),
+
+           // Special signature curves.
+           Ed25519 (31), Ed448 (32),
+
            // Finite Field Groups.
            ffdhe2048 (256), ffdhe3072 (257), ffdhe4096 (258),
            ffdhe6144 (259), ffdhe8192 (260),
@@ -2322,6 +2340,13 @@ secp256r1, etc.
   X9.62 {{X962}} and FIPS 186-4 {{DSS}}.
   Values 0xFE00 through 0xFEFF are reserved for private use.
 
+x25519, etc.
+: Indicates support of the corresponding ECDH function.
+
+Ed25519, etc.
+: Indicates support of the corresponding curve for
+  signatures.
+
 ffdhe2048, etc.
 : Indicates support of the corresponding finite field
   group, defined in {{I-D.ietf-tls-negotiated-ff-dhe}}.
@@ -2340,8 +2365,8 @@ extension type (Supported Group Extension):
        00 0A 00 06 00 04 00 17 00 18
 
 NOTE: A server participating in an ECDHE-ECDSA key exchange may use
-different curves for (i) the ECDSA key in its certificate, and (ii)
-the ephemeral ECDH key in its KeyShare extension.  The server
+different curves for (i) the ECDSA or EdDSA key in its certificate,
+and (ii) the ephemeral ECDH key in its KeyShare extension.  The server
 must consider the supported groups in both cases.
 
 [[TODO: IANA Considerations.]]
@@ -2371,7 +2396,8 @@ group
 : The named group for the key being exchanged.
   Finite Field Diffie-Hellman {{DH}} parameters are described in
   {{ffdhe-param}}; Elliptic Curve Diffie-Hellman parameters are
-  described in {{ecdhe-param}}.
+  described in {{ecdhe-param}}. Signature-only curves, currently
+  Ed25519 (31) and Ed448 (32), MUST NOT be used.
 
 key_exchange
 : Key exchange information.  The contents of this field are
@@ -2444,27 +2470,24 @@ string ECPoint.point.
        opaque point <1..2^8-1>;
 
 point
-: This is the byte string representation of an elliptic curve
-  point following the conversion routine in Section 4.3.6 of ANSI
-  X9.62 {{X962}}.
+: For secp curves, This is the byte string representation of an
+  elliptic curve point following the conversion routine in Section
+  4.3.6 of ANSI X9.62 {{X962}}.
+
+  For ECDH functions, this is raw octet-string output of the ECDH
+  function with input point being the public basepoint. E.g. 32
+  octets for X25519 (29) 56 octets for X448 (30).
 {:br }
 
 Although X9.62 supports multiple point formats, any given curve
 MUST specify only a single point format. All curves currently
 specified in this document MUST only be used with the uncompressed
-point format.
+point format (the format for all ECDH functions is considered
+uncompressed).
 
 Note: Versions of TLS prior to 1.3 permitted point negotiation;
 TLS 1.3 removes this feature in favor of a single point format
 for each curve.
-
-
-[[OPEN ISSUE: We will need to adjust the compressed/uncompressed point issue
-if we have new curves that don't need point compression. This depends
-on the CFRG's recommendations. The expectation is that future curves will
-come with defined point formats and that existing curves conform to
-X9.62.]]
-
 
 #### Pre-Shared Key Extension
 
@@ -2782,8 +2805,8 @@ The following rules apply to the certificates sent by the server:
                        in the server's KeyShare extension.
                        Note: ECDHE_RSA is defined in [RFC4492].
 
-    ECDHE_ECDSA        ECDSA-capable public key; the certificate MUST
-                       allow the key to be used for signing with the
+    ECDHE_ECDSA        ECDSA- or EdDSA-capable public key; the certificate
+                       MUST allow the key to be used for signing with the
                        hash algorithm that will be employed in the
                        server's KeyShare extension.  The public key
                        MUST use a curve and point format supported by
@@ -3034,7 +3057,7 @@ CertificateVerify, Finished and other messages.
 client's "signature_algorithms" extension unless no valid certificate chain can be
 produced without unsupported algorithms (see {{signature-algorithms}}). Note that
 there is a possibility for inconsistencies here. For instance, the client might
-offer ECDHE_ECDSA key exchange but omit any ECDSA pairs from its
+offer ECDHE_ECDSA key exchange but omit any ECDSA and EdDSA pairs from its
 "signature_algorithms" extension. In order to negotiate correctly, the server
 MUST check any candidate cipher suites against the "signature_algorithms"
 extension before selecting them. This is somewhat inelegant but is a compromise
@@ -3404,13 +3427,13 @@ before it is used as the input to HKDF.
 
 ### Elliptic Curve Diffie-Hellman
 
-All ECDH calculations (including parameter and key generation as well
-as the shared secret calculation) are performed according to [6]
-using the ECKAS-DH1 scheme with the identity map as key derivation
-function (KDF), so that the shared secret is the x-coordinate of
-the ECDH shared secret elliptic curve point represented as an octet
-string.  Note that this octet string (Z in IEEE 1363 terminology) as
-output by FE2OSP, the Field Element to Octet String Conversion
+All ECDH calculations that are not ECDH functions (including parameter
+and key generation as well as the shared secret calculation) are
+performed according to [6] using the ECKAS-DH1 scheme with the identity
+map as key derivation function (KDF), so that the shared secret is the
+x-coordinate of the ECDH shared secret elliptic curve point represented
+as an octet string.  Note that this octet string (Z in IEEE 1363 terminology)
+as output by FE2OSP, the Field Element to Octet String Conversion
 Primitive, has constant length for any given field; leading zeros
 found in this octet string MUST NOT be truncated.
 
@@ -3418,6 +3441,17 @@ found in this octet string MUST NOT be truncated.
 complete picture is that ECDH is employed with a non-trivial KDF
 because TLS does not directly use this secret for anything
 other than for computing other secrets.)
+
+ECDH functions are used as follows:
+
+* The public key to put into ECPoint.point structure is output of applying
+  the ECDH function to the secret key of appropriate length (into scalar
+  input) and the standard public basepoint (into u-coordinate point input).
+* The ECDH shared secret is output of applying ECDH function to the secret
+  key (into scauar input) and peer's public key (into u-coordinate point
+  input). The output is used raw, with no processing.
+
+For X25519 and X448, see {{I-D.irtf-cfrg-curves}}
 
 
 #  Mandatory Algorithms
