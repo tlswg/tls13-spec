@@ -1020,7 +1020,8 @@ back again.
 
 AEAD ciphers take as input a single key, a nonce, a plaintext, and "additional
 data" to be included in the authentication check, as described in Section 2.1
-of {{RFC5116}}. The key is either the client_write_key or the server_write_key.
+of {{RFC5116}}. The key is either the client_write_key or the server_write_key
+and in TLS 1.3 the additional data input is empty (zero length). 
 
 %%% Record Layer
        struct {
@@ -1089,19 +1090,6 @@ specified a partially explicit nonce.
 
 The plaintext is the concatenation of TLSPlaintext.fragment and TLSPlaintext.type.
 
-The additional authenticated data, which we denote as additional_data, is
-defined as follows:
-
-       additional_data = seq_num + TLSPlaintext.record_version
-
-where "+" denotes concatenation.
-
-Note: In versions of TLS prior to 1.3, the additional_data included a
-length field. This presents a problem for cipher constructions with
-data-dependent padding (such as CBC). TLS 1.3 removes the length
-field and relies on the AEAD cipher to provide integrity for the
-length of the data.
-
 The AEAD output consists of the ciphertext output by the AEAD
 encryption operation. The length of the plaintext is greater than
 TLSPlaintext.length due to the inclusion of TLSPlaintext.type and
@@ -1111,17 +1099,16 @@ amount that varies with the AEAD cipher. Since the ciphers might
 incorporate padding, the amount of overhead could vary with different
 lengths of plaintext. Symbolically,
 
-       AEADEncrypted = AEAD-Encrypt(write_key, nonce, plaintext of fragment,
-                                    additional_data)
+       AEADEncrypted =
+           AEAD-Encrypt(write_key, nonce, plaintext of fragment)
 
-In order to decrypt and verify, the cipher takes as input the key, nonce, the
-"additional_data", and the AEADEncrypted value. The output is either the
-plaintext or an error indicating that the decryption failed. There is no
+In order to decrypt and verify, the cipher takes as input the key,
+nonce, and the AEADEncrypted value. The output is either the plaintext
+or an error indicating that the decryption failed. There is no
 separate integrity check. That is:
 
-       plaintext of fragment = AEAD-Decrypt(write_key, nonce,
-                                            AEADEncrypted,
-                                            additional_data)
+       plaintext of fragment =
+           AEAD-Decrypt(write_key, nonce, AEADEncrypted)
 
 If the decryption fails, a fatal "bad_record_mac" alert MUST be generated.
 
