@@ -2040,9 +2040,12 @@ extensions
   client can appear in the server's list. In TLS 1.3 as opposed to
   previous versions of TLS, the server's extensions are split between
   the ServerHello and the EncryptedExtensions {{encrypted-extensions}}
-  message. The ServerHello
-  MUST only include extensions which are required to establish
-  the cryptographic context.
+  message. The ServerHello MUST only include extensions which are
+  required to establish the cryptographic context. Currently the only
+  such extensions are "key_share" and "pre_shared_key". Clients MUST
+  check the ServerHello for the presence of any forbidden extensions
+  and if any are found MUST terminate the handshake with a
+  "illegal_parameter" alert.
 {:br }
 
 ####  Hello Retry Request
@@ -2662,19 +2665,17 @@ needs to provide enough information to allow the server to
 decrypt the traffic without negotiation. This is accomplished
 by having the client indicate the "cryptographic determining
 parameters" in its ClientHello, which are necessary to decrypt
-the client's packets. This includes the following
+the client's packets (i.e., those present in the ServerHello).
+This includes the following
 values:
 
 - The cipher suite identifier.
 
-- If PSK is being used, the server's version of the
-  PreSharedKey extension (indicating the PSK the client is
-  using).
+- "key_share" if (EC)DHE is being used.
 
-[[TODO: Are there other extensions we need? I've gone over the list and I
-don't see any, but...]]
-[[TODO: This should be the same list as what you need for !EncryptedExtensions.
-Consolidate this list.]]
+- f PSK is being used, the server's version of the
+  "pre_shared_key" (indicating the PSK the client is
+  using).
 
 ##### Replay Properties
 
@@ -2703,11 +2704,14 @@ establish the cryptographic context. The same extension types
 MUST NOT appear in both the ServerHello and EncryptedExtensions.
 If the same extension appears in both locations, the client
 MUST rely only on the value in the EncryptedExtensions block.
-[[OPEN ISSUE: Should we just produce a canonical list of what
-goes where and have it be an error to have it in the wrong
-place? That seems simpler. Perhaps have a whitelist of which
-extensions can be unencrypted and everything else MUST be
-encrypted.]]
+All server-sent extensions other than those explicitly
+listed in {{server-hello}} or designated in the IANA registry
+MUST only appear in EncryptedExtensions. Extensions which
+are designated to appear in ServerHello MUST NOT appear in
+EncryptedExtensions. Clients MUST check EncryptedExtensions
+for the presence of any forbidden extensions and if
+any are found MUST terminate the handshake with
+a "illegal_parameter" alert.
 
 Structure of this message:
 
@@ -3541,9 +3545,12 @@ updated it to reference this document. The registry and its allocation policy
 (unchanged from {{RFC4366}}) is listed below:
 
 -  TLS ExtensionType Registry: Future values are allocated via IETF
-  Consensus {{RFC2434}}.  IANA has updated this registry to include
-  the "signature_algorithms" extension and its corresponding value
-  (see {{hello-extensions}}).
+  Consensus {{RFC2434}}.  IANA [shall update/has updated] this registry
+  to include the "key_share", "pre_shared_key", and "early_data"
+  extensions as defined in this document. IANA [shall update/has updated]
+  this registry to include an "Encrypted TLS 1.3" column to indicate
+  whether these extensions SHALL be in the EncryptedExtensions block
+  rather than the ServerHello.
 
 This document also uses two registries originally created in {{RFC4492}}. IANA
 [should update/has updated] it to reference this document. The registries
