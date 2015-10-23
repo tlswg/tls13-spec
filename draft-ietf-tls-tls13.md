@@ -3552,7 +3552,7 @@ updated it to reference this document. The registry and its allocation policy
   values: "Clear", indicating that they shall be in the ServerHello
   "Encrypted", indicating that they shall be in the EncryptedExtensions
   block, and "Forbidden" indicating that they are not used in TLS 1.3.
-  This registry SHALL initially be populated with the values in this
+  This registry [shall be/has been] initially populated with the values in this
   document.
 
 This document also uses two registries originally created in {{RFC4492}}. IANA
