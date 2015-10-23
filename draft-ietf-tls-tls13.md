@@ -2673,7 +2673,7 @@ values:
 
 - "key_share" if (EC)DHE is being used.
 
-- f PSK is being used, the server's version of the
+- If PSK is being used, the server's version of the
   "pre_shared_key" (indicating the PSK the client is
   using).
 
@@ -3548,9 +3548,12 @@ updated it to reference this document. The registry and its allocation policy
   Consensus {{RFC2434}}.  IANA [shall update/has updated] this registry
   to include the "key_share", "pre_shared_key", and "early_data"
   extensions as defined in this document. IANA [shall update/has updated]
-  this registry to include an "Encrypted TLS 1.3" column to indicate
-  whether these extensions SHALL be in the EncryptedExtensions block
-  rather than the ServerHello.
+  this registry to include an "TLS 1.3" column with the following three
+  values: "Clear", indicating that they shall be in the ServerHello
+  "Encrypted", indicating that they shall be in the EncryptedExtensions
+  block, and "Forbidden" indicating that they are not used in TLS 1.3.
+  This registry SHALL initially be populated with the values in this
+  document.
 
 This document also uses two registries originally created in {{RFC4492}}. IANA
 [should update/has updated] it to reference this document. The registries
