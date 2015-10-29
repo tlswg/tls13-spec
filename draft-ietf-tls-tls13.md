@@ -2679,7 +2679,7 @@ identifier in this case.
 
 When this message will be sent:
 
-> If this message is sent, it MUST be sent immediately after the
+> The EncryptedExtensions message MUST be sent immediately after the
 ServerHello message. This is the first message that is encrypted
 under keys derived from ES.
 
