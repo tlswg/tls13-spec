@@ -746,9 +746,9 @@ In RSA signing, the opaque vector contains the signature generated
 using the RSASSA-PSS signature scheme defined in {{RFC3447}} with
 MGF1. The digest used in the mask generation function MUST be the same
 as the digest which is being signed (i.e., what appears in
-algorithm.signature). The length of the salt MUST be equal to the octet
-length of the digest output. Note that previous versions of TLS used
-RSASSA-PKCS1-v1_5, not RSASSA-PSS.
+algorithm.signature). The length of the salt MUST be equal to the length
+of the digest output. Note that previous versions of TLS used RSASSA-PKCS1-v1_5,
+not RSASSA-PSS.
 
 All ECDSA computations MUST be performed according to ANSI X9.62 {{X962}}
 or its successors.  Data to be signed/verified is hashed, and the
