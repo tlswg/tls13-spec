@@ -1895,8 +1895,6 @@ random_bytes
 Note: Versions of TLS prior to TLS 1.3 used the top 32 bits of
 the Random value to encode the time since the UNIX epoch.
 
-
-%%% Hello Messages
 The cipher suite list, passed from the client to the server in the ClientHello
 message, contains the combinations of cryptographic algorithms supported by the
 client in order of the client's preference (favorite choice first). Each cipher
@@ -1910,14 +1908,12 @@ cipher suites, and process the remaining ones as usual.
 %%% Hello Messages
        uint8 CipherSuite[2];    /* Cryptographic suite selector */
 
-       enum { null(0), (255) } CompressionMethod;
-
        struct {
            ProtocolVersion client_version = { 3, 4 };    /* TLS v1.3 */
            Random random;
-           SessionID session_id;
+           opaque legacy_session_id<0..32>;
            CipherSuite cipher_suites<2..2^16-2>;
-           CompressionMethod compression_methods<1..2^8-1>;
+           opaque legacy_compression_methods<1..2^8-1>;
            Extension extensions<0..2^16-1>;
        } ClientHello;
 
@@ -1938,13 +1934,13 @@ client_version
 random
 : A client-generated random structure.
 
-session_id
-: Versions of TLS prior to TLS 1.3 supported a session resumption
+legacy_session_id
+: Versions of TLS before TLS 1.3 supported a session resumption
   feature which has been merged with Pre-Shared Keys in this version
   (see {{resumption-and-psk}}).
   This field MUST be ignored by a server negotiating TLS 1.3 and
-  should be set as a zero length vector (i.e., a single zero byte
-  length field) by clients which do not have a cached session_id
+  SHOULD be set as a zero length vector (i.e., a single zero byte
+  length field) by clients which do not have a cached session ID
   set by a pre-TLS 1.3 server.
 
 cipher_suites
@@ -1952,11 +1948,12 @@ cipher_suites
   client, with the client's first preference first.
   Values are defined in {{cipher-suites}}.
 
-compression_methods
+legacy_compression_methods
 : Versions of TLS before 1.3 supported compression and the list of
   compression methods was supplied in this field. For any TLS 1.3
-  ClientHello, this field MUST contain only the "null" compression
-  method with the code point of 0. If a TLS 1.3 ClientHello is
+  ClientHello, this vector MUST contain exactly one byte set to
+  zero, which corresponds to the "null" compression method in
+  prior versions of TLS. If a TLS 1.3 ClientHello is
   received with any other value in this field, the server MUST
   generate a fatal "illegal_parameter" alert. Note that TLS 1.3
   servers may receive TLS 1.2 or prior ClientHellos which contain
