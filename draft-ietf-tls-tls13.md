@@ -696,13 +696,6 @@ For example:
 
        Example1 ex1 = {1, 4};  /* assigns f1 = 1, f2 = 4 */
 
-## Primitive Types
-
-The following common primitive types are defined and used subsequently:
-
-          enum { false(0), true(1) } Boolean;
-
-
 ##  Cryptographic Attributes
 
 The two cryptographic operations --- digital signing, and authenticated
