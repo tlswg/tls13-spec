@@ -2257,7 +2257,7 @@ hash
   not require hashing before signing.
 
   Previous versions of TLS
-  supported MD5, SHA-1 and SHA-224.  These algorithms are now deprecated.
+  supported MD5, SHA-1, and SHA-224.  These algorithms are now deprecated.
   MD5 and SHA-224 MUST NOT be offered by TLS 1.3 implementations; SHA-1 SHOULD
   NOT be offered.
 
@@ -3248,7 +3248,7 @@ Any endpoint receiving any certificate signed using any signature algorithm
 using an MD5 hash MUST send a "bad_certificate" alert message and close
 the connection.
 
-As SHA-1 is deprecated, support for them is NOT RECOMMENDED.
+SHA-1 is deprecated and therefore NOT RECOMMENDED.
 Endpoints that reject chains due to use of a deprecated hash MUST send
 a fatal "bad_certificate" alert message before closing the connection.
 All endpoints are RECOMMENDED to transition to SHA-256 or better as soon
