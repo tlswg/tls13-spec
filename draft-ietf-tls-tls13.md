@@ -2022,9 +2022,9 @@ extensions
   the ServerHello and the EncryptedExtensions {{encrypted-extensions}}
   message. The ServerHello MUST only include extensions which are
   required to establish the cryptographic context. Currently the only
-  such extensions are "key_share" and "pre_shared_key". Clients MUST
-  check the ServerHello for the presence of any forbidden extensions
-  and if any are found MUST terminate the handshake with a
+  such extensions are "key_share", "pre_shared_key", and "early_data".
+  Clients MUST check the ServerHello for the presence of any forbidden
+  extensions and if any are found MUST terminate the handshake with a
   "illegal_parameter" alert.
 {:br }
 
