@@ -302,6 +302,9 @@ draft-10
 
 - Merge client and server key shares into a single extension.
 
+- Remove sequence number and version from additional_data, which
+  is now empty.
+
 
 draft-09
 
