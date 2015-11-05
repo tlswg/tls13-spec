@@ -2289,6 +2289,11 @@ pairs in the supported_signature_algorithms vector). TLS 1.3 servers MUST NOT
 offer a SHA-1 signed certificate unless no valid certificate chain can be
 produced without it (see {{server-certificate-selection}}).
 
+The signatures on certificates that are self-signed or certificates that are
+trust anchors are not validated.  Thus, a self-signed certificate or trust
+anchor MAY use a hash or signature algorithm that is not advertised as being
+supported in the signature_algorithms extension.
+
 Note: TLS 1.3 servers MAY receive TLS 1.2 ClientHellos which do not contain
 this extension. If those servers are willing to negotiate TLS 1.2, they MUST
 behave in accordance with the requirements of {{RFC5246}} when negotiating
@@ -2822,12 +2827,16 @@ The following rules apply to the certificates sent by the server:
 All certificates provided by the server MUST be signed by a
 hash/signature algorithm pair that appears in the "signature_algorithms"
 extension provided by the client, if they are able to provide such
-a chain (see {{signature-algorithms}}).
+a chain (see {{signature-algorithms}}).  Certificates that are self-signed
+or certificates that are expected to be trust anchors are not validated as
+part of the chain and therefore MAY be signed with any algorithm.
+
 If the server cannot produce a certificate chain that is signed only via the
 indicated supported pairs, then it SHOULD continue the handshake by sending
 the client a certificate chain of its choice that may include algorithms
 that are not known to be supported by the client. This fallback chain MAY
 use the deprecated SHA-1 hash algorithm.
+
 If the client cannot construct an acceptable chain using the provided
 certificates and decides to abort the handshake, then it MUST send an
 "unsupported_certificate" alert message and close the connection.
