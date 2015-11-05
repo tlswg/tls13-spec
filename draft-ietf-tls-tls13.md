@@ -194,6 +194,14 @@ informative:
        date: 1993
        seriesinfo:
          ITU-T: X.501
+  IEEE1363:
+       title: "Standard Specifications for Public Key Cryptography"
+       date: 2000
+       author:
+         org: IEEE
+       seriesinfo:
+         IEEE 1363
+       
 
 
 --- abstract
@@ -297,7 +305,7 @@ server: The endpoint which did not initiate the TLS connection.
 
 draft-11
 
-- Port the CFRG curves&signatures work from RFC4492bis.
+- Port the CFRG curves & signatures work from RFC4492bis.
 
 draft-11
 
@@ -758,14 +766,12 @@ or its successors.  Data to be signed/verified is hashed, and the
 result run directly through the ECDSA algorithm with no additional
 hashing.  The SignatureAndHashAlgorithm parameter in the DigitallySigned
 object indicates the digest algorithm which was used in the signature.
-Special signature-only curves MUST NOT be used for ECDSA unless otherwise
-noted.
+Signature-only curves MUST NOT be used for ECDSA unless otherwise noted.
 
-All EdDSA computations MUST be performed according to CFRG EdDSA document
-{{I-D.irtf-cfrg-eddsa}} or its successors. Data to be signed/verifies is
-passed as-is to the EdDSA algorithm with no hashing. And the signature
-output is placed as-is to the signature field. The SignatureAndHashAlgorithm
-MUST have hash algorithm of none(0).
+All EdDSA computations MUST be performed according to {{I-D.irtf-cfrg-eddsa}}
+or its successors. Data to be signed/verified is passed as-is to the EdDSA
+algorithm with no hashing. The signature output is placed as-is in the
+signature field. The SignatureAndHashAlgorithm.hash value MUST set to none(0).
 
 In the following example
 
@@ -2317,10 +2323,10 @@ The "extension_data" field of this extension contains a
            secp256r1 (23), secp384r1 (24), secp521r1 (25),
 
            // ECDH functions.
-           x25519 (29), x448 (30),
+           ecdh_x25519 (29), ecdh_x448 (30),
 
-           // Special signature curves.
-           Ed25519 (31), Ed448 (32),
+           // Signature curves.
+           eddsa_ed25519 (31), eddsa_ed448 (32),
 
            // Finite Field Groups.
            ffdhe2048 (256), ffdhe3072 (257), ffdhe4096 (258),
@@ -2343,10 +2349,10 @@ secp256r1, etc.
   X9.62 {{X962}} and FIPS 186-4 {{DSS}}.
   Values 0xFE00 through 0xFEFF are reserved for private use.
 
-x25519, etc.
-: Indicates support of the corresponding ECDH function.
+ecdh_x25519 and ecdh_x448
+: Indicates support of the corresponding ECDH functions X25519 and X448.
 
-Ed25519, etc.
+eddsa_ed25519 and eddsa_ed448
 : Indicates support of the corresponding curve for
   signatures.
 
@@ -2400,7 +2406,7 @@ group
   Finite Field Diffie-Hellman {{DH}} parameters are described in
   {{ffdhe-param}}; Elliptic Curve Diffie-Hellman parameters are
   described in {{ecdhe-param}}. Signature-only curves, currently
-  Ed25519 (31) and Ed448 (32), MUST NOT be used.
+  eddsa_ed25519 (31) and eddsa_ed448 (32), MUST NOT be used.
 
 key_exchange
 : Key exchange information.  The contents of this field are
@@ -2473,13 +2479,13 @@ string ECPoint.point.
        opaque point <1..2^8-1>;
 
 point
-: For secp curves, This is the byte string representation of an
-  elliptic curve point following the conversion routine in Section
-  4.3.6 of ANSI X9.62 {{X962}}.
+: For secp256r1, secp384r1 and secp521r1, this is the byte string
+  representation of an elliptic curve point following the conversion
+  routine in Section 4.3.6 of ANSI X9.62 {{X962}}.
 
-  For ECDH functions, this is raw octet-string output of the ECDH
-  function with input point being the public basepoint. E.g. 32
-  octets for X25519 (29) 56 octets for X448 (30).
+  For ecdh_x25519 and ecdh_x448, this is raw opaque octet-string
+  representation of point (in the format those functions use), 32 octets
+  for ecdh_x25519(29) and 56 octets for ecdh_x448(30).
 {:br }
 
 Although X9.62 supports multiple point formats, any given curve
@@ -2808,7 +2814,7 @@ The following rules apply to the certificates sent by the server:
                        in the server's KeyShare extension.
                        Note: ECDHE_RSA is defined in [RFC4492].
 
-    ECDHE_ECDSA        ECDSA- or EdDSA-capable public key; the certificate
+    ECDHE_ECDSA        ECDSA or EdDSA public key; the certificate
                        MUST allow the key to be used for signing with the
                        hash algorithm that will be employed in the
                        server's KeyShare extension.  The public key
@@ -3430,9 +3436,9 @@ before it is used as the input to HKDF.
 
 ### Elliptic Curve Diffie-Hellman
 
-All ECDH calculations that are not ECDH functions (including parameter
+For secp256r1, secp384r1 and secp521r1, ECDH calculations (including parameter
 and key generation as well as the shared secret calculation) are
-performed according to [6] using the ECKAS-DH1 scheme with the identity
+performed according to {{IEEE1363}} using the ECKAS-DH1 scheme with the identity
 map as key derivation function (KDF), so that the shared secret is the
 x-coordinate of the ECDH shared secret elliptic curve point represented
 as an octet string.  Note that this octet string (Z in IEEE 1363 terminology)
@@ -3447,14 +3453,14 @@ other than for computing other secrets.)
 
 ECDH functions are used as follows:
 
-* The public key to put into ECPoint.point structure is output of applying
+* The public key to put into ECPoint.point structure is the result of applying
   the ECDH function to the secret key of appropriate length (into scalar
   input) and the standard public basepoint (into u-coordinate point input).
-* The ECDH shared secret is output of applying ECDH function to the secret
+* The ECDH shared secret is the result of applying ECDH function to the secret
   key (into scauar input) and peer's public key (into u-coordinate point
   input). The output is used raw, with no processing.
 
-For X25519 and X448, see {{I-D.irtf-cfrg-curves}}
+For X25519 and X448, see {{I-D.irtf-cfrg-curves}}.
 
 
 #  Mandatory Algorithms
@@ -4234,7 +4240,8 @@ Archives of the list can be found at:
     agl@google.com
 
     Ilari Liusvaara
-    ilari.liusvaara@elisanet.fi
+    Independent
+    ilariliusvaara@welho.com
 
     Jan Mikkelsen
     Transactionware
