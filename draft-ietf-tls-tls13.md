@@ -307,8 +307,6 @@ draft-11
 
 - Port the CFRG curves & signatures work from RFC4492bis.
 
-draft-11
-
 - Remove sequence number and version from additional_data, which
   is now empty.
 
@@ -2406,7 +2404,8 @@ group
   Finite Field Diffie-Hellman {{DH}} parameters are described in
   {{ffdhe-param}}; Elliptic Curve Diffie-Hellman parameters are
   described in {{ecdhe-param}}. Signature-only curves, currently
-  eddsa_ed25519 (31) and eddsa_ed448 (32), MUST NOT be used.
+  eddsa_ed25519 (31) and eddsa_ed448 (32), MUST NOT be used for
+  key exchange.
 
 key_exchange
 : Key exchange information.  The contents of this field are
@@ -3457,7 +3456,7 @@ ECDH functions are used as follows:
   the ECDH function to the secret key of appropriate length (into scalar
   input) and the standard public basepoint (into u-coordinate point input).
 * The ECDH shared secret is the result of applying ECDH function to the secret
-  key (into scauar input) and peer's public key (into u-coordinate point
+  key (into scalar input) and the peer's public key (into u-coordinate point
   input). The output is used raw, with no processing.
 
 For X25519 and X448, see {{I-D.irtf-cfrg-curves}}.
