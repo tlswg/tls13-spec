@@ -2922,7 +2922,7 @@ client authentication.
 When this message will be sent:
 
 > This message is used to provide a server configuration which
-the client can use in future to skip handshake negotiation and
+the client can use in the future to skip handshake negotiation and
 (optionally) to allow 0-RTT handshakes. The ServerConfiguration
 message is sent as the last message before the CertificateVerify.
 
