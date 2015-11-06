@@ -1578,7 +1578,7 @@ Finished
   the Static Secret. [{{server-finished}}]
 {:br }
 
-Upon receiving the server's messages, the client responds with his final
+Upon receiving the server's messages, the client responds with its final
 flight of messages:
 
 Certificate
@@ -4070,7 +4070,7 @@ TLS is susceptible to a number of denial-of-service (DoS) attacks. In
 particular, an attacker who initiates a large number of TCP connections can
 cause a server to consume large amounts of CPU doing asymmetric crypto
 operations. However, because TLS is generally used over TCP, it is difficult for the
-attacker to hide his point of origin if proper TCP SYN randomization is used
+attacker to hide their point of origin if proper TCP SYN randomization is used
 {{RFC1948}} by the TCP stack.
 
 Because TLS runs over TCP, it is also susceptible to a number of DoS attacks on
