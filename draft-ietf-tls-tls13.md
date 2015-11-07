@@ -2433,7 +2433,7 @@ client_shares
   This vector MUST NOT be empty. Clients not providing a KeyShare MUST instead
   omit this extension from the ClientHello.
 
-server_shares
+server_share
 : A single KeyShareEntry value for the negotiated cipher suite.  Servers
   MUST NOT send a KeyShareEntry value for a group not offered by the client.
 {:br }
@@ -3743,9 +3743,9 @@ New cipher suite values are assigned by IANA as described in
 ### Unauthenticated Operation
 
 Previous versions of TLS offered explicitly unauthenticated cipher suites
-base on anonymous Diffie-Hellman. These cipher suites have been deprecated
+based on anonymous Diffie-Hellman. These cipher suites have been deprecated
 in TLS 1.3. However, it is still possible to negotiate cipher suites
-that do not provide verifiable server authentication by serveral methods,
+that do not provide verifiable server authentication by several methods,
 including:
 
 - Raw public keys {{RFC7250}}.
