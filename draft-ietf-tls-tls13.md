@@ -339,6 +339,9 @@ draft-11
 
 - Unify authentication modes. Add post-handshake client authentication.
 
+- Remove early_handshake content type. Terminate 0-RTT data with
+  an alert.
+
 
 draft-10
 
@@ -1005,8 +1008,7 @@ Alert messages {{alert-protocol}} MUST NOT be fragmented across records.
            change_cipher_spec_RESERVED(20),
            alert(21),
            handshake(22),
-           application_data(23),
-           early_handshake(25),
+           application_data(23)
            (255)
        } ContentType;
 
@@ -1257,6 +1259,7 @@ as specified by the current connection state.
 
        enum {
            close_notify(0),
+           end_of_early_data(1),
            unexpected_message(10),               /* fatal */
            bad_record_mac(20),                   /* fatal */
            decryption_failed_RESERVED(21),       /* fatal */
@@ -1306,6 +1309,15 @@ close_notify
 : This message notifies the recipient that the sender will not send
   any more messages on this connection. Any data received after a
   closure MUST be ignored.
+
+end_of_early_data
+: This message is sent by the client to indicate that all 0-RTT
+  application_data messages have been transmitted and that the
+  next message will be handshake message protected with the
+  1-RTT handshake keys. This alert MUST be at the warning level.
+  Servers MUST NOT send this message and clients receiving this
+  message MUST terminate the connection with an "unexpected_message"
+  alert.
 
 user_canceled
 : This message notifies the recipient that the sender is canceling the
@@ -1736,7 +1748,8 @@ that share to protect the first-flight data.
       ^  (Certificate*)
 0-RTT |  (CertificateVerify*)
 Data  |  (Finished)
-      v (Application Data)         -------->
+      v  (Application Data*)
+         (end_of_early_data)        -------->
                                                          ServerHello
                                                + EarlyDataIndication
                                                           + KeyShare
@@ -2645,10 +2658,6 @@ The "extension_data" field of this extension contains an
 "EarlyDataIndication" value:
 
 %%% Key Exchange Messages
-       [[TODO(ekr@rtfm.com): Remove this?]]
-       enum { client_authentication(1), early_data(2),
-              client_authentication_and_data(3), (255) } EarlyDataType;
-
        struct {
            select (Role) {
                case client:
@@ -2656,7 +2665,6 @@ The "extension_data" field of this extension contains an
                    CipherSuite cipher_suite;
                    Extension extensions<0..2^16-1>;
                    opaque context<0..255>;
-                   EarlyDataType type;
 
                case server:
                   struct {};
@@ -2676,12 +2684,6 @@ extensions
 context
 : An optional context value that can be used for anti-replay
   (see below).
-
-type
-: The type of early data that is being sent. "client_authentication"
-  means that only handshake data is being sent. "early_data"
-  means that only data is being sent. "client_authentication_and_data"
-  means that both are being sent.
 {:br }
 
 The client specifies the cryptographic configuration for the 0-RTT
@@ -2699,31 +2701,19 @@ suite.
 
 - Indicate the same parameters as the server indicated in that connection.
 
-If TLS client authentication is being used, then either
-"early_handshake" or "early_handshake_and_data" MUST be indicated in
-order to send the client authentication data on the first flight. In
-either case, the client Certificate and CertificateVerify (assuming
-that the Certificate is non-empty) MUST be sent on the first flight.
-A server which receives an initial flight with only "early_data" and
-which expects certificate-based client authentication MUST NOT
-accept early data.
-
-In order to allow servers to readily distinguish between messages sent
-in the first flight and in the second flight (in cases where the
-server does not accept the EarlyDataIndication extension), the client MUST
-send the handshake messages as content type
-"early_handshake". A server which does not accept the extension
-proceeds by skipping all records after the ClientHello and until
-the next client message of type "handshake".
-[[OPEN ISSUE: This needs replacement when we add encrypted content
-types.]]
+0-RTT messages sent in the first flight have the same content types
+as their corresponding messages sent in other flights (handshake,
+application_data, and alert respectively) but are protected under
+different keys. After all the 0-RTT application data messages (if
+any) have been sent, a "end_of_early_data" alert of type
+"warning" is sent to indicate the end of the flight.
 
 A server which receives an EarlyDataIndication extension
 can behave in one of two ways:
 
-- Ignore the extension and return no response. This indicates
-  that the server has ignored any early data and an ordinary
-  1-RTT handshake is required.
+- Ignore the extension and return no response. This indicates that the
+  server has ignored any early data and an ordinary 1-RTT handshake is
+  required. 
 
 - Return an empty extension, indicating that it intends to
   process the early data. It is not possible for the server
@@ -2739,8 +2729,12 @@ MUST perform the following checks:
 
 If any of these checks fail, the server MUST NOT respond
 with the extension and must discard all the remaining first
-flight data (thus falling back to 1-RTT).
-
+flight data (thus falling back to 1-RTT). If the client attempts
+a 0-RTT handshake but the server rejects it, it will generally
+not have the 0-RTT record protection keys and will instead
+trial decrypt each record with the 1-RTT handshake keys
+until it finds one that decrypts properly, and then pick up
+the handshake from that point.
 
 [[TODO: How does the client behave if the indication is rejected.]]
 
