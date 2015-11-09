@@ -3290,14 +3290,14 @@ in some cases, the extracted xSS and xES will not.
 
   struct HkdfLabel {
     uint16 length;
-    opaque hash_value<0..255>;
     opaque label<9..255>;
+    opaque hash_value<0..255>;
   };
 
   Where:
   - HkdfLabel.length is Length
-  - HkdfLabel.hash_value is HashValue.
   - HkdfLabel.label is "TLS 1.3, " + Label
+  - HkdfLabel.hash_value is HashValue.
 
   1. xSS = HKDF-Extract(0, SS). Note that HKDF-Extract always
      produces a value the same length as the underlying hash
