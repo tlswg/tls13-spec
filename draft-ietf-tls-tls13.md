@@ -1910,7 +1910,7 @@ random_bytes
 {:br }
 
 TLS 1.3 server implementations which respond to a ClientHello with a
-client_version indicating TLS 1.2 or below MUST set the first six
+client_version indicating TLS 1.2 or below MUST set the first eight
 bytes of its Random value to the the bytes 44 4F 57 4E 47 52 44 01.
 TLS 1.3 clients receiving a TLS 1.2 or below ServerHello MUST check
 that the top eight octets are not equal to either this value or 44 4F
