@@ -310,6 +310,7 @@ draft-11
 - Remove sequence number and version from additional_data, which
   is now empty.
 
+- Reorder values in HkdfLabel.
 
 draft-10
 
