@@ -1911,18 +1911,31 @@ random_bytes
 
 TLS 1.3 server implementations which respond to a ClientHello with a
 client_version indicating TLS 1.2 or below MUST set the first eight
-bytes of its Random value to the bytes 44 4F 57 4E 47 52 44 01.
+bytes of their Random value to the bytes:
+
+      44 4F 57 4E 47 52 44 01
+
+TLS 1.2 server implementations which respond to a ClientHello with a
+client_version indicating TLS 1.1 or below SHOULD set the first eight
+bytes of their Random value to the bytes:
+
+      44 4F 57 4E 47 52 44 00
+
+
 TLS 1.3 clients receiving a TLS 1.2 or below ServerHello MUST check
-that the top eight octets are not equal to either this value or 44 4F
-57 4E 47 52 44 00 (which SHOULD by used by TLS 1.2 servers which are
-negotiating TLS 1.1 or below). If a match is found the client MUST
-abort the handshake with a fatal "illegal_parameter" alert. This
-mechanism provides limited protection against downgrade attacks over
-and above that provided by the Finished exchange: because the
-ServerKeyExchange includes a signature over both random values, it is
-not possible for an active attacker to modify the randoms without
-detection as long as ephemeral ciphers are used. It does not provide
-downgrade protection when static RSA is used.
+that the top eight octets are not equal to either of these values. TLS
+1.2 clients SHOULD also perform this check if the ServerHello
+indicates TLS 1.1 or below. If a match is found the client MUST abort
+the handshake with a fatal "illegal_parameter" alert. This mechanism
+provides limited protection against downgrade attacks over and above
+that provided by the Finished exchange: because the ServerKeyExchange
+includes a signature over both random values, it is not possible for
+an active attacker to modify the randoms without detection as long as
+ephemeral ciphers are used. It does not provide downgrade protection
+when static RSA is used.
+
+Note: This is an update to TLS 1.2 so in practice many TLS 1.2 clients
+and servers will not behave as specified above.
 
 Note: Versions of TLS prior to TLS 1.3 used the top 32 bits of
 the Random value to encode the time since the UNIX epoch. The
