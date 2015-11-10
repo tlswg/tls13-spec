@@ -1566,13 +1566,13 @@ ServerHello
   are used together to derive the Static Secret and Ephemeral
   Secret (in this mode they are the same).  [{{key-share}}]
 
-ServerConfiguration
-: supplies a configuration for 0-RTT handshakes (see {{zero-rtt-exchange}}).
-[{{server-configuration}}]
-
 EncryptedExtensions
 : responses to any extensions which are not required in order to
   determine the cryptographic parameters. [{{encrypted-extensions}}]
+
+ServerConfiguration
+: supplies a configuration for 0-RTT handshakes (see {{zero-rtt-exchange}}).
+[{{server-configuration}}]
 
 Certificate
 : the server certificate. This message will be omitted if the
