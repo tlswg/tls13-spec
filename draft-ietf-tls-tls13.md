@@ -2262,8 +2262,8 @@ hash
   NOT be offered.
 
   Clients MAY offer support for SHA-1 for backwards compatibility,
-  either with TLS 1.2 servers or for servers that have certificate
-  chains with signatures based on SHA-1.
+  either with TLS 1.2 servers or for servers that have certification
+  paths with signatures based on SHA-1.
 
 signature
 : This field indicates the signature algorithm that may be used.
@@ -2290,8 +2290,9 @@ offer a SHA-1 signed certificate unless no valid certificate chain can be
 produced without it (see {{server-certificate-selection}}).
 
 The signatures on certificates that are self-signed or certificates that are
-trust anchors are not validated.  Thus, a self-signed certificate or trust
-anchor MAY use a hash or signature algorithm that is not advertised as being
+trust anchors are not validated since they begin a certification path (see
+{{RFC5280}}, Section 3.2).  A certificate that begins a certification
+path MAY use a hash or signature algorithm that is not advertised as being
 supported in the signature_algorithms extension.
 
 Note: TLS 1.3 servers MAY receive TLS 1.2 ClientHellos which do not contain
@@ -2846,7 +2847,7 @@ using an MD5 hash MUST send a "bad_certificate" alert message and close
 the connection.
 
 As SHA-1 and SHA-224 are deprecated, support for them is NOT RECOMMENDED.
-Endpoints that reject chains due to use of a deprecated hash MUST send
+Endpoints that reject certification paths due to use of a deprecated hash MUST send
 a fatal "bad_certificate" alert message before closing the connection.
 All servers are RECOMMENDED to transition to SHA-256 or better as soon
 as possible to maintain interoperability with implementations
@@ -3258,7 +3259,7 @@ using an MD5 hash MUST send a "bad_certificate" alert message and close
 the connection.
 
 SHA-1 is deprecated and therefore NOT RECOMMENDED.
-Endpoints that reject chains due to use of a deprecated hash MUST send
+Endpoints that reject certification paths due to use of a deprecated hash MUST send
 a fatal "bad_certificate" alert message before closing the connection.
 All endpoints are RECOMMENDED to transition to SHA-256 or better as soon
 as possible to maintain interoperability with implementations
@@ -4012,7 +4013,7 @@ Users should be able to view information about the certificate and root CA.
 TLS supports a range of key sizes and security levels, including some that
 provide no or minimal security. A proper implementation will probably not
 support many cipher suites. Applications SHOULD also enforce minimum and
-maximum key sizes. For example, certificate chains containing keys or
+maximum key sizes. For example, certification paths containing keys or
 signatures weaker than 2048-bit RSA or 224-bit ECDSA are not appropriate
 for secure applications.
 See also {{backwards-compatibility-security-restrictions}}.
@@ -4099,7 +4100,7 @@ version number to the negotiated version for the ServerHello and all
 records thereafter.
 
 For maximum compatibility with previously non-standard behavior and misconfigured
-deployments, all implementations SHOULD support validation of certificate chains
+deployments, all implementations SHOULD support validation of certification paths
 based on the expectations in this document, even when handling prior TLS versions'
 handshakes. (see {{server-certificate-selection}})
 
