@@ -2846,7 +2846,7 @@ Any endpoint receiving any certificate signed using any signature algorithm
 using an MD5 hash MUST send a "bad_certificate" alert message and close
 the connection.
 
-As SHA-1 and SHA-224 are deprecated, support for them is NOT RECOMMENDED.
+SHA-1 is deprecated and therefore NOT RECOMMENDED.
 Endpoints that reject certification paths due to use of a deprecated hash MUST send
 a fatal "bad_certificate" alert message before closing the connection.
 All servers are RECOMMENDED to transition to SHA-256 or better as soon
