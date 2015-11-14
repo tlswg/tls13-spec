@@ -1702,7 +1702,6 @@ that share to encrypt the first-flight data.
        ClientHello
          + KeyShare
          + EarlyDataIndication
-       (EncryptedExtensions)
        (Certificate*)
        (CertificateVerify*)
        (Application Data)        -------->
