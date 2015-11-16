@@ -3601,9 +3601,9 @@ is listed below:
 
         Extension                                 Recommended    TLS 1.3
         ----------------------------------------------------------------
-        server_name [RFC6066]                             Yes     Client
+        server_name [RFC6066]                             Yes  Encrypted
         max_fragment_length [RFC6066]                     Yes         No   
-        client_certificate_url [RFC6066]                  Yes     Client
+        client_certificate_url [RFC6066]                  Yes  Encrypted
         trusted_ca_keys [RFC6066]                         Yes  Encrypted
         truncated_hmac [RFC6066]                          Yes         No
         status_request [RFC6066]                          Yes         No 
@@ -3655,12 +3655,13 @@ This document reuses two registries defined in {{RFC5246}}.
 In addition, this document defines a new registry to be maintained
 by IANA.
 
-- TLS ConfigurationExtensionType Registry: The registry [shall be/ has
-  been] initially populated with the values described in
-  {{server-configuration}}.  Values with the first byte in the range
+- TLS ConfigurationExtensionType Registry: Values with the first byte in the range
   0-254 (decimal) are assigned via Specification Required {{RFC2434}}.
   Values with the first byte 255 (decimal) are reserved for Private
-  Use {{RFC2434}}.
+  Use {{RFC2434}}. This registry SHALL have a "Recommended" column.
+  The registry [shall be/ has been] initially populated with the values described in
+  {{server-configuration}}, with all values marked with "Recommended" valut
+  "Yes".
 --- back
 
 
