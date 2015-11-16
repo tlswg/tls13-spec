@@ -3595,7 +3595,9 @@ is listed below:
    initially populated with the values in this document.
    IANA [shall update/has updated] this registry to add a
    "Recommended" column. IANA [shall be/has been] initially populated
-   with the values in this document.
+   with the values in the table below. This column has been generated
+   by marking Standards Track RFCs as "Yes" and all others as
+   "No".
 
         Extension                                 Recommended    TLS 1.3
         ----------------------------------------------------------------
