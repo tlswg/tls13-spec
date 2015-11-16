@@ -2217,6 +2217,56 @@ be taken into account when designing new extensions:
   the possibility of version rollback should be a significant consideration in
   any major design change.
 
+
+####  Cookie 
+
+%%% Cookie Extension
+       struct {
+           opaque cookie<0..255>;
+       } CookieEntry;
+
+       struct {
+           select (role) {
+               case client:
+                   CookieEntry cookies<2..2^16-1>;
+
+               case server:
+                   uint32 cookie_lifetime_hint;
+                   CookieEntry cookie;
+           }
+       } Cookie;
+
+Cookies serve two primary purposes:
+
+- Allowing the server to force the client to demonstrate reachability
+  at their apparent network address (thus providing a measure of DoS
+  protection). This is primarily useful for non-connection-oriented
+  transports.
+
+- Allowing the to offload state to the client, thus allowing it to send
+  a HelloRetryRequest without storing any state.
+
+The client MUST provide a Cookie extension in every ClientHello it
+sends. If no cookies are available, the extension MUST be empty (i.e.,
+contain no cookies). The client MAY cache cookies from previous
+connections and use them with a future connection. If the client does
+not send a Cookie extension, the server MUST close the connection with
+a fatal "missing_extension" alert (see {{mti-extensions}}).  If
+possible, clients SHOULD bucket cookies by their local IP address and
+only send the most recent cookie delivered to that IP address. Clients
+which are not able to do so SHOULD send only the most recent cookie.
+
+A server which wants to implant a cookie on the client responds with
+a non-empty Cookie extension. The lifetime_hint indicates the 
+lifetime in seconds as a 32-bit unsigned integer in network byte order from
+the time the cookie was issued. A value of 0 indicates that the cookie
+SHALL only be used for this connection.
+
+Note: Because Cookies are transmitted in the clear, if a single cookie
+is used over multiple connections, it can be used by passive observers
+to link multiple connections.
+
+
 ####  Signature Algorithms
 
 The client uses the "signature_algorithms" extension to indicate to the server
@@ -3525,6 +3575,7 @@ applicable cipher suites:
   * "signature_algorithms" is REQUIRED for certificate authenticated cipher suites
   * "supported_groups" and "key_share" are REQUIRED for DHE or ECDHE cipher suites
   * "pre_shared_key" is REQUIRED for PSK cipher suites
+  * "cookie" is REQUIRED for all cipher suites.
 
 When negotiating use of applicable cipher suites, endpoints MUST abort the
 connection with a "missing_extension" alert if the required extension was
@@ -3642,6 +3693,7 @@ may receive them from older TLS implementations.
 %%## Alert Messages
 %%## Handshake Protocol
 %%### Hello Messages
+%%#### Cookie Extension
 %%#### Signature Algorithm Extension
 %%#### Named Group Extension
 
