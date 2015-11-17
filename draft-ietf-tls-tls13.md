@@ -3575,6 +3575,15 @@ and their allocation policies are below:
 -  TLS HandshakeType Registry: Future values are allocated via
   Standards Action {{RFC2434}}.
 
+IANA [SHALL add/has added] the following to the following to the TLS
+Cipher Suite Registry:
+
+NOTE
+    Cipher suites marked as "Yes" are the MTI TLS 1.3 cipher suites
+    in the RFC 2119-sense (See Section 8.1 of [THISRFC]). Cipher
+    suites marked as "No" are not; cipher suites marked "No" range
+    from "good" to "bad" from a cryptographic standpoint.
+
 This document also uses a registry originally created in {{RFC4366}}. IANA has
 updated it to reference this document. The registry and its allocation policy
 is listed below:
