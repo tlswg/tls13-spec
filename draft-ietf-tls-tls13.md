@@ -3349,11 +3349,7 @@ as some HKDF-Extract operations will be repeated.
 
 ## Traffic Key Calculation
 
-The Record Protocol requires an algorithm to generate keying material
-required by the current connection state (see
-{{the-security-parameters}}) from the security parameters provided by
-the handshake protocol. Each value is generated separately from the
-following input values.
+The traffic keying material is generated from the following input values:
 
 * A secret value
 * A phase value indicating the phase of the protocol the keys are
