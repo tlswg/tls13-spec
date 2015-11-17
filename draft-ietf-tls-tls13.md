@@ -3349,40 +3349,32 @@ as some HKDF-Extract operations will be repeated.
 
 ## Traffic Key Calculation
 
-[[OPEN ISSUE: This needs to be revised. Most likely we'll extract each
-  key component separately. See https://github.com/tlswg/tls13-spec/issues/5]]
-
-The Record Protocol requires an algorithm to generate keys required by the
-current connection state (see {{the-security-parameters}}) from the security
-parameters provided by the handshake protocol.
-
-The traffic key computation takes four input values and returns a key block
-of sufficient size to produce the needed traffic keys:
+The Record Protocol requires an algorithm to generate keying material
+required by the current connection state (see
+{{the-security-parameters}}) from the security parameters provided by
+the handshake protocol. Each value is generated separately from the
+following input values.
 
 * A secret value
-* A string label that indicates the purpose of keys being generated.
+* A phase value indicating the phase of the protocol the keys are
+  being generated for.
+* A purpose value indicating the specific value being generated
+* The length of the key.
 * The current handshake hash.
-* The total length in octets of the key block.
 
 The keying material is computed using:
 
-       key_block = HKDF-Expand-Label(Secret, Label,
-                                     handshake_hash,
-                                     total_length)
-
-The key_block is partitioned as follows:
-
-       client_write_key[SecurityParameters.enc_key_length]
-       server_write_key[SecurityParameters.enc_key_length]
-       client_write_IV[SecurityParameters.iv_length]
-       server_write_IV[SecurityParameters.iv_length]
+       key = HKDF-Expand-Label(Secret,
+                               phase + ", " + purpose,
+                               handshake_hash,
+                               key_length)
 
 The following table describes the inputs to the key calculation for
 each class of traffic keys:
 
 ~~~
-  Record Type Secret  Label                              Handshake Hash
-  ----------- ------  -----                             ---------------
+  Record Type Secret  Phase                              Handshake Hash
+  ----------- ------  -----                              --------------
   Early data     xSS  "early data key expansion"            ClientHello
 
   Handshake      xES  "handshake key expansion"          ClientHello...
@@ -3392,6 +3384,17 @@ each class of traffic keys:
                secret                                      messages but
                                                                Finished
                                                          (session_hash)
+~~~
+
+The following table indicates the purpose values for each type of key:
+
+~~~
+  Key Type              Purpose 
+  --------              -------
+  Client Write Key      "client write key"
+  Server Write Key      "server write key"
+  Client Write IV       "client write IV"
+  Server Write IV       "server write IV"
 ~~~
 
 ###  The Handshake Hash
