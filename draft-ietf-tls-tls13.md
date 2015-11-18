@@ -1886,10 +1886,9 @@ ClientHello as its first message. The client will also send a
 ClientHello when the server has responded to its ClientHello with a
 ServerHello that selects cryptographic parameters that don't match the
 client's KeyShare extension. In that case, the client MUST send the same
-ClientHello (without modification) except including a new KeyShareEntry
+ClientHello without modification, except including a new KeyShareEntry
 as the lowest priority share (i.e., appended to the list of shares in
-the KeyShare message). [[OPEN ISSUE: New random values? See:
-https://github.com/tlswg/tls13-spec/issues/185]]
+the KeyShare message), and with a newly generated ClientHello.random value.
 If a server receives a ClientHello at any other time, it MUST send
 a fatal "unexpected_message" alert and close the connection.
 
@@ -1951,7 +1950,9 @@ client_version
   {{backward-compatibility}} for details about backward compatibility.)
 
 random
-: A client-generated random structure.
+: A client-generated 32-byte random value. This value MUST be separately
+  generated for every ClientHello message, including retries in response
+  to a HelloRetryRequest.
 
 session_id
 : Versions of TLS prior to TLS 1.3 supported a session resumption
@@ -2098,6 +2099,7 @@ Otherwise, the client MUST send a ClientHello with a new KeyShare
 extension to the server. The client MUST append a new KeyShareEntry
 list which is consistent with the "selected_group" field to the groups
 in its original KeyShare.
+The ClientHello.random value MUST be newly generated.
 
 Upon re-sending the ClientHello and receiving the
 server's ServerHello/KeyShare, the client MUST verify that
