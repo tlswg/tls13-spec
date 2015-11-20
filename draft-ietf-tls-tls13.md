@@ -1912,6 +1912,7 @@ processed and transmitted as specified by the current active session state.
            client_key_exchange_RESERVED(16),
            server_configuration(17),
            finished(20),
+           key_update(21),
            (255)
        } HandshakeType;
 
@@ -1929,6 +1930,7 @@ processed and transmitted as specified by the current active session state.
                case certificate_verify:  CertificateVerify;
                case finished:            Finished;
                case session_ticket:      NewSessionTicket;
+               case key_update:          KeyUpdate;
            } body;
        } Handshake;
 
@@ -3434,6 +3436,35 @@ flight, the server MUST be prepared to receive an arbitrary number
 of such messages before receiving the Authentication messages.
 
 
+#### Key Update 
+
+struct {} KeyUpdate;
+
+The KeyUpdate handshake message is used to indicate that the sender is
+updating its sending cryptographic keys. This message can be sent by
+the server after sending its first flight and the client after sending
+its second flight. Implementations prior to this time MUST generate a
+fatal "unexpected_message" alert.  After sending a KeyUpdate, the
+sender SHALL send all its traffic using the next generation of keys,
+computed as described in {{updating-traffic-keys}}. Upon receiving a
+KeyUpdate, the receiver MUST update their receiving keys and if they
+have not already updated their sending state up to or past the then
+current receiving generation MUST immediately send their own
+KeyUpdate. This mechanism allows either side to force an update to the
+entire connection.
+
+Note that if implementations independently send their own
+KeyUpdates and they cross in flight, this only results in an
+update of one generation; when each side receives the other
+side's update it just updates its receive keys and notes that
+the generations match and thus no send update is needed.
+
+Note that the side which sends its KeyUpdate first needs to retain
+the traffic keys (though not the traffic secret) for the previous
+generation of keys until it receives the KeyUpdate from the other
+side.
+
+
 #  Cryptographic Computations
 
 In order to begin connection protection, the TLS Record Protocol
@@ -3496,37 +3527,64 @@ the sources from the table above.
   4. mES = HKDF-Expand-Label(xES, "expanded ephemeral secret",
                              handshake_hash, L)
 
-  Where handshake_hash includes all messages up through the
-  server CertificateVerify message, but not including any
-  0-RTT handshake messages (the server's Finished is not
-  included because the master_secret is needed to compute
-  the finished key).
 
   5. master_secret = HKDF-Extract(mSS, mES)
 
 
-  6. resumption_secret = HKDF-Expand-Label(master_secret,
+  6. traffic_secret_0 = HKDF-Expand-Label(master_secret,
+                                          "traffic secret",
+                                          handshake_hash, L)
+
+  Where handshake_hash includes all messages up through the
+  server CertificateVerify message, but not including any
+  0-RTT handshake messages (the server's Finished is not
+  included because the master_secret is need to compute
+  the finished key). [[OPEN ISSUE: Should we be including
+  0-RTT handshake messages here and below?]]
+
+  7. resumption_secret = HKDF-Expand-Label(master_secret,
                                            "resumption master secret"
                                            session_hash, L)
 
-  7. exporter_secret = HKDF-Expand-Label(master_secret,
+  8. exporter_secret = HKDF-Expand-Label(master_secret,
                                          "exporter master secret",
                                          session_hash, L)
 
+  
   Where session_hash is the session hash as defined in
   {{the-handshake-hash}}. I.e., the entire handshake up to
   and including the client's Finished, but not including
   any 0-RTT handshake messages.
 ~~~
 
-The traffic keys are computed from xSS, xES, and the master_secret
-as described in {{traffic-key-calculation}} below.
+The traffic keys are computed from xSS, xES, and the traffic_secret
+as described in {{traffic-key-calculation}} below. The traffic_secret
+may be updated throughout the connection as described in {{updating-traffic-keys}}.
 
 Note: although the steps above are phrased as individual HKDF-Extract
 and HKDF-Expand operations, because each HKDF-Expand operation is
 paired with an HKDF-Extract, it is possible to implement this key
 schedule with a black-box HKDF API, albeit at some loss of efficiency
 as some HKDF-Extract operations will be repeated.
+
+
+## Updating Traffic Keys
+
+Once the handshake is complete, it is possible for either side to
+update its sending traffic keys using the KeyUpdate handshake message
+{{key-update}}.  The next generation of traffic keys is computed by
+generating traffic_secret_N+1 from traffic_secret_N as described in
+this section then re-deriving the traffic keys as described in
+{{traffic-key-calculation}}.
+
+The next-generation traffic_secret is computed as:
+
+  traffic_secret_N+1 = HKDF-Expand-Label(traffic_secret_N,
+                                       "traffic_secret", "", L)
+
+Once traffic_secret_N+1 and its associated traffic keys have been computed,
+implementations SHOULD delete traffic_secret_N. Once the directional
+keys are no longer needed, they SHOULD be deleted as well.
 
 
 ## Traffic Key Calculation
@@ -3555,7 +3613,7 @@ each class of traffic keys:
 | 0-RTT Handshake   | xSS | "early handshake key expansion" | ClientHello + ServerConfiguration + Server Certificate |
 | 0-RTT Application | xSS | "early application data key expansion" | ClientHello + ServerConfiguration + Server Certificate |
 | Handshake         | xES | "handshake key expansion" | ClientHello... ServerHello |
-| Application Data  | master secret | "application data key expansion" | ClientHello... Server Finished |
+| Application Data  | traffic secret | "application data key expansion" | ClientHello... Server Finished |
 
 The following table indicates the purpose values for each type of key:
 
