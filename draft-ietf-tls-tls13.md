@@ -3279,8 +3279,7 @@ shown below.
 
 The derivation process is as follows, where L denotes the length of
 the underlying hash function for HKDF {{RFC5869}}. SS and ES denote
-the sources from the table above. Whilst SS and ES may be the same
-in some cases, the extracted xSS and xES will not.
+the sources from the table above.
 
 ~~~
   HKDF-Expand-Label(Secret, Label, HashValue, Length) =
