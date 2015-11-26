@@ -312,6 +312,9 @@ draft-11
 
 - Reorder values in HkdfLabel.
 
+- Add Cookies to HelloRetryRequest. Continue handshake hash through the
+  HelloRetryRequest cycle.
+
 draft-10
 
 - Remove ClientCertificateTypes field from CertificateRequest
@@ -1640,11 +1643,13 @@ against algorithmic attacks, at least in the year 2015.]]
 
 ### Incorrect DHE Share
 
-If the client has not provided an appropriate KeyShare extension (e.g. it
-includes only DHE or ECDHE groups unacceptable or unsupported by the
-server), the server corrects the mismatch with a HelloRetryRequest and
-the client will need to restart the handshake with an appropriate
-KeyShare extension, as shown in Figure 2:
+If the client has not provided an appropriate KeyShare extension
+(e.g. it includes only DHE or ECDHE groups unacceptable or unsupported
+by the server), the server corrects the mismatch with a
+HelloRetryRequest and the client will need to restart the handshake
+with an appropriate KeyShare extension, as shown in Figure 2. The
+handshake hash continues throughout the handshake so that it includes
+both copies of the ClientHello and the HelloRetryRequest.
 
 ~~~
        Client                                               Server
@@ -1670,14 +1675,6 @@ KeyShare extension, as shown in Figure 2:
 ~~~
 {: #tls-restart title="Message flow for a full handshake with mismatched parameters"}
 
-[[OPEN ISSUE: Should we restart the handshake hash?
-https://github.com/tlswg/tls13-spec/issues/104.]]
-[[OPEN ISSUE: We need to make sure that this flow doesn't introduce
-downgrade issues. Potential options include continuing the handshake
-hashes (as long as clients don't change their opinion of the server's
-capabilities with aborted handshakes) and requiring the client to send
-the same ClientHello (as is currently done) and then checking you get
-the same negotiated parameters.]]
 
 If no common cryptographic parameters can be negotiated, the server
 will send a "handshake_failure" or "insufficient_security" fatal alert
@@ -1885,13 +1882,12 @@ When this message will be sent:
 ClientHello as its first message. The client will also send a
 ClientHello when the server has responded to its ClientHello with a
 ServerHello that selects cryptographic parameters that don't match the
-client's KeyShare extension. In that case, the client MUST send the same
-ClientHello (without modification) except including a new KeyShareEntry
-as the lowest priority share (i.e., appended to the list of shares in
-the KeyShare message). [[OPEN ISSUE: New random values? See:
-https://github.com/tlswg/tls13-spec/issues/185]]
-If a server receives a ClientHello at any other time, it MUST send
-a fatal "unexpected_message" alert and close the connection.
+client's KeyShare extension. In that case, the client MUST send the
+same ClientHello (without modification) except including a new
+KeyShareEntry as the lowest priority share (i.e., appended to the list
+of shares in the KeyShare message). If a server receives a ClientHello
+at any other time, it MUST send a fatal "unexpected_message" alert and
+close the connection.
 
 Structure of this message:
 
@@ -2066,45 +2062,69 @@ Structure of this message:
 %%% Hello Messages
        struct {
            ProtocolVersion server_version;
-           CipherSuite cipher_suite;
            NamedGroup selected_group;
            Extension extensions<0..2^16-1>;
        } HelloRetryRequest;
-
-[[OPEN ISSUE: Merge in DTLS Cookies?]]
 
 selected_group
 : The group which the client MUST use for its new ClientHello.
 {:br }
 
-The "server_version", "cipher_suite" and "extensions" fields have the
+The "server_version" and "extensions" fields have the
 same meanings as their corresponding values in the ServerHello. The
 server SHOULD send only the extensions necessary for the client to
-generate a correct ClientHello pair.
+generate a correct ClientHello pair. At present, this is solely the
+Cookie extension {{cookie-extension}}.
 
 Upon receipt of a HelloRetryRequest, the client MUST first verify that
 the "selected_group" field corresponds to a group which was provided
-in the "supported_groups" extension in the original ClientHello.  It
-MUST then verify that the "selected_group" field does not correspond
-to a group which was provided in the "key_share" extension in the
-original ClientHello. If either of these checks fails, then the client
-MUST abort the handshake with a fatal "handshake_failure"
-alert. Clients SHOULD also abort with "handshake_failure" in response
-to any second HelloRetryRequest which was sent in the same connection
-(i.e., where the ClientHello was itself in response to a
-HelloRetryRequest).
+in the "supported_groups" extension in the original ClientHello.  If
+this check fails, then the client MUST abort the handshake with a
+fatal "handshake_failure" alert. Clients SHOULD also abort with
+"handshake_failure" in response to any second HelloRetryRequest which
+was sent in the same connection (i.e., where the ClientHello was
+itself in response to a HelloRetryRequest).
 
-Otherwise, the client MUST send a ClientHello with a new KeyShare
-extension to the server. The client MUST append a new KeyShareEntry
-list which is consistent with the "selected_group" field to the groups
-in its original KeyShare.
+Otherwise, the client MUST send a ClientHello to the server.
+This ClientHello MUST be identical to the
+original ClientHello except for the following two modifications:
 
-Upon re-sending the ClientHello and receiving the
-server's ServerHello/KeyShare, the client MUST verify that
-the selected CipherSuite and NamedGroup match that supplied in
-the HelloRetryRequest.
+- If the HelloRetryRequest includes a Cookie extension, the client
+  MUST append that cookie to the Cookie
+- If the "selected_group" field indicates a group that
+  was not in the client's initial KeyShare extension, then
+  the client MUST add a new KeyShareEntry to the end of the
+  KeyShare extension for the indicated group. Otherwise, it
+  MUST use the
 
-[[OPEN ISSUE: https://github.com/tlswg/tls13-spec/issues/104]]
+Upon re-sending the ClientHello and receiving the server's
+ServerHello/KeyShare, the client MUST verify that the selected
+CipherSuite and NamedGroup match that supplied in the
+HelloRetryRequest.
+
+
+#### Stateless Rejection
+
+Because the initial ClientHello and the HelloRetryRequest are included
+in the handshake hash, the server must somehow be able to maintain
+state through this cycle. A naive implementation simply stores the
+hash state associated with the connection, and this is generally
+appropriate for TLS implementations attached to connection-oriented
+transports where state is already allocated. However, it is also
+possible to implement HelloRetryRequest in a stateful fashion in
+at least two ways:
+
+1. The server can encapsulate the handshake hash state in an
+AEAD-encrypted block (using a server-global key) which is
+then stored in the cookie field.
+
+2. Because the rules for second ClientHello construction are
+strict, the server can reconstruct what the ClientHello and
+HelloRetryRequest must have been from the second ClientHello.
+
+These techniques are only recommended for implementations which
+do not already carry need state through the HelloRetryRequest cycle.
+
 
 ###  Hello Extensions
 
@@ -2122,6 +2142,7 @@ The extension format is:
            early_data(TBD),
            pre_shared_key(TBD),
            key_share(TBD),
+           cookie(TBD),
            (65535)
        } ExtensionType;
 
@@ -2195,6 +2216,56 @@ be taken into account when designing new extensions:
   protection against version rollback attacks based on the version number, and
   the possibility of version rollback should be a significant consideration in
   any major design change.
+
+
+####  Cookie 
+
+%%% Cookie Extension
+       struct {
+           opaque cookie<0..255>;
+       } CookieEntry;
+
+       struct {
+           select (role) {
+               case client:
+                   CookieEntry cookies<2..2^16-1>;
+
+               case server:
+                   uint32 cookie_lifetime_hint;
+                   CookieEntry cookie;
+           }
+       } Cookie;
+
+Cookies serve two primary purposes:
+
+- Allowing the server to force the client to demonstrate reachability
+  at their apparent network address (thus providing a measure of DoS
+  protection). This is primarily useful for non-connection-oriented
+  transports.
+
+- Allowing the to offload state to the client, thus allowing it to send
+  a HelloRetryRequest without storing any state.
+
+The client MUST provide a Cookie extension in every ClientHello it
+sends. If no cookies are available, the extension MUST be empty (i.e.,
+contain no cookies). The client MAY cache cookies from previous
+connections and use them with a future connection. If the client does
+not send a Cookie extension, the server MUST close the connection with
+a fatal "missing_extension" alert (see {{mti-extensions}}).  If
+possible, clients SHOULD bucket cookies by their local IP address and
+only send the most recent cookie delivered to that IP address. Clients
+which are not able to do so SHOULD send only the most recent cookie.
+
+A server which wants to implant a cookie on the client responds with
+a non-empty Cookie extension. The lifetime_hint indicates the 
+lifetime in seconds as a 32-bit unsigned integer in network byte order from
+the time the cookie was issued. A value of 0 indicates that the cookie
+SHALL only be used for this connection.
+
+Note: Because Cookies are transmitted in the clear, if a single cookie
+is used over multiple connections, it can be used by passive observers
+to link multiple connections.
+
 
 ####  Signature Algorithms
 
@@ -3502,6 +3573,7 @@ applicable cipher suites:
   * "signature_algorithms" is REQUIRED for certificate authenticated cipher suites
   * "supported_groups" and "key_share" are REQUIRED for DHE or ECDHE cipher suites
   * "pre_shared_key" is REQUIRED for PSK cipher suites
+  * "cookie" is REQUIRED for all cipher suites.
 
 When negotiating use of applicable cipher suites, endpoints MUST abort the
 connection with a "missing_extension" alert if the required extension was
@@ -3619,6 +3691,7 @@ may receive them from older TLS implementations.
 %%## Alert Messages
 %%## Handshake Protocol
 %%### Hello Messages
+%%#### Cookie Extension
 %%#### Signature Algorithm Extension
 %%#### Named Group Extension
 
