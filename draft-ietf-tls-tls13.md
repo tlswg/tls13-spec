@@ -312,6 +312,9 @@ draft-11
 
 - Reorder values in HkdfLabel.
 
+- Add support for version anti-downgrade mechanism.
+
+
 draft-10
 
 - Remove ClientCertificateTypes field from CertificateRequest
@@ -1907,8 +1910,40 @@ random_bytes
   See {{implementation-notes}} for additional information.
 {:br }
 
+TLS 1.3 server implementations which respond to a ClientHello with a
+client_version indicating TLS 1.2 or below MUST set the first eight
+bytes of their Random value to the bytes:
+
+      44 4F 57 4E 47 52 44 01
+
+TLS 1.2 server implementations which respond to a ClientHello with a
+client_version indicating TLS 1.1 or below SHOULD set the first eight
+bytes of their Random value to the bytes:
+
+      44 4F 57 4E 47 52 44 00
+
+
+TLS 1.3 clients receiving a TLS 1.2 or below ServerHello MUST check
+that the top eight octets are not equal to either of these values. TLS
+1.2 clients SHOULD also perform this check if the ServerHello
+indicates TLS 1.1 or below. If a match is found the client MUST abort
+the handshake with a fatal "illegal_parameter" alert. This mechanism
+provides limited protection against downgrade attacks over and above
+that provided by the Finished exchange: because the ServerKeyExchange
+includes a signature over both random values, it is not possible for
+an active attacker to modify the randoms without detection as long as
+ephemeral ciphers are used. It does not provide downgrade protection
+when static RSA is used.
+
+Note: This is an update to TLS 1.2 so in practice many TLS 1.2 clients
+and servers will not behave as specified above.
+
 Note: Versions of TLS prior to TLS 1.3 used the top 32 bits of
-the Random value to encode the time since the UNIX epoch.
+the Random value to encode the time since the UNIX epoch. The
+sentinel value above was selected to avoid conflicting with any
+valid TLS 1.2 Random value and to have a low (2^{-64})
+probability of colliding with randomly selected Random
+values.
 
 
 %%% Hello Messages
