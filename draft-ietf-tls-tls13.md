@@ -2429,6 +2429,7 @@ the connection with a fatal "missing_extension" alert.
 (see {{mti-extensions}})
 Clients MAY send an empty client_shares vector in order to request
 group selection from the server at the cost of an additional round trip.
+(see {{hello-retry-request}})
 
 %%% Key Exchange Messages
        struct {
@@ -2467,12 +2468,12 @@ The "extension_data" field of this extension contains a
 
 client_shares
 : A list of offered KeyShareEntry values in descending order of client preference.
-  Servers MUST NOT negotiate any connection if this vector is empty and instead
-  MUST respond with a HelloRetryRequest (see {{hello-retry-request}}).
+  This vector MAY be empty if the client is requesting a HelloRetryRequest.
+  The ordering of values here SHOULD match that of the ordering of offered support
+  in the "supported_groups" extension.
 
 server_share
-: A single KeyShareEntry value for the negotiated cipher suite.  Servers
-  MUST NOT send a KeyShareEntry value for a group not offered by the client.
+: A single KeyShareEntry value for the negotiated cipher suite.
 {:br }
 
 Servers offer exactly one KeyShareEntry value, which corresponds to the
@@ -2485,9 +2486,18 @@ The key_exchange values for each KeyShareEntry MUST by generated independently.
 Clients MUST NOT offer multiple KeyShareEntry values for the same parameters.
 Clients and servers MUST NOT offer any KeyShareEntry values for groups not
 listed in the client's "supported_groups" extension.
-If the client provides a non-empty client_shares vector and
-no common supported group is available, the server MUST abort the connection
-with a fatal "handshake_failure" alert.
+Servers MUST NOT offer a KeyShareEntry value for a group not offered by the
+client in its corresponding KeyShare.
+
+If no mutually supported group is available between the two endpoints' KeyShare
+offers, yet there is a mutually supported group that can be found via the
+"supported_groups" extension, then the server MUST reply with a
+HelloRetryRequest (unless there is a mutually supported cipher suite not
+requiring this extension which is offered by the client at a higher priority
+than all those requiring this extension, in which case that cipher suite
+SHOULD be negotiated instead, and this section is not applicable).
+If there is no mutually supported group at all, the server MUST abort the
+connection with a fatal "handshake_failure" alert.
 
 [[TODO: Recommendation about what the client offers.
 Presumably which integer DH groups and which curves.]]
@@ -3908,6 +3918,19 @@ TLS protocol issues:
   scanning from the end for the ContentType, do you avoid scanning
   past the start of the cleartext in the event that the peer has sent
   a malformed plaintext of all-zeros?
+
+- Have you ensured that forward secrecy is always negotiated when it
+  is supported and prioritized over non-FS cipher suites?
+  In particular:
+  When both endpoints support an (EC)DHE cipher suite and a plain PSK
+  cipher suite at a lower priority, and both endpoints support a group
+  offered via the client's "supported_groups" extension which is
+  compatible with the former, yet no corresponding KeyShareEntry was
+  provided via the client's "key_share" extension, does the server
+  correctly respond with a HelloRetryRequest for the prioritized
+  (EC)DHE cipher suite and the required group? Does the client respond
+  to this HelloRetryRequest with a new ClientHello which successfully
+  negotiates this cipher suite with this group?
 
 Cryptographic details:
 
