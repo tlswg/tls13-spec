@@ -95,6 +95,8 @@ informative:
   RFC4366:
   RFC4492:
   RFC4506:
+  RFC4507:
+  RFC4681:
   RFC5054:
   RFC5077:
   RFC5081:
@@ -102,13 +104,21 @@ informative:
   RFC5246:
   RFC5746:
   RFC5763:
+  RFC5764:
+  RFC5878:
   RFC5929:
   RFC6176:
+  RFC6091:
+  RFC6520:
+  RFC6961:
+  RFC6962:
+  RFC7301:
   RFC7250:
   RFC7366:
   RFC7465:
   RFC7568:
   RFC7627:
+  RFC7685:
   I-D.ietf-tls-negotiated-ff-dhe:
 
   DSS:
@@ -3574,20 +3584,20 @@ C, and D.
 
 #  IANA Considerations
 
-[[TODO: Update https://github.com/tlswg/tls13-spec/issues/62]]
 [[TODO: Rename "RSA" in TLS SignatureAlgorithm Registry
 to RSASSA-PKCS1-v1_5 ]]
 
 This document uses several registries that were originally created in
 {{RFC4346}}. IANA has updated these to reference this document. The registries
-and their allocation policies (unchanged from {{RFC4346}}) are listed below.
+and their allocation policies are below:
 
--  TLS Cipher Suite Registry: Future values with the first byte in
-  the range 0-191 (decimal) inclusive are assigned via Standards
-  Action {{RFC2434}}.  Values with the first byte in the range 192-254
-  (decimal) are assigned via Specification Required {{RFC2434}}.
+- TLS Cipher Suite Registry: Values with the first byte in the range
+  0-254 (decimal) are assigned via Specification Required {{RFC2434}}.
   Values with the first byte 255 (decimal) are reserved for Private
-  Use {{RFC2434}}.
+  Use {{RFC2434}}. IANA [SHALL add/has added] a "Recommended" column
+  to the cipher suite registry. All cipher suites listed in
+  {{cipher-suites}} are marked as "Yes". All other cipher suites are
+  marked as "No".
 
 -  TLS ContentType Registry: Future values are allocated via
   Standards Action {{RFC2434}}.
@@ -3600,30 +3610,64 @@ and their allocation policies (unchanged from {{RFC4346}}) are listed below.
 
 This document also uses a registry originally created in {{RFC4366}}. IANA has
 updated it to reference this document. The registry and its allocation policy
-(unchanged from {{RFC4366}}) is listed below:
+is listed below:
 
--  TLS ExtensionType Registry: Future values are allocated via IETF
-  Consensus {{RFC2434}}.  IANA [shall update/has updated] this registry
-  to include the "key_share", "pre_shared_key", and "early_data"
-  extensions as defined in this document. IANA [shall update/has updated]
-  this registry to include an "TLS 1.3" column with the following three
-  values: "Clear", indicating that they shall be in the ServerHello
-  "Encrypted", indicating that they shall be in the EncryptedExtensions
-  block, and "Forbidden" indicating that they are not used in TLS 1.3.
-  This registry [shall be/has been] initially populated with the values in this
-  document.
+- TLS ExtensionType Registry: Values with the first byte in the range
+   0-254 (decimal) are assigned via Specification Required {{RFC2434}}.
+   Values with the first byte 255 (decimal) are reserved for Private
+   Use {{RFC2434}}. IANA [SHALL update/has updated]
+   this registry to include the "key_share", "pre_shared_key", and
+   "early_data" extensions as defined in this document.
 
-This document also uses two registries originally created in {{RFC4492}}. IANA
-[should update/has updated] it to reference this document. The registries
-and their allocation policies are listed below.
+   IANA [shall update/has updated] this registry to include a "TLS
+   1.3" column with the following four values: "Client", indicating
+   that the server shall not send them. "Clear", indicating
+   that they shall be in the ServerHello "Encrypted", indicating that
+   they shall be in the EncryptedExtensions block, and "No" indicating
+   that they are not used in TLS 1.3. This column [shall be/has been]
+   initially populated with the values in this document.
+   IANA [shall update/has updated] this registry to add a
+   "Recommended" column. IANA [shall be/has been] initially populated
+   with the values in the table below. This column has been generated
+   by marking Standards Track RFCs as "Yes" and all others as
+   "No".
 
-- TLS NamedCurve registry: Future values are allocated via IETF Consensus
-  {{RFC2434}}.
+        Extension                                 Recommended    TLS 1.3
+        ----------------------------------------------------------------
+        server_name [RFC6066]                             Yes  Encrypted
+        max_fragment_length [RFC6066]                     Yes         No   
+        client_certificate_url [RFC6066]                  Yes  Encrypted
+        trusted_ca_keys [RFC6066]                         Yes  Encrypted
+        truncated_hmac [RFC6066]                          Yes         No
+        status_request [RFC6066]                          Yes         No 
+        user_mapping [RFC4681]                            Yes  Encrypted
+        client_authz [RFC5878]                             No  Encrypted
+        server_authz [RFC5878]                             No  Encrypted
+        cert_type [RFC6091]                               Yes  Encrypted
+        supported_groups                                  Yes     Client
+          [RFC-ietf-tls-negotiated-ff-dhe-10]           
+        ec_point_formats [RFC4492]                        Yes         No
+        srp [RFC5054]                                      No         No
+        signature_algorithms [RFC5246]                    Yes     Client
+        use_srtp [RFC5764]                                Yes  Encrypted
+        heartbeat [RFC6520]                               Yes  Encrypted
+        application_layer_protocol_negotiation            Yes  Encrypted
+          [RFC7301]
+        status_request_v2 [RFC6961]                       Yes  Encrypted
+        signed_certificate_timestamp [RFC6962]             No  Encrypted
+        client_certificate_type [RFC7250]                 Yes  Encrypted
+        server_certificate_type [RFC7250]                 Yes  Encrypted
+        padding [RFC7685]                                 Yes     Client
+        encrypt_then_mac [RFC7366]                        Yes         No
+        extended_master_secret [RFC7627]                  Yes         No
+        SessionTicket TLS [RFC4507]                       Yes         No
+        renegotiation_info [RFC5746]                      Yes         No
+        key_share [[this document]]                       Yes      Clear
+        pre_shared_key [[this document]]                  Yes      Clear
+        early_data [[this document]]                      Yes      Clear
 
-- TLS ECPointFormat Registry: Future values are allocated via IETF Consensus
-  {{RFC2434}}.
 
-In addition, this document defines two new registries to be maintained by IANA:
+This document reuses two registries defined in {{RFC5246}}.
 
 -  TLS SignatureAlgorithm Registry: The registry has been initially
   populated with the values described in {{signature-algorithms}}.  Future
@@ -3640,6 +3684,17 @@ In addition, this document defines two new registries to be maintained by IANA:
   inclusive are assigned via Specification Required {{RFC2434}}.
   Values from 224-255 (decimal) inclusive are reserved for Private
   Use {{RFC2434}}.
+
+In addition, this document defines a new registry to be maintained
+by IANA.
+
+- TLS ConfigurationExtensionType Registry: Values with the first byte in the range
+  0-254 (decimal) are assigned via Specification Required {{RFC2434}}.
+  Values with the first byte 255 (decimal) are reserved for Private
+  Use {{RFC2434}}. This registry SHALL have a "Recommended" column.
+  The registry [shall be/ has been] initially populated with the values described in
+  {{server-configuration}}, with all values marked with "Recommended" valut
+  "Yes".
 --- back
 
 
@@ -3732,39 +3787,15 @@ client-authenticated) cipher suites which are currently available in TLS 1.3:
     TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305          {TBD,TBD}   [I-D.ietf-tls-chacha20-poly1305]
     TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305        {TBD,TBD}   [I-D.ietf-tls-chacha20-poly1305]
     TLS_DHE_RSA_WITH_CHACHA20_POLY1305            {TBD,TBD}   [I-D.ietf-tls-chacha20-poly1305]
-
-[[TODO: CHACHA20_POLY1305 cipher suite IDs are TBD.]]
-
-The following is a list of non-standards track server-authenticated (and optionally
-client-authenticated) cipher suites which are currently available in TLS 1.3:
-
-              Cipher Suite Name                      Value     Specification
     TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256       {0xC0,0x2B}    [RFC5289]
     TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384       {0xC0,0x2C}    [RFC5289]
     TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256         {0xC0,0x2F}    [RFC5289]
     TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384         {0xC0,0x30}    [RFC5289]
-    TLS_ECDHE_ECDSA_WITH_AES_128_CCM              {0xC0,0xAC}    [RFC7251]
-    TLS_ECDHE_ECDSA_WITH_AES_256_CCM              {0xC0,0xAD}    [RFC7251]
-    TLS_ECDHE_ECDSA_WITH_AES_128_CCM_8            {0xC0,0xAE}    [RFC7251]
-    TLS_ECDHE_ECDSA_WITH_AES_256_CCM_8            {0xC0,0xAF}    [RFC7251]
-    TLS_DHE_RSA_WITH_ARIA_128_GCM_SHA256          {0xC0,0x52}    [RFC6209]
-    TLS_DHE_RSA_WITH_ARIA_256_GCM_SHA384          {0xC0,0x53}    [RFC6209]
-    TLS_ECDHE_ECDSA_WITH_ARIA_128_GCM_SHA256      {0xC0,0x5C}    [RFC6209]
-    TLS_ECDHE_ECDSA_WITH_ARIA_256_GCM_SHA384      {0xC0,0x5D}    [RFC6209]
-    TLS_ECDHE_RSA_WITH_ARIA_128_GCM_SHA256        {0xC0,0x60}    [RFC6209]
-    TLS_ECDHE_RSA_WITH_ARIA_256_GCM_SHA384        {0xC0,0x61}    [RFC6209]
-    TLS_DHE_RSA_WITH_CAMELLIA_128_GCM_SHA256      {0xC0,0x7C}    [RFC6367]
-    TLS_DHE_RSA_WITH_CAMELLIA_256_GCM_SHA384      {0xC0,0x7D}    [RFC6367]
-    TLS_ECDHE_ECDSA_WITH_CAMELLIA_128_GCM_SHA256  {0xC0,0x86}    [RFC6367]
-    TLS_ECDHE_ECDSA_WITH_CAMELLIA_256_GCM_SHA384  {0xC0,0x87}    [RFC6367]
-    TLS_ECDHE_RSA_WITH_CAMELLIA_128_GCM_SHA256    {0xC0,0x8A}    [RFC6367]
-    TLS_ECDHE_RSA_WITH_CAMELLIA_256_GCM_SHA384    {0xC0,0x8B}    [RFC6367]
 
-ECDHE AES GCM is not yet standards track, however it is already widely deployed.
+[[TODO: CHACHA20_POLY1305 cipher suite IDs are TBD.]]
 
-Note: In the case of the CCM mode of AES, two variations exist: "CCM_8" which
-uses an 8-bit authentication tag and "CCM" which uses a 16-bit authentication
-tag. Both use the default hash, SHA-256.
+Note: ECDHE AES GCM was not yet standards track prior to the publication of
+this specification. This document promotes it Standards Track.
 
 All cipher suites in this section are specified for use with both TLS 1.2
 and TLS 1.3, as well as the corresponding versions of DTLS.
