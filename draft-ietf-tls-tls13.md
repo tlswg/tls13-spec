@@ -324,6 +324,8 @@ draft-11
 
 - Add support for version anti-downgrade mechanism.
 
+- Update IANA considerations section and relax some of the policies.
+
 
 draft-10
 
@@ -3597,8 +3599,15 @@ and their allocation policies are below:
   Use {{RFC2434}}. IANA [SHALL add/has added] a "Recommended" column
   to the cipher suite registry. All cipher suites listed in
   {{cipher-suites}} are marked as "Yes". All other cipher suites are
-  marked as "No".
+  marked as "No". IANA [SHALL add/has added] add a note to this column
+  reading:
 
+~~~
+      Cipher suites marked as "Yes" are those allocated via
+      Standards Track RFCs. Cipher suites marked as "No" are not;
+      cipher suites marked "No" range from "good" to "bad" from a
+      cryptographic standpoint.
+~~~
 -  TLS ContentType Registry: Future values are allocated via
   Standards Action {{RFC2434}}.
 
@@ -3622,7 +3631,7 @@ is listed below:
    IANA [shall update/has updated] this registry to include a "TLS
    1.3" column with the following four values: "Client", indicating
    that the server shall not send them. "Clear", indicating
-   that they shall be in the ServerHello "Encrypted", indicating that
+   that they shall be in the ServerHello. "Encrypted", indicating that
    they shall be in the EncryptedExtensions block, and "No" indicating
    that they are not used in TLS 1.3. This column [shall be/has been]
    initially populated with the values in this document.
@@ -3635,7 +3644,7 @@ is listed below:
         Extension                                 Recommended    TLS 1.3
         ----------------------------------------------------------------
         server_name [RFC6066]                             Yes  Encrypted
-        max_fragment_length [RFC6066]                     Yes         No   
+        max_fragment_length [RFC6066]                     Yes  Encrypted
         client_certificate_url [RFC6066]                  Yes  Encrypted
         trusted_ca_keys [RFC6066]                         Yes  Encrypted
         truncated_hmac [RFC6066]                          Yes         No
@@ -3693,7 +3702,7 @@ by IANA.
   Values with the first byte 255 (decimal) are reserved for Private
   Use {{RFC2434}}. This registry SHALL have a "Recommended" column.
   The registry [shall be/ has been] initially populated with the values described in
-  {{server-configuration}}, with all values marked with "Recommended" valut
+  {{server-configuration}}, with all values marked with "Recommended" value
   "Yes".
 --- back
 
@@ -3727,7 +3736,6 @@ The following extensions are no longer applicable to TLS 1.3, although
 TLS 1.3 clients MAY send them if they are willing to negotiate them
 with prior versions of TLS. TLS 1.3 servers MUST ignore these
 extensions if they are negotiating TLS 1.3: 
-max_fragment_length {{RFC6066}},
 truncated_hmac {{RFC6066}},
 srp {{RFC5054}},
 encrypt_then_mac {{RFC7366}},
@@ -3780,6 +3788,10 @@ client-authenticated) cipher suites which are currently available in TLS 1.3:
               Cipher Suite Name                      Value     Specification
     TLS_DHE_RSA_WITH_AES_128_GCM_SHA256           {0x00,0x9E}    [RFC5288]
     TLS_DHE_RSA_WITH_AES_256_GCM_SHA384           {0x00,0x9F}    [RFC5288]
+    TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256       {0xC0,0x2B}    [RFC5289]
+    TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384       {0xC0,0x2C}    [RFC5289]
+    TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256         {0xC0,0x2F}    [RFC5289]
+    TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384         {0xC0,0x30}    [RFC5289]
     TLS_DHE_RSA_WITH_AES_128_CCM                  {0xC0,0x9E}    [RFC6655]
     TLS_DHE_RSA_WITH_AES_256_CCM                  {0xC0,0x9F}    [RFC6655]
     TLS_DHE_RSA_WITH_AES_128_CCM_8                {0xC0,0xA2}    [RFC6655]
@@ -3787,15 +3799,11 @@ client-authenticated) cipher suites which are currently available in TLS 1.3:
     TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305          {TBD,TBD}   [I-D.ietf-tls-chacha20-poly1305]
     TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305        {TBD,TBD}   [I-D.ietf-tls-chacha20-poly1305]
     TLS_DHE_RSA_WITH_CHACHA20_POLY1305            {TBD,TBD}   [I-D.ietf-tls-chacha20-poly1305]
-    TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256       {0xC0,0x2B}    [RFC5289]
-    TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384       {0xC0,0x2C}    [RFC5289]
-    TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256         {0xC0,0x2F}    [RFC5289]
-    TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384         {0xC0,0x30}    [RFC5289]
 
 [[TODO: CHACHA20_POLY1305 cipher suite IDs are TBD.]]
 
 Note: ECDHE AES GCM was not yet standards track prior to the publication of
-this specification. This document promotes it Standards Track.
+this specification. This document promotes it to Standards Track.
 
 All cipher suites in this section are specified for use with both TLS 1.2
 and TLS 1.3, as well as the corresponding versions of DTLS.
