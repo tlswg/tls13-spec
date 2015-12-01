@@ -3585,18 +3585,20 @@ The following table indicates the purpose values for each type of key:
 
 ###  The Handshake Hash
 
-
-[TODO: hashing 0-RTT data]
 The handshake hash is defined as the hash of all handshake messages
 sent or received, starting at ClientHello up to the present time,
-with the exception of the Finished message, including the type and
+with the exception of the client's 0-RTT authentication messages
+(Certificate, CertificateVerify, and Finished) including the type and
 length fields of the handshake messages. This is the concatenation
-of all the exchanged Handshake structures in plaintext form (even if
-they were encrypted on the wire).
+the exchanged Handshake structures in plaintext form (even if
+they were encrypted on the wire). 
+[[OPEN ISSUE: See https://github.com/tlswg/tls13-spec/issues/351
+for the question of whether the 0-RTT handshake messages are
+hashed.]]
 
 This final value of the handshake hash is referred to as the "session
 hash" because it contains all the handshake messages involved in
-establishing the session, up to and including the client's Finished.
+establishing the session, up to and including the server's Finished.
 
 ###  Diffie-Hellman
 
