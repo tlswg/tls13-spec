@@ -1543,7 +1543,7 @@ keys.
 
 Ephemeral Secret (ES): A secret which is derived from fresh (EC)DHE
    shares for this connection. Keying material derived from ES is
-   intended to be forward secure (with the exception of pre-shared
+   intended to be forward secret (with the exception of pre-shared
    key only modes).
 
 Static Secret (SS): A secret which may be derived from static or
@@ -1799,7 +1799,7 @@ IMPORTANT NOTE: The security properties for 0-RTT data (regardless of
 the cipher suite) are weaker than those for other kinds of TLS data.
 Specifically:
 
-1. This data is not forward secure, because it is encrypted solely
+1. This data is not forward secret, because it is encrypted solely
 with the server's semi-static (EC)DH share.
 
 2. There are no guarantees of non-replay between connections.
