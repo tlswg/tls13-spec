@@ -2351,11 +2351,16 @@ hash
   values indicate support for unhashed data, SHA-1, SHA-256, SHA-384,
   and SHA-512 {{SHS}}, respectively. The "none" value is provided for
   signature algorithms which do not require hashing before signing,
-  such as EdDSA.  Previous versions of TLS supported MD5 and SHA-1.
-  These algorithms are now deprecated and MUST NOT be offered by TLS
-  1.3 implementations.  SHA-1 SHOULD NOT be offered, however clients
-  willing to negotiate use of TLS 1.2 MAY offer support for SHA-1 for
-  backwards compatibility with old servers.
+  such as EdDSA.
+
+  Previous versions of TLS
+  supported MD5, SHA-1, and SHA-224.  These algorithms are now deprecated.
+  MD5 and SHA-224 MUST NOT be offered by TLS 1.3 implementations; SHA-1 SHOULD
+  NOT be offered.
+
+  Clients MAY offer support for SHA-1 for backwards compatibility,
+  either with TLS 1.2 servers or for servers that have certification
+  paths with signatures based on SHA-1.
 
 signature
 : This field indicates the signature algorithm that may be used.
@@ -2375,11 +2380,17 @@ suite indicates permissible signature algorithms but not hash algorithms.
 {{server-certificate-selection}} and {{key-share}} describe the
 appropriate rules.
 
-Clients offering support for SHA-1 for TLS 1.2 servers MUST do so by listing
+Clients offering support for SHA-1 for backwards compatibility MUST do so by listing
 those hash/signature pairs as the lowest priority (listed after all other
 pairs in the supported_signature_algorithms vector). TLS 1.3 servers MUST NOT
 offer a SHA-1 signed certificate unless no valid certificate chain can be
 produced without it (see {{server-certificate-selection}}).
+
+The signatures on certificates that are self-signed or certificates that are
+trust anchors are not validated since they begin a certification path (see
+{{RFC5280}}, Section 3.2).  A certificate that begins a certification
+path MAY use a hash or signature algorithm that is not advertised as being
+supported in the signature_algorithms extension.
 
 Note: TLS 1.3 servers MAY receive TLS 1.2 ClientHellos which do not contain
 this extension. If those servers are willing to negotiate TLS 1.2, they MUST
@@ -3159,11 +3170,16 @@ All certificates provided by the server MUST be signed by a
 hash/signature algorithm pair that appears in the "signature_algorithms"
 extension provided by the client, if they are able to provide such
 a chain (see {{signature-algorithms}}).
+Certificates that are self-signed
+or certificates that are expected to be trust anchors are not validated as
+part of the chain and therefore MAY be signed with any algorithm.
+
 If the server cannot produce a certificate chain that is signed only via the
 indicated supported pairs, then it SHOULD continue the handshake by sending
 the client a certificate chain of its choice that may include algorithms
 that are not known to be supported by the client. This fallback chain MAY
-use the deprecated SHA-1 hash algorithm.
+use the deprecated SHA-1 hash algorithm only if the "signature_algorithms"
++extension provided by the client permits it.
 If the client cannot construct an acceptable chain using the provided
 certificates and decides to abort the handshake, then it MUST send an
 "unsupported_certificate" alert message and close the connection.
@@ -3222,8 +3238,8 @@ Any endpoint receiving any certificate signed using any signature algorithm
 using an MD5 hash MUST send a "bad_certificate" alert message and close
 the connection.
 
-As SHA-1 and SHA-224 are deprecated, support for them is NOT RECOMMENDED.
-Endpoints that reject chains due to use of a deprecated hash MUST send
+SHA-1 is deprecated and therefore NOT RECOMMENDED.
+Endpoints that reject certification paths due to use of a deprecated hash MUST send
 a fatal "bad_certificate" alert message before closing the connection.
 All endpoints are RECOMMENDED to transition to SHA-256 or better as soon
 as possible to maintain interoperability with implementations
@@ -4026,7 +4042,7 @@ Users should be able to view information about the certificate and root CA.
 TLS supports a range of key sizes and security levels, including some that
 provide no or minimal security. A proper implementation will probably not
 support many cipher suites. Applications SHOULD also enforce minimum and
-maximum key sizes. For example, certificate chains containing keys or
+maximum key sizes. For example, certification paths containing keys or
 signatures weaker than 2048-bit RSA or 224-bit ECDSA are not appropriate
 for secure applications.
 See also {{backwards-compatibility-security-restrictions}}.
@@ -4113,7 +4129,7 @@ version number to the negotiated version for the ServerHello and all
 records thereafter.
 
 For maximum compatibility with previously non-standard behavior and misconfigured
-deployments, all implementations SHOULD support validation of certificate chains
+deployments, all implementations SHOULD support validation of certification paths
 based on the expectations in this document, even when handling prior TLS versions'
 handshakes. (see {{server-certificate-selection}})
 
