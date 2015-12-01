@@ -211,8 +211,19 @@ informative:
          org: IEEE
        seriesinfo:
          IEEE 1363
-       
-
+  PSK-FINISHED:
+       title: "Revision 10: possible attack if client authentication is allowed during PSK"
+       date: 2015
+       target: https://www.ietf.org/mail-archive/web/tls/current/msg18215.html              
+       author:
+       -
+         ins: C. Cremers
+       -
+         ins: M. Horvat
+       -
+         ins: T. van der Merwe
+       -
+         ins: S. Scott
 
 --- abstract
 
@@ -1592,7 +1603,7 @@ server's ephemeral Diffie-Hellman share which MUST be in the same group
 as one of the shares offered by the client. The server's KeyShare and
 the client's KeyShare corresponding to the negotiated key exchange
 are used together to derive the Static Secret and Ephemeral
- Secret (in this mode they are the same).  [{{key-share}}]
+Secret (in this mode they are the same).  [{{key-share}}]
 
 
 The server then sends three messages to establish the Server Parameters:
@@ -1601,16 +1612,16 @@ EncryptedExtensions
 : responses to any extensions which are not required in order to
   determine the cryptographic parameters. [{{encrypted-extensions}}]
 
-ServerConfiguration
-: supplies a configuration for 0-RTT handshakes (see {{zero-rtt-exchange}}).
-[{{server-configuration}}]
-
 CertificateRequest
 : if certificate-based client authentication is desired, the
   desired parameters for that certificate. This message will
   be omitted if client authentication is not desired.
   [[OPEN ISSUE: See https://github.com/tlswg/tls13-spec/issues/184]].
   [{{certificate-request}}]
+
+ServerConfiguration
+: supplies a configuration for 0-RTT handshakes (see {{zero-rtt-exchange}}).
+[{{server-configuration}}]
 
 
 Finally, the client and server exchange Authentication messages. TLS
@@ -1915,9 +1926,9 @@ New handshake message types are assigned by IANA as described in
 
 ### Key Exchange Messages
 
-The hello phase messages are used to exchange security enhancement capabilities
-between the client and server. When a new session begins, the record layer's
-connection state AEAD algorithm is initialized to NULL_NULL.
+The key exchange messages are used to exchange security enhancement capabilities
+between the client and server and establish traffic keys used to protect
+the handshake.
 
 ####  Client Hello
 
@@ -2841,11 +2852,6 @@ Structure of this message:
            CertificateExtension certificate_extensions<0..2^16-1>;
        } CertificateRequest;
 
-[[TODO: We agreed to allow the server to provide a
-context string here and we should require that to be fresh
-in the post-handshake context.
-https://github.com/tlswg/tls13-spec/issues/262.]]
-
 certificate_request_context
 : An opaque string which identifies the certificate request and
   which will be echoed in the client's Certificate message. The
@@ -3296,6 +3302,17 @@ RSASSA-PKCS-v1_5 appears in "signature_algorithms".
 SHA-1 MUST NOT be used in any signatures in CertificateVerify,
 regardless of whether SHA-1 appears in "signature_algorithms".
 
+Note: when used with non-certificate-based handshakes (e.g., PSK),
+the client's signature does not cover the server's certificate
+directly, although it does cover the server's Finished message,
+which transitively includes the server's certificate when
+the PSK derives from a certificate-authenticated handshake.
+{{PSK-FINISHED}} describes a concrete attack on this mode if
+the Finished is omitted from the signature. It is unsafe to use
+certificate-based client authentication when the client might potentially
+share the same PSK/key-id pair with two different endpoints.
+
+
 ####  Finished
 
 When this message will be sent:
@@ -3409,7 +3426,7 @@ after the handshake has completed by sending a CertificateRequest
 message. The client SHOULD respond with the appropriate Authentication
 messages. If the client chooses to authenticate, it MUST send
 Certificate, CertificateVerify, and Finished. If it declines, it
-MUST send an empty Certificate message followed by Finished.
+MUST send a Certificate message containing no certificates followed by Finished.
 Note: Because there may already be application data messages in
 flight, the server MUST be prepared to receive an arbitrary number
 of such messages before receiving the Authentication messages.
@@ -3486,7 +3503,8 @@ the sources from the table above.
                              handshake_hash, L)
 
   Where handshake_hash includes all messages up through the
-  server CertificateVerify message.
+  server CertificateVerify message, but not including any
+  0-RTT handshake messages.
 
   5. master_secret = HKDF-Extract(mSS, mES)
 
@@ -3568,6 +3586,7 @@ The following table indicates the purpose values for each type of key:
 ###  The Handshake Hash
 
 
+[TODO: hashing 0-RTT data]
 The handshake hash is defined as the hash of all handshake messages
 sent or received, starting at ClientHello up to the present time,
 with the exception of the Finished message, including the type and
