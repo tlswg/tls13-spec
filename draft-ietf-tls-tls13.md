@@ -1165,6 +1165,13 @@ fatal "record_overflow" alert.  This limit is derived from the maximum
 TLSPlaintext length of 2^14 octets + 1 octet for ContentType + the
 maximum AEAD expansion of 255 octets.
 
+There is a limitation on the total number of bytes that can be transmitted
+under one one set of keys. For the AES-GCM ciphersuites this limit is 
+2^36 bytes. For ChaCha20-Poly1305 this limit is larger then the size of the
+nonce, and so does not matter. Implementations MUST NOT transmit more than
+2^36 bytes encrypted under a single key: they MUST rekey or close the connection
+before 2^36 bytes are reached.
+
 ### Record Padding
 
 All encrypted TLS records can be padded to inflate the size of the
