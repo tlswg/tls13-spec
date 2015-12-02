@@ -1166,11 +1166,11 @@ TLSPlaintext length of 2^14 octets + 1 octet for ContentType + the
 maximum AEAD expansion of 255 octets.
 
 There is a limitation on the total number of bytes that can be transmitted
-under one one set of keys. For the AES-GCM ciphersuites this limit is 
+under one set of keys. For the AES-GCM ciphersuites this limit is 
 2^36 bytes. For ChaCha20-Poly1305 this limit is larger then the size of the
 nonce, and so does not matter. Implementations MUST NOT transmit more than
-2^36 bytes encrypted under a single key: they MUST rekey or close the connection
-before 2^36 bytes are reached.
+2^36 bytes encrypted under a single key and MUST rekey or close the connection
+before the limit is reached.
 
 ### Record Padding
 
