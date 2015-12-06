@@ -1813,7 +1813,9 @@ will not process the same data twice for the same connection) and also
 cannot be sent as if it were ordinary TLS data.
 
 3. If the server key is compromised, then the attacker can tamper with
-the 0-RTT data without detection.
+the 0-RTT data without detection. If the client's ephemeral share
+is compromised and client authentication is used, then the attacker
+can impersonate the client on subsequent connections.
 
 
 ### Resumption and PSK
