@@ -1789,8 +1789,7 @@ client offers a certificate on its first flight. This
 is consistent with the server being
 able to ask for client authentication after the handshake is
 complete. See {{post-handshake-authentication}}.
-Note that a Zero-RTT handshake can either create a new session, or
-resume a previous PSK session.
+Note that Zero-RTT handshakes handshakes can be used with pre-shared keys.
 
 Note: because sequence numbers continue to increment between the
 initial (early) application data and the application data sent
