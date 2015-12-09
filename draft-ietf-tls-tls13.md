@@ -3518,7 +3518,7 @@ the sources from the table above.
   Where handshake_hash includes all messages up through the
   server CertificateVerify message, but not including any
   0-RTT handshake messages (the server's Finished is not
-  included because the master_secret is need to compute
+  included because the master_secret is needed to compute
   the finished key).
 
   5. master_secret = HKDF-Extract(mSS, mES)
