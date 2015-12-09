@@ -2469,7 +2469,7 @@ ffdhe2048, etc.
   Values 0x01FC through 0x01FF are reserved for private use.
 {:br }
 
-Items in named_curve_list are ordered according to the client's
+Items in named_group_list are ordered according to the client's
 preferences (most preferred choice first).
 
 As an example, a client that only supports secp256r1 (aka NIST P-256;
