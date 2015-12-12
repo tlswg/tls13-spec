@@ -2072,7 +2072,7 @@ legacy_compression_methods
   prior versions of TLS. If a TLS 1.3 ClientHello is
   received with any other value in this field, the server MUST
   generate a fatal "illegal_parameter" alert. Note that TLS 1.3
-  servers may receive TLS 1.2 or prior ClientHellos which contain
+  servers might receive TLS 1.2 or prior ClientHellos which contain
   other compression methods and MUST follow the procedures for
   the appropriate prior version of TLS.
 
@@ -2392,7 +2392,7 @@ trust anchors are not validated since they begin a certification path (see
 path MAY use a hash or signature algorithm that is not advertised as being
 supported in the signature_algorithms extension.
 
-Note: TLS 1.3 servers MAY receive TLS 1.2 ClientHellos which do not contain
+Note: TLS 1.3 servers might receive TLS 1.2 ClientHellos which do not contain
 this extension. If those servers are willing to negotiate TLS 1.2, they MUST
 behave in accordance with the requirements of {{RFC5246}} when negotiating
 that version.
@@ -3856,7 +3856,7 @@ by IANA.
 This section describes protocol types and constants. Values listed as
 _RESERVED were used in previous versions of TLS and are listed here
 for completeness. TLS 1.3 implementations MUST NOT send them but
-may receive them from older TLS implementations.
+might receive them from older TLS implementations.
 
 %%## Record Layer
 %%## Alert Messages
