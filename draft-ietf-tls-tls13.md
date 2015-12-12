@@ -2488,6 +2488,8 @@ Clients and servers MUST NOT offer any KeyShareEntry values for groups not
 listed in the client's "supported_groups" extension.
 Servers MUST NOT offer a KeyShareEntry value for a group not offered by the
 client in its corresponding KeyShare.
+Implementations receiving any KeyShare containing any of these prohibited
+values MUST abort the connection with a fatal "illegal_parameter" alert.
 
 If no mutually supported group is available between the two endpoints' KeyShare
 offers, yet there is a mutually supported group that can be found via the
