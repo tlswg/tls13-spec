@@ -2160,7 +2160,7 @@ message when it was able to find an acceptable set of algorithms and
 groups that are mutually supported, but
 the client's KeyShare did not contain an acceptable
 offer. If it cannot find such a match, it will respond with a
-"handshake_failure" alert.
+fatal "handshake_failure" alert.
 
 Structure of this message:
 
@@ -2175,18 +2175,21 @@ Structure of this message:
 [[OPEN ISSUE: Merge in DTLS Cookies?]]
 
 selected_group
-: The group which the client MUST use for its new ClientHello.
+: The mutually supported group the server intends to negotiate and
+  is requesting a retried ClientHello/KeyShare for.
 {:br }
 
-The "server_version", "cipher_suite" and "extensions" fields have the
+The server_version, cipher_suite, and extensions fields have the
 same meanings as their corresponding values in the ServerHello. The
 server SHOULD send only the extensions necessary for the client to
-generate a correct ClientHello pair.
+generate a correct ClientHello pair. As with ServerHello, a
+HelloRetryRequest MUST NOT contain any extensions that were not first
+offered by the client in its ClientHello.
 
 Upon receipt of a HelloRetryRequest, the client MUST first verify that
-the "selected_group" field corresponds to a group which was provided
+the selected_group field corresponds to a group which was provided
 in the "supported_groups" extension in the original ClientHello.  It
-MUST then verify that the "selected_group" field does not correspond
+MUST then verify that the selected_group field does not correspond
 to a group which was provided in the "key_share" extension in the
 original ClientHello. If either of these checks fails, then the client
 MUST abort the handshake with a fatal "handshake_failure"
@@ -2195,15 +2198,16 @@ to any second HelloRetryRequest which was sent in the same connection
 (i.e., where the ClientHello was itself in response to a
 HelloRetryRequest).
 
-Otherwise, the client MUST send a ClientHello with a new KeyShare
+Otherwise, the client MUST send a ClientHello with an updated KeyShare
 extension to the server. The client MUST append a new KeyShareEntry
-list which is consistent with the "selected_group" field to the groups
+for the group indicated in the selected_group field to the groups
 in its original KeyShare.
 
 Upon re-sending the ClientHello and receiving the
 server's ServerHello/KeyShare, the client MUST verify that
 the selected CipherSuite and NamedGroup match that supplied in
-the HelloRetryRequest.
+the HelloRetryRequest. If either of these values differ, the client
+MUST abort the connection with a fatal "handshake_failure" alert.
 
 [[OPEN ISSUE: https://github.com/tlswg/tls13-spec/issues/104]]
 
