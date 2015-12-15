@@ -4362,155 +4362,155 @@ Archives of the list can be found at:
 
 # Contributors
 
-    Martin Abadi
-    University of California, Santa Cruz
-    abadi@cs.ucsc.edu
+* Martin Abadi \\
+  University of California, Santa Cruz \\
+  abadi@cs.ucsc.edu
 
-    Christopher Allen (co-editor of TLS 1.0)
-    Alacrity Ventures
-    ChristopherA@AlacrityManagement.com
+* Christopher Allen (co-editor of TLS 1.0) \\
+  Alacrity Ventures \\
+  ChristopherA@AlacrityManagement.com
 
-    Steven M. Bellovin
-    Columbia University
-    smb@cs.columbia.edu
+* Steven M. Bellovin \\
+  Columbia University \\
+  smb@cs.columbia.edu
 
-    Benjamin Beurdouche
+* Benjamin Beurdouche
 
-    Karthikeyan Bhargavan (co-author of [RFC7627])
-    INRIA
-    karthikeyan.bhargavan@inria.fr
+* Karthikeyan Bhargavan (co-author of [RFC7627]) \\
+  INRIA \\
+  karthikeyan.bhargavan@inria.fr
 
-    Simon Blake-Wilson (co-author of [RFC4492])
-    BCI
-    sblakewilson@bcisse.com
+* Simon Blake-Wilson (co-author of [RFC4492]) \\
+  BCI \\
+  sblakewilson@bcisse.com
 
-    Nelson Bolyard
-    Sun Microsystems, Inc.
-    nelson@bolyard.com (co-author of [RFC4492])
+* Nelson Bolyard (co-author of [RFC4492]) \\
+  Sun Microsystems, Inc. \\
+  nelson@bolyard.com
 
-    Ran Canetti
-    IBM
-    canetti@watson.ibm.com
+* Ran Canetti \\
+  IBM \\
+  canetti@watson.ibm.com
 
-    Pete Chown
-    Skygate Technology Ltd
-    pc@skygate.co.uk
+* Pete Chown \\
+  Skygate Technology Ltd \\
+  pc@skygate.co.uk
 
-    Antoine Delignat-Lavaud (co-author of [RFC7627])
-    INRIA
-    antoine.delignat-lavaud@inria.fr
+* Antoine Delignat-Lavaud (co-author of [RFC7627]) \\
+  INRIA \\
+  antoine.delignat-lavaud@inria.fr
 
-    Tim Dierks (co-editor of TLS 1.0, 1.1, and 1.2)
-    Independent
-    tim@dierks.org
+* Tim Dierks (co-editor of TLS 1.0, 1.1, and 1.2) \\
+  Independent \\
+  tim@dierks.org
 
-    Taher Elgamal
-    Securify
-    taher@securify.com
+* Taher Elgamal \\
+  Securify \\
+  taher@securify.com
 
-    Pasi Eronen
-    Nokia
-    pasi.eronen@nokia.com
+* Pasi Eronen \\
+  Nokia \\
+  pasi.eronen@nokia.com
 
-    Anil Gangolli
-    anil@busybuddha.org
+* Anil Gangolli \\
+  anil@busybuddha.org
 
-    David M. Garrett
+* David M. Garrett
 
-    Vipul Gupta (co-author of [RFC4492])
-    Sun Microsystems Laboratories
-    vipul.gupta@sun.com
+* Vipul Gupta (co-author of [RFC4492]) \\
+  Sun Microsystems Laboratories \\
+  vipul.gupta@sun.com
 
-    Chris Hawk (co-author of [RFC4492])
-    Corriente Networks LLC
-    chris@corriente.net
+* Chris Hawk (co-author of [RFC4492]) \\
+  Corriente Networks LLC \\
+  chris@corriente.net
 
-    Kipp Hickman
+* Kipp Hickman
 
-    Alfred Hoenes
+* Alfred Hoenes
 
-    David Hopwood
-    Independent Consultant
-    david.hopwood@blueyonder.co.uk
+* David Hopwood \\
+  Independent Consultant \\
+  david.hopwood@blueyonder.co.uk
 
-    Daniel Kahn Gillmor
-    ACLU
-    dkg@fifthhorseman.net
+* Daniel Kahn Gillmor \\
+  ACLU \\
+  dkg@fifthhorseman.net
 
-    Phil Karlton (co-author of SSL 3.0)
+* Phil Karlton (co-author of SSL 3.0)
 
-    Paul Kocher (co-author of SSL 3.0)
-    Cryptography Research
-    paul@cryptography.com
+* Paul Kocher (co-author of SSL 3.0) \\
+  Cryptography Research \\
+  paul@cryptography.com
 
-    Hugo Krawczyk
-    IBM
-    hugo@ee.technion.ac.il
+* Hugo Krawczyk \\
+  IBM \\
+  hugo@ee.technion.ac.il
 
-    Adam Langley (co-author of [RFC7627])
-    Google
-    agl@google.com
+* Adam Langley (co-author of [RFC7627]) \\
+  Google \\
+  agl@google.com
 
-    Ilari Liusvaara
-    Independent
-    ilariliusvaara@welho.com
+* Ilari Liusvaara \\
+  Independent \\
+  ilariliusvaara@welho.com
 
-    Jan Mikkelsen
-    Transactionware
-    janm@transactionware.com
+* Jan Mikkelsen \\
+  Transactionware \\
+  janm@transactionware.com
 
-    Bodo Moeller (co-author of [RFC4492])
-    Google
-    bodo@openssl.org
+* Bodo Moeller (co-author of [RFC4492]) \\
+  Google \\
+  bodo@openssl.org
 
-    Erik Nygren
-    Akamai Technologies
-    erik+ietf@nygren.org
+* Erik Nygren \\
+  Akamai Technologies \\
+  erik+ietf@nygren.org
 
-    Magnus Nystrom
-    RSA Security
-    magnus@rsasecurity.com
+* Magnus Nystrom \\
+  RSA Security \\
+  magnus@rsasecurity.com
 
-    Alfredo Pironti (co-author of [RFC7627])
-    INRIA
-    alfredo.pironti@inria.fr
+* Alfredo Pironti (co-author of [RFC7627]) \\
+  INRIA \\
+  alfredo.pironti@inria.fr
 
-    Andrei Popov
-    Microsoft
-    andrei.popov@microsoft.com
+* Andrei Popov \\
+  Microsoft \\
+  andrei.popov@microsoft.com
 
-    Marsh Ray (co-author of [RFC7627])
-    Microsoft
-    maray@microsoft.com
+* Marsh Ray (co-author of [RFC7627]) \\
+  Microsoft \\
+  maray@microsoft.com
 
-    Robert Relyea
-    Netscape Communications
-    relyea@netscape.com
+* Robert Relyea \\
+  Netscape Communications \\
+  relyea@netscape.com
 
-    Jim Roskind
-    Netscape Communications
-    jar@netscape.com
+* Jim Roskind \\
+  Netscape Communications \\
+  jar@netscape.com
 
-    Michael Sabin
+* Michael Sabin
 
-    Dan Simon
-    Microsoft, Inc.
-    dansimon@microsoft.com
+* Dan Simon \\
+  Microsoft, Inc. \\
+  dansimon@microsoft.com
 
-    Bjoern Tackmann
-    University of California, San Diego
-    btackmann@eng.ucsd.edu
-            
-    Martin Thomson
-    Mozilla
-    mt@mozilla.com
+* Bjoern Tackmann \\
+  University of California, San Diego \\
+  btackmann@eng.ucsd.edu
 
-    Tom Weinstein
+* Martin Thomson \\
+  Mozilla \\
+  mt@mozilla.com
 
-    Hoeteck Wee
-    Ecole Normale Superieure, Paris
-    hoeteck@alum.mit.edu
+* Tom Weinstein
 
-    Tim Wright
-    Vodafone
-    timothy.wright@vodafone.com
+* Hoeteck Wee \\
+  Ecole Normale Superieure, Paris \\
+  hoeteck@alum.mit.edu
+
+* Tim Wright \\
+  Vodafone \\
+  timothy.wright@vodafone.com
