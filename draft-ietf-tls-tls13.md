@@ -2720,6 +2720,11 @@ application_data, and alert respectively) but are protected under
 different keys. After all the 0-RTT application data messages (if
 any) have been sent, a "end_of_early_data" alert of type
 "warning" is sent to indicate the end of the flight.
+Clients which do 0-RTT MUST always send "end_of_early_data" even
+if the ServerConfiguration indicates that no application
+data is allowed (EarlyDataType of "client_authentication"),
+though in that case it MUST NOT send any non-empty data records
+(i.e., those which consist of anything other than padding).
 
 A server which receives an "early_data" extension
 can behave in one of two ways:
@@ -2940,7 +2945,10 @@ Structure of this Message:
 
 %%% Server Parameters Messages
           enum { (65535) } ConfigurationExtensionType;
-
+          
+          enum { client_authentication(1), early_data(2),
+                 client_authentication_and_data(3), (255) } EarlyDataType;
+                 
           struct {
               ConfigurationExtensionType extension_type;
               opaque extension_data<0..2^16-1>;
@@ -2977,7 +2985,7 @@ server_key
 early_data_type
 : The type of 0-RTT handshake that this configuration is to be used
 for (see {{early-data-indication}}). If "client_authentication"
-or "client_authentication_and_data", then the client should select
+or "client_authentication_and_data", then the client MUST select
 the certificate for future handshakes based on the CertificateRequest
 parameters supplied in this handshake. The server MUST NOT send
 either of these two options unless it also requested a certificate
@@ -3075,11 +3083,12 @@ includes all key exchange methods defined in this document except PSK).
 
 > The client MUST send a Certificate message whenever the server has
 requested client authentication via a CertificateRequest message
-({{certificate-request}}) or when the EarlyDataIndication indicates
-client authentication. This message is only sent if the server
-requests a certificate. If no suitable certificate is available, the
-client MUST send a Certificate message containing no certificates
-(i.e., with the "certificate_list" field having length 0).
+({{certificate-request}}) or when the EarlyDataType provided with the
+server configuration indicates a need for client authentication.  This
+message is only sent if the server requests a certificate via one of
+these mechanisms. If no suitable certificate is available, the client
+MUST send a Certificate message containing no certificates (i.e., with
+the "certificate_list" field having length 0).
 
 Meaning of this message:
 
