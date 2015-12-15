@@ -1822,6 +1822,17 @@ the 0-RTT data without detection. If the client's ephemeral share
 is compromised and client authentication is used, then the attacker
 can impersonate the client on subsequent connections.
 
+It is up to the implementation and application layers above TLS to mitigate
+the impact of these weaknesses.  For example, to support strong client
+authentication and forward secrecy over 0-RTT connections, it is possible to
+issue a new ticket on the first 1-RTT connection, and on every resumed session
+after that.  Each co-located group of servers could ensure that tickets they
+issue are used only once by maintaining a local cache of ticket decryption
+keys.  An accurate clock on the client could ensure freshness of client
+signatures.  In addition it is a good idea to make all request idempotent,
+even POST requests, to mitigate the impact of packet replay, which happen
+often as a result of network errors rather than malicious attacks.
+
 
 ### Resumption and PSK
 
