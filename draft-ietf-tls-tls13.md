@@ -3043,28 +3043,23 @@ each other, just the messages through the end of the main handshake.
 The following table defines the Handshake Context and MAC Key
 for each scenario:
 
-~~~~
-Mode             Handshake Context                        Base Key
-----             -----------------                        --------
-0-RTT            ClientHello + ServerConfiguration        xSS
-                             + Server Certificate
-                             + CertificateRequest
-                 (ServerConfiguration, etc. are
-                 from previous handshake).
+| Mode | Handshake Context | Base Key |
+|------|-------------------|----------|
+| 0-RTT | ClientHello + ServerConfiguration + Server Certificate + CertificateRequest (where ServerConfiguration, etc. are from the previous handshake) | xSS |
+| 1-RTT (Server) | ClientHello ... ServerConfiguration | master secret |
+| 1-RTT (Client) | ClientHello ... ServerFinished     | master secret |
+| Post-Handshake | ClientHello ... ClientFinished + CertificateRequest | master secret |
 
-1-RTT (Server)   ClientHello ... ServerConfiguration      master_secret
+Note 1:
 
-1-RTT (Client)   ClientHello ... ServerFinished           master_secret
+: The ServerConfiguration, CertificateRequest, and Server Certificate in the
+  0-RTT case are the messages from the handshake where the ServerConfiguration
+  was established.
 
-Post-Handshake   ClientHello ... ClientFinished +         master_secret
-                 CertificateRequest
-~~~~
-Note 1: The ServerConfiguration, CertificateRequest, and Server Certificate
-in the 0-RTT case are the messages from the handshake where the
-ServerConfiguration was established.
+Note 2:
 
-Note 2: The Handshake Context for the last three rows does not include
-any 0-RTT handshake messages, regardless of whether 0-RTT is used.
+: The Handshake Context for the last three rows does not include any 0-RTT
+  handshake messages, regardless of whether 0-RTT is used.
 
 
 
