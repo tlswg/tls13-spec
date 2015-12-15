@@ -3149,8 +3149,8 @@ The following rules apply to the certificates sent by the server:
 
 - The certificate MUST allow the key to be used for signing (i.e., the
   digitalSignature bit MUST be set if the key usage extension is present) with
-  the signature scheme and hash algorithm that will be employed in the server's
-  signature_algorithms extension.
+  a signature scheme and hash algorithm pair indicated in the client's
+  "signature_algorithms" extension.
 
 - An ECDSA or EdDSA public key MUST use a curve and point format supported by the
   client, as described in [RFC4492].
