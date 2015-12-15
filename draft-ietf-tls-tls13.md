@@ -3569,34 +3569,21 @@ The keying material is computed using:
 The following table describes the inputs to the key calculation for
 each class of traffic keys:
 
-~~~
-  Record Type Secret  Label                           Handshake Context
-  ----------- ------  -----                           -----------------
-  0-RTT          xSS  "early handshake                     ClientHello
-  Handshake            key expansion              + ServerConfiguration
-                                                   + Server Certificate
-
-  0-RTT          xSS  "early application                    ClientHello
-  Application          data key expansion"        + ServerConfiguration
-                                                   + Server Certificate
-
-  Handshake      xES  "handshake key expansion"          ClientHello...
-                                                            ServerHello
-
-  Application  master "application data key expansion"   ClientHello...
-               secret                                   Server Finished
-~~~
+| Record Type | Secret | Label | Handshake Context |
+|:------------|--------|-------|------------------:|
+| 0-RTT Handshake   | xSS | "early handshake key expansion" | ClientHello + ServerConfiguration + Server Certificate |
+| 0-RTT Application | xSS | "early application data key expansion" | ClientHello + ServerConfiguration + Server Certificate |
+| Handshake         | xES | "handshake key expansion" | ClientHello... ServerHello |
+| Application Data  | master secret | "application data key expansion" | ClientHello... Server Finished |
 
 The following table indicates the purpose values for each type of key:
 
-~~~
-  Key Type              Purpose
-  --------              -------
-  Client Write Key      "client write key"
-  Server Write Key      "server write key"
-  Client Write IV       "client write IV"
-  Server Write IV       "server write IV"
-~~~
+| Key Type         | Purpose            |
+|:-----------------|:-------------------|
+| Client Write Key | "client write key" |
+| Server Write Key | "server write key" |
+| Client Write IV  | "client write IV"  |
+| Server Write IV  | "server write IV"  |
 
 ###  The Handshake Hash
 
@@ -3796,15 +3783,13 @@ is listed below:
 | client_authz [RFC5878]                   |          No | Encrypted |
 | server_authz [RFC5878]                   |          No | Encrypted |
 | cert_type [RFC6091]                      |         Yes | Encrypted |
-| supported_groups
-    [RFC-ietf-tls-negotiated-ff-dhe-10]    |         Yes |    Client |
+| supported_groups [RFC-ietf-tls-negotiated-ff-dhe] | Yes |   Client |
 | ec_point_formats [RFC4492]               |         Yes |        No |
 | srp [RFC5054]                            |          No |        No |
 | signature_algorithms [RFC5246]           |         Yes |    Client |
 | use_srtp [RFC5764]                       |         Yes | Encrypted |
 | heartbeat [RFC6520]                      |         Yes | Encrypted |
-| application_layer_protocol_negotiation
-    [RFC7301]                              |         Yes | Encrypted |
+| application_layer_protocol_negotiation[RFC7301] |  Yes | Encrypted |
 | status_request_v2 [RFC6961]              |         Yes | Encrypted |
 | signed_certificate_timestamp [RFC6962]   |          No | Encrypted |
 | client_certificate_type [RFC7250]        |         Yes | Encrypted |
