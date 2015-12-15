@@ -2496,14 +2496,17 @@ must consider the supported groups in both cases.
 The "key_share" extension contains the endpoint's cryptographic parameters
 for non-PSK key establishment methods (currently DHE or ECDHE).
 
-Clients which offer one or more (EC)DHE cipher suites
-MUST send at least one supported KeyShare value and
-servers MUST NOT negotiate any of these cipher suites unless a supported
+Clients which offer one or more (EC)DHE cipher suites MUST send this
+extension and SHOULD send at least one supported KeyShareEntry value.
+Servers MUST NOT negotiate any of these cipher suites unless a supported
 value was provided.
-If this extension is not provided in a ServerHello or retried ClientHello,
+If this extension is not provided in a ServerHello or ClientHello,
 and the peer is offering (EC)DHE cipher suites, then the endpoint MUST close
 the connection with a fatal "missing_extension" alert.
 (see {{mti-extensions}})
+Clients MAY send an empty client_shares vector in order to request
+group selection from the server at the cost of an additional round trip.
+(see {{hello-retry-request}})
 
 %%% Key Exchange Messages
        struct {
@@ -2542,12 +2545,12 @@ The "extension_data" field of this extension contains a
 
 client_shares
 : A list of offered KeyShareEntry values in descending order of client preference.
-  This vector MUST NOT be empty. Clients not providing a KeyShare MUST instead
-  omit this extension from the ClientHello.
+  This vector MAY be empty if the client is requesting a HelloRetryRequest.
+  The ordering of values here SHOULD match that of the ordering of offered support
+  in the "supported_groups" extension.
 
 server_share
-: A single KeyShareEntry value for the negotiated cipher suite.  Servers
-  MUST NOT send a KeyShareEntry value for a group not offered by the client.
+: A single KeyShareEntry value for the negotiated cipher suite.
 {:br }
 
 Servers offer exactly one KeyShareEntry value, which corresponds to the
@@ -2558,11 +2561,19 @@ a single set of key exchange parameters. For instance, a client might
 offer shares for several elliptic curves or multiple integer DH groups.
 The key_exchange values for each KeyShareEntry MUST by generated independently.
 Clients MUST NOT offer multiple KeyShareEntry values for the same parameters.
-Clients MAY omit this extension from the ClientHello, and in response to this,
-servers MUST send a HelloRetryRequest requesting use of one of the
-groups the client offered support for in its "supported_groups"
-extension. If no common supported group is available, the server MUST
-produce a fatal "handshake_failure" alert. (see {{hello-retry-request}})
+Clients and servers MUST NOT offer any KeyShareEntry values for groups not
+listed in the client's "supported_groups" extension.
+Servers MUST NOT offer a KeyShareEntry value for a group not offered by the
+client in its corresponding KeyShare.
+Implementations receiving any KeyShare containing any of these prohibited
+values MUST abort the connection with a fatal "illegal_parameter" alert.
+
+If the server selects an (EC)DHE cipher suite and no mutually
+supported group is available between the two endpoints' KeyShare
+offers, yet there is a mutually supported group that can be found via
+the "supported_groups" extension, then the server MUST reply with a
+HelloRetryRequest.  If there is no mutually supported group at all,
+the server MUST NOT negotiate an (EC)DHE cipher suite.
 
 [[TODO: Recommendation about what the client offers.
 Presumably which integer DH groups and which curves.]]
