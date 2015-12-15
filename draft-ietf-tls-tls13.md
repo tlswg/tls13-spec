@@ -2491,15 +2491,12 @@ client in its corresponding KeyShare.
 Implementations receiving any KeyShare containing any of these prohibited
 values MUST abort the connection with a fatal "illegal_parameter" alert.
 
-If no mutually supported group is available between the two endpoints' KeyShare
-offers, yet there is a mutually supported group that can be found via the
-"supported_groups" extension, then the server MUST reply with a
-HelloRetryRequest (unless there is a mutually supported cipher suite not
-requiring this extension which is offered by the client at a higher priority
-than all those requiring this extension, in which case that cipher suite
-SHOULD be negotiated instead, and this section is not applicable).
-If there is no mutually supported group at all, the server MUST abort the
-connection with a fatal "handshake_failure" alert.
+If the server selects an (EC)DHE cipher suite and no mutually
+supported group is available between the two endpoints' KeyShare
+offers, yet there is a mutually supported group that can be found via
+the "supported_groups" extension, then the server MUST reply with a
+HelloRetryRequest.  If there is no mutually supported group at all,
+the server MUST NOT negotiate an (EC)DHE cipher suite.
 
 [[TODO: Recommendation about what the client offers.
 Presumably which integer DH groups and which curves.]]
@@ -3920,19 +3917,6 @@ TLS protocol issues:
   scanning from the end for the ContentType, do you avoid scanning
   past the start of the cleartext in the event that the peer has sent
   a malformed plaintext of all-zeros?
-
-- Have you ensured that forward secrecy is always negotiated when it
-  is supported and prioritized over non-FS cipher suites?
-  In particular:
-  When both endpoints support an (EC)DHE cipher suite and a plain PSK
-  cipher suite at a lower priority, and both endpoints support a group
-  offered via the client's "supported_groups" extension which is
-  compatible with the former, yet no corresponding KeyShareEntry was
-  provided via the client's "key_share" extension, does the server
-  correctly respond with a HelloRetryRequest for the prioritized
-  (EC)DHE cipher suite and the required group? Does the client respond
-  to this HelloRetryRequest with a new ClientHello which successfully
-  negotiates this cipher suite with this group?
 
 Cryptographic details:
 
