@@ -141,7 +141,8 @@ informative:
        author:
          - name: Hal Finney
        date: 2006-08-27
-       target: http://www.imc.org/ietf-openpgp/mail-archive/msg14307.html
+       target: https://www.ietf.org/mail-archive/web/openpgp/current/msg00999.html
+       
   GCM:
        title: "Recommendation for Block Cipher Modes of Operation: Galois/Counter Mode (GCM) and GMAC"
        date: 2007-11
