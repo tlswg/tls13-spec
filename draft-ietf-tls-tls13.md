@@ -3459,20 +3459,12 @@ input secret values: Static Secret (SS) and Ephemeral Secret (ES).
 The exact source of each of these secrets depends on the operational
 mode (DHE, ECDHE, PSK, etc.) and is summarized in the table below:
 
-~~~
-    Key Exchange            Static Secret (SS)    Ephemeral Secret (ES)
-    ------------            ------------------    ---------------------
-    (EC)DHE                   Client ephemeral         Client ephemeral
-    (full handshake)       w/ server ephemeral      w/ server ephemeral
-
-    (EC)DHE                   Client ephemeral         Client ephemeral
-    (w/ 0-RTT)                w/ server static      w/ server ephemeral
-
-    PSK                         Pre-Shared Key           Pre-shared key
-
-    PSK + (EC)DHE               Pre-Shared Key         Client ephemeral
-                                                    w/ server ephemeral
-~~~
+| Key Exchange | Static Secret (SS) | Ephemeral Secret (ES) |
+|--------------|-------------------:|----------------------:|
+| (EC)DHE (full handshake) | Client ephemeral w/ server ephemeral | Client ephemeral w/ server ephemeral |
+| (EC)DHE (w/ 0-RTT) | Client ephemeral w/ server static | Client ephemeral w/ server ephemeral |
+| PSK | Pre-Shared Key  | Pre-shared key |
+| PSK + (EC)DHE | Pre-Shared Key | Client ephemeral w/ server ephemeral |
 
 These shared secret values are used to generate cryptographic keys as
 shown below.
