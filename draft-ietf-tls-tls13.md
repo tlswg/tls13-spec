@@ -2469,7 +2469,7 @@ ffdhe2048, etc.
   Values 0x01FC through 0x01FF are reserved for private use.
 {:br }
 
-Items in named_curve_list are ordered according to the client's
+Items in named_group_list are ordered according to the client's
 preferences (most preferred choice first).
 
 As an example, a client that only supports secp256r1 (aka NIST P-256;
@@ -3261,7 +3261,7 @@ to this point. Servers MUST send this message when using
 a cipher suite which is authenticated via a certificate.
 Clients MUST send this
 message whenever authenticating via a Certificate (i.e., when
-the Certificate messageis non-empty). When sent, this message MUST appear immediately
+the Certificate message is non-empty). When sent, this message MUST appear immediately
 after the Certificate Message and immediately prior to the Finished
 message.
 
@@ -3518,7 +3518,7 @@ the sources from the table above.
   Where handshake_hash includes all messages up through the
   server CertificateVerify message, but not including any
   0-RTT handshake messages (the server's Finished is not
-  included because the master_secret is need to compute
+  included because the master_secret is needed to compute
   the finished key).
 
   5. master_secret = HKDF-Extract(mSS, mES)
