@@ -1170,8 +1170,9 @@ There is a limitation on the total number of bytes that can be transmitted
 under one set of keys. For the AES-GCM ciphersuites this limit is 
 2^36 bytes. For ChaCha20-Poly1305 this limit is larger then the size of the
 nonce, and so does not matter. Implementations MUST NOT transmit more than
-2^36 bytes encrypted under a single key and MUST rekey or close the connection
-before the limit is reached.
+2^36 bytes (64 GiB) encrypted under a single key and MUST rekey (See {{key-update}}
+or close the connection before the limit is reached, regardless of
+negotiated algorithms.
 
 ### Record Padding
 
