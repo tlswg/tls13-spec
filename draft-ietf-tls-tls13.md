@@ -1791,6 +1791,9 @@ client offers a certificate on its first flight. This
 is consistent with the server being
 able to ask for client authentication after the handshake is
 complete. See {{post-handshake-authentication}}.
+When offering PSK support, the PreSharedKeyExtension will be used
+instead of (or in addition to) the KeyShare extension as specified
+above.
 
 Note: because sequence numbers continue to increment between the
 initial (early) application data and the application data sent
