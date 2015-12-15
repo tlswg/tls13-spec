@@ -1561,9 +1561,9 @@ The basic TLS Handshake for DH is shown in {{tls-full}}:
        Client                                               Server
 
 Key  / ClientHello
-Exch \  + KeyShare               -------->
+Exch \  + key_share              -------->
                                                        ServerHello  \ Key
-                                                        + KeyShare  / Exch
+                                                       + key_share  / Exch
                                              {EncryptedExtensions}  ^
                                              {CertificateRequest*}  | Server
                                             {ServerConfiguration*}  v Params
@@ -1606,12 +1606,12 @@ In the Key Exchange phase, the client sends the ClientHello ({{client-hello}})
 message, which contains
 a random nonce (ClientHello.random), its offered protocol version,
 cipher suite, and extensions, and one or more Diffie-Hellman key
-shares in the KeyShare extension {{key-share}}.
+shares in the "key_share" extension {{key-share}}.
 
 The server processes the ClientHello and determines the appropriate
 cryptographic parameters for the connection. It then responds with
 its own ServerHello which indicates the negotiated connection parameters. [{{server-hello}}]
-If DH is in use, this will contain a KeyShare extension with the
+If DH is in use, this will contain a "key_share" extension with the
 server's ephemeral Diffie-Hellman share which MUST be in the same group
 as one of the shares offered by the client. The server's KeyShare and
 the client's KeyShare corresponding to the negotiated key exchange
@@ -1685,7 +1685,7 @@ against algorithmic attacks, at least in the year 2015.]]
 
 ### Incorrect DHE Share
 
-If the client has not provided an appropriate KeyShare extension (e.g. it
+If the client has not provided an appropriate "key_share" extension (e.g. it
 includes only DHE or ECDHE groups unacceptable or unsupported by the
 server), the server corrects the mismatch with a HelloRetryRequest and
 the client will need to restart the handshake with an appropriate
@@ -1695,13 +1695,13 @@ KeyShare extension, as shown in Figure 2:
          Client                                               Server
 
          ClientHello
-           + KeyShare              -------->
+           + key_share             -------->
                                    <--------       HelloRetryRequest
 
          ClientHello
-           + KeyShare              -------->
+           + keyshare             -------->
                                                          ServerHello
-                                                          + KeyShare
+                                                         + key_share
                                                {EncryptedExtensions}
                                                {CertificateRequest*}
                                               {ServerConfiguration*}
@@ -1744,16 +1744,16 @@ that share to protect the first-flight data.
          Client                                               Server
 
          ClientHello
-           + KeyShare
-           + EarlyDataIndication
+           + key_share
+           + early_data
       ^  (Certificate*)
 0-RTT |  (CertificateVerify*)
 Data  |  (Finished)
       v  (Application Data*)
          (end_of_early_data)        -------->
                                                          ServerHello
-                                               + EarlyDataIndication
-                                                          + KeyShare
+                                                        + early_data
+                                                         + key_share
                                                {EncryptedExtensions}
                                                {CertificateRequest*}
                                               {ServerConfiguration*}
@@ -1849,9 +1849,9 @@ a PSK and the second uses it:
 
 Initial Handshake:
        ClientHello
-        + KeyShare               -------->
+        + key_share              -------->
                                                        ServerHello
-                                                        + KeyShare
+                                                       + key_share
                                              {EncryptedExtensions}
                                              {CertificateRequest*}
                                             {ServerConfiguration*}
@@ -1867,10 +1867,10 @@ Initial Handshake:
 
 Subsequent Handshake:
        ClientHello
-         + KeyShare
-         + PreSharedKeyExtension -------->
+         + key_share
+         + pre_shared_key        -------->
                                                        ServerHello
-                                           + PreSharedKeyExtension
+                                                  + pre_shared_key
                                              {EncryptedExtensions}
                                  <--------              {Finished}
        {Finished}                -------->
@@ -1956,7 +1956,7 @@ When this message will be sent:
 ClientHello as its first message. The client will also send a
 ClientHello when the server has responded to its ClientHello with a
 ServerHello that selects cryptographic parameters that don't match the
-client's KeyShare extension. In that case, the client MUST send the same
+client's "key_share" extension. In that case, the client MUST send the same
 ClientHello (without modification) except including a new KeyShareEntry
 as the lowest priority share (i.e., appended to the list of shares in
 the KeyShare message). [[OPEN ISSUE: New random values? See:
@@ -2393,7 +2393,7 @@ The signatures on certificates that are self-signed or certificates that are
 trust anchors are not validated since they begin a certification path (see
 {{RFC5280}}, Section 3.2).  A certificate that begins a certification
 path MAY use a hash or signature algorithm that is not advertised as being
-supported in the signature_algorithms extension.
+supported in the "signature_algorithms" extension.
 
 Note: TLS 1.3 servers might receive TLS 1.2 ClientHellos which do not contain
 this extension. If those servers are willing to negotiate TLS 1.2, they MUST
@@ -2479,13 +2479,13 @@ As an example, a client that only supports secp256r1 (aka NIST P-256;
 value 23 = 0x0017) and secp384r1 (aka NIST P-384; value 24 = 0x0018)
 and prefers to use secp256r1 would include a TLS extension consisting
 of the following octets.  Note that the first two octets indicate the
-extension type (Supported Group Extension):
+extension type ("supported_groups" extension):
 
        00 0A 00 06 00 04 00 17 00 18
 
 NOTE: A server participating in an ECDHE-ECDSA key exchange may use
 different curves for (i) the ECDSA or EdDSA key in its certificate,
-and (ii) the ephemeral ECDH key in its KeyShare extension.  The server
+and (ii) the ephemeral ECDH key in its "key_share" extension.  The server
 must consider the supported groups in both cases.
 
 [[TODO: IANA Considerations.]]
@@ -2652,7 +2652,7 @@ invalid PSK identity or instead negotiate use of a non-PSK cipher
 suite, if available.
 
 If the server selects a PSK cipher suite, it MUST send a
-PreSharedKeyExtension with the identity that it selected.
+"pre_shared_key" extension with the identity that it selected.
 The client MUST verify that the server has selected one of
 the identities that the client supplied. If any other identity
 is returned, the client MUST generate a fatal
@@ -2665,8 +2665,7 @@ In cases where TLS clients have previously interacted with the
 server and the server has supplied a ServerConfiguration ({{server-configuration}}), the client
 can send application data and its Certificate/CertificateVerify
 messages (if client authentication is required). If the client
-opts to do so, it MUST supply an Early Data Indication
-extension.
+opts to do so, it MUST supply an "early_data" extension.
 
 The "extension_data" field of this extension contains an
 "EarlyDataIndication" value:
@@ -2722,7 +2721,7 @@ different keys. After all the 0-RTT application data messages (if
 any) have been sent, a "end_of_early_data" alert of type
 "warning" is sent to indicate the end of the flight.
 
-A server which receives an EarlyDataIndication extension
+A server which receives an "early_data" extension
 can behave in one of two ways:
 
 - Ignore the extension and return no response. This indicates that the
@@ -2733,7 +2732,7 @@ can behave in one of two ways:
   process the early data. It is not possible for the server
   to accept only a subset of the early data messages.
 
-Prior to accepting the EarlyDataIndication extension, the server
+Prior to accepting the "early_data" extension, the server
 MUST perform the following checks:
 
 - The configuration_id matches a known server configuration.
@@ -3170,7 +3169,7 @@ indicated supported pairs, then it SHOULD continue the handshake by sending
 the client a certificate chain of its choice that may include algorithms
 that are not known to be supported by the client. This fallback chain MAY
 use the deprecated SHA-1 hash algorithm only if the "signature_algorithms"
-+extension provided by the client permits it.
+extension provided by the client permits it.
 If the client cannot construct an acceptable chain using the provided
 certificates and decides to abort the handshake, then it MUST send an
 "unsupported_certificate" alert message and close the connection.
@@ -3739,7 +3738,7 @@ lacking a "server_name" extension with a fatal "missing_extension" alert.
 Some of these extensions exist only for the client to provide additional data
 to the server in a backwards-compatible way and thus have no meaning when sent
 from a server. The client-only extensions defined in this document
-are: "Signature Algorithms" & "Negotiated Groups".
+are: "signature_algorithms" & "supported_groups".
 Servers MUST NOT send these extensions. Clients receiving any of these
 extensions MUST respond with a fatal "unsupported_extension" alert
 and close the connection.
@@ -4100,7 +4099,7 @@ TLS protocol issues:
   records? (see {{backward-compatibility}})
 
 -  Have you ensured that all support for SSL, RC4, EXPORT ciphers, and
-  MD5 (via the Signature Algorithms extension) is completely removed from
+  MD5 (via the "signature_algorithm" extension) is completely removed from
   all possible configurations that support TLS 1.3 or later, and that
   attempts to use these obsolete capabilities fail correctly?
   (see {{backward-compatibility}})
@@ -4291,7 +4290,7 @@ that they know the correct master_secret.
 ####  Diffie-Hellman Key Exchange with Authentication
 
 When Diffie-Hellman key exchange is used, the client and server use
-the KeyShare extension to send
+the "key_share" extension to send
 temporary Diffie-Hellman parameters. The signature in the certificate
 verify message (if present) covers the entire handshake up to that
 point and thus attests the certificate holder's desire to use the
