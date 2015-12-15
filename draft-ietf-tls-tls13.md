@@ -214,7 +214,7 @@ informative:
   PSK-FINISHED:
        title: "Revision 10: possible attack if client authentication is allowed during PSK"
        date: 2015
-       target: https://www.ietf.org/mail-archive/web/tls/current/msg18215.html              
+       target: https://www.ietf.org/mail-archive/web/tls/current/msg18215.html
        author:
        -
          ins: C. Cremers
@@ -1067,7 +1067,7 @@ back again.
 AEAD ciphers take as input a single key, a nonce, a plaintext, and "additional
 data" to be included in the authentication check, as described in Section 2.1
 of {{RFC5116}}. The key is either the client_write_key or the server_write_key
-and in TLS 1.3 the additional data input is empty (zero length). 
+and in TLS 1.3 the additional data input is empty (zero length).
 
 %%% Record Layer
        struct {
@@ -1558,12 +1558,12 @@ The basic TLS Handshake for DH is shown in {{tls-full}}:
 
 ~~~
        Client                                               Server
-  
-Key  / ClientHello                                                  
-Exch \  + KeyShare               -------->                           
+
+Key  / ClientHello
+Exch \  + KeyShare               -------->
                                                        ServerHello  \ Key
                                                         + KeyShare  / Exch
-                                             {EncryptedExtensions}  ^ 
+                                             {EncryptedExtensions}  ^
                                              {CertificateRequest*}  | Server
                                             {ServerConfiguration*}  v Params
                                                     {Certificate*}  ^
@@ -1573,16 +1573,16 @@ Exch \  + KeyShare               -------->
 Auth | {CertificateVerify*}
      v {Finished}                -------->
        [Application Data]        <------->      [Application Data]
-  
+
               +  Indicates extensions sent in the
                  previously noted message.
-  
+
               *  Indicates optional or situation-dependent
                  messages that are not always sent.
-  
+
               {} Indicates messages protected using keys
                  derived from the ephemeral secret.
-  
+
               [] Indicates messages protected using keys
                  derived from the master secret.
 ~~~
@@ -1595,7 +1595,7 @@ Key Exchange: establish shared keying material and select the
    cryptographic parameters. Everything after this phase is
    encrypted.
 
-Server Parameters: establish other handshake parameters 
+Server Parameters: establish other handshake parameters
 (whether the client is authenticated, support for 0-RTT, etc.)
 
 Authentication: authenticate the server (and optionally the client)
@@ -1651,7 +1651,7 @@ CertificateVerify
 
 Finished
 : a MAC over the entire handshake. This message provides key confirmation, binds the endpoint's identity
-  to the exchanged keys, and in some modes (0-RTT and PSK) 
+  to the exchanged keys, and in some modes (0-RTT and PSK)
   also authenticates the handshake using the the Static Secret. [{{finished}}]
 {:br }
 
@@ -1692,11 +1692,11 @@ KeyShare extension, as shown in Figure 2:
 
 ~~~
          Client                                               Server
-  
+
          ClientHello
            + KeyShare              -------->
                                    <--------       HelloRetryRequest
-  
+
          ClientHello
            + KeyShare              -------->
                                                          ServerHello
@@ -1741,7 +1741,7 @@ that share to protect the first-flight data.
 
 ~~~
          Client                                               Server
-        
+
          ClientHello
            + KeyShare
            + EarlyDataIndication
@@ -1762,18 +1762,18 @@ Data  |  (Finished)
          {Certificate*}
          {CertificateVerify*}
          {Finished}                -------->
-        
+
          [Application Data]        <------->      [Application Data]
-        
+
                *  Indicates optional or situation-dependent
                   messages that are not always sent.
-   
+
                () Indicates messages protected using keys
                   derived from the static secret.
-   
+
                {} Indicates messages protected using keys
                   derived from the ephemeral secret.
-   
+
                [] Indicates messages protected using keys
                   derived from the master secret.
 ~~~
@@ -2364,7 +2364,7 @@ hash
 
 signature
 : This field indicates the signature algorithm that may be used.
-  The values indicate RSASSA-PKCS1-v1_5 {{RFC3447}}, 
+  The values indicate RSASSA-PKCS1-v1_5 {{RFC3447}},
   DSA {{DSS}}, ECDSA {{ECDSA}}, RSASSA-PSS {{RFC3447}}, and
   EdDSA {{I-D.irtf-cfrg-eddsa}} respectively. Because all RSA signatures
   used in signed TLS handshake messages (see {{digital-signing}}),
@@ -2724,7 +2724,7 @@ can behave in one of two ways:
 
 - Ignore the extension and return no response. This indicates that the
   server has ignored any early data and an ordinary 1-RTT handshake is
-  required. 
+  required.
 
 - Return an empty extension, indicating that it intends to
   process the early data. It is not possible for the server
@@ -2866,9 +2866,9 @@ certificate_request_context
 
 supported_signature_algorithms
 : A list of the hash/signature algorithm pairs that the server is
-  able to verify, listed in descending order of preference. Any 
+  able to verify, listed in descending order of preference. Any
   certificates provided by the client MUST be signed using a
-  hash/signature algorithm pair found in 
+  hash/signature algorithm pair found in
   supported_signature_algorithms.
 
 certificate_authorities
@@ -2878,8 +2878,8 @@ certificate_authorities
   root CA or for a subordinate CA; thus, this message can be used to
   describe known roots as well as a desired authorization space.  If
   the certificate_authorities list is empty, then the client MAY
-  send any certificate that meets the rest of the selection criteria 
-  in the CertificateRequest, unless there is some external arrangement 
+  send any certificate that meets the rest of the selection criteria
+  in the CertificateRequest, unless there is some external arrangement
   to the contrary.
 
 certificate_extensions
@@ -2890,34 +2890,34 @@ certificate_extensions
   the client certificate MUST contain all of the specified extension
   OIDs that the client recognizes. For each extension OID recognized
   by the client, all of the specified values MUST be present in the
-  client certificate (but the certificate MAY have other values as 
-  well). However, the client MUST ignore and skip any unrecognized 
-  certificate extension OIDs. If the client has ignored some of the 
-  required certificate extension OIDs, and supplied a certificate 
-  that does not satisfy the request, the server MAY at its discretion 
-  either continue the session without client authentication, or 
+  client certificate (but the certificate MAY have other values as
+  well). However, the client MUST ignore and skip any unrecognized
+  certificate extension OIDs. If the client has ignored some of the
+  required certificate extension OIDs, and supplied a certificate
+  that does not satisfy the request, the server MAY at its discretion
+  either continue the session without client authentication, or
   terminate the session with a fatal unsupported_certificate alert.
 
-  PKIX RFCs define a variety of certificate extension OIDs and their 
-  corresponding value types. Depending on the type, matching 
-  certificate extension values are not necessarily bitwise-equal. It 
-  is expected that TLS implementations will rely on their PKI 
-  libraries to perform certificate selection using certificate 
+  PKIX RFCs define a variety of certificate extension OIDs and their
+  corresponding value types. Depending on the type, matching
+  certificate extension values are not necessarily bitwise-equal. It
+  is expected that TLS implementations will rely on their PKI
+  libraries to perform certificate selection using certificate
   extension OIDs.
 
-  This document defines matching rules for two standard certificate 
+  This document defines matching rules for two standard certificate
   extensions defined in {{RFC5280}}:
 
-  - The Key Usage extension in a certificate matches the request when 
-  all key usage bits asserted in the request are also asserted in the 
+  - The Key Usage extension in a certificate matches the request when
+  all key usage bits asserted in the request are also asserted in the
   Key Usage certificate extension.
 
-  - The Extended Key Usage extension in a certificate matches the 
-  request when all key purpose OIDs present in the request are also 
-  found in the Extended Key Usage certificate extension. The special 
+  - The Extended Key Usage extension in a certificate matches the
+  request when all key purpose OIDs present in the request are also
+  found in the Extended Key Usage certificate extension. The special
   anyExtendedKeyUsage OID MUST NOT be used in the request.
 
-  Separate specifications may define matching rules for other certificate 
+  Separate specifications may define matching rules for other certificate
   extensions.
 {:br }
 
@@ -3053,7 +3053,7 @@ Mode             Handshake Context                        Base Key
                  from previous handshake).
 
 1-RTT (Server)   ClientHello ... ServerConfiguration      master_secret
-                 
+
 1-RTT (Client)   ClientHello ... ServerFinished           master_secret
 
 Post-Handshake   ClientHello ... ClientFinished +         master_secret
@@ -3212,7 +3212,7 @@ In particular:
   algorithms found in prior versions of TLS.
 
 - If the certificate_extensions list in the certificate request message
-  was non-empty, the end-entity certificate MUST match the extension OIDs 
+  was non-empty, the end-entity certificate MUST match the extension OIDs
   recognized by the client, as described in {{certificate-request}}.
 
 Note that, as with the server certificate, there are certificates that use
@@ -3223,7 +3223,7 @@ algorithm combinations that cannot be currently used with TLS.
 
 In general, detailed certificate validation procedures are out of scope for
 TLS (see {{RFC5280}}). This section provides TLS-specific requirements.
-      
+
 If server supplies an empty Certificate message, the client MUST terminate
 the handshake with a fatal "decode_error" alert.
 
@@ -3256,7 +3256,7 @@ When this message will be sent:
 
 > This message is used to provide explicit proof that an endpoint
 possesses the private key corresponding to its certificate
-and also provides integrity for the handshake up 
+and also provides integrity for the handshake up
 to this point. Servers MUST send this message when using
 a cipher suite which is authenticated via a certificate.
 Clients MUST send this
@@ -3489,7 +3489,7 @@ the sources from the table above.
 ~~~
   HKDF-Expand-Label(Secret, Label, HashValue, Length) =
        HKDF-Expand(Secret, HkdfLabel, Length)
- 
+
   Where HkdfLabel is specified as:
 
   struct HkdfLabel {
@@ -3574,12 +3574,12 @@ each class of traffic keys:
   ----------- ------  -----                           -----------------
   0-RTT          xSS  "early handshake                     ClientHello
   Handshake            key expansion              + ServerConfiguration
-                                                   + Server Certificate  
+                                                   + Server Certificate
 
   0-RTT          xSS  "early application                    ClientHello
   Application          data key expansion"        + ServerConfiguration
                                                    + Server Certificate
-                                                   
+
   Handshake      xES  "handshake key expansion"          ClientHello...
                                                             ServerHello
 
@@ -3590,7 +3590,7 @@ each class of traffic keys:
 The following table indicates the purpose values for each type of key:
 
 ~~~
-  Key Type              Purpose 
+  Key Type              Purpose
   --------              -------
   Client Write Key      "client write key"
   Server Write Key      "server write key"
@@ -3606,7 +3606,7 @@ with the exception of the client's 0-RTT authentication messages
 (Certificate, CertificateVerify, and Finished) including the type and
 length fields of the handshake messages. This is the concatenation
 the exchanged Handshake structures in plaintext form (even if
-they were encrypted on the wire). 
+they were encrypted on the wire).
 [[OPEN ISSUE: See https://github.com/tlswg/tls13-spec/issues/351
 for the question of whether the 0-RTT handshake messages are
 hashed.]]
@@ -3659,7 +3659,7 @@ In the absence of an application profile standard specifying otherwise, a
 TLS-compliant application MUST implement the following cipher suites:
 
 ~~~~
-    TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256 
+    TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
     TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
 ~~~~
 
@@ -3792,13 +3792,13 @@ is listed below:
         client_certificate_url [RFC6066]                  Yes  Encrypted
         trusted_ca_keys [RFC6066]                         Yes  Encrypted
         truncated_hmac [RFC6066]                          Yes         No
-        status_request [RFC6066]                          Yes         No 
+        status_request [RFC6066]                          Yes         No
         user_mapping [RFC4681]                            Yes  Encrypted
         client_authz [RFC5878]                             No  Encrypted
         server_authz [RFC5878]                             No  Encrypted
         cert_type [RFC6091]                               Yes  Encrypted
         supported_groups                                  Yes     Client
-          [RFC-ietf-tls-negotiated-ff-dhe-10]           
+          [RFC-ietf-tls-negotiated-ff-dhe-10]
         ec_point_formats [RFC4492]                        Yes         No
         srp [RFC5054]                                      No         No
         signature_algorithms [RFC5246]                    Yes     Client
@@ -3879,7 +3879,7 @@ currently deployed and properly configured TLS implementations.
 The following extensions are no longer applicable to TLS 1.3, although
 TLS 1.3 clients MAY send them if they are willing to negotiate them
 with prior versions of TLS. TLS 1.3 servers MUST ignore these
-extensions if they are negotiating TLS 1.3: 
+extensions if they are negotiating TLS 1.3:
 truncated_hmac {{RFC6066}},
 srp {{RFC5054}},
 encrypt_then_mac {{RFC7366}},
@@ -3999,10 +3999,10 @@ well, thus allowing ECDSA signatures to be used with digest algorithms other
 than SHA-1, provided such use is compatible with the certificate and any
 restrictions imposed by future revisions of {{RFC5280}}.
 
-As described in {{server-certificate-selection}}, the restrictions on the signature 
-algorithms used to sign certificates are no longer tied to the cipher suite. 
-Thus, the restrictions on the algorithm used to sign certificates specified in 
-Sections 2 and 3 of RFC 4492 are also relaxed. As in this document, the 
+As described in {{server-certificate-selection}}, the restrictions on the signature
+algorithms used to sign certificates are no longer tied to the cipher suite.
+Thus, the restrictions on the algorithm used to sign certificates specified in
+Sections 2 and 3 of RFC 4492 are also relaxed. As in this document, the
 restrictions on the keys in the end-entity certificate remain.
 
 
@@ -4362,155 +4362,155 @@ Archives of the list can be found at:
 
 # Contributors
 
-    Martin Abadi
-    University of California, Santa Cruz
-    abadi@cs.ucsc.edu
+* Martin Abadi \\
+  University of California, Santa Cruz \\
+  abadi@cs.ucsc.edu
 
-    Christopher Allen (co-editor of TLS 1.0)
-    Alacrity Ventures
-    ChristopherA@AlacrityManagement.com
+* Christopher Allen (co-editor of TLS 1.0) \\
+  Alacrity Ventures \\
+  ChristopherA@AlacrityManagement.com
 
-    Steven M. Bellovin
-    Columbia University
-    smb@cs.columbia.edu
+* Steven M. Bellovin \\
+  Columbia University \\
+  smb@cs.columbia.edu
 
-    Benjamin Beurdouche
+* Benjamin Beurdouche
 
-    Karthikeyan Bhargavan (co-author of [RFC7627])
-    INRIA
-    karthikeyan.bhargavan@inria.fr
+* Karthikeyan Bhargavan (co-author of [RFC7627]) \\
+  INRIA \\
+  karthikeyan.bhargavan@inria.fr
 
-    Simon Blake-Wilson (co-author of [RFC4492])
-    BCI
-    sblakewilson@bcisse.com
+* Simon Blake-Wilson (co-author of [RFC4492]) \\
+  BCI \\
+  sblakewilson@bcisse.com
 
-    Nelson Bolyard
-    Sun Microsystems, Inc.
-    nelson@bolyard.com (co-author of [RFC4492])
+* Nelson Bolyard (co-author of [RFC4492]) \\
+  Sun Microsystems, Inc. \\
+  nelson@bolyard.com
 
-    Ran Canetti
-    IBM
-    canetti@watson.ibm.com
+* Ran Canetti \\
+  IBM \\
+  canetti@watson.ibm.com
 
-    Pete Chown
-    Skygate Technology Ltd
-    pc@skygate.co.uk
+* Pete Chown \\
+  Skygate Technology Ltd \\
+  pc@skygate.co.uk
 
-    Antoine Delignat-Lavaud (co-author of [RFC7627])
-    INRIA
-    antoine.delignat-lavaud@inria.fr
+* Antoine Delignat-Lavaud (co-author of [RFC7627]) \\
+  INRIA \\
+  antoine.delignat-lavaud@inria.fr
 
-    Tim Dierks (co-editor of TLS 1.0, 1.1, and 1.2)
-    Independent
-    tim@dierks.org
+* Tim Dierks (co-editor of TLS 1.0, 1.1, and 1.2) \\
+  Independent \\
+  tim@dierks.org
 
-    Taher Elgamal
-    Securify
-    taher@securify.com
+* Taher Elgamal \\
+  Securify \\
+  taher@securify.com
 
-    Pasi Eronen
-    Nokia
-    pasi.eronen@nokia.com
+* Pasi Eronen \\
+  Nokia \\
+  pasi.eronen@nokia.com
 
-    Anil Gangolli
-    anil@busybuddha.org
+* Anil Gangolli \\
+  anil@busybuddha.org
 
-    David M. Garrett
+* David M. Garrett
 
-    Vipul Gupta (co-author of [RFC4492])
-    Sun Microsystems Laboratories
-    vipul.gupta@sun.com
+* Vipul Gupta (co-author of [RFC4492]) \\
+  Sun Microsystems Laboratories \\
+  vipul.gupta@sun.com
 
-    Chris Hawk (co-author of [RFC4492])
-    Corriente Networks LLC
-    chris@corriente.net
+* Chris Hawk (co-author of [RFC4492]) \\
+  Corriente Networks LLC \\
+  chris@corriente.net
 
-    Kipp Hickman
+* Kipp Hickman
 
-    Alfred Hoenes
+* Alfred Hoenes
 
-    David Hopwood
-    Independent Consultant
-    david.hopwood@blueyonder.co.uk
+* David Hopwood \\
+  Independent Consultant \\
+  david.hopwood@blueyonder.co.uk
 
-    Daniel Kahn Gillmor
-    ACLU
-    dkg@fifthhorseman.net
+* Daniel Kahn Gillmor \\
+  ACLU \\
+  dkg@fifthhorseman.net
 
-    Phil Karlton (co-author of SSL 3.0)
+* Phil Karlton (co-author of SSL 3.0)
 
-    Paul Kocher (co-author of SSL 3.0)
-    Cryptography Research
-    paul@cryptography.com
+* Paul Kocher (co-author of SSL 3.0) \\
+  Cryptography Research \\
+  paul@cryptography.com
 
-    Hugo Krawczyk
-    IBM
-    hugo@ee.technion.ac.il
+* Hugo Krawczyk \\
+  IBM \\
+  hugo@ee.technion.ac.il
 
-    Adam Langley (co-author of [RFC7627])
-    Google
-    agl@google.com
+* Adam Langley (co-author of [RFC7627]) \\
+  Google \\
+  agl@google.com
 
-    Ilari Liusvaara
-    Independent
-    ilariliusvaara@welho.com
+* Ilari Liusvaara \\
+  Independent \\
+  ilariliusvaara@welho.com
 
-    Jan Mikkelsen
-    Transactionware
-    janm@transactionware.com
+* Jan Mikkelsen \\
+  Transactionware \\
+  janm@transactionware.com
 
-    Bodo Moeller (co-author of [RFC4492])
-    Google
-    bodo@openssl.org
+* Bodo Moeller (co-author of [RFC4492]) \\
+  Google \\
+  bodo@openssl.org
 
-    Erik Nygren
-    Akamai Technologies
-    erik+ietf@nygren.org
+* Erik Nygren \\
+  Akamai Technologies \\
+  erik+ietf@nygren.org
 
-    Magnus Nystrom
-    RSA Security
-    magnus@rsasecurity.com
+* Magnus Nystrom \\
+  RSA Security \\
+  magnus@rsasecurity.com
 
-    Alfredo Pironti (co-author of [RFC7627])
-    INRIA
-    alfredo.pironti@inria.fr
+* Alfredo Pironti (co-author of [RFC7627]) \\
+  INRIA \\
+  alfredo.pironti@inria.fr
 
-    Andrei Popov
-    Microsoft
-    andrei.popov@microsoft.com
+* Andrei Popov \\
+  Microsoft \\
+  andrei.popov@microsoft.com
 
-    Marsh Ray (co-author of [RFC7627])
-    Microsoft
-    maray@microsoft.com
+* Marsh Ray (co-author of [RFC7627]) \\
+  Microsoft \\
+  maray@microsoft.com
 
-    Robert Relyea
-    Netscape Communications
-    relyea@netscape.com
+* Robert Relyea \\
+  Netscape Communications \\
+  relyea@netscape.com
 
-    Jim Roskind
-    Netscape Communications
-    jar@netscape.com
+* Jim Roskind \\
+  Netscape Communications \\
+  jar@netscape.com
 
-    Michael Sabin
+* Michael Sabin
 
-    Dan Simon
-    Microsoft, Inc.
-    dansimon@microsoft.com
+* Dan Simon \\
+  Microsoft, Inc. \\
+  dansimon@microsoft.com
 
-    Bjoern Tackmann
-    University of California, San Diego
-    btackmann@eng.ucsd.edu
-            
-    Martin Thomson
-    Mozilla
-    mt@mozilla.com
+* Bjoern Tackmann \\
+  University of California, San Diego \\
+  btackmann@eng.ucsd.edu
 
-    Tom Weinstein
+* Martin Thomson \\
+  Mozilla \\
+  mt@mozilla.com
 
-    Hoeteck Wee
-    Ecole Normale Superieure, Paris
-    hoeteck@alum.mit.edu
+* Tom Weinstein
 
-    Tim Wright
-    Vodafone
-    timothy.wright@vodafone.com
+* Hoeteck Wee \\
+  Ecole Normale Superieure, Paris \\
+  hoeteck@alum.mit.edu
+
+* Tim Wright \\
+  Vodafone \\
+  timothy.wright@vodafone.com
