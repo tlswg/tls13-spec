@@ -1698,7 +1698,7 @@ KeyShare extension, as shown in Figure 2:
                                    <--------       HelloRetryRequest
 
          ClientHello
-           + keyshare             -------->
+           + key_share             -------->
                                                          ServerHello
                                                          + key_share
                                                {EncryptedExtensions}
