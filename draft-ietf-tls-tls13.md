@@ -3992,7 +3992,7 @@ changes some of the structures used in that document. This section details the
 required changes for implementors of both RFC 4492 and TLS 1.2. Implementors of
 TLS 1.2 who are not implementing RFC 4492 do not need to read this section.
 
-This document adds a "signature_algorithm" field to the digitally-signed
+This document adds an "algorithm" field to the digitally-signed
 element in order to identify the signature and digest algorithms used to create
 a signature. This change applies to digital signatures formed using ECDSA as
 well, thus allowing ECDSA signatures to be used with digest algorithms other
@@ -4500,7 +4500,7 @@ Archives of the list can be found at:
     Bjoern Tackmann
     University of California, San Diego
     btackmann@eng.ucsd.edu
-            
+
     Martin Thomson
     Mozilla
     mt@mozilla.com
