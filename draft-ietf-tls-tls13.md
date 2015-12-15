@@ -3740,12 +3740,11 @@ and their allocation policies are below:
   marked as "No". IANA [SHALL add/has added] add a note to this column
   reading:
 
-~~~
-      Cipher suites marked as "Yes" are those allocated via
-      Standards Track RFCs. Cipher suites marked as "No" are not;
-      cipher suites marked "No" range from "good" to "bad" from a
-      cryptographic standpoint.
-~~~
+  > Cipher suites marked as "Yes" are those allocated via
+    Standards Track RFCs. Cipher suites marked as "No" are not;
+    cipher suites marked "No" range from "good" to "bad" from a
+    cryptographic standpoint.
+
 -  TLS ContentType Registry: Future values are allocated via
   Standards Action {{RFC2434}}.
 
@@ -3779,39 +3778,39 @@ is listed below:
    by marking Standards Track RFCs as "Yes" and all others as
    "No".
 
-        Extension                                 Recommended    TLS 1.3
-        ----------------------------------------------------------------
-        server_name [RFC6066]                             Yes  Encrypted
-        max_fragment_length [RFC6066]                     Yes  Encrypted
-        client_certificate_url [RFC6066]                  Yes  Encrypted
-        trusted_ca_keys [RFC6066]                         Yes  Encrypted
-        truncated_hmac [RFC6066]                          Yes         No
-        status_request [RFC6066]                          Yes         No
-        user_mapping [RFC4681]                            Yes  Encrypted
-        client_authz [RFC5878]                             No  Encrypted
-        server_authz [RFC5878]                             No  Encrypted
-        cert_type [RFC6091]                               Yes  Encrypted
-        supported_groups                                  Yes     Client
-          [RFC-ietf-tls-negotiated-ff-dhe-10]
-        ec_point_formats [RFC4492]                        Yes         No
-        srp [RFC5054]                                      No         No
-        signature_algorithms [RFC5246]                    Yes     Client
-        use_srtp [RFC5764]                                Yes  Encrypted
-        heartbeat [RFC6520]                               Yes  Encrypted
-        application_layer_protocol_negotiation            Yes  Encrypted
-          [RFC7301]
-        status_request_v2 [RFC6961]                       Yes  Encrypted
-        signed_certificate_timestamp [RFC6962]             No  Encrypted
-        client_certificate_type [RFC7250]                 Yes  Encrypted
-        server_certificate_type [RFC7250]                 Yes  Encrypted
-        padding [RFC7685]                                 Yes     Client
-        encrypt_then_mac [RFC7366]                        Yes         No
-        extended_master_secret [RFC7627]                  Yes         No
-        SessionTicket TLS [RFC4507]                       Yes         No
-        renegotiation_info [RFC5746]                      Yes         No
-        key_share [[this document]]                       Yes      Clear
-        pre_shared_key [[this document]]                  Yes      Clear
-        early_data [[this document]]                      Yes      Clear
+| Extension                                | Recommended |  TLS 1.3  |
+|:-----------------------------------------|------------:|----------:|
+| server_name [RFC6066]                    |         Yes | Encrypted |
+| max_fragment_length [RFC6066]            |         Yes | Encrypted |
+| client_certificate_url [RFC6066]         |         Yes | Encrypted |
+| trusted_ca_keys [RFC6066]                |         Yes | Encrypted |
+| truncated_hmac [RFC6066]                 |         Yes |        No |
+| status_request [RFC6066]                 |         Yes |        No |
+| user_mapping [RFC4681]                   |         Yes | Encrypted |
+| client_authz [RFC5878]                   |          No | Encrypted |
+| server_authz [RFC5878]                   |          No | Encrypted |
+| cert_type [RFC6091]                      |         Yes | Encrypted |
+| supported_groups
+    [RFC-ietf-tls-negotiated-ff-dhe-10]    |         Yes |    Client |
+| ec_point_formats [RFC4492]               |         Yes |        No |
+| srp [RFC5054]                            |          No |        No |
+| signature_algorithms [RFC5246]           |         Yes |    Client |
+| use_srtp [RFC5764]                       |         Yes | Encrypted |
+| heartbeat [RFC6520]                      |         Yes | Encrypted |
+| application_layer_protocol_negotiation
+    [RFC7301]                              |         Yes | Encrypted |
+| status_request_v2 [RFC6961]              |         Yes | Encrypted |
+| signed_certificate_timestamp [RFC6962]   |          No | Encrypted |
+| client_certificate_type [RFC7250]        |         Yes | Encrypted |
+| server_certificate_type [RFC7250]        |         Yes | Encrypted |
+| padding [RFC7685]                        |         Yes |    Client |
+| encrypt_then_mac [RFC7366]               |         Yes |        No |
+| extended_master_secret [RFC7627]         |         Yes |        No |
+| SessionTicket TLS [RFC4507]              |         Yes |        No |
+| renegotiation_info [RFC5746]             |         Yes |        No |
+| key_share [[this document]]              |         Yes |     Clear |
+| pre_shared_key [[this document]]         |         Yes |     Clear |
+| early_data [[this document]]             |         Yes |     Clear |
 
 
 This document reuses two registries defined in {{RFC5246}}.
