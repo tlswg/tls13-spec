@@ -2476,7 +2476,7 @@ As an example, a client that only supports secp256r1 (aka NIST P-256;
 value 23 = 0x0017) and secp384r1 (aka NIST P-384; value 24 = 0x0018)
 and prefers to use secp256r1 would include a TLS extension consisting
 of the following octets.  Note that the first two octets indicate the
-extension type ("supported_group" extension):
+extension type ("supported_groups" extension):
 
        00 0A 00 06 00 04 00 17 00 18
 
