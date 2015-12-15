@@ -3135,10 +3135,10 @@ request.
 
 The following rules apply to the certificates sent by the server:
 
--  The certificate type MUST be X.509v3 {{RFC5280}}, unless explicitly negotiated
+- The certificate type MUST be X.509v3 {{RFC5280}}, unless explicitly negotiated
   otherwise (e.g., {{RFC5081}}).
 
--  The server's end-entity certificate's public key (and associated
+- The server's end-entity certificate's public key (and associated
   restrictions) MUST be compatible with the selected key exchange
   algorithm.
 
@@ -3148,9 +3148,9 @@ The following rules apply to the certificates sent by the server:
 | ECDHE_ECDSA          | ECDSA or EdDSA public key  |
 
 - The certificate MUST allow the key to be used for signing (i.e., the
-   digitalSignature bit MUST be set if the key usage extension is present) with
-   the signature scheme and hash algorithm that will be employed in the server's
-   KeyShare extension.
+  digitalSignature bit MUST be set if the key usage extension is present) with
+  the signature scheme and hash algorithm that will be employed in the server's
+  signature_algorithms extension.
 
 - An ECDSA or EdDSA public key MUST use a curve and point format supported by the
   client, as described in [RFC4492].
