@@ -22,6 +22,7 @@ pi:
   comments: yes
   inline: yes
   text-list-symbols: -o*+
+  docmapping: yes
 author:
  -
        ins: E. Rescorla
