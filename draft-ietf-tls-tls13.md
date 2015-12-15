@@ -3892,16 +3892,19 @@ via hello messages in the TLS handshake.
 Cipher suite names follow a general naming convention composed of a series
 of component algorithm names separated by underscores:
 
-       CipherSuite TLS_KEA_SIGN_WITH_CIPHER_HASH = VALUE;
+~~~
+   CipherSuite TLS_KEA_SIGN_WITH_CIPHER_HASH = VALUE;
+~~~
 
-       Component      Contents
-       TLS            The string "TLS"
-       KEA            The key exchange algorithm
-       SIGN           The signature algorithm
-       WITH           The string "WITH"
-       CIPHER         The symmetric cipher used for record protection
-       HASH           The hash algorithm used with HKDF
-       VALUE          The two byte ID assigned for this cipher suite
+| Component | Contents |
+|:----------|:---------|
+| TLS       | The string "TLS" |
+| KEA       | The key exchange algorithm |
+| SIGN      | The signature algorithm |
+| WITH      | The string "WITH" |
+| CIPHER    | The symmetric cipher used for record protection |
+| HASH      | The hash algorithm used with HKDF |
+| VALUE     | The two byte ID assigned for this cipher suite |
 
 The "CIPHER" component commonly has sub-components used to designate
 the cipher name, bits, and mode, if applicable. For example, "AES_256_GCM"
@@ -3920,20 +3923,21 @@ the full details of each combination of algorithms that is specified.
 The following is a list of standards track server-authenticated (and optionally
 client-authenticated) cipher suites which are currently available in TLS 1.3:
 
-              Cipher Suite Name                      Value     Specification
-    TLS_DHE_RSA_WITH_AES_128_GCM_SHA256           {0x00,0x9E}    [RFC5288]
-    TLS_DHE_RSA_WITH_AES_256_GCM_SHA384           {0x00,0x9F}    [RFC5288]
-    TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256       {0xC0,0x2B}    [RFC5289]
-    TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384       {0xC0,0x2C}    [RFC5289]
-    TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256         {0xC0,0x2F}    [RFC5289]
-    TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384         {0xC0,0x30}    [RFC5289]
-    TLS_DHE_RSA_WITH_AES_128_CCM                  {0xC0,0x9E}    [RFC6655]
-    TLS_DHE_RSA_WITH_AES_256_CCM                  {0xC0,0x9F}    [RFC6655]
-    TLS_DHE_RSA_WITH_AES_128_CCM_8                {0xC0,0xA2}    [RFC6655]
-    TLS_DHE_RSA_WITH_AES_256_CCM_8                {0xC0,0xA3}    [RFC6655]
-    TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305          {TBD,TBD}   [I-D.ietf-tls-chacha20-poly1305]
-    TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305        {TBD,TBD}   [I-D.ietf-tls-chacha20-poly1305]
-    TLS_DHE_RSA_WITH_CHACHA20_POLY1305            {TBD,TBD}   [I-D.ietf-tls-chacha20-poly1305]
+|              Cipher Suite Name                |    Value    | Specification |
+|:----------------------------------------------|:------------|:--------------|
+|   TLS_DHE_RSA_WITH_AES_128_GCM_SHA256         | {0x00,0x9E} | [RFC5288]     |
+|   TLS_DHE_RSA_WITH_AES_256_GCM_SHA384         | {0x00,0x9F} | [RFC5288]     |
+|   TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256     | {0xC0,0x2B} | [RFC5289]     |
+|   TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384     | {0xC0,0x2C} | [RFC5289]     |
+|   TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256       | {0xC0,0x2F} | [RFC5289]     |
+|   TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384       | {0xC0,0x30} | [RFC5289]     |
+|   TLS_DHE_RSA_WITH_AES_128_CCM                | {0xC0,0x9E} | [RFC6655]     |
+|   TLS_DHE_RSA_WITH_AES_256_CCM                | {0xC0,0x9F} | [RFC6655]     |
+|   TLS_DHE_RSA_WITH_AES_128_CCM_8              | {0xC0,0xA2} | [RFC6655]     |
+|   TLS_DHE_RSA_WITH_AES_256_CCM_8              | {0xC0,0xA3} | [RFC6655]     |
+|   TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305        | {TBD,TBD}   | [I-D.ietf-tls-chacha20-poly1305] |
+|   TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305      | {TBD,TBD}   | [I-D.ietf-tls-chacha20-poly1305] |
+|   TLS_DHE_RSA_WITH_CHACHA20_POLY1305          | {TBD,TBD}   | [I-D.ietf-tls-chacha20-poly1305] |
 
 [[TODO: CHACHA20_POLY1305 cipher suite IDs are TBD.]]
 
