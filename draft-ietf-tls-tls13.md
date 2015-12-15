@@ -1912,7 +1912,7 @@ processed and transmitted as specified by the current active session state.
            client_key_exchange_RESERVED(16),
            server_configuration(17),
            finished(20),
-           key_update(21),
+           key_update(24),
            (255)
        } HandshakeType;
 
@@ -3443,15 +3443,19 @@ struct {} KeyUpdate;
 The KeyUpdate handshake message is used to indicate that the sender is
 updating its sending cryptographic keys. This message can be sent by
 the server after sending its first flight and the client after sending
-its second flight. Implementations prior to this time MUST generate a
-fatal "unexpected_message" alert.  After sending a KeyUpdate, the
-sender SHALL send all its traffic using the next generation of keys,
-computed as described in {{updating-traffic-keys}}. Upon receiving a
-KeyUpdate, the receiver MUST update their receiving keys and if they
-have not already updated their sending state up to or past the then
-current receiving generation MUST immediately send their own
-KeyUpdate. This mechanism allows either side to force an update to the
-entire connection.
+its second flight. Implementations that receive a KeyUpdate message
+prior to receiving a Finished message as part of the 1-RTT handshake
+MUST generate a fatal "unexpected_message" alert.  After sending a
+KeyUpdate message, the sender SHALL send all its traffic using the
+next generation of keys, computed as described in
+{{updating-traffic-keys}}. Upon receiving a KeyUpdate, the receiver
+MUST update their receiving keys and if they have not already updated
+their sending state up to or past the then current receiving
+generation MUST send their own KeyUpdate prior to sending any other
+messages.  This mechanism allows either side to force an update to the
+entire connection. Note that implementations may receive an arbitrary
+number of messages between sending a KeyUpdate and receiving the
+peer's KeyUpdate because those messages may already be in flight.
 
 Note that if implementations independently send their own
 KeyUpdates and they cross in flight, this only results in an
@@ -3580,7 +3584,7 @@ this section then re-deriving the traffic keys as described in
 The next-generation traffic_secret is computed as:
 
   traffic_secret_N+1 = HKDF-Expand-Label(traffic_secret_N,
-                                       "traffic_secret", "", L)
+                                       "traffic secret", "", L)
 
 Once traffic_secret_N+1 and its associated traffic keys have been computed,
 implementations SHOULD delete traffic_secret_N. Once the directional
