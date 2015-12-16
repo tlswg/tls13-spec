@@ -1,3 +1,5 @@
+MD_PREPROCESSOR := python mk-appendix.py
+
 include lib/main.mk
 
 lib/main.mk:
@@ -7,6 +9,3 @@ ifneq (,$(shell git submodule status lib 2>/dev/null))
 else
 	git clone --depth 10 -b master https://github.com/martinthomson/i-d-template.git lib
 endif
-
-draft-ietf-tls-tls13.xml: draft-ietf-tls-tls13.md
-	python mk-appendix.py < $< | $(kramdown-rfc2629) > $@
