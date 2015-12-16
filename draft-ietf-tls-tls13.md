@@ -2496,10 +2496,9 @@ different curves for (i) the ECDSA or EdDSA key in its certificate,
 and (ii) the ephemeral ECDH key in its "key_share" extension.  The server
 must consider the supported groups in both cases.
 
-Servers SHOULD avoid negotiation of groups for key exchange that have
-an estimated security level significantly higher or lower than that of
-the negotiated symmetric bulk cipher key size. The RECOMMENDED groups
-are as follows:
+Servers SHOULD attempt to select groups for key exchanges that have
+an estimated security level comparable to that of the negotiated
+symmetric bulk cipher key size. The RECOMMENDED groups are as follows:
 
   * 128-bit level:
     X25519, secp256r1, ffdhe3072, ffdhe4096
