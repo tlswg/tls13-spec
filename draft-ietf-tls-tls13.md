@@ -3465,7 +3465,7 @@ flight, the server MUST be prepared to receive an arbitrary number
 of such messages before receiving the Authentication messages.
 
 
-#### Key and IV Update 
+#### Key and IV Update {#key-update}
 
 struct {} KeyUpdate;
 
@@ -3601,7 +3601,7 @@ schedule with a black-box HKDF API, albeit at some loss of efficiency
 as some HKDF-Extract operations will be repeated.
 
 
-## Updating Traffic Keys and IVs
+## Updating Traffic Keys and IVs {#updating-traffic-keys}
 
 Once the handshake is complete, it is possible for either side to
 update its sending traffic keys using the KeyUpdate handshake message
