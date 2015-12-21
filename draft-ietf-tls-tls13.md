@@ -1308,21 +1308,21 @@ order to avoid a truncation attack. Failure to properly close a connection does
 not prohibit a session from being resumed.
 
 close_notify
-: This message notifies the recipient that the sender will not send
+: This alert notifies the recipient that the sender will not send
   any more messages on this connection. Any data received after a
   closure MUST be ignored.
 
 end_of_early_data
-: This message is sent by the client to indicate that all 0-RTT
+: This alert is sent by the client to indicate that all 0-RTT
   application_data messages have been transmitted and that the
   next message will be handshake message protected with the
   1-RTT handshake keys. This alert MUST be at the warning level.
-  Servers MUST NOT send this message and clients receiving this
-  message MUST terminate the connection with an "unexpected_message"
+  Servers MUST NOT send this alert and clients receiving this
+  alert MUST terminate the connection with an "unexpected_message"
   alert.
 
 user_canceled
-: This message notifies the recipient that the sender is canceling the
+: This alert notifies the recipient that the sender is canceling the
   handshake for some reason unrelated to a protocol failure. If a user
   cancels an operation after the handshake is complete, just closing the
   connection by sending a "close_notify" is more appropriate. This alert
