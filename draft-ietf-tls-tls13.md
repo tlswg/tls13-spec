@@ -4476,6 +4476,10 @@ Archives of the list can be found at:
   Nokia \\
   pasi.eronen@nokia.com
 
+* Cedric Fournet \\
+  Microsoft \\
+  fournet@microsoft.com
+
 * Anil Gangolli \\
   anil@busybuddha.org
 
