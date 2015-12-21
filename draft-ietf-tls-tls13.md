@@ -973,15 +973,17 @@ cipher state
 sequence number
 : Each connection state contains a sequence number, which is
   maintained separately for read and write states.  The sequence
-  number is set to zero at the beginning of a connection and
-  incremented by one thereafter.  Sequence numbers are of type uint64 and
-  MUST NOT exceed 2^64-1.  Sequence numbers do not wrap.  If a TLS
-  implementation would need to wrap a sequence number, it MUST
-  terminate the connection.  A sequence number is incremented after
-  each record: specifically, the first record transmitted under a
-  particular connection state MUST use sequence number 0.
-  NOTE: This is a change from previous versions of TLS, where
-  sequence numbers were reset whenever keys were changed.
+  number is set to zero at the beginning of a connection, and whenever
+  the key is changed.
+
+  The sequence number is incremented after each record: specifically,
+  the first record transmitted under a particular connection state and
+  record key MUST use sequence number 0.
+  
+  Sequence numbers are of type uint64 and MUST NOT exceed 2^64-1.
+  Sequence numbers do not wrap.  If a TLS implementation would need to
+  wrap a sequence number, it MUST either rekey ({{key-update}}) or
+  terminate the connection.
 {:br }
 
 
@@ -3463,7 +3465,7 @@ flight, the server MUST be prepared to receive an arbitrary number
 of such messages before receiving the Authentication messages.
 
 
-#### Key Update 
+#### Key and IV Update 
 
 struct {} KeyUpdate;
 
@@ -3599,7 +3601,7 @@ schedule with a black-box HKDF API, albeit at some loss of efficiency
 as some HKDF-Extract operations will be repeated.
 
 
-## Updating Traffic Keys
+## Updating Traffic Keys and IVs
 
 Once the handshake is complete, it is possible for either side to
 update its sending traffic keys using the KeyUpdate handshake message
@@ -3654,6 +3656,10 @@ The following table indicates the purpose values for each type of key:
 | Server Write Key | "server write key" |
 | Client Write IV  | "client write IV"  |
 | Server Write IV  | "server write IV"  |
+
+All the traffic keying material is recomputed, whenever the
+underlying Secret changes (e.g., when changing from the handshake to
+application data keys or upon a key update).
 
 ###  The Handshake Hash
 
