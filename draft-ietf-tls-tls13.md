@@ -38,12 +38,14 @@ normative:
   RFC5280:
   RFC5288:
   RFC5289:
+  RFC5487:
   RFC5869:
   RFC6066:
   RFC6209:
   RFC6367:
   RFC6655:
   RFC7251:
+  I-D.mattsson-tls-ecdhe-psk-aead:
   I-D.ietf-tls-chacha20-poly1305:
   I-D.irtf-cfrg-curves:
   I-D.irtf-cfrg-eddsa:
@@ -3959,14 +3961,14 @@ Cipher suite names follow a general naming convention composed of a series
 of component algorithm names separated by underscores:
 
 ~~~
-   CipherSuite TLS_KEA_SIGN_WITH_CIPHER_HASH = VALUE;
+   CipherSuite TLS_KEA_AUTH_WITH_CIPHER_HASH = VALUE;
 ~~~
 
 | Component | Contents |
 |:----------|:---------|
 | TLS       | The string "TLS" |
-| KEA       | The key exchange algorithm |
-| SIGN      | The signature algorithm |
+| KEA       | The key exchange algorithm (e.g. ECDHE, DHE) |
+| AUTH      | The authentication algorithm (e.g. certificates, PSK) |
 | WITH      | The string "WITH" |
 | CIPHER    | The symmetric cipher used for record protection |
 | HASH      | The hash algorithm used with HKDF |
@@ -4009,6 +4011,33 @@ client-authenticated) cipher suites which are currently available in TLS 1.3:
 
 Note: ECDHE AES GCM was not yet standards track prior to the publication of
 this specification. This document promotes it to Standards Track.
+
+The following is a list of standards track ephemeral pre-shared key cipher
+suites which are currently available in TLS 1.3:
+
+|              Cipher Suite Name                |    Value    | Specification |
+|:----------------------------------------------|:------------|:--------------|
+| TLS_DHE_PSK_WITH_AES_128_GCM_SHA256           | {0x00,0xAA} | [RFC5487]     |
+| TLS_DHE_PSK_WITH_AES_256_GCM_SHA384           | {0x00,0xAB} | [RFC5487]     |
+| TLS_DHE_PSK_WITH_AES_128_CCM                  | {0xC0,0xA6} | [RFC6655]     |
+| TLS_DHE_PSK_WITH_AES_256_CCM                  | {0xC0,0xA7} | [RFC6655]     |
+| TLS_PSK_DHE_WITH_AES_128_CCM_8                | {0xC0,0xAA} | [RFC6655]     |
+| TLS_PSK_DHE_WITH_AES_256_CCM_8                | {0xC0,0xAB} | [RFC6655]     |
+| TLS_ECDHE_PSK_WITH_AES_128_GCM_SHA256         | {TBD,TBD}   | [I-D.mattsson-tls-ecdhe-psk-aead] |
+| TLS_ECDHE_PSK_WITH_AES_256_GCM_SHA384         | {TBD,TBD}   | [I-D.mattsson-tls-ecdhe-psk-aead] |
+| TLS_ECDHE_PSK_WITH_AES_128_CCM_8_SHA256       | {TBD,TBD}   | [I-D.mattsson-tls-ecdhe-psk-aead] |
+| TLS_ECDHE_PSK_WITH_AES_128_CCM_SHA256         | {TBD,TBD}   | [I-D.mattsson-tls-ecdhe-psk-aead] |
+| TLS_ECDHE_PSK_WITH_AES_256_CCM_SHA384         | {TBD,TBD}   | [I-D.mattsson-tls-ecdhe-psk-aead] |
+| TLS_ECDHE_PSK_WITH_CHACHA20_POLY1305_SHA256   | {TBD,TBD}   | [I-D.ietf-tls-chacha20-poly1305] |
+| TLS_DHE_PSK_WITH_CHACHA20_POLY1305_SHA256     | {TBD,TBD}   | [I-D.ietf-tls-chacha20-poly1305] |
+
+[[TODO: ECDHE PSK cipher suite IDs are all TBD.]]
+
+Note: [RFC6655] is inconsistent with respect to the ordering of components
+within PSK AES CCM cipher suite names. The names above are as defined.
+
+Plain PSK versions of the above cipher suites are also defined in the cited
+specifications, however support of non-ephemeral cipher suites is NOT RECOMMENDED.
 
 All cipher suites in this section are specified for use with both TLS 1.2
 and TLS 1.3, as well as the corresponding versions of DTLS.
