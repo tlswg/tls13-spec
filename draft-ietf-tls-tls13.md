@@ -3657,7 +3657,7 @@ The following table indicates the purpose values for each type of key:
 | Client Write IV  | "client write IV"  |
 | Server Write IV  | "server write IV"  |
 
-All the traffic keying material is recomputed.  whenever the
+All the traffic keying material is recomputed, whenever the
 underlying Secret changes (e.g., when changing from the handshake to
 application data keys or upon a key update).
 
