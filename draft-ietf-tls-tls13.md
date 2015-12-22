@@ -1797,11 +1797,6 @@ When offering PSK support, the PreSharedKeyExtension will be used
 instead of (or in addition to) the KeyShare extension as specified
 above.
 
-Note: because sequence numbers continue to increment between the
-initial (early) application data and the application data sent
-after the handshake has completed, an attacker cannot remove
-early application data messages.
-
 IMPORTANT NOTE: The security properties for 0-RTT data (regardless of
 the cipher suite) are weaker than those for other kinds of TLS data.
 Specifically:
