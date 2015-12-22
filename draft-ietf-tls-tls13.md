@@ -1543,7 +1543,7 @@ TLS supports three basic key exchange modes:
 - A combination of a symmetric key and Diffie-Hellman
 
 Which mode is used depends on the negotiated cipher suite. Conceptually,
-the handshake establishes two secrets which are used to derive all the
+the handshake establishes three secrets which are used to derive all the
 keys.
 
 Ephemeral Secret (ES): A secret which is derived from fresh (EC)DHE
@@ -1554,8 +1554,12 @@ Ephemeral Secret (ES): A secret which is derived from fresh (EC)DHE
 Static Secret (SS): A secret which may be derived from static or
    semi-static keying material, such as a pre-shared key or the
    server's semi-static (EC)DH share.
+   
+Master Secret (SS): A secret derived from both the static 
+   and the ephemeral secret.
 
-In some cases, as with the DH handshake shown in {{tls-full}}, these
+In some cases, as with the DH handshake shown in {{tls-full}}, 
+ephemeral and shared
 secrets are the same, but having both allows for a uniform key
 derivation scheme for all cipher modes.
 
