@@ -1559,7 +1559,7 @@ Master Secret (SS): A secret derived from both the static
    and the ephemeral secret.
 
 In some cases, as with the DH handshake shown in {{tls-full}}, 
-ephemeral and shared
+the ephemeral and shared
 secrets are the same, but having both allows for a uniform key
 derivation scheme for all cipher modes.
 
