@@ -344,6 +344,7 @@ draft-11
 - Remove early_handshake content type. Terminate 0-RTT data with
   an alert.
 
+- Reset sequence number upon key change (as proposed by Fournet et al.)
 
 draft-10
 
@@ -1638,7 +1639,7 @@ CertificateRequest
 ServerConfiguration
 : supplies a configuration for 0-RTT handshakes (see {{zero-rtt-exchange}}).
 [{{server-configuration}}]
-
+{:br }
 
 Finally, the client and server exchange Authentication messages. TLS
 uses the same set of messages every time that authentication is needed.
@@ -1792,15 +1793,10 @@ that the server can request client authentication even if the
 client offers a certificate on its first flight. This
 is consistent with the server being
 able to ask for client authentication after the handshake is
-complete. See {{post-handshake-authentication}}.
+complete (see {{post-handshake-authentication}}).
 When offering PSK support, the PreSharedKeyExtension will be used
 instead of (or in addition to) the KeyShare extension as specified
 above.
-
-Note: because sequence numbers continue to increment between the
-initial (early) application data and the application data sent
-after the handshake has completed, an attacker cannot remove
-early application data messages.
 
 IMPORTANT NOTE: The security properties for 0-RTT data (regardless of
 the cipher suite) are weaker than those for other kinds of TLS data.
@@ -2445,7 +2441,7 @@ The "extension_data" field of this extension contains a
            // ECDH functions.
            ecdh_x25519 (29), ecdh_x448 (30),
 
-           // Signature curves.
+           // Signature-only curves.
            eddsa_ed25519 (31), eddsa_ed448 (32),
 
            // Finite Field Groups.
@@ -2617,7 +2613,7 @@ point
 
   For ecdh_x25519 and ecdh_x448, this is raw opaque octet-string
   representation of point (in the format those functions use), 32 octets
-  for ecdh_x25519(29) and 56 octets for ecdh_x448(30).
+  for ecdh_x25519 and 56 octets for ecdh_x448.
 {:br }
 
 Although X9.62 supports multiple point formats, any given curve
@@ -2804,7 +2800,8 @@ values:
 
 - The cipher suite identifier.
 
-- "key_share" if (EC)DHE is being used.
+- If (EC)DHE is being used, the server's version of
+  "key_share".
 
 - If PSK is being used, the server's version of the
   "pre_shared_key" (indicating the PSK the client is
@@ -3068,7 +3065,7 @@ Because the CertificateVerify signs the Handshake Context +
 Certificate and the Finished MACs the Handshake Context + Certificate
 + CertificateVerify, this is mostly equivalent to keeping a running hash
 of the handshake messages (exactly so in the pure 1-RTT cases). Note,
-however, the subsequent post-handshake authentications do not include
+however, that subsequent post-handshake authentications do not include
 each other, just the messages through the end of the main handshake.
 
 The following table defines the Handshake Context and MAC Key
@@ -3320,7 +3317,7 @@ MUST check any candidate cipher suites against the "signature_algorithms"
 extension before selecting them. This is somewhat inelegant but is a compromise
 designed to minimize changes to the original cipher suite design.
 
-> If sent by a server, the hash and signature algorithms used in the
+> If sent by a client, the hash and signature algorithms used in the
 signature MUST be one of those present in the
 supported_signature_algorithms field of the CertificateRequest
 message.
@@ -3343,7 +3340,8 @@ from the signature. It is unsafe to use certificate-based client
 authentication when the client might potentially share the same
 PSK/key-id pair with two different endpoints. In order to ensure
 this, implementations MUST NOT mix certificate-based client
-authentication with pure PSK modes.
+authentication with pure PSK modes (i.e., those where the
+PSK was not derived from a previous non-PSK handshake).
 
 
 ####  Finished
@@ -3460,9 +3458,15 @@ message. The client SHOULD respond with the appropriate Authentication
 messages. If the client chooses to authenticate, it MUST send
 Certificate, CertificateVerify, and Finished. If it declines, it
 MUST send a Certificate message containing no certificates followed by Finished.
-Note: Because there may already be application data messages in
-flight, the server MUST be prepared to receive an arbitrary number
-of such messages before receiving the Authentication messages.
+
+Note: Because client authentication may requires prompting the user
+servers MUST be prepared for some delay, including receiving an
+arbitrary number of other messages, between sending the
+CertificateRequest. In addition, clients which receive multiple
+CertificateRequests in close succession MAY respond to them in a
+different order than they were received (the
+certificate_request_context value allows the server to disambiguate
+the responses).
 
 
 #### Key and IV Update {#key-update}
@@ -3657,7 +3661,7 @@ The following table indicates the purpose values for each type of key:
 | Client Write IV  | "client write IV"  |
 | Server Write IV  | "server write IV"  |
 
-All the traffic keying material is recomputed, whenever the
+All the traffic keying material is recomputed whenever the
 underlying Secret changes (e.g., when changing from the handshake to
 application data keys or upon a key update).
 
@@ -3842,8 +3846,8 @@ is listed below:
    that they are not used in TLS 1.3. This column [shall be/has been]
    initially populated with the values in this document.
    IANA [shall update/has updated] this registry to add a
-   "Recommended" column. IANA [shall be/has been] initially populated
-   with the values in the table below. This column has been generated
+   "Recommended" column. IANA [shall/has] initially populated this
+   column with the values in the table below. This table has been generated
    by marking Standards Track RFCs as "Yes" and all others as
    "No".
 
