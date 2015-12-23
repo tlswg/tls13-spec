@@ -1555,7 +1555,7 @@ Static Secret (SS): A secret which may be derived from static or
    semi-static keying material, such as a pre-shared key or the
    server's semi-static (EC)DH share.
    
-Master Secret (SS): A secret derived from both the static 
+Master Secret (MS): A secret derived from both the static 
    and the ephemeral secret.
 
 In some cases, as with the DH handshake shown in {{tls-full}}, 
