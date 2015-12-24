@@ -2767,7 +2767,7 @@ MUST perform the following checks:
   rest of the ClientHello. If (EC)DHE is selected, this includes
   verifying that (1) the ClientHello contains a key from the
   same group that is indicated by the server configuration and
-  (2) that the server has negotiated that group (and will
+  (2) that the server has negotiated that group and will
   therefore include a share from that group in its own
   "key_share" extension.
 
