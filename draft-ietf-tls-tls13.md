@@ -2721,7 +2721,7 @@ context
 {:br }
 
 The client specifies the cryptographic configuration for the 0-RTT
-data using the "configuration", "cipher_suite", and "extensions"
+data using the "configuration_id", "cipher_suite", and "extensions"
 values. For configurations received in-band (in a previous TLS connection)
 the client MUST:
 
