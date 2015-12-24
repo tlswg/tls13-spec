@@ -3291,17 +3291,12 @@ Structure of this message:
 %%% Authentication Messages
        struct {
             digitally-signed struct {
-               opaque handshake_hash[hash_length];
+               opaque hashed_data[hash_length];
             };
        } CertificateVerify;
 
-> Where handshake_hash is as described in {{the-handshake-hash}} and
-includes the messages sent or received, starting at ClientHello and up
-to, but not including, this message, including the type and length
-fields of the handshake messages. This is a digest of the
-concatenation of all the Handshake structures (as defined in
-{{handshake-protocol}}) exchanged thus far. The digest MUST be the
-Hash used as the basis for HKDF.
+> Where hashed_data is as described in {{authentication-messages}},
+namely Hash(Handshake Context + Certificate).
 
 > The context string for a server signature is "TLS 1.3, server CertificateVerify"
 and for a client signature is "TLS 1.3, client CertificateVerify". A
@@ -3568,7 +3563,6 @@ the sources from the table above.
   4. mES = HKDF-Expand-Label(xES, "expanded ephemeral secret",
                              handshake_hash, L)
 
-
   5. master_secret = HKDF-Extract(mSS, mES)
 
 
@@ -3581,21 +3575,23 @@ the sources from the table above.
   0-RTT handshake messages (the server's Finished is not
   included because the master_secret is need to compute
   the finished key). [[OPEN ISSUE: Should we be including
-  0-RTT handshake messages here and below?]]
+  0-RTT handshake messages here and below?]] At this point,
+  SS, ES, xSS, xES, mSS, and mSS SHOULD be securely deleted,
+  along with any ephemeral (EC)DH secrets.
 
   7. resumption_secret = HKDF-Expand-Label(master_secret,
                                            "resumption master secret"
-                                           session_hash, L)
+                                           handshake_hash, L)
 
   8. exporter_secret = HKDF-Expand-Label(master_secret,
                                          "exporter master secret",
-                                         session_hash, L)
+                                         handshake_hash, L)
 
   
-  Where session_hash is the session hash as defined in
-  {{the-handshake-hash}}. I.e., the entire handshake up to
+  Where handshake_hash contains the entire handshake up to
   and including the client's Finished, but not including
-  any 0-RTT handshake messages.
+  any 0-RTT handshake messages or post-handshake messages.
+  AT this point master_secret SHOULD be securely deleted.
 ~~~
 
 The traffic keys are computed from xSS, xES, and the traffic_secret
@@ -3681,10 +3677,6 @@ they were encrypted on the wire).
 [[OPEN ISSUE: See https://github.com/tlswg/tls13-spec/issues/351
 for the question of whether the 0-RTT handshake messages are
 hashed.]]
-
-This final value of the handshake hash is referred to as the "session
-hash" because it contains all the handshake messages involved in
-establishing the session, up to and including the client's Finished.
 
 ###  Diffie-Hellman
 
