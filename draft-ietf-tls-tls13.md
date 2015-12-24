@@ -3295,7 +3295,7 @@ Structure of this message:
             };
        } CertificateVerify;
 
-> Where hashed_data is as described in {{authentication-messages}},
+> Where hashed_data is the input value described in {{authentication-messages}},
 namely Hash(Handshake Context + Certificate).
 
 > The context string for a server signature is "TLS 1.3, server CertificateVerify"
