@@ -2979,7 +2979,7 @@ Structure of this Message:
           struct {
               opaque configuration_id<1..2^16-1>;
               uint32 expiration_date;
-              KeyShareEntry key_share;
+              KeyShareEntry static_key_share;
               EarlyDataType early_data_type;
               ConfigurationExtension extensions<0..2^16-1>;
           } ServerConfiguration;
@@ -2996,7 +2996,7 @@ NOT cache configurations for longer than 7 days, regardless of
 the expiration_date. [[OPEN ISSUE: Is this the right value?
 The idea is just to minimize exposure.]]
 
-key_share
+static_key_share
 : The long-term DH key that is being established for this configuration.
 
 early_data_type
