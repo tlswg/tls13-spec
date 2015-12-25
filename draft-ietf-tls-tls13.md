@@ -3463,9 +3463,9 @@ messages. If the client chooses to authenticate, it MUST send
 Certificate, CertificateVerify, and Finished. If it declines, it
 MUST send a Certificate message containing no certificates followed by Finished.
 
-Note: Because client authentication may requires prompting the user
+Note: Because client authentication may require prompting the user,
 servers MUST be prepared for some delay, including receiving an
-arbitrary number of other messages, between sending the
+arbitrary number of other messages between sending the
 CertificateRequest. In addition, clients which receive multiple
 CertificateRequests in close succession MAY respond to them in a
 different order than they were received (the
