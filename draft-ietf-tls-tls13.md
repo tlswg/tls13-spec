@@ -1697,7 +1697,7 @@ If the client has not provided an appropriate "key_share" extension (e.g. it
 includes only DHE or ECDHE groups unacceptable or unsupported by the
 server), the server corrects the mismatch with a HelloRetryRequest and
 the client will need to restart the handshake with an appropriate
-KeyShare extension, as shown in Figure 2:
+"key_share" extension, as shown in Figure 2:
 
 ~~~
          Client                                               Server
@@ -1798,8 +1798,8 @@ client offers a certificate on its first flight. This
 is consistent with the server being
 able to ask for client authentication after the handshake is
 complete (see {{post-handshake-authentication}}).
-When offering PSK support, the PreSharedKeyExtension will be used
-instead of (or in addition to) the KeyShare extension as specified
+When offering PSK support, the "pre_shared_key" extension will be used
+instead of (or in addition to) the "key_share" extension as specified
 above.
 
 IMPORTANT NOTE: The security properties for 0-RTT data (regardless of
@@ -2107,7 +2107,7 @@ When this message will be sent:
 
 > The server will send this message in response to a ClientHello message when
 it was able to find an acceptable set of algorithms and the client's
-KeyShare extension was acceptable. If the client proposed groups are not
+"key_share" extension was acceptable. If the client proposed groups are not
 acceptable by the server, it will respond with a "handshake_failure" fatal alert.
 
 Structure of this message:
@@ -3176,7 +3176,7 @@ The following rules apply to the certificates sent by the server:
 | ECDHE_ECDSA          | ECDSA or EdDSA public key  |
 
 - The certificate MUST allow the key to be used for signing (i.e., the
-  digitalSignature bit MUST be set if the key usage extension is present) with
+  digitalSignature bit MUST be set if the Key Usage extension is present) with
   a signature scheme and hash algorithm pair indicated in the client's
   "signature_algorithms" extension.
 
@@ -3755,7 +3755,7 @@ TLS-compliant application MUST implement the following TLS extensions:
   * Signature Algorithms ("signature_algorithms"; {{signature-algorithms}})
   * Negotiated Groups ("supported_groups"; {{negotiated-groups}})
   * Key Share ("key_share"; {{key-share}})
-  * Pre-Shared Key Extension ("pre_shared_key"; {{pre-shared-key-extension}})
+  * Pre-Shared Key ("pre_shared_key"; {{pre-shared-key-extension}})
   * Server Name Indication ("server_name"; Section 3 of {{RFC6066}})
 
 All implementations MUST send and use these extensions when offering
