@@ -3058,10 +3058,10 @@ Certificate
 supporting certificates in the chain.
 
 CertificateVerify
-: A signature over Handshake Context + Certificate.
+: A signature over the hash of Handshake Context + Certificate.
 
 Finished
-: A MAC over Handshake Context + Certificate + CertificateVerify using
+: A MAC over the hash of Handshake Context + Certificate + CertificateVerify using
   a MAC key derived from the base key.
 {:br}
 
@@ -3295,8 +3295,9 @@ Structure of this message:
             };
        } CertificateVerify;
 
-> Where hashed_data is the input value described in {{authentication-messages}},
-namely Hash(Handshake Context + Certificate).
+> Where hashed_data is the hash output described in
+{{authentication-messages}}, namely Hash(Handshake Context +
+Certificate).
 
 > The context string for a server signature is "TLS 1.3, server CertificateVerify"
 and for a client signature is "TLS 1.3, client CertificateVerify". A
