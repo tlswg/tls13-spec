@@ -1317,12 +1317,11 @@ close_notify
 
 end_of_early_data
 : This alert is sent by the client to indicate that all 0-RTT
-  application_data messages have been transmitted and that the
-  next message will be handshake message protected with the
-  1-RTT handshake keys. This alert MUST be at the warning level.
-  Servers MUST NOT send this alert and clients receiving this
-  alert MUST terminate the connection with an "unexpected_message"
-  alert.
+  application_data messages have been transmitted (or none will
+  be sent at all) and that this is the end of the flight. This
+  alert MUST be at the warning level. Servers MUST NOT send this
+  alert and clients receiving it MUST terminate the connection
+  with an "unexpected_message" alert.
 
 user_canceled
 : This alert notifies the recipient that the sender is canceling the
