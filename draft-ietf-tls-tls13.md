@@ -778,8 +778,8 @@ can obtain a signature of a message with a chosen, 32-byte prefix. Because TLS
 element always start with 64 bytes of octet 32 in order to clear that
 chosen-prefix.
 
-Following that padding is a terminated context string in order to
-disambiguate signatures for different purposes. The context string will be
+Following that padding is a context string used to disambiguate
+signatures for different purposes. The context string will be
 specified whenever a digitally-signed element is used. A single 0 byte
 is appended to the context to act as a separator.
 
