@@ -2762,6 +2762,7 @@ Prior to accepting the "early_data" extension, the server
 MUST perform the following checks:
 
 - The configuration_id matches a known server configuration.
+
 - The client's cryptographic determining parameters match the
   parameters that the server has negotiated based on the
   rest of the ClientHello. If (EC)DHE is selected, this includes
@@ -2780,6 +2781,13 @@ trial decrypt each record with the 1-RTT handshake keys
 until it finds one that decrypts properly, and then pick up
 the handshake from that point.
 
+Servers MUST comply with the same error handling requirements
+specified for all records when processing early data records
+and MUST NOT fall back to 1-RTT on any such errors.
+Specifically, decryption failure of any 0-RTT record following
+an accepted "early_data" extension MUST produce a fatal
+"bad_record_mac" alert as per {{record-payload-protection}}.
+
 [[TODO: How does the client behave if the indication is rejected.]]
 
 [[OPEN ISSUE: This just specifies the signaling for 0-RTT but
@@ -2793,7 +2801,6 @@ not the the 0-RTT cryptographic transforms, including:
 
 What's here now needs a lot of cleanup before it is clear
 and correct.]]
-
 
 
 ##### Cryptographic Determining Parameters
