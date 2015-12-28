@@ -2781,7 +2781,7 @@ trial decrypt each record with the 1-RTT handshake keys
 until it finds one that decrypts properly, and then pick up
 the handshake from that point.
 
-If the server choosed to accept the "early_data" extension,
+If the server chooses to accept the "early_data" extension,
 then it MUST comply with the same error handling requirements
 specified for all records when processing early data records.
 Specifically, decryption failure of any 0-RTT record following
@@ -2816,12 +2816,12 @@ values:
 
 - The cipher suite identifier.
 
-- If (EC)DHE is being used, the server's version of
-  "key_share".
+- If (EC)DHE is being used, the server's version of the
+  "key_share" extension.
 
 - If PSK is being used, the server's version of the
-  "pre_shared_key" (indicating the PSK the client is
-  using).
+  "pre_shared_key" extension (indicating the PSK the
+  client is using).
 
 ##### Replay Properties
 
@@ -3162,7 +3162,7 @@ handle potentially extraneous certificates and arbitrary orderings from any TLS
 version, with the exception of the end-entity certificate which MUST be first.
 
 The server's certificate list MUST always be non-empty. A client will
-MAY send an empty certificate list if it does not have an appropriate
+send an empty certificate list if it does not have an appropriate
 certificate to send in response to the server's authentication
 request.
 
