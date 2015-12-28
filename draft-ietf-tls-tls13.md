@@ -3337,7 +3337,7 @@ RSASSA-PKCS-v1_5 appears in "signature_algorithms".
 SHA-1 MUST NOT be used in any signatures in CertificateVerify,
 regardless of whether SHA-1 appears in "signature_algorithms".
 
-Note: when used with non-certificate-based handshakes (e.g., PSK), the
+Note: When used with non-certificate-based handshakes (e.g., PSK), the
 client's signature does not cover the server's certificate directly,
 although it does cover the server's Finished message, which
 transitively includes the server's certificate when the PSK derives
@@ -3608,7 +3608,7 @@ The traffic keys are computed from xSS, xES, and the traffic_secret
 as described in {{traffic-key-calculation}} below. The traffic_secret
 may be updated throughout the connection as described in {{updating-traffic-keys}}.
 
-Note: although the steps above are phrased as individual HKDF-Extract
+Note: Although the steps above are phrased as individual HKDF-Extract
 and HKDF-Expand operations, because each HKDF-Expand operation is
 paired with an HKDF-Extract, it is possible to implement this key
 schedule with a black-box HKDF API, albeit at some loss of efficiency
