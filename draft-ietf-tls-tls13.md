@@ -3875,7 +3875,7 @@ is listed below:
 | signature_algorithms [RFC5246]           |         Yes |    Client |
 | use_srtp [RFC5764]                       |         Yes | Encrypted |
 | heartbeat [RFC6520]                      |         Yes | Encrypted |
-| application_layer_protocol_negotiation[RFC7301] |  Yes | Encrypted |
+| application_layer_protocol_negotiation [RFC7301] | Yes | Encrypted |
 | status_request_v2 [RFC6961]              |         Yes | Encrypted |
 | signed_certificate_timestamp [RFC6962]   |          No | Encrypted |
 | client_certificate_type [RFC7250]        |         Yes | Encrypted |
