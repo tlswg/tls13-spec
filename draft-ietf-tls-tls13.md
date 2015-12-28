@@ -3583,7 +3583,9 @@ the sources from the table above.
   0-RTT handshake messages (the server's Finished is not
   included because the master_secret is need to compute
   the finished key). [[OPEN ISSUE: Should we be including
-  0-RTT handshake messages here and below?]] At this point,
+  0-RTT handshake messages here and below?.
+  https://github.com/tlswg/tls13-spec/issues/351
+  ]] At this point,
   SS, ES, xSS, xES, mSS, and mSS SHOULD be securely deleted,
   along with any ephemeral (EC)DH secrets.
 
