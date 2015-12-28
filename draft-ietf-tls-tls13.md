@@ -2048,6 +2048,8 @@ are bytes following the compression_methods at the end of the ClientHello. Note
 that this method of detecting optional data differs from the normal TLS method
 of having a variable-length field, but it is used for compatibility with TLS
 before extensions were defined.
+As of TLS 1.3, all clients and servers will send at least
+one extension (at least "key_share" or "pre_shared_key").
 
 client_version
 : The version of the TLS protocol by which the client wishes to
@@ -2086,7 +2088,7 @@ legacy_compression_methods
   the appropriate prior version of TLS.
 
 extensions
-: Clients MAY request extended functionality from servers by sending
+: Clients request extended functionality from servers by sending
   data in the extensions field.  The actual "Extension" format is
   defined in {{hello-extensions}}.
 {:br }
@@ -2117,16 +2119,13 @@ Structure of this message:
            ProtocolVersion server_version;
            Random random;
            CipherSuite cipher_suite;
-           select (extensions_present) {
-               case false:
-                   struct {};
-               case true:
-                   Extension extensions<0..2^16-1>;
-           };
+           Extension extensions<0..2^16-1>;
        } ServerHello;
 
-The presence of extensions can be detected by determining whether there are
-bytes following the cipher_suite field at the end of the ServerHello.
+In prior versions of TLS, the extensions field could be omitted entirely
+if not needed, similar to ClientHello.
+As of TLS 1.3, all clients and servers will send at least
+one extension (at least "key_share" or "pre_shared_key").
 
 server_version
 : This field will contain the lower of that suggested by the client
