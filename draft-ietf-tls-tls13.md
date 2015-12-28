@@ -2781,9 +2781,9 @@ trial decrypt each record with the 1-RTT handshake keys
 until it finds one that decrypts properly, and then pick up
 the handshake from that point.
 
-Servers MUST comply with the same error handling requirements
-specified for all records when processing early data records
-and MUST NOT fall back to 1-RTT on any such errors.
+If the server choosed to accept the "early_data" extension,
+then it MUST comply with the same error handling requirements
+specified for all records when processing early data records.
 Specifically, decryption failure of any 0-RTT record following
 an accepted "early_data" extension MUST produce a fatal
 "bad_record_mac" alert as per {{record-payload-protection}}.
