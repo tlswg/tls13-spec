@@ -3655,7 +3655,7 @@ The keying material is computed using:
 The following table describes the inputs to the key calculation for
 each class of traffic keys:
 
-| Record Type | Secret | Label | Handshake Context |
+| Record Type | Secret | Phase | Handshake Context |
 |:------------|--------|-------|------------------:|
 | 0-RTT Handshake   | xSS | "early handshake key expansion" | ClientHello + ServerConfiguration + Server Certificate |
 | 0-RTT Application | xSS | "early application data key expansion" | ClientHello + ServerConfiguration + Server Certificate |
