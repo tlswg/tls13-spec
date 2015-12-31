@@ -1926,17 +1926,17 @@ processed and transmitted as specified by the current active session state.
            HandshakeType msg_type;    /* handshake type */
            uint24 length;             /* bytes in message */
            select (HandshakeType) {
-               case client_hello:        ClientHello;
-               case server_hello:        ServerHello;
-               case hello_retry_request: HelloRetryRequest;
-               case encrypted_extensions: EncryptedExtensions;
-               case certificate_request: CertificateRequest;
-               case server_configuration:ServerConfiguration;
-               case certificate:         Certificate;
-               case certificate_verify:  CertificateVerify;
-               case finished:            Finished;
-               case session_ticket:      NewSessionTicket;
-               case key_update:          KeyUpdate;
+               case client_hello:          ClientHello;
+               case server_hello:          ServerHello;
+               case hello_retry_request:   HelloRetryRequest;
+               case encrypted_extensions:  EncryptedExtensions;
+               case certificate_request:   CertificateRequest;
+               case server_configuration:  ServerConfiguration;
+               case certificate:           Certificate;
+               case certificate_verify:    CertificateVerify;
+               case finished:              Finished;
+               case session_ticket:        NewSessionTicket;
+               case key_update:            KeyUpdate;
            } body;
        } Handshake;
 
