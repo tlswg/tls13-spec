@@ -784,7 +784,7 @@ specified whenever a digitally-signed element is used. A single 0 byte
 is appended to the context to act as a separator.
 
 Finally, the specified contents of the digitally-signed structure follow the
-NUL after the context string. (See the example at the end of this
+0 byte after the context string. (See the example at the end of this
 section.)
 
 In RSA signing, the opaque vector contains the signature generated
