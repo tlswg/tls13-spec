@@ -3132,13 +3132,13 @@ Structure of this message:
        opaque ASN1Cert<1..2^24-1>;
 
        struct {
-           opaque certificate_request_context<0..255>;
+           opaque certificate_request_context<0..2^8-1>;
            ASN1Cert certificate_list<0..2^24-1>;
        } Certificate;
 
 certificate_request_context:
 : If this message is in response to a CertificateRequest, the
-  value if certificate_request_context in that message. Otherwise,
+  value of certificate_request_context in that message. Otherwise,
   in the case of server authentication or client authentication
   in 0-RTT, this field SHALL be zero length.
 
