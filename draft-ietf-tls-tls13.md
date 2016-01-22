@@ -3027,13 +3027,13 @@ ServerConfiguration format.
 {:br }
 
 The semantics of this message are to establish a shared state between
-the client and server for use with the "known_configuration" extension
-with the key specified in key and with the handshake parameters negotiated
-by this handshake.
+the client and server for use with the "early_data" extension
+with the key specified in "static_key_share" and with the handshake
+parameters negotiated by this handshake.
 
 When the ServerConfiguration message is sent, the server MUST also
 send a Certificate message and a CertificateVerify message, even
-if the "known_configuration" extension was used for this handshake,
+if the "early_data" extension was used for this handshake,
 thus requiring a signature over the configuration before it can
 be used by the client. Clients MUST NOT rely on the
 ServerConfiguration message until successfully receiving and
