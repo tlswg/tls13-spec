@@ -1577,7 +1577,8 @@ Exch \  + key_share              -------->
                                             {ServerConfiguration*}  v Params
                                                     {Certificate*}  ^
                                               {CertificateVerify*}  | Auth
-                                 <--------              {Finished}  v
+                                                        {Finished}  v
+                                 <--------     [Application Data*]
      ^ {Certificate*}
 Auth | {CertificateVerify*}
      v {Finished}                -------->
@@ -1715,7 +1716,8 @@ the client will need to restart the handshake with an appropriate
                                               {ServerConfiguration*}
                                                       {Certificate*}
                                                 {CertificateVerify*}
-                                   <--------              {Finished}
+                                                          {Finished}
+                                   <--------     [Application Data*]
          {Certificate*}
          {CertificateVerify*}
          {Finished}                -------->
@@ -1767,7 +1769,8 @@ Data  |  (Finished)
                                               {ServerConfiguration*}
                                                       {Certificate*}
                                                 {CertificateVerify*}
-                                   <--------              {Finished}
+                                                          {Finished}
+                                   <--------     [Application Data*]
          {Certificate*}
          {CertificateVerify*}
          {Finished}                -------->
@@ -1863,7 +1866,8 @@ Initial Handshake:
                                             {ServerConfiguration*}
                                                     {Certificate*}
                                               {CertificateVerify*}
-                                 <--------              {Finished}
+                                                        {Finished}
+                                 <--------     [Application Data*]
        {Certificate*}
        {CertificateVerify*}
        {Finished}                -------->
@@ -1878,7 +1882,8 @@ Subsequent Handshake:
                                                        ServerHello
                                                   + pre_shared_key
                                              {EncryptedExtensions}
-                                 <--------              {Finished}
+                                                        {Finished}
+                                 <--------     [Application Data*]
        {Finished}                -------->
        [Application Data]        <------->      [Application Data]
 ~~~
