@@ -226,6 +226,15 @@ informative:
          ins: T. van der Merwe
        -
          ins: S. Scott
+  SLOTH:
+       title: "Transcript Collision Attacks: Breaking Authentication in TLS, IKE, and SSH"
+       author:
+       -
+         ins: K. Bhargavan
+       -
+         ins: G. Leurent
+       seriesinfo: Network and Distributed System Security Symposium (NDSS 2016)
+       date: 2016
 
 --- abstract
 
@@ -761,13 +770,12 @@ current session state (see {{connection-states}}).
 A digitally-signed element is encoded as a struct DigitallySigned:
 
        struct {
-          SignatureAndHashAlgorithm algorithm;
+          SignatureAlgorithm algorithm;
           opaque signature<0..2^16-1>;
        } DigitallySigned;
 
 The algorithm field specifies the algorithm used (see {{signature-algorithms}}
-for the definition of this field). Note that the algorithm
-field was introduced in TLS 1.2, and is not in earlier versions. The signature is a digital signature
+for the definition of this field). The signature is a digital signature
 using those algorithms over the contents of the element. The contents
 themselves do not appear on the wire but are simply calculated. The length of
 the signature is specified by the signing algorithm and key.
@@ -787,25 +795,9 @@ Finally, the specified contents of the digitally-signed structure follow the
 0 byte after the context string. (See the example at the end of this
 section.)
 
-In RSA signing, the opaque vector contains the signature generated
-using the RSASSA-PSS signature scheme defined in {{RFC3447}} with
-MGF1. The digest used in the mask generation function MUST be the same
-as the digest which is being signed (i.e., what appears in
-algorithm.signature). The length of the salt MUST be equal to the length
-of the digest output. Note that previous versions of TLS used RSASSA-PKCS1-v1_5,
-not RSASSA-PSS.
-
-All ECDSA computations MUST be performed according to ANSI X9.62 {{X962}}
-or its successors.  Data to be signed/verified is hashed, and the
-result run directly through the ECDSA algorithm with no additional
-hashing.  The SignatureAndHashAlgorithm parameter in the DigitallySigned
-object indicates the digest algorithm which was used in the signature.
-Signature-only curves MUST NOT be used for ECDSA unless otherwise noted.
-
-All EdDSA computations MUST be performed according to {{I-D.irtf-cfrg-eddsa}}
-or its successors. Data to be signed/verified is passed as-is to the EdDSA
-algorithm with no hashing. The signature output is placed as-is in the
-signature field. The SignatureAndHashAlgorithm.hash value MUST set to none(0).
+The combined input is then fed into the corresponding signature algorithm
+to produce the signature value on the wire. See {{signature-algorithms}} for
+algorithms defined in this specification.
 
 In the following example
 
@@ -828,7 +820,7 @@ The input for the signature/hash algorithm would be:
 followed by the encoding of the inner struct (field3 and field4).
 
 The length of the structure, in bytes, would be equal to two
-bytes for field1 and field2, plus two bytes for the signature and hash
+bytes for field1 and field2, plus two bytes for the signature
 algorithm, plus two bytes for the length of the signature, plus the length of
 the output of the signing algorithm. The length of the signature is known
 because the algorithm and key used for the signing are known prior to encoding
@@ -2310,7 +2302,7 @@ be taken into account when designing new extensions:
 ####  Signature Algorithms
 
 The client uses the "signature_algorithms" extension to indicate to the server
-which signature/hash algorithm pairs may be used in digital signatures.
+which signature algorithms may be used in digital signatures.
 
 Clients which offer one or more cipher suites which use certificate authentication
 (i.e., any non-PSK cipher suite) MUST send the "signature_algorithms" extension.
@@ -2323,102 +2315,138 @@ The "extension_data" field of this extension contains a
 
 %%% Signature Algorithm Extension
        enum {
-           none(0),
-           md5_RESERVED(1),
-           sha1(2),
-           sha224_RESERVED(3),
-           sha256(4), sha384(5), sha512(6),
-           (255)
-       } HashAlgorithm;
+           // RSASSA-PKCS-v1_5 algorithms.
+           rsa_pkcs1_sha1 (0x0101),
+           rsa_pkcs1_sha256 (0x0301),
+           rsa_pkcs1_sha384 (0x0401),
+           rsa_pkcs1_sha512 (0x0601),
 
-       enum {
-           anonymous_RESERVED(0),
-           rsa(1),
-           dsa(2),
-           ecdsa(3),
-           rsapss(4),
-           eddsa(5),
-           (255)
+           // DSA algorithms (deprecated).
+           dsa_sha1 (0x0102),
+           dsa_sha256 (0x0302),
+           dsa_sha384 (0x0402),
+           dsa_sha512 (0x0602),
+
+           // ECDSA algorithms.
+           ecdsa_secp256r1_sha256 (0x0303),
+           ecdsa_secp384r1_sha384 (0x0403),
+           ecdsa_secp521r1_sha512 (0x0603),
+
+           // RSASSA-PSS algorithms.
+           rsa_pss_sha256 (0x0700),
+           rsa_pss_sha384 (0x0701),
+           rsa_pss_sha512 (0x0702),
+
+           // EdDSA algorithms.
+           ed25519 (0x0703),
+           ed448 (0x0704),
+
+           // Reserved Code Points.
+           obsolete_RESERVED (0x0000..0x0100),
+           obsolete_RESERVED (0x0103..0x0300),
+           obsolete_RESERVED (0x0304..0x0400),
+           obsolete_RESERVED (0x0404..0x0600),
+           obsolete_RESERVED (0x0604..0x06FF),
+           private_use (0xFE00..0xFFFF),
+           (0xFFFF)
        } SignatureAlgorithm;
 
-       struct {
-           HashAlgorithm hash;
-           SignatureAlgorithm signature;
-       } SignatureAndHashAlgorithm;
+       SignatureAlgorithm supported_signature_algorithms<2..2^16-2>;
 
-       SignatureAndHashAlgorithm
-         supported_signature_algorithms<2..2^16-2>;
+[[TODO: IANA considerations for new SignatureAlgorithm scheme]]
 
-[[TODO: IANA considerations for new SignatureAlgorithm value]]
+[[TODO: It's unfortunate that this collides with the old one. Maybe
+SignatureScheme?]]
 
-Each SignatureAndHashAlgorithm value lists a single hash/signature pair that
-the client is willing to verify. The values are indicated in descending order
-of preference.
+Each SignatureAlgorithm value lists a single signature algorithm that the
+client is willing to verify. The values are indicated in descending order
+of preference. Note that a signature algorithm takes as input an
+arbitrary-length message, rather than a digest. Algorithms which
+traditionally act on a digest should be defined in TLS to first
+hash the input with a specified hash function and then proceed as usual.
 
-Note: Because not all signature algorithms and hash algorithms may be accepted
-by an implementation (e.g., ECDSA with SHA-256, but not SHA-384), algorithms here
-are listed in pairs.
+rsa_pkcs1_sha1, etc.
+: Indicates a signature algorithm using RSASSA-PKCS1-v1_5 {{RFC3447}}
+  with the corresponding hash algorithm as defined in {{SHS}}. These values
+  refer solely to signatures which appear in certificates (see
+  {{server-certificate-selection}}) and are not defined for use in signed
+  TLS handshake messages (see {{digital-signing}}).
 
-hash
-: This field indicates the hash algorithms which may be used.  The
-  values indicate support for unhashed data, SHA-1, SHA-256, SHA-384,
-  and SHA-512 {{SHS}}, respectively. The "none" value is provided for
-  signature algorithms which do not require hashing before signing,
-  such as EdDSA.
+dsa_sha1, etc.
+: Indicates a signature algorithm using DSA {{DSS} with the corresponding
+  hash algorithm as defined in {{SHS}}. These values
+  refer solely to signatures which appear in certificates (see
+  {{server-certificate-selection}}) and are not defined for use in signed
+  TLS handshake messages (see {{digital-signing}}).
 
-  Previous versions of TLS
-  supported MD5, SHA-1, and SHA-224.  These algorithms are now deprecated.
-  MD5 and SHA-224 MUST NOT be offered by TLS 1.3 implementations; SHA-1 SHOULD
-  NOT be offered.
+: DSA is deprecated as of TLS 1.3. These values SHOULD NOT be offered or
+  negotiated by any implementation. It is believed that the vast majority of
+  implementations will not need to offer these values in order to interoperate
+  with lesser TLS versions.
 
-  Clients MAY offer support for SHA-1 for backwards compatibility,
-  either with TLS 1.2 servers or for servers that have certification
-  paths with signatures based on SHA-1.
+ecdsa_secp256r1_sha256, etc.
+: Indicates a signature algorithm using ECDSA {{ECDSA}}, the corresponding
+  curve as defined in ANSI X9.62 {{X962}} and FIPS 186-4 {{DSS}}, and the
+  corresponding hash algorithm as defined in {{SHS}}. The signature is
+  represented as a DER-encoded {{X690}} ECDSA-Sig-Value structure.
 
-signature
-: This field indicates the signature algorithm that may be used.
-  The values indicate RSASSA-PKCS1-v1_5 {{RFC3447}},
-  DSA {{DSS}}, ECDSA {{ECDSA}}, RSASSA-PSS {{RFC3447}}, and
-  EdDSA {{I-D.irtf-cfrg-eddsa}} respectively. Because all RSA signatures
-  used in signed TLS handshake messages (see {{digital-signing}}),
-  as opposed to those in certificates, are RSASSA-PSS, the "rsa"
-  value refers solely to signatures which appear in certificates.
-  The use of DSA and anonymous is deprecated. Previous versions
-  of TLS supported DSA. DSA is deprecated as of TLS 1.3 and
-  SHOULD NOT be offered or negotiated by any implementation.
+rsa_pss_sha256, etc.
+: Indicates a signature algorithm using RSASSA-PSS {{RFC3447}} with
+  MGF1. The digest used in the mask generation function and the digest
+  being signed are both the corresponding hash algorithm as defined in
+  {{SHS}}. When used in signed TLS handshake messages (see
+  {{digital-signing}}), the length of the salt MUST be equal to the length
+  of the digest output.
+
+ed25519, ed448
+: Indicates a signature algorithm using EdDSA as defined in
+  {{I-D.irtf-cfrg-eddsa}} or its successors. Note that these correspond to
+  the "PureEdDSA" algorithms and not the "prehash" variants.
 {:br }
 
 The semantics of this extension are somewhat complicated because the cipher
-suite indicates permissible signature algorithms but not hash algorithms.
-{{server-certificate-selection}} and {{key-share}} describe the
-appropriate rules.
+suite adds additional constraints on signature algorithms.
+{{server-certificate-selection}} describes the appropriate rules.
 
-Clients offering support for SHA-1 for backwards compatibility MUST do so by listing
-those hash/signature pairs as the lowest priority (listed after all other
-pairs in the supported_signature_algorithms vector). TLS 1.3 servers MUST NOT
-offer a SHA-1 signed certificate unless no valid certificate chain can be
-produced without it (see {{server-certificate-selection}}).
+rsa_pkcs1_sha1 and dsa_sha1 SHOULD NOT be offered. Clients offering these
+values for backwards compatibility MUST list them as the lowest priority
+(listed after all other algorithms in the supported_signature_algorithms
+vector). TLS 1.3 servers MUST NOT offer a SHA-1 signed certificate unless no
+valid certificate chain can be produced without it (see
+{{server-certificate-selection}}).
 
 The signatures on certificates that are self-signed or certificates that are
 trust anchors are not validated since they begin a certification path (see
 {{RFC5280}}, Section 3.2).  A certificate that begins a certification
-path MAY use a hash or signature algorithm that is not advertised as being
-supported in the "signature_algorithms" extension.
+path MAY use a signature algorithm that is not advertised as being supported
+in the "signature_algorithms" extension.
 
-Note: TLS 1.3 servers might receive TLS 1.2 ClientHellos which do not contain
-this extension. If those servers are willing to negotiate TLS 1.2, they MUST
-behave in accordance with the requirements of {{RFC5246}} when negotiating
-that version.
+Note that TLS 1.2 defines this extension differently. TLS 1.3 implementations
+willing to negotiate TLS 1.2 MUST behave in accordance with the requirements of
+{{RFC5246}} when negotiating that version. In particular:
+
+* TLS 1.2 ClientHellos may omit this extension.
+
+* In TLS 1.2, the extension contained hash/signature pairs. The pairs are
+  encoded in two octets, so SignatureAlgorithm values have been allocated to
+  align with TLS 1.2's encoding. Unallocated pairs are deprecated as of TLS
+  1.3. These values MUST NOT be offered or negotiated by any implementation.
+  Note that accepting MD5 hashes, in particular, has security concerns {{SLOTH}}.
+
+* ecdsa_secp256r1_sha256, etc., align with TLS 1.2's ECDSA hash/signature pairs.
+  However, the old semantics did not constrain the signing curve.
 
 #### Negotiated Groups
 
 When sent by the client, the "supported_groups" extension indicates
-the named groups which the client supports, ordered from most
-preferred to least preferred.
+the (EC)DHE groups which the client supports, ordered from most preferred
+to least preferred.
 
 Note: In versions of TLS prior to TLS 1.3, this extension was named
-"elliptic_curves" and only contained elliptic curve groups. See
-{{RFC4492}} and {{I-D.ietf-tls-negotiated-ff-dhe}}.
+"elliptic_curves" and only contained elliptic curve groups. See {{RFC4492}} and
+{{I-D.ietf-tls-negotiated-ff-dhe}}. This extension was also used to negotiate
+ECDSA curves. Signature algorithms are now negotiated independently (see
+{{signature-algorithms}}).
 
 Clients which offer one or more (EC)DHE cipher suites MUST send at least one
 supported NamedGroup value and servers MUST NOT negotiate any of these
@@ -2438,17 +2466,13 @@ The "extension_data" field of this extension contains a
 
 %%% Named Group Extension
        enum {
-           // Elliptic Curve Groups.
+           // Elliptic Curve Groups (ECDHE).
            obsolete_RESERVED (1..22),
            secp256r1 (23), secp384r1 (24), secp521r1 (25),
+           obsolete_RESERVED (26..28),
+           x25519 (29), x448 (30),
 
-           // ECDH functions.
-           ecdh_x25519 (29), ecdh_x448 (30),
-
-           // Signature-only curves.
-           eddsa_ed25519 (31), eddsa_ed448 (32),
-
-           // Finite Field Groups.
+           // Finite Field Groups (DHE).
            ffdhe2048 (256), ffdhe3072 (257), ffdhe4096 (258),
            ffdhe6144 (259), ffdhe8192 (260),
 
@@ -2466,15 +2490,9 @@ The "extension_data" field of this extension contains a
 secp256r1, etc.
 : Indicates support of the corresponding named curve.
   Note that some curves are also recommended in ANSI
-  X9.62 {{X962}} and FIPS 186-4 {{DSS}}.
+  X9.62 {{X962}} and FIPS 186-4 {{DSS}}. Others are recommended
+  in {{I-D.irtf-cfrg-curves}}.
   Values 0xFE00 through 0xFEFF are reserved for private use.
-
-ecdh_x25519 and ecdh_x448
-: Indicates support of the corresponding ECDH functions X25519 and X448.
-
-eddsa_ed25519 and eddsa_ed448
-: Indicates support of the corresponding curve for
-  signatures.
 
 ffdhe2048, etc.
 : Indicates support of the corresponding finite field
@@ -2492,11 +2510,6 @@ of the following octets.  Note that the first two octets indicate the
 extension type ("supported_groups" extension):
 
        00 0A 00 06 00 04 00 17 00 18
-
-NOTE: A server participating in an ECDHE-ECDSA key exchange may use
-different curves for (i) the ECDSA or EdDSA key in its certificate,
-and (ii) the ephemeral ECDH key in its "key_share" extension.  The server
-must consider the supported groups in both cases.
 
 [[TODO: IANA Considerations.]]
 
@@ -2528,9 +2541,7 @@ group
 : The named group for the key being exchanged.
   Finite Field Diffie-Hellman {{DH}} parameters are described in
   {{ffdhe-param}}; Elliptic Curve Diffie-Hellman parameters are
-  described in {{ecdhe-param}}. Signature-only curves, currently
-  eddsa_ed25519 (31) and eddsa_ed448 (32), MUST NOT be used for
-  key exchange.
+  described in {{ecdhe-param}}.
 
 key_exchange
 : Key exchange information.  The contents of this field are
@@ -2615,9 +2626,9 @@ point
   representation of an elliptic curve point following the conversion
   routine in Section 4.3.6 of ANSI X9.62 {{X962}}.
 
-  For ecdh_x25519 and ecdh_x448, this is raw opaque octet-string
-  representation of point (in the format those functions use), 32 octets
-  for ecdh_x25519 and 56 octets for ecdh_x448.
+  For x25519 and x448, this is raw opaque octet-string representation of
+  point (in the format those functions use), 32 octets for x25519 and 56
+  octets for x448.
 {:br }
 
 Although X9.62 supports multiple point formats, any given curve
@@ -2906,11 +2917,10 @@ certificate_request_context
   CertificateVerify messages).
 
 supported_signature_algorithms
-: A list of the hash/signature algorithm pairs that the server is
+: A list of the signature algorithms that the server is
   able to verify, listed in descending order of preference. Any
   certificates provided by the client MUST be signed using a
-  hash/signature algorithm pair found in
-  supported_signature_algorithms.
+  signature algorithm found in supported_signature_algorithms.
 
 certificate_authorities
 : A list of the distinguished names {{X501}} of acceptable
@@ -3184,18 +3194,14 @@ The following rules apply to the certificates sent by the server:
 
 - The certificate MUST allow the key to be used for signing (i.e., the
   digitalSignature bit MUST be set if the Key Usage extension is present) with
-  a signature scheme and hash algorithm pair indicated in the client's
-  "signature_algorithms" extension.
-
-- An ECDSA or EdDSA public key MUST use a curve and point format supported by the
-  client, as described in [RFC4492].
+  a signature scheme indicated in the client's "signature_algorithms" extension.
 
 - The "server_name" and "trusted_ca_keys" extensions {{RFC6066}} are used to
   guide certificate selection. As servers MAY require the presence of the "server_name"
   extension, clients SHOULD send this extension.
 
 All certificates provided by the server MUST be signed by a
-hash/signature algorithm pair that appears in the "signature_algorithms"
+signature algorithm that appears in the "signature_algorithms"
 extension provided by the client, if they are able to provide such
 a chain (see {{signature-algorithms}}).
 Certificates that are self-signed
@@ -3203,7 +3209,7 @@ or certificates that are expected to be trust anchors are not validated as
 part of the chain and therefore MAY be signed with any algorithm.
 
 If the server cannot produce a certificate chain that is signed only via the
-indicated supported pairs, then it SHOULD continue the handshake by sending
+indicated supported algorithms, then it SHOULD continue the handshake by sending
 the client a certificate chain of its choice that may include algorithms
 that are not known to be supported by the client. This fallback chain MAY
 use the deprecated SHA-1 hash algorithm only if the "signature_algorithms"
@@ -3314,28 +3320,27 @@ beginning of the input. Thus, by signing a digest of the messages, an
 implementation need only maintain one running hash per hash type for
 CertificateVerify, Finished and other messages.
 
-> If sent by a server, the signature algorithm and hash algorithm MUST be a pair offered in the
+> If sent by a server, the signature algorithm MUST be one offered in the
 client's "signature_algorithms" extension unless no valid certificate chain can be
 produced without unsupported algorithms (see {{signature-algorithms}}). Note that
 there is a possibility for inconsistencies here. For instance, the client might
-offer ECDHE_ECDSA key exchange but omit any ECDSA and EdDSA pairs from its
+offer ECDHE_ECDSA key exchange but omit any ECDSA and EdDSA values from its
 "signature_algorithms" extension. In order to negotiate correctly, the server
 MUST check any candidate cipher suites against the "signature_algorithms"
 extension before selecting them. This is somewhat inelegant but is a compromise
 designed to minimize changes to the original cipher suite design.
 
-> If sent by a client, the hash and signature algorithms used in the
+> If sent by a client, the signature algorithm used in the
 signature MUST be one of those present in the
 supported_signature_algorithms field of the CertificateRequest
 message.
 
-> In addition, the hash and signature algorithms MUST be compatible with the key
-in the sender's end-entity certificate. RSA keys MAY be used with any permitted
-hash algorithm, subject to restrictions in the certificate, if any.
-RSA signatures MUST be based on RSASSA-PSS, regardless of whether
-RSASSA-PKCS-v1_5 appears in "signature_algorithms".
-SHA-1 MUST NOT be used in any signatures in CertificateVerify,
-regardless of whether SHA-1 appears in "signature_algorithms".
+> In addition, the signature algorithm MUST be compatible with the key
+in the sender's end-entity certificate. RSA signatures MUST use an
+RSASSA-PSS algorithm, regardless of whether RSASSA-PKCS-v1_5 algorithms
+appear in "signature_algorithms". SHA-1 MUST NOT be used in any signatures in
+CertificateVerify. (Note that rsa_pkcs1_sha1 and dsa_sha1, the only defined
+SHA-1 signature algorithms, are undefined for CertificateVerify signatures.)
 
 Note: When used with non-certificate-based handshakes (e.g., PSK), the
 client's signature does not cover the server's certificate directly,
@@ -3803,9 +3808,6 @@ C, and D.
 
 #  IANA Considerations
 
-[[TODO: Rename "RSA" in TLS SignatureAlgorithm Registry
-to RSASSA-PKCS1-v1_5 ]]
-
 This document uses several registries that were originally created in
 {{RFC4346}}. IANA has updated these to reference this document. The registries
 and their allocation policies are below:
@@ -3907,6 +3909,9 @@ This document reuses two registries defined in {{RFC5246}}.
   inclusive are assigned via Specification Required {{RFC2434}}.
   Values from 224-255 (decimal) inclusive are reserved for Private
   Use {{RFC2434}}.
+
+[[TODO: This does not reuse the registry anymore. Write the appropriate
+text for the new registry.]]
 
 In addition, this document defines a new registry to be maintained
 by IANA.
