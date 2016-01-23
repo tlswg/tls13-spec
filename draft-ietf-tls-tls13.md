@@ -44,8 +44,8 @@ normative:
   RFC6367:
   RFC6655:
   RFC7251:
+  RFC7748:
   I-D.ietf-tls-chacha20-poly1305:
-  I-D.irtf-cfrg-curves:
   I-D.irtf-cfrg-eddsa:
 
   AES:
@@ -3721,7 +3721,7 @@ ECDH functions are used as follows:
   key (into scalar input) and the peer's public key (into u-coordinate point
   input). The output is used raw, with no processing.
 
-For X25519 and X448, see {{I-D.irtf-cfrg-curves}}.
+For X25519 and X448, see {{RFC7748}}.
 
 
 #  Mandatory Algorithms
@@ -3738,7 +3738,7 @@ TLS-compliant application MUST implement the following cipher suites:
 
 These cipher suites MUST support both digital signatures and key exchange
 with secp256r1 (NIST P-256) and SHOULD support key exchange with X25519
-{{I-D.irtf-cfrg-curves}}.
+{{RFC7748}}.
 
 A TLS-compliant application SHOULD implement the following cipher suites:
 
