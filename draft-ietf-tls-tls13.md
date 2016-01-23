@@ -797,7 +797,7 @@ of the digest output. Note that previous versions of TLS used RSASSA-PKCS1-v1_5,
 not RSASSA-PSS.
 
 All ECDSA computations MUST be performed according to ANSI X9.62 {{X962}}
-or its successors.  In addition, signatures must be deterministically made
+or its successors.  In addition, ECDSA signatures MUST be deterministically made
 using the scheme specified in {{RFC6979}}.  Data to be signed/verified is hashed, and the
 result run directly through the ECDSA algorithm with no additional
 hashing.  The SignatureAndHashAlgorithm parameter in the DigitallySigned
