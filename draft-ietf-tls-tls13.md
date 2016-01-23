@@ -43,6 +43,7 @@ normative:
   RFC6209:
   RFC6367:
   RFC6655:
+  RFC6979:
   RFC7251:
   I-D.ietf-tls-chacha20-poly1305:
   I-D.irtf-cfrg-curves:
@@ -796,7 +797,8 @@ of the digest output. Note that previous versions of TLS used RSASSA-PKCS1-v1_5,
 not RSASSA-PSS.
 
 All ECDSA computations MUST be performed according to ANSI X9.62 {{X962}}
-or its successors.  Data to be signed/verified is hashed, and the
+(or its successors) and ECDSA signatures MUST be deterministically made
+using the scheme specified in {{RFC6979}}.  Data to be signed/verified is hashed, and the
 result run directly through the ECDSA algorithm with no additional
 hashing.  The SignatureAndHashAlgorithm parameter in the DigitallySigned
 object indicates the digest algorithm which was used in the signature.
@@ -4179,7 +4181,7 @@ Cryptographic details:
 
 - Do you use a strong and, most importantly, properly seeded random number
   generator (see {{random-number-generation-and-seeding}}) Diffie-Hellman
-  private values, the ECDSA "k" parameter, and other security-critical values?
+  private values, and other security-critical values?
 
 
 # Backward Compatibility
