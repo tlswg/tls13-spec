@@ -43,6 +43,7 @@ normative:
   RFC6209:
   RFC6367:
   RFC6655:
+  RFC6979:
   RFC7251:
   I-D.ietf-tls-chacha20-poly1305:
   I-D.irtf-cfrg-curves:
@@ -796,7 +797,9 @@ of the digest output. Note that previous versions of TLS used RSASSA-PKCS1-v1_5,
 not RSASSA-PSS.
 
 All ECDSA computations MUST be performed according to ANSI X9.62 {{X962}}
-or its successors.  Data to be signed/verified is hashed, and the
+or its successors.  The utmost care must be taken to choose high-entropy
+"k" values; use of Deterministic ECDSA {{RFC6979}} is RECOMMENDED to ensure this.
+Data to be signed/verified is hashed, and the
 result run directly through the ECDSA algorithm with no additional
 hashing.  The SignatureAndHashAlgorithm parameter in the DigitallySigned
 object indicates the digest algorithm which was used in the signature.
@@ -4176,6 +4179,13 @@ Cryptographic details:
 -  Does your TLS client check that the Diffie-Hellman parameters sent
   by the server are acceptable (see
   {{diffie-hellman-key-exchange-with-authentication}})?
+
+- When making ECDSA signatures, consider countermeasures against failure
+  to properly choose the per-message secret "k" value.  A RECOMMENDED
+  countermeasure is described in {{RFC6979}}.
+  The impact of a failure here is key material disclosure, and in TLS the
+  keys involved are typically high value: long-term, externally certified
+  and the root of endpoint authentication.
 
 - Do you use a strong and, most importantly, properly seeded random number
   generator (see {{random-number-generation-and-seeding}}) Diffie-Hellman
