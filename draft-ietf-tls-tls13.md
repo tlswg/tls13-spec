@@ -2062,7 +2062,7 @@ random
 legacy_session_id
 : Versions of TLS before TLS 1.3 supported a session resumption
   feature which has been merged with Pre-Shared Keys in this version
-  (see {{resumption-and-psk}}).
+  (see {{resumption-and-pre-shared-key-psk}}).
   This field MUST be ignored by a server negotiating TLS 1.3 and
   SHOULD be set as a zero length vector (i.e., a single zero byte
   length field) by clients which do not have a cached session ID
