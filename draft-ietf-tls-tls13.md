@@ -1241,7 +1241,7 @@ cipher spec
 
 resumption master secret
 : a secret shared between the client and server that can be used
-  as a PSK in future connections.
+  as a pre-shared symmetric key (PSK) in future connections.
 {:br }
 
 These items are then used to create security parameters for use by the record
@@ -1825,7 +1825,7 @@ is compromised and client authentication is used, then the attacker
 can impersonate the client on subsequent connections.
 
 
-### Resumption and PSK
+### Resumption and Pre-Shared Key (PSK)
 
 Finally, TLS provides a pre-shared key (PSK) mode which allows a
 client and server who share an existing secret (e.g., a key
