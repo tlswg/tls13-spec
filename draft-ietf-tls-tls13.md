@@ -3586,7 +3586,7 @@ the sources from the table above.
   0-RTT handshake messages here and below?.
   https://github.com/tlswg/tls13-spec/issues/351
   ]] At this point,
-  SS, ES, xSS, xES, mSS, and mSS SHOULD be securely deleted,
+  SS, ES, xSS, xES, mSS, and mES SHOULD be securely deleted,
   along with any ephemeral (EC)DH secrets.
 
   7. resumption_secret = HKDF-Expand-Label(master_secret,
@@ -3681,7 +3681,7 @@ The handshake hash is defined as the hash of all handshake messages
 sent or received, starting at ClientHello up to the present time,
 with the exception of the client's 0-RTT authentication messages
 (Certificate, CertificateVerify, and Finished) including the type and
-length fields of the handshake messages. This is the concatenation
+length fields of the handshake messages. This is the concatenation of
 the exchanged Handshake structures in plaintext form (even if
 they were encrypted on the wire).
 [[OPEN ISSUE: See https://github.com/tlswg/tls13-spec/issues/351
