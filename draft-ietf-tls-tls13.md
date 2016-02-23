@@ -3668,8 +3668,8 @@ The following table indicates the purpose values for each type of key:
 |:-----------------|:-------------------|
 | Client Write Key | "client write key" |
 | Server Write Key | "server write key" |
-| Client Write IV  | "client write IV"  |
-| Server Write IV  | "server write IV"  |
+| Client Write IV  | "client write iv"  |
+| Server Write IV  | "server write iv"  |
 
 All the traffic keying material is recomputed whenever the
 underlying Secret changes (e.g., when changing from the handshake to
