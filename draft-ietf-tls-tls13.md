@@ -3427,26 +3427,24 @@ suite.
 
 %%% Ticket Establishment
       struct {
-          uint32 ticket_lifetime_hint;
+          uint32 ticket_lifetime;
           opaque ticket<0..2^16-1>;
       } NewSessionTicket;
 
-ticket_lifetime_hint
-: Indicates the lifetime
-  in seconds as a 32-bit unsigned integer in network byte order from
-  the time of ticket issuance. A value of zero is reserved to indicate
-  that the lifetime of the ticket is unspecified.
+ticket_lifetime
+: Indicates the lifetime in seconds as a 32-bit unsigned integer in
+  network byte order from the time of ticket issuance.
+  Servers MUST NOT use any value more than 604800 seconds (7 days).
+  The value of zero indicates that the ticket should be discarded
+  immediately. Clients MUST NOT cache session tickets for longer than
+  7 days, regardless of the ticket_lifetime. It MAY delete the ticket
+  earlier based on local policy. A server MAY treat a ticket as valid
+  for a shorter period of time than what is stated in the
+  ticket_lifetime.
 
 ticket
 : The value of the ticket to be used as the PSK identifier.
 {:br }
-
-The ticket lifetime hint is informative only.
-A client SHOULD delete the ticket and associated
-state when the time expires.  It MAY delete the ticket earlier based
-on local policy.  A server MAY treat a ticket as valid for a shorter
-or longer period of time than what is stated in the
-ticket_lifetime_hint.
 
 The ticket itself is an opaque label. It MAY either be a database
 lookup key or a self-encrypted and self-authenticated value. Section
