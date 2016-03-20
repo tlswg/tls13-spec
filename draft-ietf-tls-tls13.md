@@ -2429,9 +2429,10 @@ willing to negotiate TLS 1.2 MUST behave in accordance with the requirements of
 
 * In TLS 1.2, the extension contained hash/signature pairs. The pairs are
   encoded in two octets, so SignatureAlgorithm values have been allocated to
-  align with TLS 1.2's encoding. Unallocated pairs are deprecated as of TLS
-  1.3. These values MUST NOT be offered or negotiated by any implementation.
-  Note that accepting MD5 hashes, in particular, has security concerns {{SLOTH}}.
+  align with TLS 1.2's encoding. Some legacy pairs are left unallocated. These
+  algorithms are deprecated as of TLS 1.3. They MUST NOT be offered or
+  negotiated by any implementation. In particular, MD5 {{SLOTH}} and SHA-224
+  MUST NOT be used.
 
 * ecdsa_secp256r1_sha256, etc., align with TLS 1.2's ECDSA hash/signature pairs.
   However, the old semantics did not constrain the signing curve.
