@@ -1828,7 +1828,7 @@ is compromised and client authentication is used, then the attacker
 can impersonate the client on subsequent connections.
 
 
-### Resumption and Pre-Shared Key (PSK)
+### Resumption and Pre-Shared Key (PSK) {#resumption-and-psk}
 
 Finally, TLS provides a pre-shared key (PSK) mode which allows a
 client and server who share an existing secret (e.g., a key
@@ -2069,7 +2069,7 @@ random
 legacy_session_id
 : Versions of TLS before TLS 1.3 supported a session resumption
   feature which has been merged with Pre-Shared Keys in this version
-  (see {{resumption-and-pre-shared-key-psk}}).
+  (see {{resumption-and-psk}}).
   This field MUST be ignored by a server negotiating TLS 1.3 and
   SHOULD be set as a zero length vector (i.e., a single zero byte
   length field) by clients which do not have a cached session ID
