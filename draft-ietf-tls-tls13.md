@@ -142,7 +142,7 @@ informative:
          - name: Hal Finney
        date: 2006-08-27
        target: https://www.ietf.org/mail-archive/web/openpgp/current/msg00999.html
-       
+
   GCM:
        title: "Recommendation for Block Cipher Modes of Operation: Galois/Counter Mode (GCM) and GMAC"
        date: 2007-11
@@ -981,7 +981,7 @@ sequence number
   The sequence number is incremented after each record: specifically,
   the first record transmitted under a particular connection state and
   record key MUST use sequence number 0.
-  
+
   Sequence numbers are of type uint64 and MUST NOT exceed 2^64-1.
   Sequence numbers do not wrap.  If a TLS implementation would need to
   wrap a sequence number, it MUST either rekey ({{key-update}}) or
@@ -1554,11 +1554,11 @@ Ephemeral Secret (ES): A secret which is derived from fresh (EC)DHE
 Static Secret (SS): A secret which may be derived from static or
    semi-static keying material, such as a pre-shared key or the
    server's semi-static (EC)DH share.
-   
-Master Secret (MS): A secret derived from both the static 
+
+Master Secret (MS): A secret derived from both the static
    and the ephemeral secret.
 
-In some cases, as with the DH handshake shown in {{tls-full}}, 
+In some cases, as with the DH handshake shown in {{tls-full}},
 the ephemeral and shared
 secrets are the same, but having both allows for a uniform key
 derivation scheme for all cipher modes.
@@ -1926,17 +1926,17 @@ processed and transmitted as specified by the current active session state.
            HandshakeType msg_type;    /* handshake type */
            uint24 length;             /* bytes in message */
            select (HandshakeType) {
-               case client_hello:        ClientHello;
-               case server_hello:        ServerHello;
-               case hello_retry_request: HelloRetryRequest;
-               case encrypted_extensions: EncryptedExtensions;
-               case certificate_request: CertificateRequest;
-               case server_configuration:ServerConfiguration;
-               case certificate:         Certificate;
-               case certificate_verify:  CertificateVerify;
-               case finished:            Finished;
-               case session_ticket:      NewSessionTicket;
-               case key_update:          KeyUpdate;
+               case client_hello:          ClientHello;
+               case server_hello:          ServerHello;
+               case hello_retry_request:   HelloRetryRequest;
+               case encrypted_extensions:  EncryptedExtensions;
+               case certificate_request:   CertificateRequest;
+               case server_configuration:  ServerConfiguration;
+               case certificate:           Certificate;
+               case certificate_verify:    CertificateVerify;
+               case finished:              Finished;
+               case session_ticket:        NewSessionTicket;
+               case key_update:            KeyUpdate;
            } body;
        } Handshake;
 
@@ -2978,10 +2978,10 @@ Structure of this Message:
 
 %%% Server Parameters Messages
           enum { (65535) } ConfigurationExtensionType;
-          
+
           enum { client_authentication(1), early_data(2),
                  client_authentication_and_data(3), (255) } EarlyDataType;
-                 
+
           struct {
               ConfigurationExtensionType extension_type;
               opaque extension_data<0..2^16-1>;
@@ -3594,7 +3594,7 @@ the sources from the table above.
                                          "exporter master secret",
                                          handshake_hash, L)
 
-  
+
   Where handshake_hash contains the entire handshake up to
   and including the client's Finished, but not including
   any 0-RTT handshake messages or post-handshake messages.
