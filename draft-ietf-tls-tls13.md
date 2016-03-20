@@ -2230,9 +2230,9 @@ The extension format is:
        enum {
            supported_groups(10),
            signature_algorithms(13),
-           early_data(TBD),
-           pre_shared_key(TBD),
-           key_share(TBD),
+           key_share(40),
+           pre_shared_key(41),
+           early_data(42),
            (65535)
        } ExtensionType;
 
