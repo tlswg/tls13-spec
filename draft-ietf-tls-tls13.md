@@ -772,7 +772,7 @@ current session state (see {{connection-states}}).
 A digitally-signed element is encoded as a struct DigitallySigned:
 
        struct {
-          SignatureAlgorithm algorithm;
+          SignatureScheme algorithm;
           opaque signature<0..2^16-1>;
        } DigitallySigned;
 
@@ -2355,16 +2355,15 @@ The "extension_data" field of this extension contains a
            obsolete_RESERVED (0x0604..0x06FF),
            private_use (0xFE00..0xFFFF),
            (0xFFFF)
-       } SignatureAlgorithm;
+       } SignatureScheme;
 
-       SignatureAlgorithm supported_signature_algorithms<2..2^16-2>;
+       SignatureScheme supported_signature_algorithms<2..2^16-2>;
 
-[[TODO: IANA considerations for new SignatureAlgorithm scheme]]
+Note: This production is named "SignatureScheme" because there is already
+a SignatureAlgorithm type in TLS 1.2. We use the term "signature algorithm"
+throughout the text.
 
-[[TODO: It's unfortunate that this collides with the old one. Maybe
-SignatureScheme?]]
-
-Each SignatureAlgorithm value lists a single signature algorithm that the
+Each SignatureScheme value lists a single signature algorithm that the
 client is willing to verify. The values are indicated in descending order
 of preference. Note that a signature algorithm takes as input an
 arbitrary-length message, rather than a digest. Algorithms which
@@ -2434,7 +2433,7 @@ willing to negotiate TLS 1.2 MUST behave in accordance with the requirements of
 * TLS 1.2 ClientHellos may omit this extension.
 
 * In TLS 1.2, the extension contained hash/signature pairs. The pairs are
-  encoded in two octets, so SignatureAlgorithm values have been allocated to
+  encoded in two octets, so SignatureScheme values have been allocated to
   align with TLS 1.2's encoding. Some legacy pairs are left unallocated. These
   algorithms are deprecated as of TLS 1.3. They MUST NOT be offered or
   negotiated by any implementation. In particular, MD5 {{SLOTH}} and SHA-224
@@ -2498,7 +2497,7 @@ secp256r1, etc.
 : Indicates support of the corresponding named curve.
   Note that some curves are also recommended in ANSI
   X9.62 {{X962}} and FIPS 186-4 {{DSS}}. Others are recommended
-  in {{I-D.irtf-cfrg-curves}}.
+  in {{!I-D.irtf-cfrg-curves}}.
   Values 0xFE00 through 0xFEFF are reserved for private use.
 
 ffdhe2048, etc.
@@ -2910,7 +2909,7 @@ Structure of this message:
 
        struct {
            opaque certificate_request_context<0..2^8-1>;
-           SignatureAndHashAlgorithm
+           SignatureScheme
              supported_signature_algorithms<2..2^16-2>;
            DistinguishedName certificate_authorities<0..2^16-1>;
            CertificateExtension certificate_extensions<0..2^16-1>;
@@ -3897,29 +3896,17 @@ is listed below:
 | early_data [[this document]]             |         Yes |     Clear |
 
 
-This document reuses two registries defined in {{RFC5246}}.
+In addition, this document defines two new registries to be maintained
+by IANA
 
--  TLS SignatureAlgorithm Registry: The registry has been initially
-  populated with the values described in {{signature-algorithms}}.  Future
-  values in the range 0-63 (decimal) inclusive are assigned via
-  Standards Action {{RFC2434}}.  Values in the range 64-223 (decimal)
-  inclusive are assigned via Specification Required {{RFC2434}}.
-  Values from 224-255 (decimal) inclusive are reserved for Private
-  Use {{RFC2434}}.
-
--  TLS HashAlgorithm Registry: The registry has been initially
-  populated with the values described in {{signature-algorithms}}.  Future
-  values in the range 0-63 (decimal) inclusive are assigned via
-  Standards Action {{RFC2434}}.  Values in the range 64-223 (decimal)
-  inclusive are assigned via Specification Required {{RFC2434}}.
-  Values from 224-255 (decimal) inclusive are reserved for Private
-  Use {{RFC2434}}.
-
-[[TODO: This does not reuse the registry anymore. Write the appropriate
-text for the new registry.]]
-
-In addition, this document defines a new registry to be maintained
-by IANA.
+-  TLS SignatureScheme Registry: Values with the first byte in the range
+  0-254 (decimal) are assigned via Specification Required {{RFC2434}}.
+  Values with the first byte 255 (decimal) are reserved for Private
+  Use {{RFC2434}}. This registry SHALL have a "Recommended" column.
+  The registry [shall be/ has been] initially populated with the values described in
+  {{signature-algorithms}}. The following values SHALL be marked as
+  "Recommended": ecdsa_secp256r1_sha256, ecdsa_secp384r1_sha384,
+  rsa_pss_sha256, rsa_pss_sha384, rsa_pss_sha512, ed25519.
 
 - TLS ConfigurationExtensionType Registry: Values with the first byte in the range
   0-254 (decimal) are assigned via Specification Required {{RFC2434}}.
