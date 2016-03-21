@@ -3428,13 +3428,14 @@ traffic key.
 
 #### New Session Ticket Message
 
-After the server has received the client Finished message, it MAY send
+At any time after the server has received the client Finished message, it MAY send
 a NewSessionTicket message.  This message creates a pre-shared key
 (PSK) binding between the resumption master secret and the ticket
 label. The client MAY use this PSK for future handshakes by including
 it in the "pre_shared_key" extension in its ClientHello
 ({{pre-shared-key-extension}}) and supplying a suitable PSK cipher
-suite.
+suite. Servers may send multiple tickets on a single connection, for
+instance after post-handshake authentication.
 
 %%% Ticket Establishment
       struct {
@@ -3460,6 +3461,7 @@ ticket
 The ticket itself is an opaque label. It MAY either be a database
 lookup key or a self-encrypted and self-authenticated value. Section
 4 of {{RFC5077}} describes a recommended ticket construction mechanism.
+
 
 [[TODO: Should we require that tickets be bound to the existing
 symmetric cipher suite. See the TODO above about early_data and
