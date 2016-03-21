@@ -3542,6 +3542,12 @@ the traffic keys (though not the traffic secret) for the previous
 generation of keys until it receives the KeyUpdate from the other
 side.
 
+Both sender and receiver must encrypt their KeyUpdate 
+messages with the old keys. Additionaly, both sides MUST enforce that 
+a KeyUpdate with the old key is received before accepting any messages
+encrypted with the new key. Failure to do so may allow message truncation
+attacks.
+
 
 #  Cryptographic Computations
 
