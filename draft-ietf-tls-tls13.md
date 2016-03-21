@@ -4238,6 +4238,13 @@ deployments, all implementations SHOULD support validation of certification path
 based on the expectations in this document, even when handling prior TLS versions'
 handshakes. (see {{server-certificate-selection}})
 
+TLS 1.2 and prior supported an "Extended Master Secret" {{?RFC7627}} extension
+which digested large parts of the handshake transcript into the master secret.
+Because TLS 1.3 always hashes in the transcript up to the server CertificateVerify,
+implementations which support both TLS 1.3 and earlier versions SHOULD
+indicate the use of the Extended Master Secret extension in their APIs
+whenever TLS 1.3 is used.
+
 ## Negotiating with an older server
 
 A TLS 1.3 client who wishes to negotiate with such older servers will send a
