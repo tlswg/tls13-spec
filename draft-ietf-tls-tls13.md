@@ -4017,7 +4017,8 @@ or will be used for interop testing and therefore are likely to be
 assigned.
 
 Note: ECDHE AES GCM was not yet standards track prior to the publication of
-this specification. This document promotes it to Standards Track.
+this specification. This document promotes the above-listed ciphers to
+standards track.
 
 The following is a list of standards track ephemeral pre-shared key cipher
 suites which are currently available in TLS 1.3:
