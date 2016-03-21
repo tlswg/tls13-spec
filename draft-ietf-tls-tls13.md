@@ -3674,7 +3674,7 @@ each class of traffic keys:
 | 0-RTT Handshake   | xSS | "early handshake key expansion" | ClientHello + ServerConfiguration + Server Certificate |
 | 0-RTT Application | xSS | "early application data key expansion" | ClientHello + ServerConfiguration + Server Certificate |
 | Handshake         | xES | "handshake key expansion" | ClientHello... ServerHello |
-| Application Data  | traffic secret | "application data key expansion" | ClientHello... Server Finished |
+| Application Data  | traffic secret | "application data key expansion" | ClientHello... Server CertificateVerify |
 
 The following table indicates the purpose values for each type of key:
 
