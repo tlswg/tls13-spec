@@ -3691,7 +3691,9 @@ application data keys or upon a key update).
 
 ###  The Handshake Hash
 
-The handshake hash is defined as the hash of all handshake messages
+The handshake hash ("handshake_hash")
+is defined as the hash (using the Hash algorithm
+for the handshake) of all handshake messages
 sent or received, starting at ClientHello up to the present time,
 with the exception of the client's 0-RTT authentication messages
 (Certificate, CertificateVerify, and Finished) including the type and
