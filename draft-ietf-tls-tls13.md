@@ -3316,8 +3316,11 @@ Structure of this message:
 
 > Where hashed_data is the hash output described in
 {{authentication-messages}}, namely Hash(Handshake Context +
-Certificate).
+Certificate). For concreteness, this means that the value that is
+signed is:
 
+   padding + context_string + 00 + hashed_data
+   
 > The context string for a server signature is "TLS 1.3, server CertificateVerify"
 and for a client signature is "TLS 1.3, client CertificateVerify". A
 hash of the handshake messages is signed rather than the messages themselves
