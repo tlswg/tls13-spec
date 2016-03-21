@@ -4508,6 +4508,10 @@ Archives of the list can be found at:
   Columbia University \\
   smb@cs.columbia.edu
 
+* David Benjamin \\
+  Google \\
+  davidben@google.com
+  
 * Benjamin Beurdouche
 
 * Karthikeyan Bhargavan (co-author of [RFC7627]) \\
@@ -4635,6 +4639,10 @@ Archives of the list can be found at:
   Microsoft, Inc. \\
   dansimon@microsoft.com
 
+* Nick Sullivan \\
+  CloudFlare Inc. \\
+  nick@cloudflare.com
+
 * Bjoern Tackmann \\
   University of California, San Diego \\
   btackmann@eng.ucsd.edu
@@ -4652,7 +4660,3 @@ Archives of the list can be found at:
 * Tim Wright \\
   Vodafone \\
   timothy.wright@vodafone.com
-
-* Nick Sullivan \\
-  CloudFlare Inc. \\
-  nick@cloudflare.com
