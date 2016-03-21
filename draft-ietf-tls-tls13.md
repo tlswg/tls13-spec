@@ -337,6 +337,26 @@ server: The endpoint which did not initiate the TLS connection.
 
 ##  Major Differences from TLS 1.2
 
+draft-12
+
+- Provide a list of the PSK cipher sutes.
+
+- Remove the ability for the ServerHello to have no extensions
+  (this aligns the syntax with the text).
+
+- Clarify that the server can send application data after its first
+  flight (0.5 RTT data)
+
+- Revise signature algorithm negotiation to group hash, signature
+  algorithm, and curve together. This is backwards compatible.
+
+- Make ticket lifetime mandatory and limit it to a week.
+
+- Make the purpose strings lower-case. This matches how people
+  are implementing for interop.
+
+- Editorial cleanup
+
 draft-11
 
 - Port the CFRG curves & signatures work from RFC4492bis.
