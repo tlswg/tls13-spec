@@ -4624,3 +4624,7 @@ Archives of the list can be found at:
 * Tim Wright \\
   Vodafone \\
   timothy.wright@vodafone.com
+
+* Nick Sullivan \\
+  CloudFlare Inc. \\
+  nick@cloudflare.com
