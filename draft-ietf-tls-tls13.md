@@ -2343,32 +2343,31 @@ The "extension_data" field of this extension contains a
 
 %%% Signature Algorithm Extension
        enum {
-           // RSASSA-PKCS-v1_5 algorithms.
+           // RSASSA-PKCS-v1_5 algorithms
            rsa_pkcs1_sha1 (0x0201),
            rsa_pkcs1_sha256 (0x0401),
            rsa_pkcs1_sha384 (0x0501),
            rsa_pkcs1_sha512 (0x0601),
 
-           dsa_sha1_RESERVED (0x0202),
-           dsa_sha256_RESERVED (0x0402),
-           dsa_sha384_RESERVED (0x0502),
-           dsa_sha512_RESERVED (0x0602),
-
-           // ECDSA algorithms.
+           // ECDSA algorithms
            ecdsa_secp256r1_sha256 (0x0403),
            ecdsa_secp384r1_sha384 (0x0503),
            ecdsa_secp521r1_sha512 (0x0603),
 
-           // RSASSA-PSS algorithms.
+           // RSASSA-PSS algorithms
            rsa_pss_sha256 (0x0700),
            rsa_pss_sha384 (0x0701),
            rsa_pss_sha512 (0x0702),
 
-           // EdDSA algorithms.
+           // EdDSA algorithms
            ed25519 (0x0703),
            ed448 (0x0704),
 
-           // Reserved Code Points.
+           // Reserved Code Points
+           dsa_sha1_RESERVED (0x0202),
+           dsa_sha256_RESERVED (0x0402),
+           dsa_sha384_RESERVED (0x0502),
+           dsa_sha512_RESERVED (0x0602),
            obsolete_RESERVED (0x0000..0x0200),
            obsolete_RESERVED (0x0203..0x0400),
            obsolete_RESERVED (0x0404..0x0500),
