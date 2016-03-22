@@ -3753,6 +3753,19 @@ ECDH functions are used as follows:
 
 For X25519 and X448, see {{RFC7748}}.
 
+### Exporter Definition
+
+{{!RFC5705}} defines keying material exporters for TLS in terms of
+the TLS PRF. This document replaces the PRF with HKDF, thus requiring
+a new construction. The exporter interface remains the same, however
+the value is computed as:
+
+    HKDF-Expand-Label(HKDF-Extract(0, exporter_secret), 
+                      label, context_value, length)
+
+Note: the inner HKDF-Extract is strictly unnecessary, but it maintains
+the invariant that HKDF Extract and Expand calls are paired.
+
 
 #  Mandatory Algorithms
 
