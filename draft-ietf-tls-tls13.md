@@ -355,6 +355,8 @@ draft-12
 - Make the purpose strings lower-case. This matches how people
   are implementing for interop.
 
+- Define exporters.
+
 - Editorial cleanup
 
 draft-11
