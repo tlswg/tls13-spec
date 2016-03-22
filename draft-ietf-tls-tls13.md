@@ -2455,7 +2455,7 @@ willing to negotiate TLS 1.2 MUST behave in accordance with the requirements of
 #### Negotiated Groups
 
 When sent by the client, the "supported_groups" extension indicates
-the (EC)DHE groups which the client supports, ordered from most preferred
+the named groups which the client supports, ordered from most preferred
 to least preferred.
 
 Note: In versions of TLS prior to TLS 1.3, this extension was named
@@ -3329,8 +3329,9 @@ Structure of this message:
 Certificate). For concreteness, this means that the value that is
 signed is:
 
-   padding + context_string + 00 + hashed_data
-   
+~~~~
+       padding + context_string + 00 + hashed_data
+~~~~
 > The context string for a server signature is "TLS 1.3, server CertificateVerify"
 and for a client signature is "TLS 1.3, client CertificateVerify". A
 hash of the handshake messages is signed rather than the messages themselves
@@ -3755,7 +3756,7 @@ ECDH functions are used as follows:
 
 For X25519 and X448, see {{RFC7748}}.
 
-### Exporter Definition
+### Exporters
 
 {{!RFC5705}} defines keying material exporters for TLS in terms of
 the TLS PRF. This document replaces the PRF with HKDF, thus requiring
