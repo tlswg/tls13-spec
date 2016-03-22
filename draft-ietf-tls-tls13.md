@@ -2397,18 +2397,6 @@ rsa_pkcs1_sha1, etc.
   {{server-certificate-selection}}) and are not defined for use in signed
   TLS handshake messages (see {{digital-signing}}).
 
-dsa_sha1, etc.
-: Indicates a signature algorithm using DSA {{DSS} with the corresponding
-  hash algorithm as defined in {{SHS}}. These values
-  refer solely to signatures which appear in certificates (see
-  {{server-certificate-selection}}) and are not defined for use in signed
-  TLS handshake messages (see {{digital-signing}}).
-
-: DSA is deprecated as of TLS 1.3. These values SHOULD NOT be offered or
-  negotiated by any implementation. It is believed that the vast majority of
-  implementations will not need to offer these values in order to interoperate
-  with lesser TLS versions.
-
 ecdsa_secp256r1_sha256, etc.
 : Indicates a signature algorithm using ECDSA {{ECDSA}}, the corresponding
   curve as defined in ANSI X9.62 {{X962}} and FIPS 186-4 {{DSS}}, and the
