@@ -2349,11 +2349,10 @@ The "extension_data" field of this extension contains a
            rsa_pkcs1_sha384 (0x0501),
            rsa_pkcs1_sha512 (0x0601),
 
-           // DSA algorithms (deprecated).
-           dsa_sha1 (0x0202),
-           dsa_sha256 (0x0402),
-           dsa_sha384 (0x0502),
-           dsa_sha512 (0x0602),
+           dsa_sha1_RESERVED (0x0202),
+           dsa_sha256_RESERVED (0x0402),
+           dsa_sha384_RESERVED (0x0502),
+           dsa_sha512_RESERVED (0x0602),
 
            // ECDSA algorithms.
            ecdsa_secp256r1_sha256 (0x0403),
