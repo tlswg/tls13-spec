@@ -3531,8 +3531,8 @@ the traffic keys (though not the traffic secret) for the previous
 generation of keys until it receives the KeyUpdate from the other
 side.
 
-Both sender and receiver must encrypt their KeyUpdate 
-messages with the old keys. Additionally, both sides MUST enforce that 
+Both sender and receiver must encrypt their KeyUpdate
+messages with the old keys. Additionally, both sides MUST enforce that
 a KeyUpdate with the old key is received before accepting any messages
 encrypted with the new key. Failure to do so may allow message truncation
 attacks.
@@ -3761,7 +3761,7 @@ the TLS PRF. This document replaces the PRF with HKDF, thus requiring
 a new construction. The exporter interface remains the same, however
 the value is computed as:
 
-    HKDF-Expand-Label(HKDF-Extract(0, exporter_secret), 
+    HKDF-Expand-Label(HKDF-Extract(0, exporter_secret),
                       label, context_value, length)
 
 Note: the inner HKDF-Extract is strictly unnecessary, but it maintains
@@ -4519,7 +4519,7 @@ Archives of the list can be found at:
 * David Benjamin \\
   Google \\
   davidben@google.com
-  
+
 * Benjamin Beurdouche
 
 * Karthikeyan Bhargavan (co-author of [RFC7627]) \\
