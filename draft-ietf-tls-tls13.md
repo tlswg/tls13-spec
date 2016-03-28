@@ -1106,7 +1106,7 @@ and in TLS 1.3 the additional data input is empty (zero length).
 opaque_type
 : The outer opaque_type field of a TLSCiphertext record is always set to the
   value 23 (application_data) for outward compatibility with
-  middleboxes that used to parse previous versions of TLS.  The
+  middleboxes accustomed to parsing previous versions of TLS.  The
   actual content type of the record is found in fragment.type after
   decryption.
 
@@ -3531,7 +3531,7 @@ the traffic keys (though not the traffic secret) for the previous
 generation of keys until it receives the KeyUpdate from the other
 side.
 
-Both sender and receiver must encrypt their KeyUpdate
+Both sender and receiver MUST encrypt their KeyUpdate
 messages with the old keys. Additionally, both sides MUST enforce that
 a KeyUpdate with the old key is received before accepting any messages
 encrypted with the new key. Failure to do so may allow message truncation
