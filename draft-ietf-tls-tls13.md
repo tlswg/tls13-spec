@@ -337,6 +337,10 @@ server: The endpoint which did not initiate the TLS connection.
 
 ##  Major Differences from TLS 1.2
 
+draft-13
+
+- Add elapsed time to early_data extension to limit replay window.
+
 draft-12
 
 - Provide a list of the PSK cipher sutes.
@@ -2721,6 +2725,7 @@ The "extension_data" field of this extension contains an
            select (Role) {
                case client:
                    opaque configuration_id<1..2^16-1>;
+		   uint32 elapsed_time;
                    CipherSuite cipher_suite;
                    Extension extensions<0..2^16-1>;
                    opaque context<0..255>;
@@ -2732,6 +2737,13 @@ The "extension_data" field of this extension contains an
 
 configuration_id
 : The label for the configuration in question.
+
+elapsed_time
+
+: The time elapsed since the client learned about the server
+  configuration that it is using, in seconds.  This value can be used
+  by the server to limit the time over which early data can be
+  replayed.  See {{replay-time}} for details.
 
 cipher_suite
 : The cipher suite which the client is using to encrypt the early data.
@@ -2787,6 +2799,10 @@ Prior to accepting the "early_data" extension, the server
 MUST perform the following checks:
 
 - The configuration_id matches a known server configuration.
+
+- The elapsed_time is within a small tolerance of the time since the
+  server configuration was provided to the client.  See
+  {{replay-time}}.
 
 - The client's cryptographic determining parameters match the
   parameters that the server has negotiated based on the
@@ -2848,9 +2864,9 @@ values:
   "pre_shared_key" extension (indicating the PSK the
   client is using).
 
-##### Replay Properties
+##### Replay Properties {{replay-time}}
 
-As noted in {{zero-rtt-exchange}}, TLS does not provide any
+As noted in {{zero-rtt-exchange}}, TLS provides only a limited
 inter-connection mechanism for replay protection for data sent by the
 client in the first flight.  As a special case, implementations where
 the server configuration, is delivered out of band (as has been
@@ -2858,6 +2874,35 @@ proposed for DTLS-SRTP {{RFC5763}}), MAY use a unique server
 configuration identifier for each connection, thus preventing
 replay. Implementations are responsible for ensuring uniqueness of the
 identifier in this case.
+
+The elapsed_time field in the early_data extension SHOULD be used by
+servers to limit the time over which the first flight might be
+replayed.  A server can store the time at which it sends a server
+configuration to a client, or encode the time in a ticket.  Then, each
+time it receives an early_data extension, it can check to see if the
+value used by the client matches its expectations.
+
+The elapsed_time value provided by the client will be shorter than the
+actual time elapsed on the server by a single round trip time.  This
+difference is comprised of the delay in sending the NewSessionTicket
+message to the client, plus the time taken to send the ClientHello to
+the server.  For this reason, a server SHOULD measure the round trip
+time prior to sending the NewSessionTicket message and account for
+that in the value it saves.
+
+There are several potential sources of error that make an exact
+measurement of time difficult.  Variations in client and server clocks
+are likely to be minimal, outside of gross time corrections.  Network
+propagation delays are most likely causes of a mismatch in legitimate
+values for elapsed time.  Both the NewSessionTicket and ClientHello
+messages might be retransmitted and therefore delayed, which might be
+hidden by TCP.
+
+A small allowance for errors in clocks and variations in measurements
+is advisable.  However, any allowance also increases the opportunity
+for replay.  In this case, it is better to reject early data than to
+risk greater exposure to replay attacks.
+
 
 ### Server Parameters
 
