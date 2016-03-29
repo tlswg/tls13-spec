@@ -2741,9 +2741,9 @@ configuration_id
 elapsed_time
 
 : The time elapsed since the client learned about the server
-  configuration that it is using, in seconds.  This value can be used
-  by the server to limit the time over which early data can be
-  replayed.  See {{replay-time}} for details.
+  configuration that it is using, in milliseconds.  This value can
+  be used by the server to limit the time over which early data can
+  be replayed.  See {{replay-time}} for details.
 
 cipher_suite
 : The cipher suite which the client is using to encrypt the early data.
