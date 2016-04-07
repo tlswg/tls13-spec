@@ -4285,6 +4285,9 @@ client agrees to use this version, the negotiation will proceed as appropriate
 for the negotiated protocol. A client resuming a session SHOULD initiate the
 connection using the version that was previously negotiated.
 
+Note that a 0-RTT TLS 1.3 ClientHello is not compatible with older servers.
+See {{zero-rtt-backwards-compatibility}}.
+
 If the version chosen by the server is not supported by the client (or not
 acceptable), the client MUST send a "protocol_version" alert message and close
 the connection.
@@ -4317,6 +4320,31 @@ Note that earlier versions of TLS did not clearly specify the record layer
 version number value in all cases (TLSPlaintext.record_version). Servers
 will receive various TLS 1.x versions in this field, however its value
 MUST always be ignored.
+
+
+## Zero-RTT backwards compatibility
+
+A TLS 1.3 ClientHello with 0-RTT data is not compatible with older servers
+implementing previous versions of TLS. This can cause compatibility issues if a
+client first connects to a 0-RTT-capable TLS 1.3 server and later to an older
+server, both behind the same service. For example, a multi-server deployment
+may deploy TLS 1.3 gradually with some servers implementing TLS 1.3 and some
+implementing TLS 1.2. This may also occur if a TLS 1.3 deployment gets reverted
+to TLS 1.2.
+
+If a TLS 1.3 client sends a ClientHello with 0-RTT to an older server, the
+server will respond with a ServerHello containing an older version number.
+(The handshake will later fail at the 0-RTT data.) Clients which accept older
+versions of TLS SHOULD then retry the connection advertising TLS 1.3 without
+offering 0-RTT.
+
+Note that it is not necessary to retry based on network error or arbitrary
+protocol error. It is also not necessary to advertise lower versions of
+TLS.
+
+Services in transition from an older TLS version SHOULD ensure that all older
+servers have upgraded to TLS 1.3 without 0-RTT and wait before there is minimal
+chance of rollback before offering 0-RTT on any server.
 
 
 ## Backwards Compatibility Security Restrictions
