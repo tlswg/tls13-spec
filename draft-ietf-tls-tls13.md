@@ -2571,7 +2571,7 @@ The "extension_data" field of this extension contains a
        struct {
            select (role) {
                case client:
-                   KeyShareEntry client_shares<4..2^16-1>;
+                   KeyShareEntry client_shares<0..2^16-1>;
 
                case server:
                    KeyShareEntry server_share;
