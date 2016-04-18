@@ -4338,8 +4338,8 @@ versions of TLS MAY retry the connection without 0-RTT in response to this
 ServerHello. It is NOT RECOMMENDED to retry the connection in response to a
 more generic error or advertise lower versions of TLS.
 
-Services with multiple servers SHOULD ensure a stable deployment of TLS 1.3
-without 0-RTT prior to enabling 0-RTT.
+Services with multiple servers are RECOMMENDED to ensure a stable deployment of
+TLS 1.3 without 0-RTT prior to enabling 0-RTT.
 
 ## Backwards Compatibility Security Restrictions
 
