@@ -4324,28 +4324,22 @@ MUST always be ignored.
 
 ## Zero-RTT backwards compatibility
 
-A TLS 1.3 ClientHello with 0-RTT data is not compatible with older servers
-implementing previous versions of TLS. This can cause compatibility issues if a
-client first connects to a 0-RTT-capable TLS 1.3 server and later to an older
-server, both behind the same service. For example, a multi-server deployment
-may deploy TLS 1.3 gradually with some servers implementing TLS 1.3 and some
-implementing TLS 1.2. This may also occur if a TLS 1.3 deployment gets reverted
-to TLS 1.2.
+A TLS 1.3 ClientHello with 0-RTT data is not compatible with older servers.
+This can cause compatibility issues if a client attempts to use 0-RTT with a
+server cluster that contains servers without TLS 1.3 support. For example, a
+multi-server deployment may deploy TLS 1.3 gradually with some servers
+implementing TLS 1.3 and some implementing TLS 1.2. This may also occur if a
+TLS 1.3 deployment gets reverted to TLS 1.2.
 
 If a TLS 1.3 client sends a ClientHello with 0-RTT to an older server, the
-server will respond with a ServerHello containing an older version number.
-(The handshake will later fail at the 0-RTT data.) Clients which accept older
-versions of TLS SHOULD then retry the connection advertising TLS 1.3 without
-offering 0-RTT.
+server will respond with a ServerHello containing an older version number. The
+handshake will later fail at the 0-RTT data. Clients which accept older
+versions of TLS MAY retry the connection without 0-RTT in response to this
+ServerHello. It is NOT RECOMMENDED to retry the connection in response to a
+more generic error or advertise lower versions of TLS.
 
-Note that it is not necessary to retry based on network error or arbitrary
-protocol error. It is also not necessary to advertise lower versions of
-TLS.
-
-Services in transition from an older TLS version SHOULD ensure that all older
-servers have upgraded to TLS 1.3 without 0-RTT and wait before there is minimal
-chance of rollback before offering 0-RTT on any server.
-
+Services with multiple servers SHOULD ensure a stable deployment of TLS 1.3
+without 0-RTT prior to enabling 0-RTT.
 
 ## Backwards Compatibility Security Restrictions
 
