@@ -339,7 +339,7 @@ server: The endpoint which did not initiate the TLS connection.
 
 draft-12
 
-- Provide a list of the PSK cipher sutes.
+- Provide a list of the PSK cipher suites.
 
 - Remove the ability for the ServerHello to have no extensions
   (this aligns the syntax with the text).
@@ -1106,7 +1106,7 @@ and in TLS 1.3 the additional data input is empty (zero length).
 opaque_type
 : The outer opaque_type field of a TLSCiphertext record is always set to the
   value 23 (application_data) for outward compatibility with
-  middleboxes used to parsing previous versions of TLS.  The
+  middleboxes accustomed to parsing previous versions of TLS.  The
   actual content type of the record is found in fragment.type after
   decryption.
 
@@ -1678,7 +1678,7 @@ CertificateVerify
 Finished
 : a MAC over the entire handshake. This message provides key confirmation, binds the endpoint's identity
   to the exchanged keys, and in some modes (0-RTT and PSK)
-  also authenticates the handshake using the the Static Secret. [{{finished}}]
+  also authenticates the handshake using the Static Secret. [{{finished}}]
 {:br }
 
 Upon receiving the server's messages, the client responds with its Authentication
@@ -1688,7 +1688,7 @@ At this point, the handshake is complete, and the client and server may exchange
 application layer data. Application data MUST NOT be sent prior to sending the
 Finished message. Note that while the server may send application data
 prior to receiving the client's Authentication messages, any data sent at
-that point is of course being sent to an unauthenticated peer.
+that point is, of course, being sent to an unauthenticated peer.
 
 [[TODO: Move this elsewhere?
 Note that higher layers should not be overly reliant on whether TLS always
@@ -1760,7 +1760,7 @@ described below.
 ### Zero-RTT Exchange
 
 TLS 1.3 supports a "0-RTT" mode in which the client can both
-authenticate and send application on its first flight, thus reducing
+authenticate and send application data on its first flight, thus reducing
 handshake latency. In order to enable this functionality, the server
 provides a ServerConfiguration message containing a long-term (EC)DH
 share. On future connections to the same server, the client can use
@@ -2320,7 +2320,7 @@ be taken into account when designing new extensions:
   insert, remove, or replace extensions.
 
 - It would be technically possible to use extensions to change major aspects
-  of the design of TLS; for example the design of cipher suite negotiation.
+  of the design of TLS; for example, the design of cipher suite negotiation.
   This is not recommended; it would be more appropriate to define a new version
   of TLS --- particularly since the TLS handshake algorithms have specific
   protection against version rollback attacks based on the version number, and
@@ -2884,7 +2884,7 @@ are designated to appear in ServerHello MUST NOT appear in
 EncryptedExtensions. Clients MUST check EncryptedExtensions
 for the presence of any forbidden extensions and if
 any are found MUST terminate the handshake with
-a "illegal_parameter" alert.
+an "illegal_parameter" alert.
 
 Structure of this message:
 
@@ -3272,7 +3272,7 @@ algorithm combinations that cannot be currently used with TLS.
 In general, detailed certificate validation procedures are out of scope for
 TLS (see {{RFC5280}}). This section provides TLS-specific requirements.
 
-If server supplies an empty Certificate message, the client MUST terminate
+If the server supplies an empty Certificate message, the client MUST terminate
 the handshake with a fatal "decode_error" alert.
 
 If the client does not send any certificates,
@@ -3295,7 +3295,7 @@ currently in the process of phasing out SHA-1 support.
 
 Note that a certificate containing a key for one signature algorithm
 MAY be signed using a different signature algorithm (for instance,
-an RSA key signed with a ECDSA key).
+an RSA key signed with an ECDSA key).
 
 
 ####  Certificate Verify
@@ -3335,7 +3335,7 @@ and for a client signature is "TLS 1.3, client CertificateVerify". A
 hash of the handshake messages is signed rather than the messages themselves
 because the digitally-signed format requires padding and context bytes at the
 beginning of the input. Thus, by signing a digest of the messages, an
-implementation need only maintain one running hash per hash type for
+implementation only needs to maintain a single running hash per hash type for
 CertificateVerify, Finished and other messages.
 
 > If sent by a server, the signature algorithm MUST be one offered in the
@@ -3435,7 +3435,7 @@ and are not included in the hash computations.
 ### Post-Handshake Messages
 
 TLS also allows other messages to be sent after the main handshake.
-These message use a handshake content type and are encrypted under the application
+These messages use a handshake content type and are encrypted under the application
 traffic key.
 
 #### New Session Ticket Message
@@ -3531,8 +3531,8 @@ the traffic keys (though not the traffic secret) for the previous
 generation of keys until it receives the KeyUpdate from the other
 side.
 
-Both sender and receiver must encrypt their KeyUpdate 
-messages with the old keys. Additionally, both sides MUST enforce that 
+Both sender and receiver MUST encrypt their KeyUpdate
+messages with the old keys. Additionally, both sides MUST enforce that
 a KeyUpdate with the old key is received before accepting any messages
 encrypted with the new key. Failure to do so may allow message truncation
 attacks.
@@ -3610,7 +3610,7 @@ the sources from the table above.
   Where handshake_hash includes all messages up through the
   server CertificateVerify message, but not including any
   0-RTT handshake messages (the server's Finished is not
-  included because the master_secret is need to compute
+  included because the master_secret is needed to compute
   the finished key). [[OPEN ISSUE: Should we be including
   0-RTT handshake messages here and below?.
   https://github.com/tlswg/tls13-spec/issues/351
@@ -3761,7 +3761,7 @@ the TLS PRF. This document replaces the PRF with HKDF, thus requiring
 a new construction. The exporter interface remains the same, however
 the value is computed as:
 
-    HKDF-Expand-Label(HKDF-Extract(0, exporter_secret), 
+    HKDF-Expand-Label(HKDF-Extract(0, exporter_secret),
                       label, context_value, length)
 
 Note: the inner HKDF-Extract is strictly unnecessary, but it maintains
@@ -4405,7 +4405,7 @@ When Diffie-Hellman key exchange is used, the client and server use
 the "key_share" extension to send
 temporary Diffie-Hellman parameters. The signature in the certificate
 verify message (if present) covers the entire handshake up to that
-point and thus attests the certificate holder's desire to use the
+point and thus attests the certificate holder's desire to use
 the ephemeral DHE keys.
 
 Peers SHOULD validate each other's public key Y (dh_Ys offered by
@@ -4519,7 +4519,7 @@ Archives of the list can be found at:
 * David Benjamin \\
   Google \\
   davidben@google.com
-  
+
 * Benjamin Beurdouche
 
 * Karthikeyan Bhargavan (co-author of [RFC7627]) \\
