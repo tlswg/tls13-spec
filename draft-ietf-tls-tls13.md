@@ -114,7 +114,6 @@ informative:
   RFC6091:
   RFC6520:
   RFC6961:
-  RFC6962:
   RFC7301:
   RFC7250:
   RFC7366:
@@ -286,10 +285,10 @@ receives its first byte of data. The TLS Handshake Protocol provides connection
 security that has three basic properties:
 
 
-- The peer's identity can be authenticated using asymmetric, or
-  public key, cryptography (e.g., RSA {{RSA}}, ECDSA {{ECDSA}}).  This
-  authentication can be made optional, but is generally required for
-  at least one of the peers.
+- The peer's identity can be authenticated using asymmetric (public key)
+  cryptography (e.g., RSA {{RSA}}, ECDSA {{ECDSA}}) or a pre-shared
+  symmetric key. The TLS server is always authenticated; client authentication
+  is optional.
 
 - The negotiation of a shared secret is secure: the negotiated
   secret is unavailable to eavesdroppers, and for any authenticated
@@ -340,6 +339,14 @@ server: The endpoint which did not initiate the TLS connection.
 draft-13
 
 - Allow server to send SupportedGroups.
+
+- Remove 0-RTT client authentication
+
+- Remove (EC)DHE 0-RTT.
+
+- Flesh out 0-RTT PSK mode and shrink EarlyDataIndiation
+
+- Turn PSK-resumption response into an index to save room.
 
 draft-12
 
@@ -1578,23 +1585,29 @@ Static Secret (SS): A secret which may be derived from static or
 Master Secret (MS): A secret derived from both the static
    and the ephemeral secret.
 
-In some cases, as with the DH handshake shown in {{tls-full}},
-the ephemeral and shared
-secrets are the same, but having both allows for a uniform key
-derivation scheme for all cipher modes.
+There are three basic cases:
 
-The basic TLS Handshake for DH is shown in {{tls-full}}:
+- In a pure (EC)DHE cipher suite, ES and SS will both be
+  the (EC)DHE shared secret.
+  
+- In a pure PSK cipher suite, ES and SS will both be the PSK.
+
+- In an (EC)DHE-PSK cipher suite, ES will be the (EC)DHE
+  shared secret and SS will be the PSK.
+
+{{tls-full}} below shows the basic full TLS handshake.
 
 ~~~
        Client                                               Server
 
 Key  / ClientHello
-Exch \  + key_share              -------->
-                                                       ServerHello  \ Key
-                                                       + key_share  / Exch
-                                             {EncryptedExtensions}  ^
-                                             {CertificateRequest*}  | Server
-                                            {ServerConfiguration*}  v Params
+Exch<  + key_share*
+     \ + pre_shared_key*        -------->
+                                                       ServerHello  \  Key
+                                                      + key_share*   > Exch
+                                                 + pre_shared_key*  /
+                                             {EncryptedExtensions}  ^  Server
+                                             {CertificateRequest*}  v  Parameters
                                                     {Certificate*}  ^
                                               {CertificateVerify*}  | Auth
                                                         {Finished}  v
@@ -1626,29 +1639,31 @@ Key Exchange: establish shared keying material and select the
    encrypted.
 
 Server Parameters: establish other handshake parameters
-(whether the client is authenticated, support for 0-RTT, etc.)
+(whether the client is authenticated, application layer protocol support, etc.)
 
 Authentication: authenticate the server (and optionally the client)
    and provide key confirmation and handshake integrity.
 
-In the Key Exchange phase, the client sends the ClientHello ({{client-hello}})
-message, which contains
-a random nonce (ClientHello.random), its offered protocol version,
-cipher suite, and extensions, and one or more Diffie-Hellman key
-shares in the "key_share" extension {{key-share}}.
+In the Key Exchange phase, the client sends the ClientHello
+({{client-hello}}) message, which contains a random nonce
+(ClientHello.random), its offered protocol version, cipher suite, and
+extensions, and in general either one or more Diffie-Hellman key shares (in the
+"key_share" extension {{key-share}}), one or more pre-shared key labels (in the
+"pre_shared_key" extension {{pre-shared-key-extension}}), or both.
 
 The server processes the ClientHello and determines the appropriate
 cryptographic parameters for the connection. It then responds with
-its own ServerHello which indicates the negotiated connection parameters. [{{server-hello}}]
-If DH is in use, this will contain a "key_share" extension with the
-server's ephemeral Diffie-Hellman share which MUST be in the same group
-as one of the shares offered by the client. The server's KeyShare and
-the client's KeyShare corresponding to the negotiated key exchange
-are used together to derive the Static Secret and Ephemeral
-Secret (in this mode they are the same).  [{{key-share}}]
+its own ServerHello which indicates the negotiated connection parameters. [{{server-hello}}].
+The combination of the ClientHello and the ServerHello determines
+the values of ES and SS, as described above. If either a pure
+(EC)DHE or (EC)DHE-PSK cipher suite is in use, then the ServerHello
+will will contain a "key_share" extension with the server's ephemeral
+Diffie-Hellman share which MUST be in the same group.
+If a pure PSK or an (EC)DHE-PSK cipher suite is negotiated, then the
+ServerHello will contain a "pre_shared_key" extension indicating
+which if the client's offered PSKs was selected.
 
-
-The server then sends three messages to establish the Server Parameters:
+The server then sends two messages to establish the Server Parameters:
 
 EncryptedExtensions
 : responses to any extensions which are not required in order to
@@ -1661,23 +1676,20 @@ CertificateRequest
   [[OPEN ISSUE: See https://github.com/tlswg/tls13-spec/issues/184]].
   [{{certificate-request}}]
 
-ServerConfiguration
-: supplies a configuration for 0-RTT handshakes (see {{zero-rtt-exchange}}).
-[{{server-configuration}}]
-{:br }
-
 Finally, the client and server exchange Authentication messages. TLS
 uses the same set of messages every time that authentication is needed.
 Specifically:
 
 Certificate
-: the certificate of the endpoint. This message is omitted if certificate
-  authentication is not being used. [{{certificate}}]
+: the certificate of the endpoint. This message is omitted if the
+  server is not authenticating via a certificate (i.e.,
+  with PSK or (EC)DHE-PSK cipher suites). [{{certificate}}]
 
 CertificateVerify
 : a signature over the entire handshake using the public key
-  in the Certificate message. This message will be omitted if the
-  server is not authenticating via a certificate. [{{certificate-verify}}]
+  in the Certificate message. This message is omitted if the
+  server is not authenticating via a certificate (i.e.,
+  with PSK or (EC)DHE-PSK cipher suites). [{{certificate-verify}}]
 
 Finished
 : a MAC over the entire handshake. This message provides key confirmation, binds the endpoint's identity
@@ -1711,7 +1723,6 @@ a 255-bit ECDHE key exchange with a host whose certificate
 chain you have verified, you can expect that to be reasonably "secure"
 against algorithmic attacks, at least in the year 2015.]]
 
-
 ### Incorrect DHE Share
 
 If the client has not provided an appropriate "key_share" extension (e.g. it
@@ -1719,6 +1730,9 @@ includes only DHE or ECDHE groups unacceptable or unsupported by the
 server), the server corrects the mismatch with a HelloRetryRequest and
 the client will need to restart the handshake with an appropriate
 "key_share" extension, as shown in Figure 2:
+If no common cryptographic parameters can be negotiated,
+the server will send a "handshake_failure" or "insufficient_security"
+fatal alert (see {{alert-protocol}}).
 
 ~~~
          Client                                               Server
@@ -1733,7 +1747,6 @@ the client will need to restart the handshake with an appropriate
                                                          + key_share
                                                {EncryptedExtensions}
                                                {CertificateRequest*}
-                                              {ServerConfiguration*}
                                                       {Certificate*}
                                                 {CertificateVerify*}
                                                           {Finished}
@@ -1745,115 +1758,17 @@ the client will need to restart the handshake with an appropriate
 ~~~
 {: #tls-restart title="Message flow for a full handshake with mismatched parameters"}
 
-[[OPEN ISSUE: Should we restart the handshake hash?
-https://github.com/tlswg/tls13-spec/issues/104.]]
-[[OPEN ISSUE: We need to make sure that this flow doesn't introduce
-downgrade issues. Potential options include continuing the handshake
-hashes (as long as clients don't change their opinion of the server's
-capabilities with aborted handshakes) and requiring the client to send
-the same ClientHello (as is currently done) and then checking you get
-the same negotiated parameters.]]
-
-If no common cryptographic parameters can be negotiated, the server
-will send a "handshake_failure" or "insufficient_security" fatal alert
-(see {{alert-protocol}}).
+Note: the handshake hash for the message includes the initial
+ClientHello/HelloRetryRequest exchange. It is not reset with the new
+ClientHello.
 
 TLS also allows several optimized variants of the basic handshake, as
 described below.
 
-### Zero-RTT Exchange
-
-TLS 1.3 supports a "0-RTT" mode in which the client can both
-authenticate and send application data on its first flight, thus reducing
-handshake latency. In order to enable this functionality, the server
-provides a ServerConfiguration message containing a long-term (EC)DH
-share. On future connections to the same server, the client can use
-that share to protect the first-flight data.
-
-~~~
-         Client                                               Server
-
-         ClientHello
-           + key_share
-           + early_data
-      ^  (Certificate*)
-0-RTT |  (CertificateVerify*)
-Data  |  (Finished)
-      v  (Application Data*)
-         (end_of_early_data)        -------->
-                                                         ServerHello
-                                                        + early_data
-                                                         + key_share
-                                               {EncryptedExtensions}
-                                               {CertificateRequest*}
-                                              {ServerConfiguration*}
-                                                      {Certificate*}
-                                                {CertificateVerify*}
-                                                          {Finished}
-                                   <--------     [Application Data*]
-         {Certificate*}
-         {CertificateVerify*}
-         {Finished}                -------->
-
-         [Application Data]        <------->      [Application Data]
-
-               *  Indicates optional or situation-dependent
-                  messages that are not always sent.
-
-               () Indicates messages protected using keys
-                  derived from the static secret.
-
-               {} Indicates messages protected using keys
-                  derived from the ephemeral secret.
-
-               [] Indicates messages protected using keys
-                  derived from the master secret.
-~~~
-{: #tls-0-rtt title="Message flow for a zero round trip handshake"}
-
-As shown in {{tls-0-rtt}}, the Zero-RTT data is just added
-to the 1-RTT handshake in the first flight. Specifically, the
-client sends its Authentication messages after the ClientHello,
-followed by any application data. The rest of the handshake
-messages are the same as with {{tls-full}}. This implies
-that the server can request client authentication even if the
-client offers a certificate on its first flight. This
-is consistent with the server being
-able to ask for client authentication after the handshake is
-complete (see {{post-handshake-authentication}}).
-When offering PSK support, the "pre_shared_key" extension will be used
-instead of (or in addition to) the "key_share" extension as specified
-above.
-
-IMPORTANT NOTE: The security properties for 0-RTT data (regardless of
-the cipher suite) are weaker than those for other kinds of TLS data.
-Specifically:
-
-1. This data is not forward secret, because it is encrypted solely
-with the server's semi-static (EC)DH share.
-
-2. There are no guarantees of non-replay between connections.
-Unless the server takes special measures outside those provided by TLS (See
-{{replay-properties}}), the server has no guarantee that the same
-0-RTT data was not transmitted on multiple 0-RTT connections.
-This is especially relevant if the data is authenticated either
-with TLS client authentication or inside the application layer
-protocol. However, 0-RTT data cannot be duplicated within a connection (i.e., the server
-will not process the same data twice for the same connection) and also
-cannot be sent as if it were ordinary TLS data.
-
-3. If the server key is compromised, then the attacker can tamper with
-the 0-RTT data without detection. If the client's ephemeral share
-is compromised and client authentication is used, then the attacker
-can impersonate the client on subsequent connections.
-
-
 ### Resumption and Pre-Shared Key (PSK) {#resumption-and-psk}
 
-Finally, TLS provides a pre-shared key (PSK) mode which allows a
-client and server who share an existing secret (e.g., a key
-established out of band) to establish a connection authenticated by
-that key. PSKs can also be established in a previous session and
+Although TLS PSKs can be established out of band, 
+PSKs can also be established in a previous session and
 then reused ("session resumption"). Once a handshake has completed, the server can
 send the client a PSK identity which corresponds to a key derived from
 the initial handshake (See {{new-session-ticket-message}}). The client
@@ -1883,7 +1798,6 @@ Initial Handshake:
                                                        + key_share
                                              {EncryptedExtensions}
                                              {CertificateRequest*}
-                                            {ServerConfiguration*}
                                                     {Certificate*}
                                               {CertificateVerify*}
                                                         {Finished}
@@ -1901,6 +1815,7 @@ Subsequent Handshake:
          + pre_shared_key        -------->
                                                        ServerHello
                                                   + pre_shared_key
+                                                      + key_share*
                                              {EncryptedExtensions}
                                                         {Finished}
                                  <--------     [Application Data*]
@@ -1910,10 +1825,78 @@ Subsequent Handshake:
 {: #tls-resumption-psk title="Message flow for resumption and PSK"}
 
 As the server is authenticating via a PSK, it does not send a
-Certificate or a CertificateVerify. PSK-based resumption cannot be
-used to provide a new ServerConfiguration. Note that the client
-supplies a KeyShare to the server as well, which allows the
-server to decline resumption and fall back to a full handshake.
+Certificate or a CertificateVerify. When a client offers resumption
+via PSK it SHOULD also supply a KeyShare to the server as well; this
+allows server to decline resumption and fall back to a full handshake.
+A KeyShare MUST also be sent if the client is attempting to
+negotiate an (EC)DHE-PSK cipher suite.
+
+
+### Zero-RTT Data
+
+When resuming via a PSK, clients can also send data on their first
+flight ("early data"). This data is encrypted solely under keys
+derived using the PSK as the static secret.  As shown in
+{{tls-0-rtt}}, the Zero-RTT data is just added to the 1-RTT handshake
+in the first flight, the rest of the handshake uses the same messages.
+
+~~~
+         Client                                               Server
+
+         ClientHello
+           + early_data
+           + key_share*
+         (Finished)
+         (Application Data*)
+         (end_of_early_data)        -------->
+                                                         ServerHello
+                                                        + early_data
+                                                         + key_share
+                                               {EncryptedExtensions}
+                                               {CertificateRequest*}
+                                                          {Finished}
+                                   <--------     [Application Data*]
+         {Certificate*}
+         {CertificateVerify*}
+         {Finished}                -------->
+
+         [Application Data]        <------->      [Application Data]
+
+               *  Indicates optional or situation-dependent
+                  messages that are not always sent.
+
+               () Indicates messages protected using keys
+                  derived from the static secret.
+
+               {} Indicates messages protected using keys
+                  derived from the ephemeral secret.
+
+               [] Indicates messages protected using keys
+                  derived from the master secret.
+~~~
+{: #tls-0-rtt title="Message flow for a zero round trip handshake"}
+
+[[OPEN ISSUE: Should it be possible to combine 0-RTT with the
+server authenticating via a signature
+https://github.com/tlswg/tls13-spec/issues/443]]
+
+
+IMPORTANT NOTE: The security properties for 0-RTT data (regardless of
+the cipher suite) are weaker than those for other kinds of TLS data.
+Specifically:
+
+1. This data is not forward secret, because it is encrypted solely
+with the PSK.
+
+2. There are no guarantees of non-replay between connections.
+Unless the server takes special measures outside those provided by TLS (See
+{{replay-properties}}), the server has no guarantee that the same
+0-RTT data was not transmitted on multiple 0-RTT connections.
+This is especially relevant if the data is authenticated either
+with TLS client authentication or inside the application layer
+protocol. However, 0-RTT data cannot be duplicated within a connection (i.e., the server
+will not process the same data twice for the same connection) and also
+cannot be sent as if it were ordinary TLS data.
 
 The contents and significance of each message will be presented in detail in
 the following sections.
@@ -1941,7 +1924,6 @@ processed and transmitted as specified by the current active session state.
            server_hello_done_RESERVED(14),
            certificate_verify(15),
            client_key_exchange_RESERVED(16),
-           server_configuration(17),
            finished(20),
            key_update(24),
            (255)
@@ -1956,7 +1938,6 @@ processed and transmitted as specified by the current active session state.
                case hello_retry_request:   HelloRetryRequest;
                case encrypted_extensions:  EncryptedExtensions;
                case certificate_request:   CertificateRequest;
-               case server_configuration:  ServerConfiguration;
                case certificate:           Certificate;
                case certificate_verify:    CertificateVerify;
                case finished:              Finished;
@@ -1990,9 +1971,7 @@ ServerHello that selects cryptographic parameters that don't match the
 client's "key_share" extension. In that case, the client MUST send the same
 ClientHello (without modification) except including a new KeyShareEntry
 as the lowest priority share (i.e., appended to the list of shares in
-the KeyShare message). [[OPEN ISSUE: New random values? See:
-https://github.com/tlswg/tls13-spec/issues/185]]
-If a server receives a ClientHello at any other time, it MUST send
+the KeyShare message). If a server receives a ClientHello at any other time, it MUST send
 a fatal "unexpected_message" alert and close the connection.
 
 Structure of this message:
@@ -2699,12 +2678,17 @@ The "extension_data" field of this extension contains a
                    psk_identity identities<2..2^16-1>;
 
                case server:
-                   psk_identity identity;
+                   uint16 selected_identity;
            }
        } PreSharedKeyExtension;
 
-identity
-: An opaque label for the pre-shared key.
+identities
+: A list of the identities (labels for keys) that the client is willing
+  to negotiate with the server.
+
+selected_identity
+: The server's chosen identity expressed as a (0-based) index into
+  the identies in the client's list.
 {: br}
 
 If no suitable identity is provided, the server MUST NOT negotiate
@@ -2716,19 +2700,18 @@ suite, if available.
 
 If the server selects a PSK cipher suite, it MUST send a
 "pre_shared_key" extension with the identity that it selected.
-The client MUST verify that the server has selected one of
-the identities that the client supplied. If any other identity
+The client MUST verify that the server's selected_identity
+is within the range supplied by the client. If any other value
 is returned, the client MUST generate a fatal
 "unknown_psk_identity" alert and close the connection.
 
 
 #### Early Data Indication
 
-In cases where TLS clients have previously interacted with the
-server and the server has supplied a ServerConfiguration ({{server-configuration}}), the client
-can send application data and its Certificate/CertificateVerify
-messages (if client authentication is required). If the client
-opts to do so, it MUST supply an "early_data" extension.
+When PSK resumption is used the the client can send application data
+in its first flight of messages. If the client opts to do so, it MUST
+supply an "early_data" extension as well as the "pre_shared_key"
+extension.
 
 The "extension_data" field of this extension contains an
 "EarlyDataIndication" value:
@@ -2737,9 +2720,6 @@ The "extension_data" field of this extension contains an
        struct {
            select (Role) {
                case client:
-                   opaque configuration_id<1..2^16-1>;
-                   CipherSuite cipher_suite;
-                   Extension extensions<0..2^16-1>;
                    opaque context<0..255>;
 
                case server:
@@ -2747,35 +2727,15 @@ The "extension_data" field of this extension contains an
            }
        } EarlyDataIndication;
 
-configuration_id
-: The label for the configuration in question.
-
-cipher_suite
-: The cipher suite which the client is using to encrypt the early data.
-
-extensions
-: The extensions required to define the cryptographic configuration
-  for the clients early data (see below for details).
-
 context
 : An optional context value that can be used for anti-replay
   (see below).
 {:br }
 
-The client specifies the cryptographic configuration for the 0-RTT
-data using the "configuration_id", "cipher_suite", and "extensions"
-values. For configurations received in-band (in a previous TLS connection)
-the client MUST:
-
-- Send the same cryptographic determining parameters (Section
-{{cryptographic-determining-parameters}}) with the previous
-connection. If a 0-RTT handshake is being used with a PSK
-that was negotiated via a non-PSK handshake,
-then the client MUST use the same symmetric cipher parameters
-as were negotiated on that handshake but with a PSK cipher
-suite.
-
-- Indicate the same parameters as the server indicated in that connection.
+All of the parameters for the 0-RTT data (symmetric cipher suite,
+ALPN, etc.) MUST be those which were negotiated in the connection
+which established the PSK.  The PSK used to encrypt the early data
+MUST be the first PSK listed in the client's "pre_shared_key" extension.
 
 0-RTT messages sent in the first flight have the same content types
 as their corresponding messages sent in other flights (handshake,
@@ -2783,11 +2743,7 @@ application_data, and alert respectively) but are protected under
 different keys. After all the 0-RTT application data messages (if
 any) have been sent, a "end_of_early_data" alert of type
 "warning" is sent to indicate the end of the flight.
-Clients which do 0-RTT MUST always send "end_of_early_data" even
-if the ServerConfiguration indicates that no application
-data is allowed (EarlyDataType of "client_authentication"),
-though in that case it MUST NOT send any non-empty data records
-(i.e., those which consist of anything other than padding).
+Clients which do 0-RTT MUST always send "end_of_early_data".
 
 A server which receives an "early_data" extension
 can behave in one of two ways:
@@ -2800,20 +2756,21 @@ can behave in one of two ways:
   process the early data. It is not possible for the server
   to accept only a subset of the early data messages.
 
-Prior to accepting the "early_data" extension, the server
-MUST perform the following checks:
+Prior to accepting the "early_data" extension, the server MUST
+validate that the session ticket parameters are consistent with its
+current configuration. It MUST also validate that the extensions
+negotiated in the previous connection are identical to those being
+negotiated in the ServerHello, with the exception of the
+following extensions:
 
-- The configuration_id matches a known server configuration.
+- The use of "signed_certificate_timestamp" {{!RFC6962}} MUST
+  be identical but the server's SCT extension value may differ.
 
-- The client's cryptographic determining parameters match the
-  parameters that the server has negotiated based on the
-  rest of the ClientHello. If (EC)DHE is selected, this includes
-  verifying that (1) the ClientHello contains a key from the
-  same group that is indicated by the server configuration and
-  (2) that the server has negotiated that group and will
-  therefore include a share from that group in its own
-  "key_share" extension.
+- The "padding" extension {{RFC7685}} MUST be ignored for this purpose.
 
+- The values of "key_share", "pre_shared_key", and "early_data", which MUST
+  be as defined in this document.
+  
 If any of these checks fail, the server MUST NOT respond
 with the extension and must discard all the remaining first
 flight data (thus falling back to 1-RTT). If the client attempts
@@ -2832,42 +2789,10 @@ an accepted "early_data" extension MUST produce a fatal
 
 [[TODO: How does the client behave if the indication is rejected.]]
 
-[[OPEN ISSUE: This just specifies the signaling for 0-RTT but
-not the the 0-RTT cryptographic transforms, including:
-
-- What is in the handshake hash (including potentially some
-  speculative data from the server).
-- What is signed in the client's CertificateVerify.
-- Whether we really want the Finished to not include the
-  server's data at all.
-
-What's here now needs a lot of cleanup before it is clear
-and correct.]]
-
-
-##### Cryptographic Determining Parameters
-
-In order to allow the server to decrypt 0-RTT data, the client
-needs to provide enough information to allow the server to
-decrypt the traffic without negotiation. This is accomplished
-by having the client indicate the "cryptographic determining
-parameters" in its ClientHello, which are necessary to decrypt
-the client's packets (i.e., those present in the ServerHello).
-This includes the following
-values:
-
-- The cipher suite identifier.
-
-- If (EC)DHE is being used, the server's version of the
-  "key_share" extension.
-
-- If PSK is being used, the server's version of the
-  "pre_shared_key" extension (indicating the PSK the
-  client is using).
 
 ##### Replay Properties
 
-As noted in {{zero-rtt-exchange}}, TLS does not provide any
+As noted in {{zero-rtt-data}}, TLS does not provide any
 inter-connection mechanism for replay protection for data sent by the
 client in the first flight.  As a special case, implementations where
 the server configuration, is delivered out of band (as has been
@@ -3006,82 +2931,6 @@ certificate_extensions
 Note: It is a fatal "handshake_failure" alert for an anonymous server to request
 client authentication.
 
-
-#### Server Configuration
-
-When this message will be sent:
-
-> This message is used to provide a server configuration which
-the client can use in the future to skip handshake negotiation and
-(optionally) to allow 0-RTT handshakes. The ServerConfiguration
-message is sent as the last message before the CertificateVerify.
-
-Structure of this Message:
-
-%%% Server Parameters Messages
-          enum { (65535) } ConfigurationExtensionType;
-
-          enum { client_authentication(1), early_data(2),
-                 client_authentication_and_data(3), (255) } EarlyDataType;
-
-          struct {
-              ConfigurationExtensionType extension_type;
-              opaque extension_data<0..2^16-1>;
-          } ConfigurationExtension;
-
-          struct {
-              opaque configuration_id<1..2^16-1>;
-              uint32 expiration_date;
-              KeyShareEntry static_key_share;
-              EarlyDataType early_data_type;
-              ConfigurationExtension extensions<0..2^16-1>;
-          } ServerConfiguration;
-
-
-configuration_id
-: The configuration identifier to be used in 0-RTT mode.
-
-expiration_date
-: The last time when this configuration is expected to be valid
-(in seconds since the Unix epoch). Servers MUST NOT use any value
-more than 604800 seconds (7 days) in the future. Clients MUST
-NOT cache configurations for longer than 7 days, regardless of
-the expiration_date. [[OPEN ISSUE: Is this the right value?
-The idea is just to minimize exposure.]]
-
-static_key_share
-: The long-term DH key that is being established for this configuration.
-
-early_data_type
-: The type of 0-RTT handshake that this configuration is to be used
-for (see {{early-data-indication}}). If "client_authentication"
-or "client_authentication_and_data", then the client MUST select
-the certificate for future handshakes based on the CertificateRequest
-parameters supplied in this handshake. The server MUST NOT send
-either of these two options unless it also requested a certificate
-on this handshake.
-[[OPEN ISSUE: Should we relax this?]]
-
-extensions
-: This field is a placeholder for future extensions to the
-ServerConfiguration format.
-{:br }
-
-The semantics of this message are to establish a shared state between
-the client and server for use with the "early_data" extension
-with the key specified in "static_key_share" and with the handshake
-parameters negotiated by this handshake.
-
-When the ServerConfiguration message is sent, the server MUST also
-send a Certificate message and a CertificateVerify message, even
-if the "early_data" extension was used for this handshake,
-thus requiring a signature over the configuration before it can
-be used by the client. Clients MUST NOT rely on the
-ServerConfiguration message until successfully receiving and
-processing the server's Certificate, CertificateVerify, and
-Finished. If there is a failure in processing those messages, the
-client MUST discard the ServerConfiguration.
-
 ### Authentication Messages
 
 As discussed in {{handshake-protocol-overview}}, TLS uses a common
@@ -3103,7 +2952,8 @@ Based on these inputs, the messages then contain:
 
 Certificate
 : The certificate to be used for authentication and any
-supporting certificates in the chain.
+supporting certificates in the chain. Note that certificate-based
+client authentication is not available in the 0-RTT case.
 
 CertificateVerify
 : A signature over the hash of Handshake Context + Certificate.
@@ -3125,23 +2975,13 @@ for each scenario:
 
 | Mode | Handshake Context | Base Key |
 |------|-------------------|----------|
-| 0-RTT | ClientHello + ServerConfiguration + Server Certificate + CertificateRequest (where ServerConfiguration, etc. are from the previous handshake) | xSS |
-| 1-RTT (Server) | ClientHello ... ServerConfiguration | master secret |
+| 0-RTT | ClientHello | xSS |
+| 1-RTT (Server) | ClientHello ... CertificateVerify | master secret |
 | 1-RTT (Client) | ClientHello ... ServerFinished     | master secret |
 | Post-Handshake | ClientHello ... ClientFinished + CertificateRequest | master secret |
 
-Note 1:
-
-: The ServerConfiguration, CertificateRequest, and Server Certificate in the
-  0-RTT case are the messages from the handshake where the ServerConfiguration
-  was established.
-
-Note 2:
-
-: The Handshake Context for the last three rows does not include any 0-RTT
+Note: The Handshake Context for the last three rows does not include any 0-RTT
   handshake messages, regardless of whether 0-RTT is used.
-
-
 
 ####  Certificate
 
@@ -3151,12 +2991,10 @@ When this message will be sent:
 key exchange method uses certificates for authentication (this
 includes all key exchange methods defined in this document except PSK).
 
-> The client MUST send a Certificate message whenever the server has
+> The client MUST send a Certificate message if and only if server has
 requested client authentication via a CertificateRequest message
-({{certificate-request}}) or when the EarlyDataType provided with the
-server configuration indicates a need for client authentication.  This
-message is only sent if the server requests a certificate via one of
-these mechanisms. If no suitable certificate is available, the client
+({{certificate-request}}). If the server requests client authentication
+but no suitable certificate is available, the client
 MUST send a Certificate message containing no certificates (i.e., with
 the "certificate_list" field having length 0).
 
@@ -3703,8 +3541,8 @@ each class of traffic keys:
 
 | Record Type | Secret | Phase | Handshake Context |
 |:------------|--------|-------|------------------:|
-| 0-RTT Handshake   | xSS | "early handshake key expansion" | ClientHello + ServerConfiguration + Server Certificate |
-| 0-RTT Application | xSS | "early application data key expansion" | ClientHello + ServerConfiguration + Server Certificate |
+| 0-RTT Handshake   | xSS | "early handshake key expansion" | ClientHello  |
+| 0-RTT Application | xSS | "early application data key expansion" | ClientHello |
 | Handshake         | xES | "handshake key expansion" | ClientHello... ServerHello |
 | Application Data  | traffic secret | "application data key expansion" | ClientHello... Server Finished |
 
@@ -3955,14 +3793,6 @@ by IANA
   {{signature-algorithms}}. The following values SHALL be marked as
   "Recommended": ecdsa_secp256r1_sha256, ecdsa_secp384r1_sha384,
   rsa_pss_sha256, rsa_pss_sha384, rsa_pss_sha512, ed25519.
-
-- TLS ConfigurationExtensionType Registry: Values with the first byte in the range
-  0-254 (decimal) are assigned via Specification Required {{RFC2434}}.
-  Values with the first byte 255 (decimal) are reserved for Private
-  Use {{RFC2434}}. This registry SHALL have a "Recommended" column.
-  The registry [shall be/ has been] initially populated with the values described in
-  {{server-configuration}}, with all values marked with "Recommended" value
-  "Yes".
 --- back
 
 
