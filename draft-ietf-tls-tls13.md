@@ -2525,7 +2525,17 @@ extension type ("supported_groups" extension):
 
        00 0A 00 06 00 04 00 17 00 18
 
+
+As of TLS 1.3, servers are permitted to send the "supported_groups"
+extension to the client.  If the server has a group it prefers to the
+ones in the "key_share" extension but is still willing to accept the
+ClientHello, it SHOULD send "supported_groups" to update the client's
+view of its preferences.  Clients MUST NOT act upon any information
+found in "supported_groups" prior to successful completion of the
+handshake.
+
 [[TODO: IANA Considerations.]]
+
 
 
 #### Key Share
