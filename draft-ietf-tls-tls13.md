@@ -348,6 +348,8 @@ draft-13
 
 - Turn PSK-resumption response into an index to save room.
 
+- Extra fields in NewSessionTicket.
+
 draft-12
 
 - Provide a list of the PSK cipher suites.
