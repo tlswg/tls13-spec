@@ -2532,7 +2532,10 @@ ones in the "key_share" extension but is still willing to accept the
 ClientHello, it SHOULD send "supported_groups" to update the client's
 view of its preferences.  Clients MUST NOT act upon any information
 found in "supported_groups" prior to successful completion of the
-handshake.
+handshake, but MAY use the information learned from a successfully
+completed handshake to change what groups they offer to a server in
+subsequent connections.
+
 
 [[TODO: IANA Considerations.]]
 
@@ -3833,12 +3836,8 @@ Servers MAY require clients to send a valid "server_name" extension.
 Servers requiring this extension SHOULD respond to a ClientHello
 lacking a "server_name" extension with a fatal "missing_extension" alert.
 
-Some of these extensions exist only for the client to provide additional data
-to the server in a backwards-compatible way and thus have no meaning when sent
-from a server. The client-only extensions defined in this document
-are: "signature_algorithms" & "supported_groups".
-Servers MUST NOT send these extensions. Clients receiving any of these
-extensions MUST respond with a fatal "unsupported_extension" alert
+Servers MUST NOT send the "signature_algorithms" extension; if a client
+receives this extension it MUST respond with a fatal "unsupported_extension" alert
 and close the connection.
 
 
