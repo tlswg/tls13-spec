@@ -3323,9 +3323,9 @@ instance after post-handshake authentication.
      } TicketExtension;
 
      enum {
-       allow_dhe_resumption(1),
-       allow_psk_resumption(2)
-       allow_early_data(4)
+       allow_early_data(1)
+       allow_dhe_resumption(2),
+       allow_psk_resumption(4)
      } TicketFlags;
      
      struct {
@@ -3364,18 +3364,19 @@ lookup key or a self-encrypted and self-authenticated value. Section
 
 The meanings of the flags are as follows:
 
+allow_early_data
+: When resuming with this ticket, the client MAY send data in its
+first flight (early data) encrypted under a key derived from
+this PSK.
+
 allow_dhe_resumption
-: When resuming this session, the client MAY offer an (EC)DHE-PSK cipher
+: This ticket MAY be used with (EC)DHE-PSK cipher
   suite
 
 allow_psk_resumption
-: When resuming this session, the client MAY offer a pure PSK cipher
+: This ticket MAY be used with a pure PSK cipher
   suite.
 
-allow_early_data
-: When resuming this session, the client MAY send data in its
-first flight (early data) encrypted under a key derived from
-this PSK.
 {:br }
 
 In all cases, the PSK or (EC)DHE-PSK cipher suites that the client
