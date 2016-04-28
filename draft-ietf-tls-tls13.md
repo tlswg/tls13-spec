@@ -1600,12 +1600,12 @@ There are three basic cases:
 ~~~
        Client                                               Server
 
-Key  / ClientHello
-Exch<  + key_share*
-     \ + pre_shared_key*        -------->
-                                                       ServerHello  \  Key
-                                                      + key_share*   > Exch
-                                                 + pre_shared_key*  /
+Key  ^ ClientHello
+Exch | + key_share*
+     v + pre_shared_key*        -------->
+                                                       ServerHello  ^ Key
+                                                      + key_share*  | Exch
+                                                 + pre_shared_key*  v
                                              {EncryptedExtensions}  ^  Server
                                              {CertificateRequest*}  v  Parameters
                                                     {Certificate*}  ^
@@ -1682,8 +1682,13 @@ Specifically:
 
 Certificate
 : the certificate of the endpoint. This message is omitted if the
-  server is not authenticating via a certificate (i.e.,
-  with PSK or (EC)DHE-PSK cipher suites). [{{certificate}}]
+  server is not authenticating with a certificate (i.e.,
+  with PSK or (EC)DHE-PSK cipher suites). Note that if raw public keys
+  {{RFC7250}} or or the cached information extension
+  {{?I-D.ietf-tls-cached-info}} are in use, then this message
+  will not contain a certificate but rather some other value
+  corresponding to the server's long-term key.
+  [{{certificate}}]
 
 CertificateVerify
 : a signature over the entire handshake using the public key
@@ -1729,7 +1734,7 @@ If the client has not provided an appropriate "key_share" extension (e.g. it
 includes only DHE or ECDHE groups unacceptable or unsupported by the
 server), the server corrects the mismatch with a HelloRetryRequest and
 the client will need to restart the handshake with an appropriate
-"key_share" extension, as shown in Figure 2:
+"key_share" extension, as shown in Figure 2.
 If no common cryptographic parameters can be negotiated,
 the server will send a "handshake_failure" or "insufficient_security"
 fatal alert (see {{alert-protocol}}).
@@ -1826,9 +1831,9 @@ Subsequent Handshake:
 
 As the server is authenticating via a PSK, it does not send a
 Certificate or a CertificateVerify. When a client offers resumption
-via PSK it SHOULD also supply a KeyShare to the server as well; this
+via PSK it SHOULD also supply a "key_share" extension to the server as well; this
 allows server to decline resumption and fall back to a full handshake.
-A KeyShare MUST also be sent if the client is attempting to
+A "key_share" extension MUST also be sent if the client is attempting to
 negotiate an (EC)DHE-PSK cipher suite.
 
 
@@ -1895,8 +1900,9 @@ Unless the server takes special measures outside those provided by TLS (See
 This is especially relevant if the data is authenticated either
 with TLS client authentication or inside the application layer
 protocol. However, 0-RTT data cannot be duplicated within a connection (i.e., the server
-will not process the same data twice for the same connection) and also
-cannot be sent as if it were ordinary TLS data.
+will not process the same data twice for the same connection) and
+an attacker will not be able to make 0-RTT data appear to be
+1-RTT data (because it is protected with different keys.)
 
 The contents and significance of each message will be presented in detail in
 the following sections.
@@ -1971,7 +1977,7 @@ ServerHello that selects cryptographic parameters that don't match the
 client's "key_share" extension. In that case, the client MUST send the same
 ClientHello (without modification) except including a new KeyShareEntry
 as the lowest priority share (i.e., appended to the list of shares in
-the KeyShare message). If a server receives a ClientHello at any other time, it MUST send
+the "key_share" extension). If a server receives a ClientHello at any other time, it MUST send
 a fatal "unexpected_message" alert and close the connection.
 
 Structure of this message:
@@ -2743,7 +2749,7 @@ application_data, and alert respectively) but are protected under
 different keys. After all the 0-RTT application data messages (if
 any) have been sent, a "end_of_early_data" alert of type
 "warning" is sent to indicate the end of the flight.
-Clients which do 0-RTT MUST always send "end_of_early_data".
+0-RTT MUST always be followed by an "end_of_early_data" alert.
 
 A server which receives an "early_data" extension
 can behave in one of two ways:
