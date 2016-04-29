@@ -2982,7 +2982,7 @@ for each scenario:
 | Mode | Handshake Context | Base Key |
 |------|-------------------|----------|
 | 0-RTT | ClientHello | xSS |
-| 1-RTT (Server) | ClientHello ... (EncryptedExtensions/CertificateRequest) | master secret |
+| 1-RTT (Server) | ClientHello ... later of EncryptedExtensions/CertificateRequest | master secret |
 | 1-RTT (Client) | ClientHello ... ServerFinished     | master secret |
 | Post-Handshake | ClientHello ... ClientFinished + CertificateRequest | master secret |
 
