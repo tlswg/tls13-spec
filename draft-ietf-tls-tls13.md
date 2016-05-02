@@ -337,6 +337,10 @@ server: The endpoint which did not initiate the TLS connection.
 
 ##  Major Differences from TLS 1.2
 
+draft-13
+
+- Allow server to send SupportedGroups.
+
 draft-12
 
 - Provide a list of the PSK cipher suites.
