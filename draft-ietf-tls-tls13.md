@@ -3,7 +3,7 @@ title: The Transport Layer Security (TLS) Protocol Version 1.3
 abbrev: TLS
 docname: draft-ietf-tls-tls13-latest
 category: std
-updates: 4492
+updates: 4492, 6066, 6961
 obsoletes: 5077, 5246, 5746
 
 ipr: pre5378Trust200902
@@ -113,7 +113,6 @@ informative:
   RFC6176:
   RFC6091:
   RFC6520:
-  RFC6961:
   RFC7301:
   RFC7250:
   RFC7366:
@@ -347,6 +346,9 @@ draft-13
 - Flesh out 0-RTT PSK mode and shrink EarlyDataIndiation
 
 - Turn PSK-resumption response into an index to save room.
+
+- Move CertificateStatus to an extension.
+
 
 draft-12
 
@@ -2710,6 +2712,24 @@ The client MUST verify that the server's selected_identity
 is within the range supplied by the client. If any other value
 is returned, the client MUST generate a fatal
 "unknown_psk_identity" alert and close the connection.
+
+
+#### OCSP Status Extensions
+
+{{!RFC6066}} and {{!RFC6961}} provide extensions to negotiate the server
+sending OCSP responses to the client. In TLS 1.2 and below, the
+server sends an empty extension to indicate negotiation of this
+extension and the OCSP information is carried in a CertificateStatus
+message. In TLS 1.3, the server's OCSP information is
+carried in an extension in EncryptedExtensions. Specifically:
+The body of the "status_request" or "status_request_v2" extension
+from the server MUST be a CertificateStatus structure as defined
+in {{RFC6066}} and {{RFC6961}} respectively.
+
+Note: this means that the certificate status appears prior to the
+certificates it applies to. This is slightly anomalous but matches
+the existing behavior for SignedCertificateTimestamps {{?RFC6962}},
+and is more easily extensible in the handshake state machine.
 
 
 #### Early Data Indication
