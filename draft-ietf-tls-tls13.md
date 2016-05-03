@@ -3376,7 +3376,6 @@ allow_dhe_resumption
 allow_psk_resumption
 : This ticket MAY be used with a pure PSK cipher
   suite.
-
 {:br }
 
 In all cases, the PSK or (EC)DHE-PSK cipher suites that the client
