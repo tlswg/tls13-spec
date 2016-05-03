@@ -1851,6 +1851,7 @@ in the first flight, the rest of the handshake uses the same messages.
          ClientHello
            + early_data
            + key_share*
+         (EncryptedExtensions)
          (Finished)
          (Application Data*)
          (end_of_early_data)        -------->
@@ -1895,7 +1896,7 @@ with the PSK.
 
 2. There are no guarantees of non-replay between connections.
 Unless the server takes special measures outside those provided by TLS (See
-{{replay-properties}}), the server has no guarantee that the same
+{{replay-time}}), the server has no guarantee that the same
 0-RTT data was not transmitted on multiple 0-RTT connections.
 This is especially relevant if the data is authenticated either
 with TLS client authentication or inside the application layer
@@ -2242,6 +2243,7 @@ The extension format is:
            key_share(40),
            pre_shared_key(41),
            early_data(42),
+           ticket_age(43),
            (65535)
        } ExtensionType;
 
@@ -2777,7 +2779,10 @@ following extensions:
 
 - The values of "key_share", "pre_shared_key", and "early_data", which MUST
   be as defined in this document.
-  
+
+In addition, it MUST validate that the ticket_age is within a small
+tolerance of the time since the ticket was issued (see {{replay-time}}).
+
 If any of these checks fail, the server MUST NOT respond
 with the extension and must discard all the remaining first
 flight data (thus falling back to 1-RTT). If the client attempts
@@ -2793,13 +2798,25 @@ specified for all records when processing early data records.
 Specifically, decryption failure of any 0-RTT record following
 an accepted "early_data" extension MUST produce a fatal
 "bad_record_mac" alert as per {{record-payload-protection}}.
+Implementations SHOULD determine the security parameters for the
+1-RTT phase of the connection entirely before processing the EncryptedExtensions
+and Finished, using those values solely to determine whether to
+accept or reject the "early_data" extension.
 
 [[TODO: How does the client behave if the indication is rejected.]]
 
+##### Processing Order
 
-##### Replay Properties
+Clients are permitted to "stream" 0-RTT data until they
+receive the ServerHello, only then sending the "end_of_early_data"
+alert. In order to avoid deadlock, when accepting "early_data",
+servers MUST process the client's Finished and then immediately
+send the ServerHello, rather than waiting for the client's
+"end_of_early_data" alert.
 
-As noted in {{zero-rtt-data}}, TLS does not provide any
+##### Replay Properties {#replay-time}
+
+As noted in {{zero-rtt-data}}, TLS provides only a limited
 inter-connection mechanism for replay protection for data sent by the
 client in the first flight.  As a special case, implementations where
 the server configuration, is delivered out of band (as has been
@@ -2808,32 +2825,82 @@ configuration identifier for each connection, thus preventing
 replay. Implementations are responsible for ensuring uniqueness of the
 identifier in this case.
 
+The "ticket_age" extension sent by the client SHOULD be used by
+servers to limit the time over which the first flight might be
+replayed.  A server can store the time at which it sends a server
+configuration to a client, or encode the time in a ticket.  Then, each
+time it receives an early_data extension, it can check to see if the
+value used by the client matches its expectations.
+
+The "ticket_age" value provided by the client will be shorter than the
+actual time elapsed on the server by a single round trip time.  This
+difference is comprised of the delay in sending the NewSessionTicket
+message to the client, plus the time taken to send the ClientHello to
+the server.  For this reason, a server SHOULD measure the round trip
+time prior to sending the NewSessionTicket message and account for
+that in the value it saves.
+
+There are several potential sources of error that make an exact
+measurement of time difficult.  Variations in client and server clocks
+are likely to be minimal, outside of gross time corrections.  Network
+propagation delays are most likely causes of a mismatch in legitimate
+values for elapsed time.  Both the NewSessionTicket and ClientHello
+messages might be retransmitted and therefore delayed, which might be
+hidden by TCP.
+
+A small allowance for errors in clocks and variations in measurements
+is advisable.  However, any allowance also increases the opportunity
+for replay.  In this case, it is better to reject early data than to
+risk greater exposure to replay attacks.
+
+#### Ticket Age
+
+%%% Key Exchange Messages
+       struct {
+           uint64 ticket_age;
+       } TicketAge;
+
+When the client sends the "early_data" extension, it MUST also send
+a "ticket_age" extension in its EncryptedExtensions block. This value
+contains the time elapsed since the client learned about the server
+configuration that it is using, in milliseconds.  This value can
+be used by the server to limit the time over which early data can
+be replayed.
+       
+
 ### Server Parameters
 
 ####  Encrypted Extensions
 
 When this message will be sent:
 
-> The EncryptedExtensions message MUST be sent immediately after the
+> In all handshakes, the server MUST send the
+EncryptedExtensions message MUST be sent immediately after the
 ServerHello message. This is the first message that is encrypted
-under keys derived from ES.
+under keys derived from ES. If the client indicates "early_data"
+in its ClientHello, it MUST also send EncryptedExtensions immediately
+following the ClientHello and immediately prior to the Finished.
 
 Meaning of this message:
 
-> The EncryptedExtensions message simply contains any extensions
+> The EncryptedExtensions message contains any extensions
 which should be protected, i.e., any which are not needed to
-establish the cryptographic context. The same extension types
-MUST NOT appear in both the ServerHello and EncryptedExtensions.
-If the same extension appears in both locations, the client
-MUST rely only on the value in the EncryptedExtensions block.
-All server-sent extensions other than those explicitly
-listed in {{server-hello}} or designated in the IANA registry
-MUST only appear in EncryptedExtensions. Extensions which
-are designated to appear in ServerHello MUST NOT appear in
-EncryptedExtensions. Clients MUST check EncryptedExtensions
-for the presence of any forbidden extensions and if
-any are found MUST terminate the handshake with
-an "illegal_parameter" alert.
+establish the cryptographic context.
+
+The same extension types MUST NOT appear in both the ServerHello and
+EncryptedExtensions.  If the same extension appears in both locations,
+the client MUST rely only on the value in the EncryptedExtensions
+block.  All server-sent extensions other than those explicitly listed
+in {{server-hello}} or designated in the IANA registry MUST only
+appear in EncryptedExtensions. Extensions which are designated to
+appear in ServerHello MUST NOT appear in EncryptedExtensions. Clients
+MUST check EncryptedExtensions for the presence of any forbidden
+extensions and if any are found MUST terminate the handshake with an
+"illegal_parameter" alert.
+
+The client's EncryptedExtensions apply only to the early data
+with which they appear. Servers MUST NOT use them to negotiate
+the rest of the handshake.
 
 Structure of this message:
 
@@ -3747,7 +3814,9 @@ is listed below:
    1.3" column with the following four values: "Client", indicating
    that the server shall not send them. "Clear", indicating
    that they shall be in the ServerHello. "Encrypted", indicating that
-   they shall be in the EncryptedExtensions block, and "No" indicating
+   they shall be in the EncryptedExtensions block, "Early", indicating
+   that they shall be in the client's 0-RTT EncryptedExtensions block,
+   and "No" indicating
    that they are not used in TLS 1.3. This column [shall be/has been]
    initially populated with the values in this document.
    IANA [shall update/has updated] this registry to add a
@@ -3787,6 +3856,7 @@ is listed below:
 | key_share [[this document]]              |         Yes |     Clear |
 | pre_shared_key [[this document]]         |         Yes |     Clear |
 | early_data [[this document]]             |         Yes |     Clear |
+| 
 
 
 In addition, this document defines two new registries to be maintained
