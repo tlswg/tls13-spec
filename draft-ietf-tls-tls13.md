@@ -3923,7 +3923,7 @@ is listed below:
 | client_authz [RFC5878]                   |          No | Encrypted |
 | server_authz [RFC5878]                   |          No | Encrypted |
 | cert_type [RFC6091]                      |         Yes | Encrypted |
-| supported_groups [RFC-ietf-tls-negotiated-ff-dhe] | Yes |   Client |
+| supported_groups [RFC-ietf-tls-negotiated-ff-dhe] | Yes | Encrypted |
 | ec_point_formats [RFC4492]               |         Yes |        No |
 | srp [RFC5054]                            |          No |        No |
 | signature_algorithms [RFC5246]           |         Yes |    Client |
