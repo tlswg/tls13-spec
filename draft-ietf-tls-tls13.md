@@ -2762,6 +2762,7 @@ can behave in one of two ways:
   process the early data. It is not possible for the server
   to accept only a subset of the early data messages.
 
+[[OPEN ISSUE: are the rules below correct? https://github.com/tlswg/tls13-spec/issues/451]]
 Prior to accepting the "early_data" extension, the server MUST
 validate that the session ticket parameters are consistent with its
 current configuration. It MUST also validate that the extensions
