@@ -4285,7 +4285,7 @@ client agrees to use this version, the negotiation will proceed as appropriate
 for the negotiated protocol. A client resuming a session SHOULD initiate the
 connection using the version that was previously negotiated.
 
-Note that a 0-RTT TLS 1.3 ClientHello is not compatible with older servers.
+Note that 0-RTT data is not compatible with older servers.
 See {{zero-rtt-backwards-compatibility}}.
 
 If the version chosen by the server is not supported by the client (or not
@@ -4324,22 +4324,21 @@ MUST always be ignored.
 
 ## Zero-RTT backwards compatibility
 
-A TLS 1.3 ClientHello with 0-RTT data is not compatible with older servers.
-This can cause compatibility issues if a client attempts to use 0-RTT with a
-server cluster that contains servers without TLS 1.3 support. For example, a
-multi-server deployment may deploy TLS 1.3 gradually with some servers
-implementing TLS 1.3 and some implementing TLS 1.2. This may also occur if a
-TLS 1.3 deployment gets reverted to TLS 1.2.
+0-RTT data is not compatible with older servers. An older server will respond
+to the ClientHello with an older ServerHello, but it will not correctly skip
+the 0-RTT data and fail to complete the handshake. This can cause issues when
+a client offers 0-RTT, particularly against multi-server deployments. For
+example, a deployment may deploy TLS 1.3 gradually with some servers
+implementing TLS 1.3 and some implementing TLS 1.2, or a TLS 1.3 deployment
+may be downgraded to TLS 1.2.
 
-If a TLS 1.3 client sends a ClientHello with 0-RTT to an older server, the
-server will respond with a ServerHello containing an older version number. The
-handshake will later fail at the 0-RTT data. Clients which accept older
-versions of TLS MAY retry the connection without 0-RTT in response to this
-ServerHello. It is NOT RECOMMENDED to retry the connection in response to a
+If a client accepts older versions of TLS and receives an older ServerHello
+after sending a ClientHello with 0-RTT data, it MAY retry the connection
+without 0-RTT. It is NOT RECOMMENDED to retry the connection in response to a
 more generic error or advertise lower versions of TLS.
 
-Services with multiple servers are RECOMMENDED to ensure a stable deployment of
-TLS 1.3 without 0-RTT prior to enabling 0-RTT.
+Multi-server deployments are RECOMMENDED to ensure a stable deployment of TLS
+1.3 without 0-RTT prior to enabling 0-RTT.
 
 ## Backwards Compatibility Security Restrictions
 
