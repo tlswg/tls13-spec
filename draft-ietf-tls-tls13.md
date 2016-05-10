@@ -2801,14 +2801,14 @@ an accepted "early_data" extension MUST produce a fatal
 Implementations SHOULD determine the security parameters for the
 1-RTT phase of the connection entirely before processing the EncryptedExtensions
 and Finished, using those values solely to determine whether to
-accept or reject the "early_data" extension.
+accept or reject 0-RTT data.
 
 [[TODO: How does the client behave if the indication is rejected.]]
 
 ##### Processing Order
 
 Clients are permitted to "stream" 0-RTT data until they
-receive the ServerHello, only then sending the "end_of_early_data"
+receive the server's Finished, only then sending the "end_of_early_data"
 alert. In order to avoid deadlock, when accepting "early_data",
 servers MUST process the client's Finished and then immediately
 send the ServerHello, rather than waiting for the client's
@@ -2900,7 +2900,9 @@ extensions and if any are found MUST terminate the handshake with an
 
 The client's EncryptedExtensions apply only to the early data
 with which they appear. Servers MUST NOT use them to negotiate
-the rest of the handshake.
+the rest of the handshake. Only those extensions explicitly
+designated as being included in 0-RTT Encrypted Extensions
+in the IANA registry can be sent in the client's EncryptedExtensions.
 
 Structure of this message:
 
@@ -3815,7 +3817,7 @@ is listed below:
    that the server shall not send them. "Clear", indicating
    that they shall be in the ServerHello. "Encrypted", indicating that
    they shall be in the EncryptedExtensions block, "Early", indicating
-   that they shall be in the client's 0-RTT EncryptedExtensions block,
+   that they shall be only in the client's 0-RTT EncryptedExtensions block,
    and "No" indicating
    that they are not used in TLS 1.3. This column [shall be/has been]
    initially populated with the values in this document.
@@ -3856,7 +3858,7 @@ is listed below:
 | key_share [[this document]]              |         Yes |     Clear |
 | pre_shared_key [[this document]]         |         Yes |     Clear |
 | early_data [[this document]]             |         Yes |     Clear |
-| 
+| ticket_age [[this document]]             |         Yes |     Early |
 
 
 In addition, this document defines two new registries to be maintained
