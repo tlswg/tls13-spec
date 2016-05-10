@@ -1575,27 +1575,6 @@ Which mode is used depends on the negotiated cipher suite. Conceptually,
 the handshake establishes three secrets which are used to derive all the
 keys.
 
-Ephemeral Secret (ES): A secret which is derived from fresh (EC)DHE
-   shares for this connection. Keying material derived from ES is
-   intended to be forward secret (with the exception of pre-shared
-   key only modes).
-
-Static Secret (SS): A secret which may be derived from static or
-   semi-static keying material, such as a pre-shared key or the
-   server's semi-static (EC)DH share.
-
-Master Secret (MS): A secret derived from both the static
-   and the ephemeral secret.
-
-There are three basic cases:
-
-- In a pure (EC)DHE cipher suite, ES and SS will both be
-  the (EC)DHE shared secret.
-  
-- In a pure PSK cipher suite, ES and SS will both be the PSK.
-
-- In an (EC)DHE-PSK cipher suite, ES will be the (EC)DHE
-  shared secret and SS will be the PSK.
 
 {{tls-full}} below shows the basic full TLS handshake.
 
@@ -1608,15 +1587,15 @@ Exch | + key_share*
                                                        ServerHello  ^ Key
                                                       + key_share*  | Exch
                                                  + pre_shared_key*  v
-                                             {EncryptedExtensions}  ^  Server
-                                             {CertificateRequest*}  v  Parameters
-                                                    {Certificate*}  ^
-                                              {CertificateVerify*}  | Auth
-                                                        {Finished}  v
+                                             [EncryptedExtensions]  ^  Server
+                                             [CertificateRequest*]  v  Parameters
+                                                    [Certificate*]  ^
+                                              [CertificateVerify*]  | Auth
+                                                        [Finished]  v
                                  <--------     [Application Data*]
-     ^ {Certificate*}
-Auth | {CertificateVerify*}
-     v {Finished}                -------->
+     ^ [Certificate*]
+Auth | [CertificateVerify*]
+     v [Finished]                -------->
        [Application Data]        <------->      [Application Data]
 
               +  Indicates extensions sent in the
@@ -1625,11 +1604,7 @@ Auth | {CertificateVerify*}
               *  Indicates optional or situation-dependent
                  messages that are not always sent.
 
-              {} Indicates messages protected using keys
-                 derived from the ephemeral secret.
-
-              [] Indicates messages protected using keys
-                 derived from the master secret.
+              [] Indicates encrypted messages
 ~~~
 {: #tls-full title="Message flow for full TLS Handshake"}
 
@@ -1752,15 +1727,15 @@ fatal alert (see {{alert-protocol}}).
            + key_share             -------->
                                                          ServerHello
                                                          + key_share
-                                               {EncryptedExtensions}
-                                               {CertificateRequest*}
-                                                      {Certificate*}
-                                                {CertificateVerify*}
-                                                          {Finished}
+                                               [EncryptedExtensions]
+                                               [CertificateRequest*]
+                                                      [Certificate*]
+                                                [CertificateVerify*]
+                                                          [Finished]
                                    <--------     [Application Data*]
-         {Certificate*}
-         {CertificateVerify*}
-         {Finished}                -------->
+         [Certificate*]
+         [CertificateVerify*]
+         [Finished]                -------->
          [Application Data]        <------->     [Application Data]
 ~~~
 {: #tls-restart title="Message flow for a full handshake with mismatched parameters"}
@@ -1803,15 +1778,15 @@ Initial Handshake:
         + key_share              -------->
                                                        ServerHello
                                                        + key_share
-                                             {EncryptedExtensions}
-                                             {CertificateRequest*}
-                                                    {Certificate*}
-                                              {CertificateVerify*}
-                                                        {Finished}
+                                             [EncryptedExtensions]
+                                             [CertificateRequest*]
+                                                    [Certificate*]
+                                              [CertificateVerify*]
+                                                        [Finished]
                                  <--------     [Application Data*]
-       {Certificate*}
-       {CertificateVerify*}
-       {Finished}                -------->
+       [Certificate*]
+       [CertificateVerify*]
+       [Finished]                -------->
                                  <--------      [NewSessionTicket]
        [Application Data]        <------->      [Application Data]
 
@@ -1823,10 +1798,10 @@ Subsequent Handshake:
                                                        ServerHello
                                                   + pre_shared_key
                                                       + key_share*
-                                             {EncryptedExtensions}
-                                                        {Finished}
+                                             [EncryptedExtensions]
+                                                        [Finished]
                                  <--------     [Application Data*]
-       {Finished}                -------->
+       [Finished]                -------->
        [Application Data]        <------->      [Application Data]
 ~~~
 {: #tls-resumption-psk title="Message flow for resumption and PSK"}
@@ -1860,13 +1835,13 @@ in the first flight, the rest of the handshake uses the same messages.
                                                          ServerHello
                                                         + early_data
                                                          + key_share
-                                               {EncryptedExtensions}
-                                               {CertificateRequest*}
-                                                          {Finished}
+                                               [EncryptedExtensions]
+                                               [CertificateRequest*]
+                                                          [Finished]
                                    <--------     [Application Data*]
-         {Certificate*}
-         {CertificateVerify*}
-         {Finished}                -------->
+         [Certificate*]
+         [CertificateVerify*]
+         [Finished]                -------->
 
          [Application Data]        <------->      [Application Data]
 
@@ -1874,10 +1849,7 @@ in the first flight, the rest of the handshake uses the same messages.
                   messages that are not always sent.
 
                () Indicates messages protected using keys
-                  derived from the static secret.
-
-               {} Indicates messages protected using keys
-                  derived from the ephemeral secret.
+                  derived from the PSK.
 
                [] Indicates messages protected using keys
                   derived from the master secret.
@@ -3067,7 +3039,7 @@ for each scenario:
 
 | Mode | Handshake Context | Base Key |
 |------|-------------------|----------|
-| 0-RTT | ClientHello | xSS |
+| 0-RTT | ClientHello | Early Secret |
 | 1-RTT (Server) | ClientHello ... later of EncryptedExtensions/CertificateRequest | master secret |
 | 1-RTT (Client) | ClientHello ... ServerFinished     | master secret |
 | Post-Handshake | ClientHello ... ClientFinished + CertificateRequest | master secret |
@@ -3334,9 +3306,7 @@ Meaning of this message:
 > Recipients of Finished messages MUST verify that the contents are
 correct. Once a side has sent its Finished message and received and
 validated the Finished message from its peer, it may begin to send and
-receive application data over the connection. This data will be
-protected under keys derived from the ephemeral secret (see
-{{cryptographic-computations}}).
+receive application data over the connection.
 
 The key used to compute the finished message is computed from the
 Base key defined in {{authentication-messages}} using HKDF (see
@@ -3348,6 +3318,9 @@ client_finished_key =
 
 server_finished_key =
     HKDF-Expand-Label(BaseKey, "server finished", "", L)
+
+client_post_handshake_finished_key =
+    HKDF-Expand-Label(BaseKey, "client post-handshake finished", "", L)
 ~~~
 
 Structure of this message:
@@ -3497,28 +3470,14 @@ that remains is to calculate the key schedule.
 
 ## Key Schedule
 
-The TLS handshake establishes secret keying material which is then used
-to protect traffic. This keying material is derived from the two
-input secret values: Static Secret (SS) and Ephemeral Secret (ES).
+The TLS handshake establishes one or more input secrets which
+are combined to create the actual working keying material, as detailed
+below. The key derivation process makes use of the following functions,
+based on HKDF {{RFC5869}}:
 
-The exact source of each of these secrets depends on the operational
-mode (DHE, ECDHE, PSK, etc.) and is summarized in the table below:
-
-| Key Exchange | Static Secret (SS) | Ephemeral Secret (ES) |
-|--------------|-------------------:|----------------------:|
-| (EC)DHE (full handshake) | Client ephemeral w/ server ephemeral | Client ephemeral w/ server ephemeral |
-| (EC)DHE (w/ 0-RTT) | Client ephemeral w/ server static | Client ephemeral w/ server ephemeral |
-| PSK | Pre-Shared Key  | Pre-shared key |
-| PSK + (EC)DHE | Pre-Shared Key | Client ephemeral w/ server ephemeral |
-
-These shared secret values are used to generate cryptographic keys as
-shown below.
-
-The derivation process is as follows, where L denotes the length of
-the underlying hash function for HKDF {{RFC5869}}. SS and ES denote
-the sources from the table above.
-
-~~~
+~~~~
+  HKDF-Extract(Salt, IKM) as defined in {{RFC5869}}.
+  
   HKDF-Expand-Label(Secret, Label, HashValue, Length) =
        HKDF-Expand(Secret, HkdfLabel, Length)
 
@@ -3535,60 +3494,65 @@ the sources from the table above.
   - HkdfLabel.label is "TLS 1.3, " + Label
   - HkdfLabel.hash_value is HashValue.
 
-  1. xSS = HKDF-Extract(0, SS). Note that HKDF-Extract always
-     produces a value the same length as the underlying hash
-     function.
+  Add-Secret(Secret, InputSecret) =
+       HKDF-Extract(HKDF-Expand(Secret, "", L), InputSecret))
 
-  2. xES = HKDF-Extract(0, ES)
+  where L denotes the length of the underlying hash function for
+  HKDF.
 
-  3. mSS = HKDF-Expand-Label(xSS, "expanded static secret",
-                             handshake_hash, L)
+  Derive-Secret(Secret, Label, Messages) =
+       HKDF-Extract(HKDF-Expand(Secret, Label, Hash(Messages), L))
+~~~~       
 
-  4. mES = HKDF-Expand-Label(xES, "expanded ephemeral secret",
-                             handshake_hash, L)
+Given a set of n InputSecrets, the final "master secret" is computed
+by iteratively invoking Add-Secret with InputSecret_1, InputSecret_2,
+etc.  The initial secret is simply a string of 0s as long as the size
+of the Hash that is the basis for the HKDF. Concretely, for the
+present version of TLS 1.3, secrets are added in the following order:
 
-  5. master_secret = HKDF-Extract(mSS, mES)
+- PSK
+- (EC)DHE shared secret
 
+This produces a full key derivation schedule as below.
 
-  6. traffic_secret_0 = HKDF-Expand-Label(master_secret,
-                                          "traffic secret",
-                                          handshake_hash, L)
+~~~~ 
+                 0
+                 |
+   PSK ->   Add-Secret()
+                 |
+                 v
+           Early Secret  --> Derive-Secret("early traffic secret",
+                 |                         ClientHello) -> early_traffic_secret
+                 |                         
+                 v
+(EC)DHE ->  Add-Secret()
+                 |
+                 v
+           Master Secret --> Derive-Secret("traffic secret",
+                 |                         ClientHello + ServerHello) ->
+                 |                         traffic_secret_0
+                 |                        
+                 +---------> Derive-Secret("exporter master secret",
+                 |                         ClientHello...Client Finished) ->
+                 |                         exporter_secret       
+                 |
+                 +---------> Derive-Secret("resumption master secret",
+                                           ClientHello...Client Finished) ->
+                                           resumption_secret
+~~~~
 
-  Where handshake_hash includes all messages up through the
-  server CertificateVerify message, but not including any
-  0-RTT handshake messages (the server's Finished is not
-  included because the master_secret is needed to compute
-  the finished key). [[OPEN ISSUE: Should we be including
-  0-RTT handshake messages here and below?.
-  https://github.com/tlswg/tls13-spec/issues/351
-  ]] At this point,
-  SS, ES, xSS, xES, mSS, and mES SHOULD be securely deleted,
-  along with any ephemeral (EC)DH secrets.
+The general pattern here is that the secrets shown down the left side
+of the diagram are just raw entropy without context, whereas the
+secrets down the right side include handshake context and therefore
+can be used to derive working keys without additional context. With
+the exception of finished keys, the secrets down the left are never
+used to generate working keying material.
 
-  7. resumption_secret = HKDF-Expand-Label(master_secret,
-                                           "resumption master secret"
-                                           handshake_hash, L)
-
-  8. exporter_secret = HKDF-Expand-Label(master_secret,
-                                         "exporter master secret",
-                                         handshake_hash, L)
-
-
-  Where handshake_hash contains the entire handshake up to
-  and including the client's Finished, but not including
-  any 0-RTT handshake messages or post-handshake messages.
-  AT this point master_secret SHOULD be securely deleted.
-~~~
-
-The traffic keys are computed from xSS, xES, and the traffic_secret
-as described in {{traffic-key-calculation}} below. The traffic_secret
-may be updated throughout the connection as described in {{updating-traffic-keys}}.
-
-Note: Although the steps above are phrased as individual HKDF-Extract
-and HKDF-Expand operations, because each HKDF-Expand operation is
-paired with an HKDF-Extract, it is possible to implement this key
-schedule with a black-box HKDF API, albeit at some loss of efficiency
-as some HKDF-Extract operations will be repeated.
+If no PSK is available, then the first Add-Secret() stage is omitted
+and the (EC)DHE secret is mixed with the empty secret (0). Of course, this
+means that it is not possible to send 0-RTT data. If no (EC)DHE secret
+is available, then the second Add-Secret() stage is omitted and the
+secret derived from the PSK is used directly as the Master Secret.
 
 
 ## Updating Traffic Keys and IVs {#updating-traffic-keys}
@@ -3602,8 +3566,8 @@ this section then re-deriving the traffic keys as described in
 
 The next-generation traffic_secret is computed as:
 
-  traffic_secret_N+1 = HKDF-Expand-Label(traffic_secret_N,
-                                       "traffic secret", "", L)
+  traffic_secret_N+1 = Derive-Secret(traffic_secret_N,
+                                     "traffic secret", "", L)
 
 Once traffic_secret_N+1 and its associated traffic keys have been computed,
 implementations SHOULD delete traffic_secret_N. Once the directional
@@ -3619,24 +3583,22 @@ The traffic keying material is generated from the following input values:
   being generated for.
 * A purpose value indicating the specific value being generated
 * The length of the key.
-* The handshake context which is used to generate the keys.
 
 The keying material is computed using:
 
        key = HKDF-Expand-Label(Secret,
-                               phase + ", " + purpose,
-                               handshake_context,
+                               phase + ", " + purpose, "",
                                key_length)
 
 The following table describes the inputs to the key calculation for
 each class of traffic keys:
 
-| Record Type | Secret | Phase | Handshake Context |
-|:------------|--------|-------|------------------:|
-| 0-RTT Handshake   | xSS | "early handshake key expansion" | ClientHello  |
-| 0-RTT Application | xSS | "early application data key expansion" | ClientHello |
-| Handshake         | xES | "handshake key expansion" | ClientHello... ServerHello |
-| Application Data  | traffic secret | "application data key expansion" | ClientHello... Server Finished |
+| Record Type | Secret | Phase | 
+|:------------|--------|-------|
+| 0-RTT Handshake   | early_traffic_secret | "early handshake key expansion" |
+| 0-RTT Application | early_traffic_secret | "early application data key expansion" | 
+| Handshake         | traffic_secret_0 | "handshake key expansion" |
+| Application Data  | traffic secret_N | "application data key expansion" | 
 
 The following table indicates the purpose values for each type of key:
 
@@ -3708,12 +3670,8 @@ the TLS PRF. This document replaces the PRF with HKDF, thus requiring
 a new construction. The exporter interface remains the same, however
 the value is computed as:
 
-    HKDF-Expand-Label(HKDF-Extract(0, exporter_secret),
+    HKDF-Expand-Label(exporter_secret
                       label, context_value, length)
-
-Note: the inner HKDF-Extract is strictly unnecessary, but it maintains
-the invariant that HKDF Extract and Expand calls are paired.
-
 
 #  Mandatory Algorithms
 
