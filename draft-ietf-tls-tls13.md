@@ -3495,7 +3495,8 @@ based on HKDF {{RFC5869}}:
   - HkdfLabel.hash_value is HashValue.
 
   Add-Secret(Secret, InputSecret) =
-       HKDF-Extract(HKDF-Expand(Secret, "", L), InputSecret))
+       HKDF-Extract(HKDF-Expand-Label(Secret, "add secret", "", L),
+                                      InputSecret))
 
   where L denotes the length of the underlying hash function for
   HKDF.
@@ -3528,8 +3529,12 @@ This produces a full key derivation schedule as below.
 (EC)DHE ->  Add-Secret()
                  |
                  v
-           Master Secret --> Derive-Secret("traffic secret",
+           Master Secret --> Derive-Secret("handshake traffic secret",
                  |                         ClientHello + ServerHello) ->
+                 |                         handshake_traffic_secret
+                 |
+                 +---------> Derive-Secret("application traffic secret",
+                 |                         ClientHello...Server Finished) ->
                  |                         traffic_secret_0
                  |                        
                  +---------> Derive-Secret("exporter master secret",
@@ -3546,7 +3551,11 @@ of the diagram are just raw entropy without context, whereas the
 secrets down the right side include handshake context and therefore
 can be used to derive working keys without additional context. With
 the exception of finished keys, the secrets down the left are never
-used to generate working keying material.
+used to generate working keying material. Note that the different
+calls to Derive-Secret() may take different Messages arguments,
+even with the same secret. In a 0-RTT exchange, Derive-Secret is
+called with four distinct transcripts; in a 1-RTT only exchange
+with three distinct transcripts.
 
 If no PSK is available, then the first Add-Secret() stage is omitted
 and the (EC)DHE secret is mixed with the empty secret (0). Of course, this
@@ -3597,7 +3606,7 @@ each class of traffic keys:
 |:------------|--------|-------|
 | 0-RTT Handshake   | early_traffic_secret | "early handshake key expansion" |
 | 0-RTT Application | early_traffic_secret | "early application data key expansion" | 
-| Handshake         | traffic_secret_0 | "handshake key expansion" |
+| Handshake         | handshake_traffic_secret | "handshake key expansion" |
 | Application Data  | traffic secret_N | "application data key expansion" | 
 
 The following table indicates the purpose values for each type of key:
