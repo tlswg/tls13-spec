@@ -2818,12 +2818,7 @@ send the ServerHello, rather than waiting for the client's
 
 As noted in {{zero-rtt-data}}, TLS provides only a limited
 inter-connection mechanism for replay protection for data sent by the
-client in the first flight.  As a special case, implementations where
-the server configuration, is delivered out of band (as has been
-proposed for DTLS-SRTP {{RFC5763}}), MAY use a unique server
-configuration identifier for each connection, thus preventing
-replay. Implementations are responsible for ensuring uniqueness of the
-identifier in this case.
+client in the first flight. 
 
 The "ticket_age" extension sent by the client SHOULD be used by
 servers to limit the time over which the first flight might be
@@ -2857,7 +2852,7 @@ risk greater exposure to replay attacks.
 
 %%% Key Exchange Messages
        struct {
-           uint64 ticket_age;
+           uint32 ticket_age;
        } TicketAge;
 
 When the client sends the "early_data" extension, it MUST also send
@@ -2865,7 +2860,8 @@ a "ticket_age" extension in its EncryptedExtensions block. This value
 contains the time elapsed since the client learned about the server
 configuration that it is using, in milliseconds.  This value can
 be used by the server to limit the time over which early data can
-be replayed.
+be replayed. Note: because ticket lifetimes are restricted to a week,
+32 bits is enough to represent any plausible age, even in milliseconds.
        
 
 ### Server Parameters
