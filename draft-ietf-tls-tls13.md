@@ -1659,7 +1659,7 @@ its own ServerHello which indicates the negotiated connection parameters. [{{ser
 The combination of the ClientHello and the ServerHello determines
 the values of ES and SS, as described above. If either a pure
 (EC)DHE or (EC)DHE-PSK cipher suite is in use, then the ServerHello
-will will contain a "key_share" extension with the server's ephemeral
+will contain a "key_share" extension with the server's ephemeral
 Diffie-Hellman share which MUST be in the same group.
 If a pure PSK or an (EC)DHE-PSK cipher suite is negotiated, then the
 ServerHello will contain a "pre_shared_key" extension indicating
@@ -1686,7 +1686,7 @@ Certificate
 : the certificate of the endpoint. This message is omitted if the
   server is not authenticating with a certificate (i.e.,
   with PSK or (EC)DHE-PSK cipher suites). Note that if raw public keys
-  {{RFC7250}} or or the cached information extension
+  {{RFC7250}} or the cached information extension
   {{?I-D.ietf-tls-cached-info}} are in use, then this message
   will not contain a certificate but rather some other value
   corresponding to the server's long-term key.
@@ -2734,7 +2734,7 @@ and is more easily extensible in the handshake state machine.
 
 #### Early Data Indication
 
-When PSK resumption is used the the client can send application data
+When PSK resumption is used the client can send application data
 in its first flight of messages. If the client opts to do so, it MUST
 supply an "early_data" extension as well as the "pre_shared_key"
 extension.
