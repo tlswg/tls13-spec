@@ -2013,7 +2013,7 @@ bytes of their Random value to the bytes:
 TLS 1.3 clients receiving a TLS 1.2 or below ServerHello MUST check
 that the top eight octets are not equal to either of these values. TLS
 1.2 clients SHOULD also perform this check if the ServerHello
-indicates TLS 1.1 or below. If a match is found the client MUST abort
+indicates TLS 1.1 or below. If a match is found, the client MUST abort
 the handshake with a fatal "illegal_parameter" alert. This mechanism
 provides limited protection against downgrade attacks over and above
 that provided by the Finished exchange: because the ServerKeyExchange
@@ -2734,7 +2734,7 @@ and is more easily extensible in the handshake state machine.
 
 #### Early Data Indication
 
-When PSK resumption is used the client can send application data
+When PSK resumption is used, the client can send application data
 in its first flight of messages. If the client opts to do so, it MUST
 supply an "early_data" extension as well as the "pre_shared_key"
 extension.
