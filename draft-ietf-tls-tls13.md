@@ -1587,15 +1587,15 @@ Exch | + key_share*
                                                        ServerHello  ^ Key
                                                       + key_share*  | Exch
                                                  + pre_shared_key*  v
-                                             [EncryptedExtensions]  ^  Server
-                                             [CertificateRequest*]  v  Parameters
-                                                    [Certificate*]  ^
-                                              [CertificateVerify*]  | Auth
-                                                        [Finished]  v
+                                             {EncryptedExtensions}  ^  Server
+                                             {CertificateRequest*}  v  Parameters
+                                                    {Certificate*}  ^
+                                              {CertificateVerify*}  | Auth
+                                                        {Finished}  v
                                  <--------     [Application Data*]
-     ^ [Certificate*]
-Auth | [CertificateVerify*]
-     v [Finished]                -------->
+     ^ {Certificate*}
+Auth | {CertificateVerify*}
+     v {Finished}                -------->
        [Application Data]        <------->      [Application Data]
 
               +  Indicates extensions sent in the
@@ -1604,7 +1604,11 @@ Auth | [CertificateVerify*]
               *  Indicates optional or situation-dependent
                  messages that are not always sent.
 
-              [] Indicates encrypted messages
+              {} Indicates messages protected using keys
+                 derived from handshake_traffic_secret.
+
+              [] Indicates messages protected using keys
+                 derived from traffic_secret_N
 ~~~
 {: #tls-full title="Message flow for full TLS Handshake"}
 
@@ -1727,15 +1731,15 @@ fatal alert (see {{alert-protocol}}).
            + key_share             -------->
                                                          ServerHello
                                                          + key_share
-                                               [EncryptedExtensions]
-                                               [CertificateRequest*]
-                                                      [Certificate*]
-                                                [CertificateVerify*]
-                                                          [Finished]
+                                               {EncryptedExtensions}
+                                               {CertificateRequest*}
+                                                      {Certificate*}
+                                                {CertificateVerify*}
+                                                          {Finished}
                                    <--------     [Application Data*]
-         [Certificate*]
-         [CertificateVerify*]
-         [Finished]                -------->
+         {Certificate*}
+         {CertificateVerify*}
+         {Finished}                -------->
          [Application Data]        <------->     [Application Data]
 ~~~
 {: #tls-restart title="Message flow for a full handshake with mismatched parameters"}
@@ -1778,15 +1782,15 @@ Initial Handshake:
         + key_share              -------->
                                                        ServerHello
                                                        + key_share
-                                             [EncryptedExtensions]
-                                             [CertificateRequest*]
-                                                    [Certificate*]
-                                              [CertificateVerify*]
-                                                        [Finished]
+                                             {EncryptedExtensions}
+                                             {CertificateRequest*}
+                                                    {Certificate*}
+                                              {CertificateVerify*}
+                                                        {Finished}
                                  <--------     [Application Data*]
-       [Certificate*]
-       [CertificateVerify*]
-       [Finished]                -------->
+       {Certificate*}
+       {CertificateVerify*}
+       {Finished}                -------->
                                  <--------      [NewSessionTicket]
        [Application Data]        <------->      [Application Data]
 
@@ -1798,10 +1802,10 @@ Subsequent Handshake:
                                                        ServerHello
                                                   + pre_shared_key
                                                       + key_share*
-                                             [EncryptedExtensions]
-                                                        [Finished]
+                                             {EncryptedExtensions}
+                                                        {Finished}
                                  <--------     [Application Data*]
-       [Finished]                -------->
+       {Finished}                -------->
        [Application Data]        <------->      [Application Data]
 ~~~
 {: #tls-resumption-psk title="Message flow for resumption and PSK"}
@@ -1835,13 +1839,13 @@ in the first flight, the rest of the handshake uses the same messages.
                                                          ServerHello
                                                         + early_data
                                                          + key_share
-                                               [EncryptedExtensions]
-                                               [CertificateRequest*]
-                                                          [Finished]
+                                               {EncryptedExtensions}
+                                               {CertificateRequest*}
+                                                          {Finished}
                                    <--------     [Application Data*]
-         [Certificate*]
-         [CertificateVerify*]
-         [Finished]                -------->
+         {Certificate*}
+         {CertificateVerify*}
+         {Finished}                -------->
 
          [Application Data]        <------->      [Application Data]
 
@@ -1849,10 +1853,13 @@ in the first flight, the rest of the handshake uses the same messages.
                   messages that are not always sent.
 
                () Indicates messages protected using keys
-                  derived from the PSK.
+                  derived from early_traffic_secret.
+
+               {} Indicates messages protected using keys
+                  derived from handshake_traffic_secret.
 
                [] Indicates messages protected using keys
-                  derived from the master secret.
+                  derived from traffic_secret_N
 ~~~
 {: #tls-0-rtt title="Message flow for a zero round trip handshake"}
 
