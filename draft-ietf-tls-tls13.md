@@ -3494,15 +3494,15 @@ based on HKDF {{RFC5869}}:
   - HkdfLabel.label is "TLS 1.3, " + Label
   - HkdfLabel.hash_value is HashValue.
 
-  Add-Secret(Secret, InputSecret) =
+  Add-Secret(Old, New) =
        HKDF-Extract(HKDF-Expand-Label(Secret, "add secret", "", L),
-                                      InputSecret))
+                   InputSecret))
 
   where L denotes the length of the underlying hash function for
   HKDF.
 
   Derive-Secret(Secret, Label, Messages) =
-       HKDF-Extract(HKDF-Expand(Secret, Label, Hash(Messages), L))
+       HKDF-Extract(0, HKDF-Expand(Secret, Label, Hash(Messages), L))
 ~~~~       
 
 Given a set of n InputSecrets, the final "master secret" is computed
@@ -3514,36 +3514,49 @@ present version of TLS 1.3, secrets are added in the following order:
 - PSK
 - (EC)DHE shared secret
 
-This produces a full key derivation schedule as below.
+This produces a full key derivation schedule shown in the diagram below.
+In this diagram, the following formatting conventions apply:
+
+- Add-Secret is drawn as taking the Old argument from the top and the New argument
+  from the left.
+- Derive-Secret's first argument, represented by ".", is the secret indicated
+  by the arrow coming in from the left.
 
 ~~~~ 
                  0
                  |
+                 v
    PSK ->   Add-Secret()
                  |
                  v
-           Early Secret  --> Derive-Secret("early traffic secret",
-                 |                         ClientHello) -> early_traffic_secret
-                 |                         
+           Early Secret  --> Derive-Secret(., "early traffic secret",
+                 |                         ClientHello) =
+                 |                         = early_traffic_secret 
                  v
 (EC)DHE ->  Add-Secret()
                  |
                  v
-           Master Secret --> Derive-Secret("handshake traffic secret",
-                 |                         ClientHello + ServerHello) ->
-                 |                         handshake_traffic_secret
+              Handshake
+               Secret -----> Derive-Secret(., "handshake traffic secret",
+                 |                         ClientHello + ServerHello)
+                 |                         = handshake_traffic_secret
+                 v
+      0 ->  Add-Secret()
                  |
-                 +---------> Derive-Secret("application traffic secret",
-                 |                         ClientHello...Server Finished) ->
-                 |                         traffic_secret_0
+                 v
+                MS2
+                 |
+                 +---------> Derive-Secret(., "application traffic secret",
+                 |                         ClientHello...Server Finished)
+                 |                         = traffic_secret_0
                  |                        
-                 +---------> Derive-Secret("exporter master secret",
-                 |                         ClientHello...Client Finished) ->
-                 |                         exporter_secret       
+                 +---------> Derive-Secret(., "exporter master secret",
+                 |                         ClientHello...Client Finished)
+                 |                         = exporter_secret       
                  |
-                 +---------> Derive-Secret("resumption master secret",
-                                           ClientHello...Client Finished) ->
-                                           resumption_secret
+                 +---------> Derive-Secret(., "resumption master secret",
+                                           ClientHello...Client Finished)
+                                           = resumption_secret
 ~~~~
 
 The general pattern here is that the secrets shown down the left side
@@ -3557,11 +3570,8 @@ even with the same secret. In a 0-RTT exchange, Derive-Secret is
 called with four distinct transcripts; in a 1-RTT only exchange
 with three distinct transcripts.
 
-If no PSK is available, then the first Add-Secret() stage is omitted
-and the (EC)DHE secret is mixed with the empty secret (0). Of course, this
-means that it is not possible to send 0-RTT data. If no (EC)DHE secret
-is available, then the second Add-Secret() stage is omitted and the
-secret derived from the PSK is used directly as the Master Secret.
+If a given secret is not available, then a null value consisting
+of L 0s is used.
 
 
 ## Updating Traffic Keys and IVs {#updating-traffic-keys}
