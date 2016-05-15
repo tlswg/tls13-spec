@@ -3577,8 +3577,8 @@ even with the same secret. In a 0-RTT exchange, Derive-Secret is
 called with four distinct transcripts; in a 1-RTT only exchange
 with three distinct transcripts.
 
-If a given secret is not available, then a null value consisting
-of L 0s is used.
+If a given secret is not available, then the 0-value consisting of
+a string of L 0s is used.
 
 
 ## Updating Traffic Keys and IVs {#updating-traffic-keys}
