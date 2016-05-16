@@ -3047,8 +3047,8 @@ for each scenario:
 | Mode | Handshake Context | Base Key |
 |------|-------------------|----------|
 | 0-RTT | ClientHello | Early Secret |
-| 1-RTT (Server) | ClientHello ... later of EncryptedExtensions/CertificateRequest | master secret |
-| 1-RTT (Client) | ClientHello ... ServerFinished     | master secret |
+| 1-RTT (Server) | ClientHello ... later of EncryptedExtensions/CertificateRequest | handshake secret |
+| 1-RTT (Client) | ClientHello ... ServerFinished     | handshake secret |
 | Post-Handshake | ClientHello ... ClientFinished + CertificateRequest | master secret |
 
 Note: The Handshake Context for the last three rows does not include any 0-RTT
@@ -3325,9 +3325,6 @@ client_finished_key =
 
 server_finished_key =
     HKDF-Expand-Label(BaseKey, "server finished", "", L)
-
-client_post_handshake_finished_key =
-    HKDF-Expand-Label(BaseKey, "client post-handshake finished", "", L)
 ~~~
 
 Structure of this message:
@@ -3537,7 +3534,7 @@ In this diagram, the following formatting conventions apply:
                  |
                  v
            Early Secret  --> Derive-Secret(., "early traffic secret",
-                 |                         ClientHello) =
+                 |                         ClientHello)
                  |                         = early_traffic_secret 
                  v
 (EC)DHE ->  Add-Secret()
