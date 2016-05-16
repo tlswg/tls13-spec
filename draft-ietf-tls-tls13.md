@@ -3548,7 +3548,7 @@ In this diagram, the following formatting conventions apply:
       0 ->  Add-Secret()
                  |
                  v
-                MS2
+            Master Secret
                  |
                  +---------> Derive-Secret(., "application traffic secret",
                  |                         ClientHello...Server Finished)
