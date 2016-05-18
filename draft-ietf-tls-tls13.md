@@ -2625,7 +2625,10 @@ Diffie-Hellman {{DH}} parameters for both clients and servers are encoded in
 the opaque key_exchange field of a KeyShareEntry in a KeyShare structure.
 The opaque value contains the
 Diffie-Hellman public value (dh_Y = g^X mod p),
-encoded as a big-endian integer.
+encoded as a big-endian integer, padded with zeros to the size of p.
+
+Note: For a given Diffie-Hellman group, the padding results in all public keys
+having the same length.
 
 %%% Key Exchange Messages
        opaque dh_Y<1..2^16-1>;
@@ -4187,6 +4190,9 @@ Cryptographic details:
 - Do you use a strong and, most importantly, properly seeded random number
   generator (see {{random-number-generation-and-seeding}}) Diffie-Hellman
   private values, the ECDSA "k" parameter, and other security-critical values?
+
+- Do you zero-pad Diffie-Hellman public key values to the group size (see
+  {{ffdhe-param}})?
 
 
 # Backward Compatibility
