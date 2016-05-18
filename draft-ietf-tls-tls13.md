@@ -4148,7 +4148,7 @@ TLS protocol issues:
   (see {{backward-compatibility}})
 
 -  Do you handle TLS extensions in ClientHello correctly, including
-  omitting the extensions field completely?
+  unknown extensions?
 
 -  When the server has requested a client certificate, but no
   suitable certificate is available, do you correctly send an empty
@@ -4159,6 +4159,14 @@ TLS protocol issues:
   scanning from the end for the ContentType, do you avoid scanning
   past the start of the cleartext in the event that the peer has sent
   a malformed plaintext of all-zeros?
+
+- When processing a ClientHello containing a version of { 3, 5 } or higher, do
+  you respond with the highest common version of TLS rather than requiring an
+  exact match?
+
+- Do you ignore unrecognized cipher suites (see {{client-hello}}), named groups
+  (see {{negotiated-groups}}), and signature algorithms (see
+  {{signature-algorithms}})?
 
 Cryptographic details:
 
