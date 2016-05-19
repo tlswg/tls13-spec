@@ -3578,8 +3578,8 @@ this section then re-deriving the traffic keys as described in
 
 The next-generation traffic_secret is computed as:
 
-  traffic_secret_N+1 = Derive-Secret(traffic_secret_N,
-                                     "traffic secret", "", L)
+  traffic_secret_N+1 = HKDF-Expand-Label(traffic_secret_N,
+                                         "application traffic secret", "", L)
 
 Once traffic_secret_N+1 and its associated traffic keys have been computed,
 implementations SHOULD delete traffic_secret_N. Once the directional
