@@ -4197,12 +4197,13 @@ Cryptographic details:
 
 ## Client Tracking Prevention
 
-Clients concerned with privacy against tracking by passive observers
-SHOULD use a PSK/session ticket at most once. Servers SHOULD issue
-more than one session ticket per handshake, or issue a new session
-ticket on every resumption handshake, to assist in the privacy of the
-client while preserving the performance advantage of session
-resumption.
+Clients SHOULD NOT reuse a session ticket for multiple connections. Reuse
+of a session ticket allows passive observers to correlate different connections.
+Servers that issue session tickets SHOULD offer at least as many session tickets
+as the number of connections that a client might use; for example, a web browser
+using HTTP/1.1 might open six connections to a server. Servers SHOULD issue new
+session tickets with every connection. This ensures that clients are always able
+to use a new session ticket when creating a new connection.
 
 
 # Backward Compatibility
