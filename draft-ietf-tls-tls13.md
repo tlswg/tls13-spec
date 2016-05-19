@@ -3027,14 +3027,14 @@ supporting certificates in the chain. Note that certificate-based
 client authentication is not available in the 0-RTT case.
 
 CertificateVerify
-: A signature over the value Hash(Handshake Context + Certificate) + session_context
+: A signature over the value Hash(Handshake Context + Certificate) + resumption_context
 
 Finished
 : A MAC over the value Hash(Handshake Context + Certificate + CertificateVerify) +
-  session_context using  a MAC key derived from the base key.
+  resumption_context using  a MAC key derived from the base key.
 {:br}
 
-If this is a resumed handshake (i.e., using resumption PSK), then the session_context
+If this is a resumed handshake (i.e., using resumption PSK), then the resumption_context
 value is the resumption_context corresponding to the PSK. Otherwise, it is a string
 of zeros as long as the hash length.
 
@@ -3514,7 +3514,7 @@ based on HKDF {{RFC5869}}:
 
   Derive-Secret(Secret, Label, Messages) =
        HKDF-Expand-Label(Secret, Label,
-                         Hash(Messages) + session_context, L))
+                         Hash(Messages) + resumption_context, L))
 ~~~~       
 
 Given a set of n InputSecrets, the final "master secret" is computed
