@@ -4195,6 +4195,16 @@ Cryptographic details:
   {{ffdhe-param}})?
 
 
+## Client Tracking Prevention
+
+Clients concerned with privacy against tracking by passive observers
+SHOULD use a PSK/session ticket at most once. Servers SHOULD issue
+more than one session ticket per handshake, or issue a new session
+ticket on every resumption handshake, to assist in the privacy of the
+client while preserving the performance advantage of session
+resumption.
+
+
 # Backward Compatibility
 
 The TLS protocol provides a built-in mechanism for version negotiation between
