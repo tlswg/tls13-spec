@@ -2498,7 +2498,7 @@ secp256r1, etc.
 : Indicates support of the corresponding named curve.
   Note that some curves are also recommended in ANSI
   X9.62 {{X962}} and FIPS 186-4 {{DSS}}. Others are recommended
-  in {{!I-D.irtf-cfrg-curves}}.
+  in {{RFC7748}}.
   Values 0xFE00 through 0xFEFF are reserved for private use.
 
 ffdhe2048, etc.
@@ -2624,41 +2624,30 @@ Presumably which integer DH groups and which curves.]]
 Diffie-Hellman {{DH}} parameters for both clients and servers are encoded in
 the opaque key_exchange field of a KeyShareEntry in a KeyShare structure.
 The opaque value contains the
-Diffie-Hellman public value (dh_Y = g^X mod p),
+Diffie-Hellman public value (Y = g^X mod p),
 encoded as a big-endian integer, padded with zeros to the size of p.
 
 Note: For a given Diffie-Hellman group, the padding results in all public keys
 having the same length.
 
-%%% Key Exchange Messages
-       opaque dh_Y<1..2^16-1>;
-
 ##### ECDHE Parameters {#ecdhe-param}
 
 ECDHE parameters for both clients and servers are encoded in the
 the opaque key_exchange field of a KeyShareEntry in a KeyShare structure.
-The opaque value conveys the Elliptic
-Curve Diffie-Hellman public value (ecdh_Y) represented as a byte
-string ECPoint.point.
 
-%%% Key Exchange Messages
-       opaque point <1..2^8-1>;
-
-point
-: For secp256r1, secp384r1 and secp521r1, this is the byte string
-  representation of an elliptic curve point following the conversion
-  routine in Section 4.3.6 of ANSI X9.62 {{X962}}.
-
-  For x25519 and x448, this is raw opaque octet-string representation of
-  point (in the format those functions use), 32 octets for x25519 and 56
-  octets for x448.
-{:br }
+For secp256r1, secp384r1 and secp521r1, the contents are the byte string
+representation of an elliptic curve public value following the conversion
+routine in Section 4.3.6 of ANSI X9.62 {{X962}}.
 
 Although X9.62 supports multiple point formats, any given curve
 MUST specify only a single point format. All curves currently
 specified in this document MUST only be used with the uncompressed
 point format (the format for all ECDH functions is considered
 uncompressed).
+
+For x25519 and x448, the contents are the byte string inputs and outputs of the
+corresponding functions defined in {{RFC7748}}, 32 bytes for x25519 and 56
+bytes for x448.
 
 Note: Versions of TLS prior to 1.3 permitted point negotiation;
 TLS 1.3 removes this feature in favor of a single point format
@@ -3695,9 +3684,10 @@ other than for computing other secrets.)
 
 ECDH functions are used as follows:
 
-* The public key to put into ECPoint.point structure is the result of applying
-  the ECDH function to the secret key of appropriate length (into scalar
-  input) and the standard public basepoint (into u-coordinate point input).
+* The public key to put into the KeyShareEntry.key_exchange structure is the
+  result of applying the ECDH function to the secret key of appropriate length
+  (into scalar input) and the standard public basepoint (into u-coordinate point
+  input).
 * The ECDH shared secret is the result of applying ECDH function to the secret
   key (into scalar input) and the peer's public key (into u-coordinate point
   input). The output is used raw, with no processing.
@@ -4381,9 +4371,8 @@ verify message (if present) covers the entire handshake up to that
 point and thus attests the certificate holder's desire to use
 the ephemeral DHE keys.
 
-Peers SHOULD validate each other's public key Y (dh_Ys offered by
-the server or DH_Yc offered by the client) by ensuring that 1 < Y <
-p-1.  This simple check ensures that the remote peer is properly
+Peers SHOULD validate each other's public key Y by ensuring that
+1 < Y < p-1.  This simple check ensures that the remote peer is properly
 behaved and isn't forcing the local system into a small subgroup.
 
 Additionally, using a fresh key for each handshake provides Perfect
