@@ -3672,9 +3672,12 @@ hashed.]]
 ###  Diffie-Hellman
 
 A conventional Diffie-Hellman computation is performed. The negotiated key (Z)
-is used as the shared secret, and is used in the key schedule as
-specified above. Leading bytes of Z that contain all zero bits are stripped
-before it is used as the input to HKDF.
+is converted to byte string by encoding in big-endian, padded with zeros up to
+the size of the prime. This byte string is used as the shared secret, and is
+used in the key schedule as specified above.
+
+Note that this construction differs from previous versions of TLS which remove
+leading zeros.
 
 ### Elliptic Curve Diffie-Hellman
 
@@ -4180,8 +4183,8 @@ Cryptographic details:
   (see {{cryptographic-attributes}})? Do you verify that the RSA padding
   doesn't have additional data after the hash value? {{FI06}}
 
--  When using Diffie-Hellman key exchange, do you correctly strip
-  leading zero bytes from the negotiated key (see {{diffie-hellman}})?
+-  When using Diffie-Hellman key exchange, do you correctly preserve
+  leading zero bytes in the negotiated key (see {{diffie-hellman}})?
 
 -  Does your TLS client check that the Diffie-Hellman parameters sent
   by the server are acceptable (see
