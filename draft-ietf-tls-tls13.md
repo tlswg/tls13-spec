@@ -4151,7 +4151,7 @@ TLS protocol issues:
   (see {{backward-compatibility}})
 
 -  Do you handle TLS extensions in ClientHello correctly, including
-  unknown extensions?
+  unknown extensions or omitting the extensions field completely?
 
 -  When the server has requested a client certificate, but no
   suitable certificate is available, do you correctly send an empty
