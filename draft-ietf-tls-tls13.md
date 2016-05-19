@@ -3046,10 +3046,10 @@ for each scenario:
 
 | Mode | Handshake Context | Base Key |
 |------|-------------------|----------|
-| 0-RTT | ClientHello | Early Secret |
-| 1-RTT (Server) | ClientHello ... later of EncryptedExtensions/CertificateRequest | handshake secret |
-| 1-RTT (Client) | ClientHello ... ServerFinished     | handshake secret |
-| Post-Handshake | ClientHello ... ClientFinished + CertificateRequest | master secret |
+| 0-RTT | ClientHello | early_traffic_secret|
+| 1-RTT (Server) | ClientHello ... later of EncryptedExtensions/CertificateRequest | handshake_traffic_secret |
+| 1-RTT (Client) | ClientHello ... ServerFinished     | handshake_traffic_secret |
+| Post-Handshake | ClientHello ... ClientFinished + CertificateRequest | traffic_secret_0 |
 
 Note: The Handshake Context for the last three rows does not include any 0-RTT
   handshake messages, regardless of whether 0-RTT is used.
@@ -3482,7 +3482,7 @@ based on HKDF {{RFC5869}}:
 ~~~~
   HKDF-Extract(Salt, IKM) as defined in {{RFC5869}}.
   
-  HKDF-Expand-Label(Secret, Label, HashValue, Length) =
+  HKDF-Expand-Label(Secret, Label, Messages, Length) =
        HKDF-Expand(Secret, HkdfLabel, Length)
 
   Where HkdfLabel is specified as:
@@ -3497,16 +3497,6 @@ based on HKDF {{RFC5869}}:
   - HkdfLabel.length is Length
   - HkdfLabel.label is "TLS 1.3, " + Label
   - HkdfLabel.hash_value is HashValue.
-
-  Add-Secret(Old, New) =
-       HKDF-Extract(HKDF-Expand-Label(Secret, "add secret", "", L),
-                   InputSecret))
-
-  where L denotes the length of the underlying hash function for
-  HKDF.
-
-  Derive-Secret(Secret, Label, Messages) =
-       HKDF-Extract(0, HKDF-Expand(Secret, Label, Hash(Messages), L))
 ~~~~       
 
 Given a set of n InputSecrets, the final "master secret" is computed
@@ -3521,56 +3511,55 @@ present version of TLS 1.3, secrets are added in the following order:
 This produces a full key derivation schedule shown in the diagram below.
 In this diagram, the following formatting conventions apply:
 
-- Add-Secret is drawn as taking the Old argument from the top and the New argument
+- HKDF-Extract is drawn as taking the Salt argument from the top and the IKM argument
   from the left.
-- Derive-Secret's first argument, represented by ".", is the secret indicated
-  by the arrow coming in from the left.
+- HKDF's PRK argument is indicated by the arrow coming in from the left. For instance,
+  the Early Secret is the PRK for generating the early_traffic-secret.
 
 ~~~~ 
                  0
                  |
                  v
-   PSK ->   Add-Secret()
+   PSK ->  HKDF-Extract
                  |
                  v
-           Early Secret  --> Derive-Secret(., "early traffic secret",
-                 |                         ClientHello)
-                 |                         = early_traffic_secret 
+           Early Secret  --> HKDF-Expand-Label(., "early traffic secret",
+                 |                             ClientHello)
+                 |                             = early_traffic_secret 
                  v
-(EC)DHE ->  Add-Secret()
+(EC)DHE -> HKDF-Extract
                  |
                  v
               Handshake
-               Secret -----> Derive-Secret(., "handshake traffic secret",
-                 |                         ClientHello + ServerHello)
-                 |                         = handshake_traffic_secret
+               Secret -----> HKDF-Expand-Label(., "handshake traffic secret",
+                 |                             ClientHello + ServerHello)
+                 |                             = handshake_traffic_secret
                  v
-      0 ->  Add-Secret()
+      0 -> HKDF-Extract
                  |
                  v
             Master Secret
                  |
-                 +---------> Derive-Secret(., "application traffic secret",
-                 |                         ClientHello...Server Finished)
-                 |                         = traffic_secret_0
+                 +---------> HKDF-Expand-Label(., "application traffic secret",
+                 |                             ClientHello...Server Finished)
+                 |                             = traffic_secret_0
                  |                        
-                 +---------> Derive-Secret(., "exporter master secret",
-                 |                         ClientHello...Client Finished)
-                 |                         = exporter_secret       
+                 +---------> HKDF-Expand-Label(., "exporter master secret",
+                 |                             ClientHello...Client Finished)
+                 |                             = exporter_secret       
                  |
-                 +---------> Derive-Secret(., "resumption master secret",
-                                           ClientHello...Client Finished)
-                                           = resumption_secret
+                 +---------> HKDF-Expand-Label(., "resumption master secret",
+                                               ClientHello...Client Finished)
+                                               = resumption_secret
 ~~~~
 
 The general pattern here is that the secrets shown down the left side
 of the diagram are just raw entropy without context, whereas the
 secrets down the right side include handshake context and therefore
-can be used to derive working keys without additional context. With
-the exception of finished keys, the secrets down the left are never
-used to generate working keying material. Note that the different
-calls to Derive-Secret() may take different Messages arguments,
-even with the same secret. In a 0-RTT exchange, Derive-Secret is
+can be used to derive working keys without additional context.
+Note that the different
+calls to HKDF-Expand-Label may take different Context arguments,
+even with the same secret. In a 0-RTT exchange, HKDF-Expand-Label is
 called with four distinct transcripts; in a 1-RTT only exchange
 with three distinct transcripts.
 
