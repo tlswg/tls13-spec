@@ -2894,7 +2894,7 @@ be replayed. Note: because ticket lifetimes are restricted to a week,
 When this message will be sent:
 
 > In all handshakes, the server MUST send the
-EncryptedExtensions message MUST be sent immediately after the
+EncryptedExtensions message immediately after the
 ServerHello message. This is the first message that is encrypted
 under keys derived from ES. If the client indicates "early_data"
 in its ClientHello, it MUST also send EncryptedExtensions immediately
