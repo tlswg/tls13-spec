@@ -2374,8 +2374,9 @@ The "extension_data" field of this extension contains a
            dsa_sha256_RESERVED (0x0402),
            dsa_sha384_RESERVED (0x0502),
            dsa_sha512_RESERVED (0x0602),
+           ecdsa_sha1_RESERVED (0x0203),
            obsolete_RESERVED (0x0000..0x0200),
-           obsolete_RESERVED (0x0203..0x0400),
+           obsolete_RESERVED (0x0204..0x0400),
            obsolete_RESERVED (0x0404..0x0500),
            obsolete_RESERVED (0x0504..0x0600),
            obsolete_RESERVED (0x0604..0x06FF),
@@ -2428,12 +2429,12 @@ The semantics of this extension are somewhat complicated because the cipher
 suite adds additional constraints on signature algorithms.
 {{server-certificate-selection}} describes the appropriate rules.
 
-rsa_pkcs1_sha1 and dsa_sha1 SHOULD NOT be offered. Clients offering these
-values for backwards compatibility MUST list them as the lowest priority
-(listed after all other algorithms in the supported_signature_algorithms
-vector). TLS 1.3 servers MUST NOT offer a SHA-1 signed certificate unless no
-valid certificate chain can be produced without it (see
-{{server-certificate-selection}}).
+rsa_pkcs1_sha1, dsa_sha1, and ecdsa_sha1 SHOULD NOT be offered. Clients
+offering these values for backwards compatibility MUST list them as the lowest
+priority (listed after all other algorithms in the
+supported_signature_algorithms vector). TLS 1.3 servers MUST NOT offer a SHA-1
+signed certificate unless no valid certificate chain can be produced without it
+(see {{server-certificate-selection}}).
 
 The signatures on certificates that are self-signed or certificates that are
 trust anchors are not validated since they begin a certification path (see
@@ -3302,8 +3303,9 @@ message.
 in the sender's end-entity certificate. RSA signatures MUST use an
 RSASSA-PSS algorithm, regardless of whether RSASSA-PKCS-v1_5 algorithms
 appear in "signature_algorithms". SHA-1 MUST NOT be used in any signatures in
-CertificateVerify. (Note that rsa_pkcs1_sha1 and dsa_sha1, the only defined
-SHA-1 signature algorithms, are undefined for CertificateVerify signatures.)
+CertificateVerify. (Note that all SHA-1 signature algorithms in this
+specification are defined solely for use in certificates, not CertificateVerify
+signatures.)
 
 Note: When used with non-certificate-based handshakes (e.g., PSK), the
 client's signature does not cover the server's certificate directly,
