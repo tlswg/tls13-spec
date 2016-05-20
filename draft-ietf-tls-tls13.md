@@ -3582,7 +3582,7 @@ called with four distinct transcripts; in a 1-RTT only exchange
 with three distinct transcripts.
 
 If a given secret is not available, then the 0-value consisting of
-a string of L 0s is used.
+a string of L zeroes is used.
 
 
 ## Updating Traffic Keys and IVs {#updating-traffic-keys}
@@ -3628,7 +3628,7 @@ each class of traffic keys:
 | 0-RTT Handshake   | early_traffic_secret | "early handshake key expansion" |
 | 0-RTT Application | early_traffic_secret | "early application data key expansion" | 
 | Handshake         | handshake_traffic_secret | "handshake key expansion" |
-| Application Data  | traffic secret_N | "application data key expansion" | 
+| Application Data  | traffic_secret_N | "application data key expansion" | 
 
 The following table indicates the purpose values for each type of key:
 
@@ -3686,8 +3686,8 @@ the TLS PRF. This document replaces the PRF with HKDF, thus requiring
 a new construction. The exporter interface remains the same, however
 the value is computed as:
 
-    HKDF-Expand-Label(exporter_secret
-                      label, context_value, length)
+    HKDF-Expand-Label(exporter_secret,
+                      label, context_value, key_length)
 
 #  Mandatory Algorithms
 
