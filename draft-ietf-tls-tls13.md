@@ -346,11 +346,19 @@ draft-13
 
 - Flesh out 0-RTT PSK mode and shrink EarlyDataIndiation
 
-- Turn PSK-resumption response into an index to save room.
+- Turn PSK-resumption response into an index to save room
 
-- Move CertificateStatus to an extension.
+- Move CertificateStatus to an extension
 
 - Extra fields in NewSessionTicket.
+
+- Restructure key schedule and add a resumption_context value.
+
+- Require DH public keys and secrets to be zero-padded to the size
+  of the group.
+
+- Remove the redundant length fields in KeyShareEntry.
+
 
 draft-12
 
