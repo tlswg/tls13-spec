@@ -3518,7 +3518,7 @@ based on HKDF {{RFC5869}}:
 ~~~~       
 
 Given a set of n InputSecrets, the final "master secret" is computed
-by iteratively invoking Add-Secret with InputSecret_1, InputSecret_2,
+by iteratively invoking HKDF-Extract with InputSecret_1, InputSecret_2,
 etc.  The initial secret is simply a string of 0s as long as the size
 of the Hash that is the basis for the HKDF. Concretely, for the
 present version of TLS 1.3, secrets are added in the following order:
@@ -3534,6 +3534,7 @@ In this diagram, the following formatting conventions apply:
 - Derive-Secret's Secret argument is indicated by the arrow coming in
   from the left. For instance, the Early Secret is the Secret for
   generating the early_traffic-secret.
+  
 ~~~~ 
                  0
                  |
@@ -3576,7 +3577,7 @@ of the diagram are just raw entropy without context, whereas the
 secrets down the right side include handshake context and therefore
 can be used to derive working keys without additional context.
 Note that the different
-calls to Derive-Secret may take different Context arguments,
+calls to Derive-Secret may take different Messages arguments,
 even with the same secret. In a 0-RTT exchange, Derive-Secret is
 called with four distinct transcripts; in a 1-RTT only exchange
 with three distinct transcripts.
