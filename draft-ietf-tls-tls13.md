@@ -2372,21 +2372,22 @@ of preference. Note that a signature algorithm takes as input an
 arbitrary-length message, rather than a digest. Algorithms which
 traditionally act on a digest should be defined in TLS to first
 hash the input with a specified hash function and then proceed as usual.
+The code point groups listed above have the following meanings:
 
-rsa_pkcs1_sha1, etc.
+RSASSA-PKCS-v1_5 algorithms
 : Indicates a signature algorithm using RSASSA-PKCS1-v1_5 {{RFC3447}}
   with the corresponding hash algorithm as defined in {{SHS}}. These values
   refer solely to signatures which appear in certificates (see
   {{server-certificate-selection}}) and are not defined for use in signed
   TLS handshake messages (see {{digital-signing}}).
 
-ecdsa_secp256r1_sha256, etc.
+ECDSA algorithms
 : Indicates a signature algorithm using ECDSA {{ECDSA}}, the corresponding
   curve as defined in ANSI X9.62 {{X962}} and FIPS 186-4 {{DSS}}, and the
   corresponding hash algorithm as defined in {{SHS}}. The signature is
   represented as a DER-encoded {{X690}} ECDSA-Sig-Value structure.
 
-rsa_pss_sha256, etc.
+RSASSA-PSS algorithms
 : Indicates a signature algorithm using RSASSA-PSS {{RFC3447}} with
   MGF1. The digest used in the mask generation function and the digest
   being signed are both the corresponding hash algorithm as defined in
@@ -2394,7 +2395,7 @@ rsa_pss_sha256, etc.
   {{digital-signing}}), the length of the salt MUST be equal to the length
   of the digest output.
 
-ed25519, ed448
+EdDSA algorithms
 : Indicates a signature algorithm using EdDSA as defined in
   {{I-D.irtf-cfrg-eddsa}} or its successors. Note that these correspond to
   the "PureEdDSA" algorithms and not the "prehash" variants.
