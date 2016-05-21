@@ -3448,7 +3448,9 @@ allow_psk_resumption
 
 In all cases, the PSK or (EC)DHE-PSK cipher suites that the client
 offers/uses MUST have the same symmetric parameters (cipher/hash) as
-the cipher suite negotiated for this connection.
+the cipher suite negotiated for this connection. If no flags are set
+that the client recognizes, it MUST ignore the ticket.
+
 
 #### Post-Handshake Authentication
 
