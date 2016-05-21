@@ -350,6 +350,7 @@ draft-13
 
 - Move CertificateStatus to an extension.
 
+- Extra fields in NewSessionTicket.
 
 draft-12
 
@@ -1821,7 +1822,8 @@ negotiate an (EC)DHE-PSK cipher suite.
 
 ### Zero-RTT Data
 
-When resuming via a PSK, clients can also send data on their first
+When resuming via a PSK with an appropriate ticket (i.e., one with
+the "allow_early_data" flag), clients can also send data on their first
 flight ("early data"). This data is encrypted solely under keys
 derived using the PSK as the static secret.  As shown in
 {{tls-0-rtt}}, the Zero-RTT data is just added to the 1-RTT handshake
@@ -3381,10 +3383,31 @@ suite. Servers may send multiple tickets on a single connection, for
 instance after post-handshake authentication.
 
 %%% Ticket Establishment
-      struct {
-          uint32 ticket_lifetime;
-          opaque ticket<0..2^16-1>;
-      } NewSessionTicket;
+
+     enum { (65535) } TicketExtensionType;
+
+     struct {
+         TicketExtensionType extension_type;
+         opaque extension_data<0..2^16-1>;
+     } TicketExtension;
+
+     enum {
+       allow_early_data(1)
+       allow_dhe_resumption(2),
+       allow_psk_resumption(4)
+     } TicketFlags;
+     
+     struct {
+         uint32 ticket_lifetime;
+         uint32 flags;
+         TicketExtension extensions<2..2^16-2>;
+         opaque ticket<0..2^16-1>;
+     } NewSessionTicket;
+
+
+flags
+: A 32-bit value indicating the ways in which this ticket may
+  be used (as an OR of the flags values).
 
 ticket_lifetime
 : Indicates the lifetime in seconds as a 32-bit unsigned integer in
@@ -3397,18 +3420,37 @@ ticket_lifetime
   for a shorter period of time than what is stated in the
   ticket_lifetime.
 
+ticket_extensions
+: A placeholder for extensions in the ticket. Clients MUST ignore
+  unrecognized extensions.
+
 ticket
 : The value of the ticket to be used as the PSK identifier.
-{:br }
-
 The ticket itself is an opaque label. It MAY either be a database
 lookup key or a self-encrypted and self-authenticated value. Section
 4 of {{RFC5077}} describes a recommended ticket construction mechanism.
+{:br }
 
+The meanings of the flags are as follows:
 
-[[TODO: Should we require that tickets be bound to the existing
-symmetric cipher suite. See the TODO above about early_data and
-PSK.??]
+allow_early_data
+: When resuming with this ticket, the client MAY send data in its
+first flight (early data) encrypted under a key derived from
+this PSK.
+
+allow_dhe_resumption
+: This ticket MAY be used with (EC)DHE-PSK cipher
+  suite
+
+allow_psk_resumption
+: This ticket MAY be used with a pure PSK cipher
+  suite.
+{:br }
+
+In all cases, the PSK or (EC)DHE-PSK cipher suites that the client
+offers/uses MUST have the same symmetric parameters (cipher/hash) as
+the cipher suite negotiated for this connection. If no flags are set
+that the client recognizes, it MUST ignore the ticket.
 
 
 #### Post-Handshake Authentication
