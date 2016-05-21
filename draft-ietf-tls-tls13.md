@@ -3352,7 +3352,7 @@ traffic key.
 
 At any time after the server has received the client Finished message, it MAY send
 a NewSessionTicket message. This message creates a pre-shared key
-(PSK) binding between the ticket value and the following two values derived
+(PSK) binding between the ticket value(s) and the following two values derived
 from the resumption master secret:
 
 ~~~~
@@ -3366,10 +3366,20 @@ from the resumption master secret:
 The client MAY use this PSK for future handshakes by including
 the ticket value in the "pre_shared_key" extension in its ClientHello
 ({{pre-shared-key-extension}}) and supplying a suitable PSK cipher
-suite. Servers may send multiple tickets on a single connection, for
-instance after post-handshake authentication. For handshakes that
+suite. For handshakes that
 do not use a resumption_psk, the resumption_context is a string of
 L zeroes.
+
+The NewSessionTicket message may include multiple ticket
+labels bound to the same resumption_psk and context; this allows
+a client to initiate multiple concurrent connections in parallel
+without exposing themselves to tracking of the PSK label, which
+is carried in the clear. Servers MAY send multiple NewSessionTicket
+messages on a single connection, for
+instance after post-handshake authentication. When a client
+receives a NewSessionTicket message it SHOULD discard any existing
+tickets from this connection.
+
 
 %%% Ticket Establishment
 
@@ -3385,12 +3395,14 @@ L zeroes.
        allow_dhe_resumption(2),
        allow_psk_resumption(4)
      } TicketFlags;
-     
+
+     opaque Ticket<1..2^16-1>;
+  
      struct {
          uint32 ticket_lifetime;
          uint32 flags;
          TicketExtension extensions<2..2^16-2>;
-         opaque ticket<0..2^16-1>;
+         Ticket tickets<2..2^16-1>;
      } NewSessionTicket;
 
 
@@ -3413,11 +3425,12 @@ ticket_extensions
 : A placeholder for extensions in the ticket. Clients MUST ignore
   unrecognized extensions.
 
-ticket
-: The value of the ticket to be used as the PSK identifier.
-The ticket itself is an opaque label. It MAY either be a database
-lookup key or a self-encrypted and self-authenticated value. Section
-4 of {{RFC5077}} describes a recommended ticket construction mechanism.
+tickets
+: One or more ticket values, each of which is to be used as the PSK
+identifier.  The ticket itself is an opaque label. It MAY either be a
+database lookup key or a self-encrypted and self-authenticated
+value. Section 4 of {{RFC5077}} describes a recommended ticket
+construction mechanism.
 {:br }
 
 The meanings of the flags are as follows:
