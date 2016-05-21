@@ -2225,6 +2225,7 @@ The extension format is:
            pre_shared_key(41),
            early_data(42),
            ticket_age(43),
+           cookie (44),
            (65535)
        } ExtensionType;
 
@@ -2305,17 +2306,6 @@ be taken into account when designing new extensions:
 %%% Cookie Extension
        struct {
            opaque cookie<0..255>;
-       } CookieEntry;
-
-       struct {
-           select (role) {
-               case client:
-                   CookieEntry cookies<2..2^16-1>;
-
-               case server:
-                   uint32 cookie_lifetime_hint;
-                   CookieEntry cookie;
-           }
        } Cookie;
 
 Cookies serve two primary purposes:
@@ -2323,30 +2313,19 @@ Cookies serve two primary purposes:
 - Allowing the server to force the client to demonstrate reachability
   at their apparent network address (thus providing a measure of DoS
   protection). This is primarily useful for non-connection-oriented
-  transports.
+  transports (see {{?RFC6347}} for an example of this).
 
-- Allowing the to offload state to the client, thus allowing it to send
+- Allowing the server to offload state to the client, thus allowing it to send
   a HelloRetryRequest without storing any state.
 
 The client MUST provide a Cookie extension in every ClientHello it
 sends. If no cookies are available, the extension MUST be empty (i.e.,
-contain no cookies). The client MAY cache cookies from previous
-connections and use them with a future connection. If the client does
-not send a Cookie extension, the server MUST close the connection with
-a fatal "missing_extension" alert (see {{mti-extensions}}).  If
-possible, clients SHOULD bucket cookies by their local IP address and
-only send the most recent cookie delivered to that IP address. Clients
-which are not able to do so SHOULD send only the most recent cookie.
+contain an empty-length cookie, allowing the server to send a Cookie in the
+HelloRetryRequest. A server MAY supply a Cookie in the EncryptedExtensions
+block to allow the client to use it for future connections.
 
-A server which wants to implant a cookie on the client responds with
-a non-empty Cookie extension. The lifetime_hint indicates the 
-lifetime in seconds as a 32-bit unsigned integer in network byte order from
-the time the cookie was issued. A value of 0 indicates that the cookie
-SHALL only be used for this connection.
-
-Note: Because Cookies are transmitted in the clear, if a single cookie
-is used over multiple connections, it can be used by passive observers
-to link multiple connections.
+Note: Because Cookies are transmitted in the clear, clients MUST
+NOT use the same cookie for multiple connections.
 
 
 ####  Signature Algorithms
@@ -3802,6 +3781,7 @@ TLS-compliant application MUST implement the following TLS extensions:
   * Key Share ("key_share"; {{key-share}})
   * Pre-Shared Key ("pre_shared_key"; {{pre-shared-key-extension}})
   * Server Name Indication ("server_name"; Section 3 of {{RFC6066}})
+  * Cookie ("cookie"; {{cookie}})
 
 All implementations MUST send and use these extensions when offering
 applicable cipher suites:
@@ -3928,6 +3908,7 @@ is listed below:
 | pre_shared_key [[this document]]         |         Yes |     Clear |
 | early_data [[this document]]             |         Yes |     Clear |
 | ticket_age [[this document]]             |         Yes |     Early |
+| cookie [[this document]]                 |         Yes | Encrypted/HelloRetryRequest |
 
 
 In addition, this document defines two new registries to be maintained
