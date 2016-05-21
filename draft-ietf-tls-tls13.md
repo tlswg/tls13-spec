@@ -268,7 +268,7 @@ that has two basic properties:
   data encryption (e.g., AES {{AES}}).  The keys for
   this symmetric encryption are generated uniquely for each
   connection and are based on a secret negotiated by another
-  protocol (such as the TLS Handshake Protocol).
+  the TLS Handshake Protocol.
 
 - The connection is reliable.  Messages include an authentication
   tag which protects them against modification.
@@ -670,7 +670,7 @@ equivalent to the decimal value 16909060.
 
 Note that in some cases (e.g., DH parameters) it is necessary to represent
 integers as opaque vectors. In such cases, they are represented as unsigned
-integers (i.e., leading zero octets are not required even if the most
+integers (i.e., additional leading zero octets are not used even if the most
 significant bit is set).
 
 
@@ -884,12 +884,10 @@ value.
 
 #  The TLS Record Protocol
 
-The TLS Record Protocol is a layered protocol. At each layer, messages
-may include fields for length, description, and content.  The TLS Record
-Protocol takes messages to be transmitted, fragments the data into
-manageable blocks, protects the records, and transmits the
-result. Received data is decrypted and verified, reassembled, and then
-delivered to higher-level clients.
+The TLS Record Protocol takes messages to be transmitted, fragments
+the data into manageable blocks, protects the records, and transmits
+the result. Received data is decrypted and verified, reassembled, and
+then delivered to higher-level clients.
 
 Three protocols that use the TLS Record Protocol are described in this document: the TLS
 Handshake Protocol, the Alert Protocol, and
@@ -1036,11 +1034,11 @@ non-empty blocks of arbitrary size.
 ###  Fragmentation
 
 The record layer fragments information blocks into TLSPlaintext records
-carrying data in chunks of 2^14 bytes or less. Client message boundaries are
-not preserved in the record layer (i.e., multiple client messages of the same
+carrying data in chunks of 2^14 bytes or less. Message boundaries are
+not preserved in the record layer (i.e., multiple messages of the same
 ContentType MAY be coalesced into a single TLSPlaintext record, or a single
 message MAY be fragmented across several records).
-Alert messages {{alert-protocol}} MUST NOT be fragmented across records.
+Alert messages ({{alert-protocol}}) MUST NOT be fragmented across records.
 
 %%% Record Layer
        struct {
@@ -1233,6 +1231,11 @@ mechanism: Upon successful decryption of a TLSCiphertext.fragment,
 the receiving implementation scans the field from the end toward the
 beginning until it finds a non-zero octet. This non-zero octet is the
 content type of the message.
+This padding scheme was selected because it allows padding of any encrypted
+TLS record by an arbitrary size (from zero up to TLS record size
+limits) without introducing new content types.  The design also
+enforces all-zero padding octets, which allows for quick detection of
+padding errors.
 
 Implementations MUST limit their scanning to the cleartext returned
 from the AEAD decryption.  If a receiving implementation does not find
@@ -1242,13 +1245,6 @@ alert.
 
 The presence of padding does not change the overall record size
 limitations -- the full fragment plaintext may not exceed 2^14 octets.
-
-Versions of TLS prior to 1.3 had limited support for padding.  This
-padding scheme was selected because it allows padding of any encrypted
-TLS record by an arbitrary size (from zero up to TLS record size
-limits) without introducing new content types.  The design also
-enforces all-zero padding octets, which allows for quick detection of
-padding errors.
 
 Selecting a padding policy that suggests when and how much to pad is a
 complex topic, and is beyond the scope of this specification. If the
@@ -1261,7 +1257,7 @@ mechanism through TLS extensions or some other means.
 
 #  The TLS Handshaking Protocols
 
-TLS has three subprotocols that are used to allow peers to agree upon security
+TLS has two subprotocols that are used to allow peers to agree upon security
 parameters for the record layer, to authenticate themselves, to instantiate
 negotiated security parameters, and to report error conditions to each other.
 
@@ -1555,9 +1551,6 @@ unknown_psk_identity
  acceptable PSK identity is provided by the client. Sending this alert
  is OPTIONAL; servers MAY instead choose to send a "decrypt_error"
  alert to merely indicate an invalid PSK identity.
- [[TODO: This doesn't really make sense with the current PSK
- negotiation scheme where the client provides multiple PSKs in
- flight 1. https://github.com/tlswg/tls13-spec/issues/230]]
 {:br }
 
 New Alert values are assigned by IANA as described in {{iana-considerations}}.
@@ -1598,7 +1591,7 @@ Exch | + key_share*
                                                       + key_share*  | Exch
                                                  + pre_shared_key*  v
                                              {EncryptedExtensions}  ^  Server
-                                             {CertificateRequest*}  v  Parameters
+                                             {CertificateRequest*}  v  Params
                                                     {Certificate*}  ^
                                               {CertificateVerify*}  | Auth
                                                         {Finished}  v
@@ -1664,8 +1657,6 @@ CertificateRequest
 : if certificate-based client authentication is desired, the
   desired parameters for that certificate. This message will
   be omitted if client authentication is not desired.
-  [[OPEN ISSUE: See https://github.com/tlswg/tls13-spec/issues/184]].
-  [{{certificate-request}}]
 
 Finally, the client and server exchange Authentication messages. TLS
 uses the same set of messages every time that authentication is needed.
@@ -1689,8 +1680,8 @@ CertificateVerify
 
 Finished
 : a MAC over the entire handshake. This message provides key confirmation, binds the endpoint's identity
-  to the exchanged keys, and in some modes (0-RTT and PSK)
-  also authenticates the handshake using the Static Secret. [{{finished}}]
+  to the exchanged keys, and in PSK mode
+  also authenticates the handshake. [{{finished}}]
 {:br }
 
 Upon receiving the server's messages, the client responds with its Authentication
@@ -1754,7 +1745,7 @@ fatal alert (see {{alert-protocol}}).
 ~~~
 {: #tls-restart title="Message flow for a full handshake with mismatched parameters"}
 
-Note: the handshake hash for the message includes the initial
+Note: the handshake transcript includes the initial
 ClientHello/HelloRetryRequest exchange. It is not reset with the new
 ClientHello.
 
@@ -1785,7 +1776,6 @@ a PSK and the second uses it:
 
 ~~~
        Client                                               Server
-
 
 Initial Handshake:
        ClientHello
@@ -1979,49 +1969,6 @@ Structure of this message:
 the protocol.
 
 %%% Key Exchange Messages
-       struct {
-           opaque random_bytes[32];
-       } Random;
-
-random_bytes
-: 32 bytes generated by a secure random number generator.
-  See {{implementation-notes}} for additional information.
-{:br }
-
-TLS 1.3 server implementations which respond to a ClientHello with a
-client_version indicating TLS 1.2 or below MUST set the first eight
-bytes of their Random value to the bytes:
-
-      44 4F 57 4E 47 52 44 01
-
-TLS 1.2 server implementations which respond to a ClientHello with a
-client_version indicating TLS 1.1 or below SHOULD set the first eight
-bytes of their Random value to the bytes:
-
-      44 4F 57 4E 47 52 44 00
-
-
-TLS 1.3 clients receiving a TLS 1.2 or below ServerHello MUST check
-that the top eight octets are not equal to either of these values. TLS
-1.2 clients SHOULD also perform this check if the ServerHello
-indicates TLS 1.1 or below. If a match is found, the client MUST abort
-the handshake with a fatal "illegal_parameter" alert. This mechanism
-provides limited protection against downgrade attacks over and above
-that provided by the Finished exchange: because the ServerKeyExchange
-includes a signature over both random values, it is not possible for
-an active attacker to modify the randoms without detection as long as
-ephemeral ciphers are used. It does not provide downgrade protection
-when static RSA is used.
-
-Note: This is an update to TLS 1.2 so in practice many TLS 1.2 clients
-and servers will not behave as specified above.
-
-Note: Versions of TLS prior to TLS 1.3 used the top 32 bits of
-the Random value to encode the time since the UNIX epoch. The
-sentinel value above was selected to avoid conflicting with any
-valid TLS 1.2 Random value and to have a low (2^{-64})
-probability of colliding with randomly selected Random
-values.
 
 The cipher suite list, passed from the client to the server in the ClientHello
 message, contains the combinations of cryptographic algorithms supported by the
@@ -2034,6 +1981,10 @@ does not recognize, support, or wish to use, the server MUST ignore those
 cipher suites, and process the remaining ones as usual.
 
 %%% Key Exchange Messages
+       struct {
+           opaque random_bytes[32];
+       } Random;
+
        uint8 CipherSuite[2];    /* Cryptographic suite selector */
 
        struct {
@@ -2062,7 +2013,8 @@ client_version
   {{backward-compatibility}} for details about backward compatibility.)
 
 random
-: A client-generated random structure.
+: 32 bytes generated by a secure random number generator.
+  See {{implementation-notes}} for additional information.
 
 legacy_session_id
 : Versions of TLS before TLS 1.3 supported a session resumption
@@ -2096,12 +2048,15 @@ extensions
   defined in {{hello-extensions}}.
 {:br }
 
-In the event that a client requests additional functionality using extensions,
-and this functionality is not supplied by the server, the client MAY abort the
-handshake. A server MUST accept ClientHello messages both with and without the
-extensions field, and (as for all other messages) it MUST check that the amount
-of data in the message precisely matches one of these formats; if not, then it
-MUST send a fatal "decode_error" alert.
+In the event that a client requests additional functionality using
+extensions, and this functionality is not supplied by the server, the
+client MAY abort the handshake. Note: TLS 1.3 ClientHello messages
+MUST always contain extensions, and a TLS 1.3 server MUST respond to
+any TLS 1.3 ClientHello without extensions with a fatal "decode_error"
+alert. TLS 1.3 servers may receive TLS 1.2 ClientHello messages
+without extensions. If negotiating TLS 1.2, a server MUST check that
+the amount of data in the message precisely matches one of these
+formats; if not, then it MUST send a fatal "decode_error" alert.
 
 After sending the ClientHello message, the client waits for a ServerHello
 or HelloRetryRequest message.
@@ -2158,6 +2113,42 @@ extensions
   extensions and if any are found MUST terminate the handshake with a
   "illegal_parameter" alert.
 {:br }
+
+TLS 1.3 server implementations which respond to a ClientHello with a
+client_version indicating TLS 1.2 or below MUST set the first eight
+bytes of their Random value to the bytes:
+
+      44 4F 57 4E 47 52 44 01
+
+TLS 1.2 server implementations which respond to a ClientHello with a
+client_version indicating TLS 1.1 or below SHOULD set the first eight
+bytes of their Random value to the bytes:
+
+      44 4F 57 4E 47 52 44 00
+
+
+TLS 1.3 clients receiving a TLS 1.2 or below ServerHello MUST check
+that the top eight octets are not equal to either of these values. TLS
+1.2 clients SHOULD also perform this check if the ServerHello
+indicates TLS 1.1 or below. If a match is found, the client MUST abort
+the handshake with a fatal "illegal_parameter" alert. This mechanism
+provides limited protection against downgrade attacks over and above
+that provided by the Finished exchange: because the ServerKeyExchange
+includes a signature over both random values, it is not possible for
+an active attacker to modify the randoms without detection as long as
+ephemeral ciphers are used. It does not provide downgrade protection
+when static RSA is used.
+
+Note: This is an update to TLS 1.2 so in practice many TLS 1.2 clients
+and servers will not behave as specified above.
+
+Note: Versions of TLS prior to TLS 1.3 used the top 32 bits of
+the Random value to encode the time since the UNIX epoch. The
+sentinel value above was selected to avoid conflicting with any
+valid TLS 1.2 Random value and to have a low (2^{-64})
+probability of colliding with randomly selected Random
+values.
+
 
 ####  Hello Retry Request
 
@@ -2216,8 +2207,6 @@ server's ServerHello/KeyShare, the client MUST verify that
 the selected CipherSuite and NamedGroup match that supplied in
 the HelloRetryRequest. If either of these values differ, the client
 MUST abort the connection with a fatal "handshake_failure" alert.
-
-[[OPEN ISSUE: https://github.com/tlswg/tls13-spec/issues/104]]
 
 ###  Hello Extensions
 
@@ -2326,27 +2315,27 @@ The "extension_data" field of this extension contains a
 
 %%% Signature Algorithm Extension
        enum {
-           // RSASSA-PKCS-v1_5 algorithms
+           /* RSASSA-PKCS-v1_5 algorithms */
            rsa_pkcs1_sha1 (0x0201),
            rsa_pkcs1_sha256 (0x0401),
            rsa_pkcs1_sha384 (0x0501),
            rsa_pkcs1_sha512 (0x0601),
 
-           // ECDSA algorithms
+           /* ECDSA algorithms */
            ecdsa_secp256r1_sha256 (0x0403),
            ecdsa_secp384r1_sha384 (0x0503),
            ecdsa_secp521r1_sha512 (0x0603),
 
-           // RSASSA-PSS algorithms
+           /* RSASSA-PSS algorithms */
            rsa_pss_sha256 (0x0700),
            rsa_pss_sha384 (0x0701),
            rsa_pss_sha512 (0x0702),
 
-           // EdDSA algorithms
+           /* EdDSA algorithms */
            ed25519 (0x0703),
            ed448 (0x0704),
 
-           // Reserved Code Points
+           /* Reserved Code Points */
            dsa_sha1_RESERVED (0x0202),
            dsa_sha256_RESERVED (0x0402),
            dsa_sha384_RESERVED (0x0502),
@@ -2464,17 +2453,17 @@ The "extension_data" field of this extension contains a
 
 %%% Named Group Extension
        enum {
-           // Elliptic Curve Groups (ECDHE).
+           /* Elliptic Curve Groups (ECDHE) */
            obsolete_RESERVED (1..22),
            secp256r1 (23), secp384r1 (24), secp521r1 (25),
            obsolete_RESERVED (26..28),
            x25519 (29), x448 (30),
 
-           // Finite Field Groups (DHE).
+           /* Finite Field Groups (DHE) */
            ffdhe2048 (256), ffdhe3072 (257), ffdhe4096 (258),
            ffdhe6144 (259), ffdhe8192 (260),
 
-           // Reserved Code Points.
+           /* Reserved Code Points */
            ffdhe_private_use (0x01FC..0x01FF),
            ecdhe_private_use (0xFE00..0xFEFF),
            obsolete_RESERVED (0xFF01..0xFF02),
@@ -2485,14 +2474,14 @@ The "extension_data" field of this extension contains a
            NamedGroup named_group_list<1..2^16-1>;
        } NamedGroupList;
 
-secp256r1, etc.
+Elliptic Curve Groups (ECDHE)
 : Indicates support of the corresponding named curve.
   Note that some curves are also recommended in ANSI
   X9.62 {{X962}} and FIPS 186-4 {{DSS}}. Others are recommended
   in {{RFC7748}}.
   Values 0xFE00 through 0xFEFF are reserved for private use.
 
-ffdhe2048, etc.
+Finite Field Groups (DHE)
 : Indicates support of the corresponding finite field
   group, defined in {{I-D.ietf-tls-negotiated-ff-dhe}}.
   Values 0x01FC through 0x01FF are reserved for private use.
@@ -2500,15 +2489,6 @@ ffdhe2048, etc.
 
 Items in named_group_list are ordered according to the client's
 preferences (most preferred choice first).
-
-As an example, a client that only supports secp256r1 (aka NIST P-256;
-value 23 = 0x0017) and secp384r1 (aka NIST P-384; value 24 = 0x0018)
-and prefers to use secp256r1 would include a TLS extension consisting
-of the following octets.  Note that the first two octets indicate the
-extension type ("supported_groups" extension):
-
-       00 0A 00 06 00 04 00 17 00 18
-
 
 As of TLS 1.3, servers are permitted to send the "supported_groups"
 extension to the client.  If the server has a group it prefers to the
@@ -2590,7 +2570,7 @@ key exchange used for the negotiated cipher suite.
 
 Clients offer an arbitrary number of KeyShareEntry values, each representing
 a single set of key exchange parameters. For instance, a client might
-offer shares for several elliptic curves or multiple integer DH groups.
+offer shares for several elliptic curves or multiple FFDHE groups.
 The key_exchange values for each KeyShareEntry MUST by generated independently.
 Clients MUST NOT offer multiple KeyShareEntry values for the same parameters.
 Clients and servers MUST NOT offer any KeyShareEntry values for groups not
@@ -2790,7 +2770,7 @@ If any of these checks fail, the server MUST NOT respond
 with the extension and must discard all the remaining first
 flight data (thus falling back to 1-RTT). If the client attempts
 a 0-RTT handshake but the server rejects it, it will generally
-not have the 0-RTT record protection keys and will instead
+not have the 0-RTT record protection keys and must instead
 trial decrypt each record with the 1-RTT handshake keys
 until it finds one that decrypts properly, and then pick up
 the handshake from that point.
@@ -2876,7 +2856,7 @@ When this message will be sent:
 > In all handshakes, the server MUST send the
 EncryptedExtensions message immediately after the
 ServerHello message. This is the first message that is encrypted
-under keys derived from ES. If the client indicates "early_data"
+under keys derived from handshake_traffic_secret. If the client indicates "early_data"
 in its ClientHello, it MUST also send EncryptedExtensions immediately
 following the ClientHello and immediately prior to the Finished.
 
@@ -3032,15 +3012,12 @@ client authentication is not available in the 0-RTT case.
 
 CertificateVerify
 : A signature over the value Hash(Handshake Context + Certificate) + Hash(resumption_context)
+See {{new-session-ticket-message}} for the definition of resumption_context.
 
 Finished
 : A MAC over the value Hash(Handshake Context + Certificate + CertificateVerify) +
   Hash(resumption_context) using  a MAC key derived from the base key.
 {:br}
-
-If this is a resumed handshake (i.e., using resumption PSK), then the resumption_context
-value is the resumption_context corresponding to the PSK. Otherwise, it is a string
-of zeros as long as the hash length.
 
 Because the CertificateVerify signs the Handshake Context +
 Certificate and the Finished MACs the Handshake Context + Certificate
@@ -3258,7 +3235,7 @@ Structure of this message:
 
 > Where hashed_data is the hash output described in
 {{authentication-messages}}, namely Hash(Handshake Context +
-Certificate). For concreteness, this means that the value that is
+Certificate) + Hash(resumption_context). For concreteness, this means that the value that is
 signed is:
 
 ~~~~
@@ -3348,8 +3325,9 @@ The verify_data value is computed as follows:
 
        verify_data =
            HMAC(finished_key, Hash(
-                  Handshake Context + Certificate* + CertificateVerify*
-               ))
+                  Handshake Context + Certificate* + CertificateVerify* 
+               ) + Hash(resumption_context)
+               )
 
        * Only included if present.
 
@@ -3389,7 +3367,9 @@ The client MAY use this PSK for future handshakes by including
 the ticket value in the "pre_shared_key" extension in its ClientHello
 ({{pre-shared-key-extension}}) and supplying a suitable PSK cipher
 suite. Servers may send multiple tickets on a single connection, for
-instance after post-handshake authentication.
+instance after post-handshake authentication. For handshakes that
+do not use a resumption_psk, the resumption_context is a string of
+L zeroes.
 
 %%% Ticket Establishment
 
@@ -3551,7 +3531,6 @@ based on HKDF {{RFC5869}}:
     opaque hash_value<0..255>;
   };
 
-  Where:
   - HkdfLabel.length is Length
   - HkdfLabel.label is "TLS 1.3, " + Label
   - HkdfLabel.hash_value is HashValue.
@@ -3604,8 +3583,8 @@ In this diagram, the following formatting conventions apply:
             Master Secret
                  |
                  +---------> Derive-Secret(., "application traffic secret",
-                 |                             ClientHello...Server Finished)
-                 |                             = traffic_secret_0
+                 |                         ClientHello...Server Finished)
+                 |                         = traffic_secret_0
                  |                        
                  +---------> Derive-Secret(., "exporter master secret",
                  |                         ClientHello...Client Finished)
