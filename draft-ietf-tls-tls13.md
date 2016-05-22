@@ -2171,8 +2171,6 @@ Structure of this message:
            Extension extensions<0..2^16-1>;
        } HelloRetryRequest;
 
-[[OPEN ISSUE: Merge in DTLS Cookies?]]
-
 selected_group
 : The mutually supported group the server intends to negotiate and
   is requesting a retried ClientHello/KeyShare for.
@@ -2316,16 +2314,15 @@ Cookies serve two primary purposes:
   transports (see {{?RFC6347}} for an example of this).
 
 - Allowing the server to offload state to the client, thus allowing it to send
-  a HelloRetryRequest without storing any state.
+  a HelloRetryRequest without storing any state. The server does this by
+  pickling that post-ClientHello hash state into the cookie (protected
+  with some suitable integrity algorithm).
 
-The client MUST provide a Cookie extension in every ClientHello it
-sends. If no cookies are available, the extension MUST be empty (i.e.,
-contain an empty-length cookie, allowing the server to send a Cookie in the
-HelloRetryRequest. A server MAY supply a Cookie in the EncryptedExtensions
-block to allow the client to use it for future connections.
-
-Note: Because Cookies are transmitted in the clear, clients MUST
-NOT use the same cookie for multiple connections.
+When sending a HelloRetryRequest, the server MAY provide a "cookie" extension to the
+client (this is an exception to the usual rule that the only extensions that
+may be sent are those that appear in the ClientHello). When sending the
+new ClientHello, the client MUST echo the value of the extension.
+Clients MUST NOT use cookies in subsequent connections.
 
 
 ####  Signature Algorithms
