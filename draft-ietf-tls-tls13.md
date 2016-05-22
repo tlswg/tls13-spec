@@ -359,6 +359,8 @@ draft-13
 
 - Remove the redundant length fields in KeyShareEntry.
 
+- Define a cookie field for HRR.
+
 
 draft-12
 
