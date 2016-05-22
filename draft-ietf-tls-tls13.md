@@ -2573,7 +2573,7 @@ a single set of key exchange parameters. For instance, a client might
 offer shares for several elliptic curves or multiple FFDHE groups.
 The key_exchange values for each KeyShareEntry MUST by generated independently.
 Clients MUST NOT offer multiple KeyShareEntry values for the same group
-and servers recieving multiple KeyShareEntry values for the same group
+and servers receiving multiple KeyShareEntry values for the same group
 MUST abort the connection with a fatal "illegal_parameter" alert.
 Clients and servers MUST NOT offer or accept any KeyShareEntry values for
 groups not listed in the client's "supported_groups" extension.
