@@ -2171,8 +2171,6 @@ Structure of this message:
            Extension extensions<0..2^16-1>;
        } HelloRetryRequest;
 
-[[OPEN ISSUE: Merge in DTLS Cookies?]]
-
 selected_group
 : The mutually supported group the server intends to negotiate and
   is requesting a retried ClientHello/KeyShare for.
@@ -2225,6 +2223,7 @@ The extension format is:
            pre_shared_key(41),
            early_data(42),
            ticket_age(43),
+           cookie (44),
            (65535)
        } ExtensionType;
 
@@ -2298,6 +2297,33 @@ be taken into account when designing new extensions:
   protection against version rollback attacks based on the version number, and
   the possibility of version rollback should be a significant consideration in
   any major design change.
+
+
+####  Cookie 
+
+%%% Cookie Extension
+       struct {
+           opaque cookie<0..255>;
+       } Cookie;
+
+Cookies serve two primary purposes:
+
+- Allowing the server to force the client to demonstrate reachability
+  at their apparent network address (thus providing a measure of DoS
+  protection). This is primarily useful for non-connection-oriented
+  transports (see {{?RFC6347}} for an example of this).
+
+- Allowing the server to offload state to the client, thus allowing it to send
+  a HelloRetryRequest without storing any state. The server does this by
+  pickling that post-ClientHello hash state into the cookie (protected
+  with some suitable integrity algorithm).
+
+When sending a HelloRetryRequest, the server MAY provide a "cookie" extension to the
+client (this is an exception to the usual rule that the only extensions that
+may be sent are those that appear in the ClientHello). When sending the
+new ClientHello, the client MUST echo the value of the extension.
+Clients MUST NOT use cookies in subsequent connections.
+
 
 ####  Signature Algorithms
 
@@ -3752,6 +3778,7 @@ TLS-compliant application MUST implement the following TLS extensions:
   * Key Share ("key_share"; {{key-share}})
   * Pre-Shared Key ("pre_shared_key"; {{pre-shared-key-extension}})
   * Server Name Indication ("server_name"; Section 3 of {{RFC6066}})
+  * Cookie ("cookie"; {{cookie}})
 
 All implementations MUST send and use these extensions when offering
 applicable cipher suites:
@@ -3759,6 +3786,7 @@ applicable cipher suites:
   * "signature_algorithms" is REQUIRED for certificate authenticated cipher suites
   * "supported_groups" and "key_share" are REQUIRED for DHE or ECDHE cipher suites
   * "pre_shared_key" is REQUIRED for PSK cipher suites
+  * "cookie" is REQUIRED for all cipher suites.
 
 When negotiating use of applicable cipher suites, endpoints MUST abort the
 connection with a "missing_extension" alert if the required extension was
@@ -3877,6 +3905,7 @@ is listed below:
 | pre_shared_key [[this document]]         |         Yes |     Clear |
 | early_data [[this document]]             |         Yes |     Clear |
 | ticket_age [[this document]]             |         Yes |     Early |
+| cookie [[this document]]                 |         Yes | Encrypted/HelloRetryRequest |
 
 
 In addition, this document defines two new registries to be maintained
@@ -3904,6 +3933,7 @@ might receive them from older TLS implementations.
 %%## Alert Messages
 %%## Handshake Protocol
 %%### Key Exchange Messages
+%%#### Cookie Extension
 %%#### Signature Algorithm Extension
 %%#### Named Group Extension
 
