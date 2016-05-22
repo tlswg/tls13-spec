@@ -336,6 +336,10 @@ server: The endpoint which did not initiate the TLS connection.
 
 ##  Major Differences from TLS 1.2
 
+draft-14
+- Allow cookies to be longer.
+
+
 draft-13
 
 - Allow server to send SupportedGroups.
@@ -2305,7 +2309,7 @@ be taken into account when designing new extensions:
 
 %%% Cookie Extension
        struct {
-           opaque cookie<0..255>;
+           opaque cookie<0..2^16-1>;
        } Cookie;
 
 Cookies serve two primary purposes:
