@@ -2592,13 +2592,13 @@ Clients offer an arbitrary number of KeyShareEntry values, each representing
 a single set of key exchange parameters. For instance, a client might
 offer shares for several elliptic curves or multiple integer DH groups.
 The key_exchange values for each KeyShareEntry MUST by generated independently.
-Clients MUST NOT offer multiple KeyShareEntry values for the same parameters.
-Clients and servers MUST NOT offer any KeyShareEntry values for groups not
-listed in the client's "supported_groups" extension.
+Clients MUST NOT offer multiple KeyShareEntry values for the same group
+and servers recieving multiple KeyShareEntry values for the same group
+MUST abort the connection with a fatal "illegal_parameter" alert.
+Clients and servers MUST NOT offer or accept any KeyShareEntry values for
+groups not listed in the client's "supported_groups" extension.
 Servers MUST NOT offer a KeyShareEntry value for a group not offered by the
 client in its corresponding KeyShare.
-Implementations receiving any KeyShare containing any of these prohibited
-values MUST abort the connection with a fatal "illegal_parameter" alert.
 
 If the server selects an (EC)DHE cipher suite and no mutually
 supported group is available between the two endpoints' KeyShare
