@@ -114,7 +114,7 @@ informative:
   RFC6091:
   RFC6520:
   RFC7301:
-  RFC7231:
+  RFC7230:
   RFC7250:
   RFC7366:
   RFC7465:
@@ -4221,7 +4221,7 @@ Clients SHOULD NOT reuse a session ticket for multiple connections. Reuse
 of a session ticket allows passive observers to correlate different connections.
 Servers that issue session tickets SHOULD offer at least as many session tickets
 as the number of connections that a client might use; for example, a web browser
-using HTTP/1.1 {{RFC7231}} might open six connections to a server. Servers SHOULD
+using HTTP/1.1 {{RFC7230}} might open six connections to a server. Servers SHOULD
 issue new session tickets with every connection. This ensures that clients are
 always able to use a new session ticket when creating a new connection.
 
