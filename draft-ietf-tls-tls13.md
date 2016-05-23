@@ -4660,6 +4660,10 @@ Archives of the list can be found at:
   Netscape Communications \\
   relyea@netscape.com
 
+* Kyle Rose \\
+  Akamai Technologies \\
+  krose@krose.org
+
 * Jim Roskind \\
   Netscape Communications \\
   jar@netscape.com
