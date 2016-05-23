@@ -3548,26 +3548,23 @@ that remains is to calculate the key schedule.
 
 The TLS handshake establishes one or more input secrets which
 are combined to create the actual working keying material, as detailed
-below. The key derivation process makes use of the following functions,
-based on HKDF {{RFC5869}}:
+below.
+The key derivation process makes use of the HKDF-Extract and HKDF-Expand
+functions as defined for HKDF {{RFC5869}}, as well as the functions
+defined below:
 
 ~~~~
-  HKDF-Extract(Salt, IKM) as defined in {{RFC5869}}.
-
-  HKDF-Expand-Label(Secret, Label, Messages, Length) =
+  HKDF-Expand-Label(Secret, Label, HashValue, Length) =
        HKDF-Expand(Secret, HkdfLabel, Length)
 
   Where HkdfLabel is specified as:
 
-  struct HkdfLabel {
-    uint16 length;
-    opaque label<9..255>;
-    opaque hash_value<0..255>;
+  struct HkdfLabel
+  {
+    uint16 length = Length;
+    opaque label<9..255> = "TLS 1.3, " + Label;
+    opaque hash_value<0..255> = HashValue;
   };
-
-  - HkdfLabel.length is Length
-  - HkdfLabel.label is "TLS 1.3, " + Label
-  - HkdfLabel.hash_value is HashValue.
 
   Derive-Secret(Secret, Label, Messages) =
        HKDF-Expand-Label(Secret, Label,
@@ -3576,7 +3573,7 @@ based on HKDF {{RFC5869}}:
 
 Given a set of n InputSecrets, the final "master secret" is computed
 by iteratively invoking HKDF-Extract with InputSecret_1, InputSecret_2,
-etc.  The initial secret is simply a string of 0s as long as the size
+etc.  The initial secret is simply a string of zeroes as long as the size
 of the Hash that is the basis for the HKDF. Concretely, for the
 present version of TLS 1.3, secrets are added in the following order:
 
