@@ -3568,7 +3568,7 @@ defined below:
 
   Derive-Secret(Secret, Label, Messages) =
        HKDF-Expand-Label(Secret, Label,
-                         Hash(Messages) + Hash(resumption_context), L))
+                         Hash(Messages) + Hash(resumption_context), L)
 ~~~~
 
 Given a set of n InputSecrets, the final "master secret" is computed
