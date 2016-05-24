@@ -1760,7 +1760,7 @@ described below.
 
 ### Resumption and Pre-Shared Key (PSK) {#resumption-and-psk}
 
-Although TLS PSKs can be established out of band, 
+Although TLS PSKs can be established out of band,
 PSKs can also be established in a previous session and
 then reused ("session resumption"). Once a handshake has completed, the server can
 send the client a PSK identity which corresponds to a key derived from
@@ -2305,7 +2305,7 @@ be taken into account when designing new extensions:
   any major design change.
 
 
-####  Cookie 
+####  Cookie
 
 %%% Cookie Extension
        struct {
@@ -2833,7 +2833,7 @@ send the ServerHello, rather than waiting for the client's
 
 As noted in {{zero-rtt-data}}, TLS provides only a limited
 inter-connection mechanism for replay protection for data sent by the
-client in the first flight. 
+client in the first flight.
 
 The "ticket_age" extension sent by the client SHOULD be used by
 servers to limit the time over which the first flight might be
@@ -2877,7 +2877,7 @@ configuration that it is using, in milliseconds.  This value can
 be used by the server to limit the time over which early data can
 be replayed. Note: because ticket lifetimes are restricted to a week,
 32 bits is enough to represent any plausible age, even in milliseconds.
-       
+
 
 ### Server Parameters
 
@@ -3357,7 +3357,7 @@ The verify_data value is computed as follows:
 
        verify_data =
            HMAC(finished_key, Hash(
-                  Handshake Context + Certificate* + CertificateVerify* 
+                  Handshake Context + Certificate* + CertificateVerify*
                ) + Hash(resumption_context)
                )
 
@@ -3417,7 +3417,7 @@ L zeroes.
        allow_dhe_resumption(2),
        allow_psk_resumption(4)
      } TicketFlags;
-     
+
      struct {
          uint32 ticket_lifetime;
          uint32 flags;
@@ -3551,7 +3551,7 @@ based on HKDF {{RFC5869}}:
 
 ~~~~
   HKDF-Extract(Salt, IKM) as defined in {{RFC5869}}.
-  
+
   HKDF-Expand-Label(Secret, Label, Messages, Length) =
        HKDF-Expand(Secret, HkdfLabel, Length)
 
@@ -3570,7 +3570,7 @@ based on HKDF {{RFC5869}}:
   Derive-Secret(Secret, Label, Messages) =
        HKDF-Expand-Label(Secret, Label,
                          Hash(Messages) + Hash(resumption_context), L))
-~~~~       
+~~~~
 
 Given a set of n InputSecrets, the final "master secret" is computed
 by iteratively invoking HKDF-Extract with InputSecret_1, InputSecret_2,
@@ -3589,8 +3589,8 @@ In this diagram, the following formatting conventions apply:
 - Derive-Secret's Secret argument is indicated by the arrow coming in
   from the left. For instance, the Early Secret is the Secret for
   generating the early_traffic-secret.
-  
-~~~~ 
+
+~~~~
                  0
                  |
                  v
@@ -3599,7 +3599,7 @@ In this diagram, the following formatting conventions apply:
                  v
            Early Secret  --> Derive-Secret(., "early traffic secret",
                  |                         ClientHello)
-                 |                         = early_traffic_secret 
+                 |                         = early_traffic_secret
                  v
 (EC)DHE -> HKDF-Extract
                  |
@@ -3617,10 +3617,10 @@ In this diagram, the following formatting conventions apply:
                  +---------> Derive-Secret(., "application traffic secret",
                  |                         ClientHello...Server Finished)
                  |                         = traffic_secret_0
-                 |                        
+                 |
                  +---------> Derive-Secret(., "exporter master secret",
                  |                         ClientHello...Client Finished)
-                 |                         = exporter_secret       
+                 |                         = exporter_secret
                  |
                  +---------> Derive-Secret(., "resumption master secret",
                                            ClientHello...Client Finished)
@@ -3679,12 +3679,12 @@ The keying material is computed using:
 The following table describes the inputs to the key calculation for
 each class of traffic keys:
 
-| Record Type | Secret | Phase | 
+| Record Type | Secret | Phase |
 |:------------|--------|-------|
 | 0-RTT Handshake   | early_traffic_secret | "early handshake key expansion" |
-| 0-RTT Application | early_traffic_secret | "early application data key expansion" | 
+| 0-RTT Application | early_traffic_secret | "early application data key expansion" |
 | Handshake         | handshake_traffic_secret | "handshake key expansion" |
-| Application Data  | traffic_secret_N | "application data key expansion" | 
+| Application Data  | traffic_secret_N | "application data key expansion" |
 
 The following table indicates the purpose values for each type of key:
 
