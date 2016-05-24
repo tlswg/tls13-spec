@@ -997,10 +997,10 @@ These parameters are defined in the presentation language as:
 The connection state will use the security parameters to generate the following four
 items:
 
-       client write key
-       server write key
-       client write iv
-       server write iv
+       client_write_key
+       server_write_key
+       client_write_iv
+       server_write_iv
 
 The client write parameters are used by the server when receiving and
 processing records and vice versa. The algorithm used for generating these
