@@ -3413,7 +3413,7 @@ L zeroes.
      } TicketExtension;
 
      enum {
-       allow_early_data(1)
+       allow_early_data(1),
        allow_dhe_resumption(2),
        allow_psk_resumption(4)
      } TicketFlags;
