@@ -1803,8 +1803,8 @@ Initial Handshake:
 
 Subsequent Handshake:
        ClientHello
-         + key_share
-         + pre_shared_key        -------->
+         + pre_shared_key
+         + key_share*            -------->
                                                        ServerHello
                                                   + pre_shared_key
                                                       + key_share*
@@ -1838,6 +1838,7 @@ in the first flight, the rest of the handshake uses the same messages.
 
          ClientHello
            + early_data
+           + pre_shared_key
            + key_share*
          (EncryptedExtensions)
          (Finished)
@@ -1845,7 +1846,8 @@ in the first flight, the rest of the handshake uses the same messages.
          (end_of_early_data)        -------->
                                                          ServerHello
                                                         + early_data
-                                                         + key_share
+                                                    + pre_shared_key
+                                                        + key_share*
                                                {EncryptedExtensions}
                                                {CertificateRequest*}
                                                           {Finished}
