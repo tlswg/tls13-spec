@@ -1912,7 +1912,7 @@ processed and transmitted as specified by the current active session state.
            hello_request_RESERVED(0),
            client_hello(1),
            server_hello(2),
-           session_ticket(4),
+           new_session_ticket(4),
            hello_retry_request(6),
            encrypted_extensions(8),
            certificate(11),
@@ -1938,10 +1938,13 @@ processed and transmitted as specified by the current active session state.
                case certificate:           Certificate;
                case certificate_verify:    CertificateVerify;
                case finished:              Finished;
-               case session_ticket:        NewSessionTicket;
+               case new_session_ticket:    NewSessionTicket;
                case key_update:            KeyUpdate;
            } body;
        } Handshake;
+
+[[TODO: Add IANA Considerations to rename the 'NewSessionTicket' HandshakeType
+value to 'new_session_ticket'.]]
 
 The TLS Handshake Protocol messages are presented below in the order they
 MUST be sent; sending handshake messages in an unexpected order
