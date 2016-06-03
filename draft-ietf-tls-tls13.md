@@ -815,8 +815,7 @@ The two cryptographic operations --- digital signing, and authenticated
 encryption with additional data (AEAD) --- are designated digitally-signed,
 and aead-ciphered, respectively. A field's cryptographic processing
 is specified by prepending an appropriate key word designation before
-the field's type specification.  Cryptographic keys are implied by the
-current session state (see {{connection-states}}).
+the field's type specification.
 
 ### Digital Signing
 
@@ -916,7 +915,7 @@ itself is not protected by encryption unless the sender uses the
 supplied padding mechanism -- see {{record-padding}} for more details.
 
 
-##  Record Layer
+## Record Layer
 
 The TLS record layer receives uninterpreted data from higher layers in
 non-empty blocks of arbitrary size.
@@ -1178,8 +1177,7 @@ peer certificate
 cipher spec
 : Specifies the authentication and key establishment algorithms,
   the hash for use with HKDF to generate keying
-  material, and the record protection algorithm (See
-  {{the-security-parameters}} for formal definition.)
+  material, and the record protection algorithm
 
 resumption master secret
 : a secret shared between the client and server that can be used
@@ -3563,7 +3561,7 @@ implementations SHOULD delete traffic_secret_N. Once the directional
 keys are no longer needed, they SHOULD be deleted as well.
 
 
-## Traffic Key Calculation {#traffic-key-calculation}
+## Traffic Key Calculation
 
 The traffic keying material is generated from the following input values:
 
@@ -3990,14 +3988,6 @@ against active man-in-the-middle attack; applications MUST NOT use TLS
 in such a way absent explicit configuration or a specific application
 profile.
 
-## The Security Parameters
-
-These security parameters are determined by the TLS Handshake Protocol and
-provided as parameters to the TLS record layer in order to initialize a
-connection state. SecurityParameters includes:
-
-%%! Security Parameters
-
 
 ## Changes to RFC 4492
 
@@ -4073,7 +4063,7 @@ things that require special attention from implementors.
 TLS protocol issues:
 
 -  Do you correctly handle handshake messages that are fragmented to
-  multiple TLS records (see {{fragmentation}})? Including corner cases
+  multiple TLS records (see {{record-layer}})? Including corner cases
   like a ClientHello that is split to several small fragments? Do
   you fragment handshake messages that exceed the maximum fragment
   size? In particular, the certificate and certificate request
