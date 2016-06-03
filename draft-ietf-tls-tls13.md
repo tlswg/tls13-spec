@@ -916,128 +916,10 @@ itself is not protected by encryption unless the sender uses the
 supplied padding mechanism -- see {{record-padding}} for more details.
 
 
-##  Connection States
-
-[[TODO: I plan to totally rewrite or remove this. IT seems like just cruft.]]
-
-A TLS connection state is the operating environment of the TLS Record
-Protocol.  It specifies a record protection algorithm and its
-parameters as well as the record protection keys and IVs for the
-connection in both the read and the write directions. The security
-parameters are set by the TLS Handshake Protocol, which also determines
-when new cryptographic keys are installed and used for record
-protection.
-The initial current state always specifies that records are
-not protected.
-
-The security parameters for a TLS Connection read and write state are set by
-providing the following values:
-
-{:br: vspace="0"}
-
-connection end
-
-: Whether this entity is considered the "client" or the "server" in
-  this connection.
-
-Hash algorithm
-
-: An algorithm used to generate keys from the appropriate secret (see
-  {{key-schedule}} and {{traffic-key-calculation}}).
-
-record protection algorithm
-
-: The algorithm to be used for record protection. This algorithm must
-  be of the AEAD type and thus provides integrity and confidentiality
-  as a single primitive. This specification
-  includes the key size of this algorithm and of the nonce for
-  the AEAD algorithm.
-
-master secret
-
-: A 48-byte secret shared between the two peers in the connection
-  and used to generate keys for protecting data.
-
-
-client random
-
-: A 32-byte value provided by the client.
-
-server random
-
-: A 32-byte value provided by the server.
-{: br}
-
-These parameters are defined in the presentation language as:
-
-%%% Security Parameters
-       enum { server, client } ConnectionEnd;
-
-       enum { tls_kdf_sha256, tls_kdf_sha384 } KDFAlgorithm;
-
-       enum { aes_gcm } RecordProtAlgorithm;
-
-       /* The algorithms specified in KDFAlgorithm and
-          RecordProtAlgorithm may be added to. */
-
-       struct {
-           ConnectionEnd          entity;
-           KDFAlgorithm           kdf_algorithm;
-           RecordProtAlgorithm    record_prot_algorithm;
-           uint8                  enc_key_length;
-           uint8                  iv_length;
-           opaque                 hs_master_secret[48];
-           opaque                 master_secret[48];
-           opaque                 client_random[32];
-           opaque                 server_random[32];
-       } SecurityParameters;
-
-[TODO: update this to handle new key hierarchy.]
-
-The connection state will use the security parameters to generate the following four
-items:
-
-       client_write_key
-       server_write_key
-       client_write_iv
-       server_write_iv
-
-The client write parameters are used by the server when receiving and
-processing records and vice versa. The algorithm used for generating these
-items from the security parameters is described in {{traffic-key-calculation}}.
-
-Once the security parameters have been set and the keys have been generated,
-the connection states can be instantiated by making them the current states.
-These current states MUST be updated for each record processed. Each connection
-state includes the following elements:
-
-cipher state
-: The current state of the encryption algorithm.  This will consist
-  of the scheduled key for that connection.
-
-sequence number
-: Each connection state contains a sequence number, which is
-  maintained separately for read and write states.  The sequence
-  number is set to zero at the beginning of a connection, and whenever
-  the key is changed.
-
-  The sequence number is incremented after each record: specifically,
-  the first record transmitted under a particular connection state and
-  record key MUST use sequence number 0.
-
-  Sequence numbers are of type uint64 and MUST NOT exceed 2^64-1.
-  Sequence numbers do not wrap.  If a TLS implementation would need to
-  wrap a sequence number, it MUST either rekey ({{key-update}}) or
-  terminate the connection.
-{:br }
-
-
 ##  Record Layer
 
 The TLS record layer receives uninterpreted data from higher layers in
 non-empty blocks of arbitrary size.
-
-###  Fragmentation
 
 The record layer fragments information blocks into TLSPlaintext records
 carrying data in chunks of 2^14 bytes or less. Message boundaries are
@@ -1103,7 +985,7 @@ structures are written directly onto the wire. Once record protection
 has started, TLSPlaintext records are protected and sent as
 described in the following section.
 
-###  Record Payload Protection
+## Record Payload Protection
 
 The record protection functions translate a TLSPlaintext structure into a
 TLSCiphertext. The deprotection functions reverse the process. In TLS 1.3
@@ -1112,11 +994,6 @@ as opposed to previous versions of TLS, all ciphers are modeled as
 AEAD functions provide a unified encryption and authentication
 operation which turns plaintext into authenticated ciphertext and
 back again.
-
-AEAD ciphers take as input a single key, a nonce, a plaintext, and "additional
-data" to be included in the authentication check, as described in Section 2.1
-of {{RFC5116}}. The key is either the client_write_key or the server_write_key
-and in TLS 1.3 the additional data input is empty (zero length).
 
 %%% Record Layer
        struct {
@@ -1166,30 +1043,20 @@ fragment
 {:br }
 
 
-The length of the per-record nonce (iv_length) is set to max(8 bytes,
-N_MIN) for the AEAD algorithm (see {{RFC5116}} Section 4). An AEAD
-algorithm where N_MAX is less than 8 bytes MUST NOT be used with TLS.
-The per-record nonce for the AEAD construction is formed as follows:
-
-  1. The 64-bit record sequence number is padded to the left with zeroes
-     to iv_length.
-
-  2. The padded sequence number is XORed with the static client_write_iv
-     or server_write_iv, depending on the role.
-
-The resulting quantity (of length iv_length) is used as the per-record
-nonce.
-
-Note: This is a different construction from that in TLS 1.2, which
-specified a partially explicit nonce.
+AEAD ciphers take as input a single key, a nonce, a plaintext, and "additional
+data" to be included in the authentication check, as described in Section 2.1
+of {{RFC5116}}. The key is either the client_write_key or the server_write_key,
+the nonce is derived from the a sequence number (see {{nonce}}) and the
+client_write_iv or server_write_iv, and the additional data input is empty
+(zero length).  Derivation of traffic keys is defined in {{traffic-key-calculation}}.
 
 The plaintext is the concatenation of TLSPlaintext.fragment and TLSPlaintext.type.
 
 The AEAD output consists of the ciphertext output by the AEAD
 encryption operation. The length of the plaintext is greater than
 TLSPlaintext.length due to the inclusion of TLSPlaintext.type and
-however much padding is supplied by the sender.  The length of
-aead_output will generally be larger than the plaintext, but by an
+however much padding is supplied by the sender.  The length of the
+AEAD output will generally be larger than the plaintext, but by an
 amount that varies with the AEAD cipher. Since the ciphers might
 incorporate padding, the amount of overhead could vary with different
 lengths of plaintext. Symbolically,
@@ -1214,7 +1081,40 @@ fatal "record_overflow" alert.  This limit is derived from the maximum
 TLSPlaintext length of 2^14 octets + 1 octet for ContentType + the
 maximum AEAD expansion of 255 octets.
 
-### Record Padding
+
+## Per-Record Nonce {#nonce}
+
+A 64-bit sequence number is maintained separately for reading and writing
+records.  Each sequence number is set to zero at the beginning of a connection
+and whenever the key is changed.
+
+The sequence number is incremented after reading or writing each record.
+The first record transmitted under a particular set of traffic keys
+record key MUST use sequence number 0.
+
+Sequence numbers do not wrap.  If a TLS implementation would need to
+wrap a sequence number, it MUST either rekey ({{key-update}}) or
+terminate the connection.
+
+The length of the per-record nonce (iv_length) is set to max(8 bytes,
+N_MIN) for the AEAD algorithm (see {{RFC5116}} Section 4). An AEAD
+algorithm where N_MAX is less than 8 bytes MUST NOT be used with TLS.
+The per-record nonce for the AEAD construction is formed as follows:
+
+  1. The 64-bit record sequence number is padded to the left with zeroes
+     to iv_length.
+
+  2. The padded sequence number is XORed with the static client_write_iv
+     or server_write_iv, depending on the role.
+
+The resulting quantity (of length iv_length) is used as the per-record
+nonce.
+
+Note: This is a different construction from that in TLS 1.2, which
+specified a partially explicit nonce.
+
+
+## Record Padding
 
 All encrypted TLS records can be padded to inflate the size of the
 TLSCipherText.  This allows the sender to hide the size of the
@@ -1260,6 +1160,7 @@ layer.  Padding for encrypted handshake and alert TLS records must
 still be handled at the TLS layer, though.  Later documents may define
 padding selection algorithms, or define a padding policy request
 mechanism through TLS extensions or some other means.
+
 
 #  The TLS Handshaking Protocols
 
@@ -3662,7 +3563,7 @@ implementations SHOULD delete traffic_secret_N. Once the directional
 keys are no longer needed, they SHOULD be deleted as well.
 
 
-## Traffic Key Calculation
+## Traffic Key Calculation {#traffic-key-calculation}
 
 The traffic keying material is generated from the following input values:
 
