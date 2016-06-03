@@ -273,10 +273,6 @@ that has two basic properties:
 - The connection is reliable.  Messages include an authentication
   tag which protects them against modification.
 
-Note: The TLS Record Protocol can operate in an insecure mode but is generally
-only used in this mode while another protocol is using the TLS Record
-Protocol as a transport for negotiating security parameters.
-
 The TLS Record Protocol is used for encapsulation of various higher-level
 protocols. One such encapsulated protocol, the TLS Handshake Protocol, allows
 the server and client to authenticate each other and to negotiate an encryption
