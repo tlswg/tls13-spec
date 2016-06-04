@@ -3421,17 +3421,26 @@ L zeroes.
      } TicketFlags;
 
      struct {
+         uint32 generation;
          uint32 ticket_lifetime;
          uint32 flags;
          TicketExtension extensions<2..2^16-2>;
          opaque ticket<0..2^16-1>;
      } NewSessionTicket;
 
-
-flags
-: A 32-bit value indicating the ways in which this ticket may
-  be used (as an OR of the flags values).
-
+generation
+: A nondecreasing value indicating the generation that this ticket
+  came from. When a client accepts a ticket, it MUST discard any
+  tickets from this connection with a lower generation value and
+  SHOULD discard any tickets from connections from which this
+  connection was derived. This mechanism allows a server to install
+  multiple concurrently valid tickets but also to delete them
+  early. Note: a client MAY implement this policy by simply keeping
+  the most recently received ticket from a given server; clients which
+  open multiple concurrent connections SHOULD retain all currently
+  valid tickets and to the extent possible use a different one for
+  each new connection.
+  
 ticket_lifetime
 : Indicates the lifetime in seconds as a 32-bit unsigned integer in
   network byte order from the time of ticket issuance.
@@ -3442,6 +3451,10 @@ ticket_lifetime
   earlier based on local policy. A server MAY treat a ticket as valid
   for a shorter period of time than what is stated in the
   ticket_lifetime.
+
+flags
+: A 32-bit value indicating the ways in which this ticket may
+  be used (as an OR of the flags values).
 
 ticket_extensions
 : A placeholder for extensions in the ticket. Clients MUST ignore
