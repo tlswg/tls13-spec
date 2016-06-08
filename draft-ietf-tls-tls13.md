@@ -1912,7 +1912,7 @@ processed and transmitted as specified by the current active session state.
            hello_request_RESERVED(0),
            client_hello(1),
            server_hello(2),
-           session_ticket(4),
+           new_session_ticket(4),
            hello_retry_request(6),
            encrypted_extensions(8),
            certificate(11),
@@ -1938,7 +1938,7 @@ processed and transmitted as specified by the current active session state.
                case certificate:           Certificate;
                case certificate_verify:    CertificateVerify;
                case finished:              Finished;
-               case session_ticket:        NewSessionTicket;
+               case new_session_ticket:    NewSessionTicket;
                case key_update:            KeyUpdate;
            } body;
        } Handshake;
@@ -3853,7 +3853,8 @@ and their allocation policies are below:
   Action {{RFC2434}}.
 
 -  TLS HandshakeType Registry: Future values are allocated via
-  Standards Action {{RFC2434}}.
+  Standards Action {{RFC2434}}. IANA [SHALL update/has updated] this registry
+  to rename item 4 from "NewSessionTicket" to "new_session_ticket".
 
 This document also uses a registry originally created in {{RFC4366}}. IANA has
 updated it to reference this document. The registry and its allocation policy
