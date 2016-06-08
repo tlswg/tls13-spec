@@ -1943,9 +1943,6 @@ processed and transmitted as specified by the current active session state.
            } body;
        } Handshake;
 
-[[TODO: Add IANA Considerations to rename the 'NewSessionTicket' HandshakeType
-value to 'new_session_ticket'.]]
-
 The TLS Handshake Protocol messages are presented below in the order they
 MUST be sent; sending handshake messages in an unexpected order
 results in an "unexpected_message" fatal error. Unneeded handshake
@@ -3856,7 +3853,8 @@ and their allocation policies are below:
   Action {{RFC2434}}.
 
 -  TLS HandshakeType Registry: Future values are allocated via
-  Standards Action {{RFC2434}}.
+  Standards Action {{RFC2434}}. IANA [SHALL update/has updated] this registry
+  to rename item 4 from "NewSessionTicket" to "new_session_ticket".
 
 This document also uses a registry originally created in {{RFC4366}}. IANA has
 updated it to reference this document. The registry and its allocation policy
