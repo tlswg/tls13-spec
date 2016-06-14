@@ -2231,7 +2231,7 @@ The extension format is:
            pre_shared_key(41),
            early_data(42),
            ticket_age(43),
-           cookie (44),
+           cookie(44),
            (65535)
        } ExtensionType;
 
