@@ -1829,7 +1829,7 @@ negotiate an (EC)DHE-PSK cipher suite.
 When resuming via a PSK with an appropriate ticket (i.e., one with
 the "allow_early_data" flag), clients can also send data on their first
 flight ("early data"). This data is encrypted solely under keys
-derived using the PSK as the static secret.  As shown in
+derived using the first offered PSK as the static secret.  As shown in
 {{tls-0-rtt}}, the Zero-RTT data is just added to the 1-RTT handshake
 in the first flight, the rest of the handshake uses the same messages.
 
@@ -2691,7 +2691,9 @@ The "extension_data" field of this extension contains a
 
 identities
 : A list of the identities (labels for keys) that the client is willing
-  to negotiate with the server.
+  to negotiate with the server. If sent alongside the "early_data"
+  extension (see {{early-data-indication}}), the first identity is the
+  one used for 0-RTT data.
 
 selected_identity
 : The server's chosen identity expressed as a (0-based) index into
@@ -2708,9 +2710,14 @@ suite, if available.
 If the server selects a PSK cipher suite, it MUST send a
 "pre_shared_key" extension with the identity that it selected.
 The client MUST verify that the server's selected_identity
-is within the range supplied by the client. If any other value
-is returned, the client MUST generate a fatal
-"unknown_psk_identity" alert and close the connection.
+is within the range supplied by the client. If the server supplies an
+"early_data" extension, the client MUST verify that the server selected the
+first offered identity. If any other value is returned, the client MUST
+generate a fatal "unknown_psk_identity" alert and close the connection.
+
+Note that, although 0-RTT data is encrypted with the first PSK identity, the
+server may fall back to 1-RTT and select a different PSK identity if multiple
+are offered.
 
 
 #### OCSP Status Extensions
@@ -2782,9 +2789,11 @@ can behave in one of two ways:
   to accept only a subset of the early data messages.
 
 [[OPEN ISSUE: are the rules below correct? https://github.com/tlswg/tls13-spec/issues/451]]
-Prior to accepting the "early_data" extension, the server MUST
-validate that the session ticket parameters are consistent with its
-current configuration. It MUST also validate that the extensions
+Prior to accepting the "early_data" extension, the server MUST check the
+first PSK identity (see {{pre-shared-key-extension}}) corresponds to a
+valid ticket and validate that the session parameters are consistent
+with its current configuration.
+It MUST also validate that the extensions
 negotiated in the previous connection are identical to those being
 negotiated in the ServerHello, with the exception of the
 following extensions:
