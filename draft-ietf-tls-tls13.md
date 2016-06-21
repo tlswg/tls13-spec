@@ -4328,18 +4328,16 @@ MUST always be ignored.
 0-RTT data is not compatible with older servers. An older server will respond
 to the ClientHello with an older ServerHello, but it will not correctly skip
 the 0-RTT data and fail to complete the handshake. This can cause issues when
-a client offers 0-RTT, particularly against multi-server deployments. For
-example, a deployment may deploy TLS 1.3 gradually with some servers
+a client attempts to use 0-RTT, particularly against multi-server deployments. For
+example, a deployment could deploy TLS 1.3 gradually with some servers
 implementing TLS 1.3 and some implementing TLS 1.2, or a TLS 1.3 deployment
-may be downgraded to TLS 1.2.
+could be downgraded to TLS 1.2.
 
-If a client accepts older versions of TLS and receives an older ServerHello
-after sending a ClientHello with 0-RTT data, it MAY retry the connection
-without 0-RTT. It is NOT RECOMMENDED to retry the connection in response to a
-more generic error or advertise lower versions of TLS.
+A client that attempts to send 0-RTT data MUST fail a connection if it receives
+a ServerHello with TLS 1.2 or older.
 
-Multi-server deployments are RECOMMENDED to ensure a stable deployment of TLS
-1.3 without 0-RTT prior to enabling 0-RTT.
+Multi-server deployments therefore MUST ensure a uniform and stable deployment
+of TLS 1.3 without 0-RTT prior to enabling 0-RTT.
 
 ## Backwards Compatibility Security Restrictions
 
