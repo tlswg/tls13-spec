@@ -2855,6 +2855,12 @@ the server.  For this reason, a server SHOULD measure the round trip
 time prior to sending the NewSessionTicket message and account for
 that in the value it saves.
 
+To properly validate the ticket age, a server needs to save at least two items:
+* The time that the server generated the session ticket and the estimated round
+  trip time can be added together to form a baseline time.
+* The "ticket_age_mask" parameter from the NewSessionTicket is needed to recover
+  the ticket age from the "masked_ticket_age" parameter.
+
 There are several potential sources of error that make an exact
 measurement of time difficult.  Variations in client and server clocks
 are likely to be minimal, outside of gross time corrections.  Network
