@@ -4334,10 +4334,12 @@ implementing TLS 1.3 and some implementing TLS 1.2, or a TLS 1.3 deployment
 could be downgraded to TLS 1.2.
 
 A client that attempts to send 0-RTT data MUST fail a connection if it receives
-a ServerHello with TLS 1.2 or older.
+a ServerHello with TLS 1.2 or older.  A client that attempts to repair this
+error SHOULD NOT send a TLS 1.2 ClientHello, but instead send a TLS 1.3
+ClientHello without 0-RTT data.
 
-Multi-server deployments therefore MUST ensure a uniform and stable deployment
-of TLS 1.3 without 0-RTT prior to enabling 0-RTT.
+To avoid this error condition, multi-server deployments SHOULD ensure a uniform
+and stable deployment of TLS 1.3 without 0-RTT prior to enabling 0-RTT.
 
 ## Backwards Compatibility Security Restrictions
 
