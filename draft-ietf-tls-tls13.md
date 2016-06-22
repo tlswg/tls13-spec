@@ -1840,7 +1840,6 @@ in the first flight, the rest of the handshake uses the same messages.
            + early_data
            + pre_shared_key
            + key_share*
-         (EncryptedExtensions)
          (Finished)
          (Application Data*)
          (end_of_early_data)        -------->
@@ -2230,7 +2229,6 @@ The extension format is:
            key_share(40),
            pre_shared_key(41),
            early_data(42),
-           ticket_age(43),
            cookie(44),
            (65535)
        } ExtensionType;
@@ -2745,6 +2743,7 @@ The "extension_data" field of this extension contains an
        struct {
            select (Role) {
                case client:
+                   uint32 masked_ticket_age;
                    opaque context<0..255>;
 
                case server:
@@ -2752,10 +2751,21 @@ The "extension_data" field of this extension contains an
            }
        } EarlyDataIndication;
 
+masked_ticket_age
+: The time since the client learned about the server configuration that it is
+  using, in milliseconds.  This value is XORed with the "ticket_age_mask" value
+  that was included with the ticket, see {{NewSessionTicket}}.  This masking
+  prevents passive observers from correlating sessions.  Note: because ticket
+  lifetimes are restricted to a week, 32 bits is enough to represent any
+  plausible age, even in milliseconds.
+
 context
 : An optional context value that can be used for anti-replay
   (see below).
 {:br }
+
+A server MUST validate that the ticket_age is within a small
+tolerance of the time since the ticket was issued (see {{replay-time}}).
 
 All of the parameters for the 0-RTT data (symmetric cipher suite,
 ALPN, etc.) MUST be those which were negotiated in the connection
@@ -2797,9 +2807,6 @@ following extensions:
 - The values of "key_share", "pre_shared_key", and "early_data", which MUST
   be as defined in this document.
 
-In addition, it MUST validate that the ticket_age is within a small
-tolerance of the time since the ticket was issued (see {{replay-time}}).
-
 If any of these checks fail, the server MUST NOT respond
 with the extension and must discard all the remaining first
 flight data (thus falling back to 1-RTT). If the client attempts
@@ -2815,10 +2822,6 @@ specified for all records when processing early data records.
 Specifically, decryption failure of any 0-RTT record following
 an accepted "early_data" extension MUST produce a fatal
 "bad_record_mac" alert as per {{record-payload-protection}}.
-Implementations SHOULD determine the security parameters for the
-1-RTT phase of the connection entirely before processing the EncryptedExtensions
-and Finished, using those values solely to determine whether to
-accept or reject 0-RTT data.
 
 [[TODO: How does the client behave if the indication is rejected.]]
 
@@ -2837,14 +2840,14 @@ As noted in {{zero-rtt-data}}, TLS provides only a limited
 inter-connection mechanism for replay protection for data sent by the
 client in the first flight.
 
-The "ticket_age" extension sent by the client SHOULD be used by
+The "masked_ticket_age" parameter in the client's "early_data" extension SHOULD be used by
 servers to limit the time over which the first flight might be
 replayed.  A server can store the time at which it sends a server
 configuration to a client, or encode the time in a ticket.  Then, each
-time it receives an early_data extension, it can check to see if the
+time it receives an "early_data" extension, it can unmask the value and check to see if the
 value used by the client matches its expectations.
 
-The "ticket_age" value provided by the client will be shorter than the
+The "masked_ticket_age" value provided by the client will be shorter than the
 actual time elapsed on the server by a single round trip time.  This
 difference is comprised of the delay in sending the NewSessionTicket
 message to the client, plus the time taken to send the ClientHello to
@@ -2865,22 +2868,6 @@ is advisable.  However, any allowance also increases the opportunity
 for replay.  In this case, it is better to reject early data than to
 risk greater exposure to replay attacks.
 
-#### Ticket Age
-
-%%% Key Exchange Messages
-       struct {
-           uint32 ticket_age;
-       } TicketAge;
-
-When the client sends the "early_data" extension, it MUST also send
-a "ticket_age" extension in its EncryptedExtensions block. This value
-contains the time elapsed since the client learned about the server
-configuration that it is using, in milliseconds.  This value can
-be used by the server to limit the time over which early data can
-be replayed. Note: because ticket lifetimes are restricted to a week,
-32 bits is enough to represent any plausible age, even in milliseconds.
-
-
 ### Server Parameters
 
 ####  Encrypted Extensions
@@ -2890,9 +2877,7 @@ When this message will be sent:
 > In all handshakes, the server MUST send the
 EncryptedExtensions message immediately after the
 ServerHello message. This is the first message that is encrypted
-under keys derived from handshake_traffic_secret. If the client indicates "early_data"
-in its ClientHello, it MUST also send EncryptedExtensions immediately
-following the ClientHello and immediately prior to the Finished.
+under keys derived from handshake_traffic_secret.
 
 Meaning of this message:
 
@@ -2910,12 +2895,6 @@ appear in ServerHello MUST NOT appear in EncryptedExtensions. Clients
 MUST check EncryptedExtensions for the presence of any forbidden
 extensions and if any are found MUST terminate the handshake with an
 "illegal_parameter" alert.
-
-The client's EncryptedExtensions apply only to the early data
-with which they appear. Servers MUST NOT use them to negotiate
-the rest of the handshake. Only those extensions explicitly
-designated as being included in 0-RTT Encrypted Extensions
-in the IANA registry can be sent in the client's EncryptedExtensions.
 
 Structure of this message:
 
@@ -3382,7 +3361,7 @@ TLS also allows other messages to be sent after the main handshake.
 These messages use a handshake content type and are encrypted under the application
 traffic key.
 
-#### New Session Ticket Message
+#### New Session Ticket Message {#NewSessionTicket}
 
 At any time after the server has received the client Finished message, it MAY send
 a NewSessionTicket message. This message creates a pre-shared key
@@ -3423,6 +3402,7 @@ L zeroes.
      struct {
          uint32 ticket_lifetime;
          uint32 flags;
+         uint32 ticket_age_mask;
          TicketExtension extensions<2..2^16-2>;
          opaque ticket<0..2^16-1>;
      } NewSessionTicket;
@@ -3442,6 +3422,10 @@ ticket_lifetime
   earlier based on local policy. A server MAY treat a ticket as valid
   for a shorter period of time than what is stated in the
   ticket_lifetime.
+
+ticket_age_mask
+: A randomly 32-bit value that is used to mask the age of the ticket that the
+  client includes in the "early_data" extension.
 
 ticket_extensions
 : A placeholder for extensions in the ticket. Clients MUST ignore
@@ -3871,9 +3855,7 @@ is listed below:
    1.3" column with the following four values: "Client", indicating
    that the server shall not send them. "Clear", indicating
    that they shall be in the ServerHello. "Encrypted", indicating that
-   they shall be in the EncryptedExtensions block, "Early", indicating
-   that they shall be only in the client's 0-RTT EncryptedExtensions block,
-   and "No" indicating
+   they shall be in the EncryptedExtensions block, and "No" indicating
    that they are not used in TLS 1.3. This column [shall be/has been]
    initially populated with the values in this document.
    IANA [shall update/has updated] this registry to add a
@@ -3913,7 +3895,6 @@ is listed below:
 | key_share [[this document]]              |         Yes |     Clear |
 | pre_shared_key [[this document]]         |         Yes |     Clear |
 | early_data [[this document]]             |         Yes |     Clear |
-| ticket_age [[this document]]             |         Yes |     Early |
 | cookie [[this document]]                 |         Yes | Encrypted/HelloRetryRequest |
 
 
