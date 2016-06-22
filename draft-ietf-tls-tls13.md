@@ -2847,7 +2847,7 @@ configuration to a client, or encode the time in a ticket.  Then, each
 time it receives an "early_data" extension, it can unmask the value and check to see if the
 value used by the client matches its expectations.
 
-The "masked_ticket_age" value provided by the client will be shorter than the
+The unmasked value of "masked_ticket_age" will be shorter than the
 actual time elapsed on the server by a single round trip time.  This
 difference is comprised of the delay in sending the NewSessionTicket
 message to the client, plus the time taken to send the ClientHello to
