@@ -46,8 +46,8 @@ normative:
   RFC6655:
   RFC7251:
   RFC7748:
+  RFC7905:
   I-D.mattsson-tls-ecdhe-psk-aead:
-  I-D.ietf-tls-chacha20-poly1305:
   I-D.irtf-cfrg-eddsa:
 
   AES:
@@ -4022,9 +4022,9 @@ client-authenticated) cipher suites which are currently available in TLS 1.3:
 | TLS_DHE_RSA_WITH_AES_256_CCM                  | {0xC0,0x9F} | [RFC6655]     |
 | TLS_DHE_RSA_WITH_AES_128_CCM_8                | {0xC0,0xA2} | [RFC6655]     |
 | TLS_DHE_RSA_WITH_AES_256_CCM_8                | {0xC0,0xA3} | [RFC6655]     |
-| TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256   | {0xCC,0xA8}   | [I-D.ietf-tls-chacha20-poly1305] |
-| TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256 | {0xCC,0xA9}   | [I-D.ietf-tls-chacha20-poly1305] |
-| TLS_DHE_RSA_WITH_CHACHA20_POLY1305_SHA256     | {0xCC,0xAA}   | [I-D.ietf-tls-chacha20-poly1305] |
+| TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256   | {0xCC,0xA8}   | [RFC7905] |
+| TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256 | {0xCC,0xA9}   | [RFC7905] |
+| TLS_DHE_RSA_WITH_CHACHA20_POLY1305_SHA256     | {0xCC,0xAA}   | [RFC7905] |
 
 Note: The values listed for ChaCha/Poly are preliminary but are being
 or will be used for interop testing and therefore are likely to be
@@ -4050,8 +4050,8 @@ suites which are currently available in TLS 1.3:
 | TLS_ECDHE_PSK_WITH_AES_128_CCM_8_SHA256       | {0xD0,0x03}   | [I-D.mattsson-tls-ecdhe-psk-aead] |
 | TLS_ECDHE_PSK_WITH_AES_128_CCM_SHA256         | {0xD0,0x04}   | [I-D.mattsson-tls-ecdhe-psk-aead] |
 | TLS_ECDHE_PSK_WITH_AES_256_CCM_SHA384         | {0xD0,0x05}   | [I-D.mattsson-tls-ecdhe-psk-aead] |
-| TLS_ECDHE_PSK_WITH_CHACHA20_POLY1305_SHA256   | {0xCC,0xAC}   | [I-D.ietf-tls-chacha20-poly1305] |
-| TLS_DHE_PSK_WITH_CHACHA20_POLY1305_SHA256     | {0xCC,0xAD}   | [I-D.ietf-tls-chacha20-poly1305] |
+| TLS_ECDHE_PSK_WITH_CHACHA20_POLY1305_SHA256   | {0xCC,0xAC}   | [RFC7905] |
+| TLS_DHE_PSK_WITH_CHACHA20_POLY1305_SHA256     | {0xCC,0xAD}   | [RFC7905] |
 
 Note: The values listed for ECDHE and ChaCha/Poly are preliminary but
 are being or will be used for interop testing and therefore are likely to be
