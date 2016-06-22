@@ -1764,7 +1764,7 @@ Although TLS PSKs can be established out of band,
 PSKs can also be established in a previous session and
 then reused ("session resumption"). Once a handshake has completed, the server can
 send the client a PSK identity which corresponds to a key derived from
-the initial handshake (See {{new-session-ticket-message}}). The client
+the initial handshake (See {{NewSessionTicket}}). The client
 can then use that PSK identity in future handshakes to negotiate use
 of the PSK; if the server accepts it, then the security context of the
 original connection is tied to the new connection. In TLS 1.2 and
@@ -3025,7 +3025,7 @@ client authentication is not available in the 0-RTT case.
 
 CertificateVerify
 : A signature over the value Hash(Handshake Context + Certificate) + Hash(resumption_context)
-See {{new-session-ticket-message}} for the definition of resumption_context.
+See {{NewSessionTicket}} for the definition of resumption_context.
 
 Finished
 : A MAC over the value Hash(Handshake Context + Certificate + CertificateVerify) +
