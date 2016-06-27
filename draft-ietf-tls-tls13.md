@@ -2743,7 +2743,7 @@ The "extension_data" field of this extension contains an
        struct {
            select (Role) {
                case client:
-                   uint32 masked_ticket_age;
+                   uint32 ticket_age;
                    opaque context<0..255>;
 
                case server:
@@ -2751,11 +2751,12 @@ The "extension_data" field of this extension contains an
            }
        } EarlyDataIndication;
 
-masked_ticket_age
+ticket_age
 : The time since the client learned about the server configuration that it is
-  using, in milliseconds.  This value is XORed with the "ticket_age_mask" value
-  that was included with the ticket, see {{NewSessionTicket}}.  This masking
-  prevents passive observers from correlating sessions.  Note: because ticket
+  using, in milliseconds.  This value is added modulo 2^32 to with the
+  "ticket_age_add" value that was included with the ticket, see
+  {{NewSessionTicket}}.  This addition prevents passive observers from
+  correlating sessions unless tickets are reused.  Note: because ticket
   lifetimes are restricted to a week, 32 bits is enough to represent any
   plausible age, even in milliseconds.
 
@@ -2840,14 +2841,15 @@ As noted in {{zero-rtt-data}}, TLS provides only a limited
 inter-connection mechanism for replay protection for data sent by the
 client in the first flight.
 
-The "masked_ticket_age" parameter in the client's "early_data" extension SHOULD be used by
+The "ticket_age" parameter in the client's "early_data" extension SHOULD be used by
 servers to limit the time over which the first flight might be
 replayed.  A server can store the time at which it sends a server
 configuration to a client, or encode the time in a ticket.  Then, each
-time it receives an "early_data" extension, it can unmask the value and check to see if the
-value used by the client matches its expectations.
+time it receives an "early_data" extension, it can subtract the base value and
+check to see if the value used by the client matches its expectations.
 
-The unmasked value of "masked_ticket_age" will be shorter than the
+The ticket age (the value with "ticket_age_add" subtracted) provided by the
+client will be shorter than the
 actual time elapsed on the server by a single round trip time.  This
 difference is comprised of the delay in sending the NewSessionTicket
 message to the client, plus the time taken to send the ClientHello to
@@ -2858,8 +2860,8 @@ that in the value it saves.
 To properly validate the ticket age, a server needs to save at least two items:
 * The time that the server generated the session ticket and the estimated round
   trip time can be added together to form a baseline time.
-* The "ticket_age_mask" parameter from the NewSessionTicket is needed to recover
-  the ticket age from the "masked_ticket_age" parameter.
+* The "ticket_age_add" parameter from the NewSessionTicket is needed to recover
+  the ticket age from the "ticket_age" parameter.
 
 There are several potential sources of error that make an exact
 measurement of time difficult.  Variations in client and server clocks
@@ -3408,7 +3410,7 @@ L zeroes.
      struct {
          uint32 ticket_lifetime;
          uint32 flags;
-         uint32 ticket_age_mask;
+         uint32 ticket_age_add;
          TicketExtension extensions<2..2^16-2>;
          opaque ticket<0..2^16-1>;
      } NewSessionTicket;
@@ -3429,9 +3431,11 @@ ticket_lifetime
   for a shorter period of time than what is stated in the
   ticket_lifetime.
 
-ticket_age_mask
-: A randomly 32-bit value that is used to mask the age of the ticket that the
-  client includes in the "early_data" extension.
+ticket_age_add
+: A randomly 32-bit value that is used to obscure the age of the ticket that the
+  client includes in the "early_data" extension.  The actual ticket age is
+  added to this value modulo 2^32 to obtain the value that is transmitted by
+  the client.
 
 ticket_extensions
 : A placeholder for extensions in the ticket. Clients MUST ignore
