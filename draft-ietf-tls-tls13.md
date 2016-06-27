@@ -2743,7 +2743,7 @@ The "extension_data" field of this extension contains an
        struct {
            select (Role) {
                case client:
-                   uint32 ticket_age;
+                   uint32 obfuscated_ticket_age;
                    opaque context<0..255>;
 
                case server:
@@ -2751,7 +2751,7 @@ The "extension_data" field of this extension contains an
            }
        } EarlyDataIndication;
 
-ticket_age
+obfuscated_ticket_age
 : The time since the client learned about the server configuration that it is
   using, in milliseconds.  This value is added modulo 2^32 to with the
   "ticket_age_add" value that was included with the ticket, see
@@ -2841,7 +2841,7 @@ As noted in {{zero-rtt-data}}, TLS provides only a limited
 inter-connection mechanism for replay protection for data sent by the
 client in the first flight.
 
-The "ticket_age" parameter in the client's "early_data" extension SHOULD be used by
+The "obfuscated_ticket_age" parameter in the client's "early_data" extension SHOULD be used by
 servers to limit the time over which the first flight might be
 replayed.  A server can store the time at which it sends a server
 configuration to a client, or encode the time in a ticket.  Then, each
@@ -2861,7 +2861,7 @@ To properly validate the ticket age, a server needs to save at least two items:
 * The time that the server generated the session ticket and the estimated round
   trip time can be added together to form a baseline time.
 * The "ticket_age_add" parameter from the NewSessionTicket is needed to recover
-  the ticket age from the "ticket_age" parameter.
+  the ticket age from the "obfuscated_ticket_age" parameter.
 
 There are several potential sources of error that make an exact
 measurement of time difficult.  Variations in client and server clocks
