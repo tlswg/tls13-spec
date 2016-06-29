@@ -1651,7 +1651,7 @@ will contain a "key_share" extension with the server's ephemeral
 Diffie-Hellman share which MUST be in the same group.
 If a pure PSK or an (EC)DHE-PSK cipher suite is negotiated, then the
 ServerHello will contain a "pre_shared_key" extension indicating
-which if the client's offered PSKs was selected.
+which of the client's offered PSKs was selected.
 
 The server then sends two messages to establish the Server Parameters:
 
