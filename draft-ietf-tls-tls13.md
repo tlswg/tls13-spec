@@ -3554,7 +3554,7 @@ based on HKDF {{RFC5869}}:
 ~~~~
   HKDF-Extract(Salt, IKM) as defined in {{RFC5869}}.
 
-  HKDF-Expand-Label(Secret, Label, Messages, Length) =
+  HKDF-Expand-Label(Secret, Label, HashValue, Length) =
        HKDF-Expand(Secret, HkdfLabel, Length)
 
   Where HkdfLabel is specified as:
