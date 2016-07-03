@@ -2349,7 +2349,7 @@ The "extension_data" field of this extension contains a
 
 %%% Signature Algorithm Extension
        enum {
-           /* RSASSA-PKCS-v1_5 algorithms */
+           /* RSASSA-PKCS1-v1_5 algorithms */
            rsa_pkcs1_sha1 (0x0201),
            rsa_pkcs1_sha256 (0x0401),
            rsa_pkcs1_sha384 (0x0501),
@@ -2397,7 +2397,7 @@ traditionally act on a digest should be defined in TLS to first
 hash the input with a specified hash function and then proceed as usual.
 The code point groups listed above have the following meanings:
 
-RSASSA-PKCS-v1_5 algorithms
+RSASSA-PKCS1-v1_5 algorithms
 : Indicates a signature algorithm using RSASSA-PKCS1-v1_5 {{RFC3447}}
   with the corresponding hash algorithm as defined in {{SHS}}. These values
   refer solely to signatures which appear in certificates (see
@@ -3300,7 +3300,7 @@ message.
 
 > In addition, the signature algorithm MUST be compatible with the key
 in the sender's end-entity certificate. RSA signatures MUST use an
-RSASSA-PSS algorithm, regardless of whether RSASSA-PKCS-v1_5 algorithms
+RSASSA-PSS algorithm, regardless of whether RSASSA-PKCS1-v1_5 algorithms
 appear in "signature_algorithms". SHA-1 MUST NOT be used in any signatures in
 CertificateVerify. (Note that rsa_pkcs1_sha1 and dsa_sha1, the only defined
 SHA-1 signature algorithms, are undefined for CertificateVerify signatures.)
