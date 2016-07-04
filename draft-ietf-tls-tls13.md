@@ -1296,7 +1296,7 @@ verify the TLS MAC.  The DTLS record format is shown below:
 
       struct {
            ContentType type;
-           ProtocolVersion version;
+           ProtocolVersion version = { 3, 1 };
            uint16 epoch;                         // DTLS-related field
            uint48 sequence_number;               // DTLS-related field
            uint16 length;
@@ -1307,7 +1307,9 @@ type
 : Identical to the type field in a TLS 1.3 record.
 
 version
-: Identical to the version field in a TLS 1.3 record.
+: Identical to the version field in a TLS 1.3 record. This value MUST 
+be set to { 3, 1 } for all records. This field is deprecated and MUST 
+be ignored for all purposes. [TBD: Decide about the version number.]
 
 epoch
 : A counter value that is incremented on every cipher state change.
@@ -3947,8 +3949,6 @@ and MUST be ignored by a server negotiating DTLS 1.3.
    In order to support message loss, reordering, and message
    fragmentation, DTLS modifies the TLS 1.3 handshake header:
 
-%%% DTLS Handshake Message Format
-
 ~~~~
        enum {
            hello_request_RESERVED(0),
@@ -3988,15 +3988,13 @@ and MUST be ignored by a server negotiating DTLS 1.3.
            } body;
        } Handshake;
 ~~~~
- 
- The format of the ClientHello used in DTLS 1.3 differs from the 
- TLS 1.3 ClientHello format. 
- 
-%%% DTLS ClientHello
 
+The format of the ClientHello used in DTLS 1.3 differs from the 
+TLS 1.3 ClientHello format. 
+ 
 ~~~~
   struct {
-       ProtocolVersion client_version = { 3, 4 };    /* TLS v1.3 */
+       ProtocolVersion client_version = { 3, 4 };    /* DTLS v1.3 */
        Random random;
        opaque legacy_session_id<0..32>;
        opaque legacy_cookie<0..2^8-1>;               // DTLS       
@@ -4007,7 +4005,7 @@ and MUST be ignored by a server negotiating DTLS 1.3.
 ~~~~
 
 client_version
-: Same as for TLS 1.3
+: Same as for TLS 1.3. [TBD: Decide about the version number.]
 
 random
 : Same as for TLS 1.3
