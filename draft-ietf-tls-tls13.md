@@ -1866,7 +1866,7 @@ keys.
 
 {{tls-full}} below shows the basic full TLS handshake.
 
-~~~
+~~~~
        Client                                           Server
 
 Key  ^ ClientHello
@@ -1897,7 +1897,7 @@ Auth | {CertificateVerify*}
 
               [] Indicates messages protected using keys
                  derived from traffic_secret_N
-~~~
+~~~~
 {: #tls-full title="Message flow for full TLS Handshake"}
 
 The handshake can be thought of as having three phases, indicated
@@ -2006,7 +2006,7 @@ If no common cryptographic parameters can be negotiated,
 the server will send a "handshake_failure" or "insufficient_security"
 fatal alert (see {{alert-protocol}}).
 
-~~~
+~~~~
          Client                                               Server
 
          ClientHello
@@ -2027,7 +2027,7 @@ fatal alert (see {{alert-protocol}}).
          {CertificateVerify*}
          {Finished}                -------->
          [Application Data]        <------->     [Application Data]
-~~~
+~~~~
 {: #tls-restart title="Message flow for a full handshake with mismatched parameters"}
 
 Note: the handshake transcript includes the initial
@@ -2059,7 +2059,7 @@ secrecy.
 {{tls-resumption-psk}} shows a pair of handshakes in which the first establishes
 a PSK and the second uses it:
 
-~~~
+~~~~
        Client                                               Server
 
 Initial Handshake:
@@ -2092,7 +2092,7 @@ Subsequent Handshake:
                                  <--------     [Application Data*]
        {Finished}                -------->
        [Application Data]        <------->      [Application Data]
-~~~
+~~~~
 {: #tls-resumption-psk title="Message flow for resumption and PSK"}
 
 As the server is authenticating via a PSK, it does not send a
@@ -2112,7 +2112,7 @@ derived using the PSK as the static secret.  As shown in
 {{tls-0-rtt}}, the Zero-RTT data is just added to the 1-RTT handshake
 in the first flight, the rest of the handshake uses the same messages.
 
-~~~
+~~~~
          Client                                               Server
 
          ClientHello
@@ -2148,7 +2148,7 @@ in the first flight, the rest of the handshake uses the same messages.
 
                [] Indicates messages protected using keys
                   derived from traffic_secret_N
-~~~
+~~~~
 {: #tls-0-rtt title="Message flow for a zero round trip handshake"}
 
 [[OPEN ISSUE: Should it be possible to combine 0-RTT with the
@@ -3617,13 +3617,13 @@ The key used to compute the finished message is computed from the
 Base key defined in {{authentication-messages}} using HKDF (see
 {{key-schedule}}). Specifically:
 
-~~~
+~~~~
 client_finished_key =
     HKDF-Expand-Label(BaseKey, "client finished", "", L)
 
 server_finished_key =
     HKDF-Expand-Label(BaseKey, "server finished", "", L)
-~~~
+~~~~
 
 Structure of this message:
 
@@ -3865,7 +3865,7 @@ Datagram security protocols are extremely susceptible to a variety of
    the figure focuses on the cookie exchange; other extensions 
    are omitted. 
 
-~~~
+~~~~
       Client                                   Server
       ------                                   ------
       ClientHello           ------>
@@ -3877,7 +3877,7 @@ Datagram security protocols are extremely susceptible to a variety of
        + cookie
 
       [Rest of handshake]
-~~~
+~~~~
 {: #dtls-cookie-exchange title="DTLS Exchange with HelloRetryRequest contain the Cookie Extension"}
 
 The cookie extension is defined in {{cookie}}. When sending the 
@@ -3947,9 +3947,9 @@ and MUST be ignored by a server negotiating DTLS 1.3.
    In order to support message loss, reordering, and message
    fragmentation, DTLS modifies the TLS 1.3 handshake header:
 
-%%% DTLS Handshake Format
+%%% DTLS Handshake Message Format
 
-~~~
+~~~~
        enum {
            hello_request_RESERVED(0),
            client_hello(1),
@@ -3987,12 +3987,14 @@ and MUST be ignored by a server negotiating DTLS 1.3.
                case key_update:            KeyUpdate;
            } body;
        } Handshake;
- ~~~
+~~~~
  
  The format of the ClientHello used in DTLS 1.3 differs from the 
  TLS 1.3 ClientHello format. 
-  
- ~~~
+ 
+%%% DTLS ClientHello
+
+~~~~
   struct {
        ProtocolVersion client_version = { 3, 4 };    /* TLS v1.3 */
        Random random;
@@ -4001,9 +4003,8 @@ and MUST be ignored by a server negotiating DTLS 1.3.
        CipherSuite cipher_suites<2..2^16-2>;
        opaque legacy_compression_methods<1..2^8-1>;
        Extension extensions<0..2^16-1>;
-   } ClientHello;       
-~~~
-
+   } ClientHello;
+~~~~
 
 client_version
 : Same as for TLS 1.3
@@ -4034,7 +4035,7 @@ extensions
    = 0 and the ServerHello will have message_seq = 1.  When a message is
    retransmitted, the same message_seq value is used.  For example:
 
-~~~
+~~~~
          Client                             Server
          ------                             ------
          ClientHello (seq=0)  ------>
@@ -4055,7 +4056,7 @@ extensions
                               <------        ServerHello (seq=1)
 
                           [Rest of handshake]
-~~~
+~~~~
 {: #dtls-msg-loss title="Example DTLS Exchange with Message Loss"}
 
    Note, however, that from the perspective of the DTLS record layer,
@@ -4111,7 +4112,7 @@ extensions
    of a number of messages, they should be viewed as monolithic for the
    purpose of timeout and retransmission.
 
-~~~
+~~~~
 Client                                             Server
 
 ClientHello                                                 +----------+
@@ -4141,10 +4142,10 @@ ClientHello                                                 +----------+
  {Certificate*}                                             +----------+
  {CertificateVerify*}                                       | Flight 5 |
  {Finished}             -------->                           +----------+
-~~~
+~~~~
 {: #dtls-full title="Message Flights for full DTLS Handshake (With Cookie Exchange)"}
 
-~~~
+~~~~
 ClientHello                                               +----------+
   + pre_shared_key                                        | Flight 1 |
   + key_share*         -------->                          +----------+
@@ -4159,10 +4160,10 @@ ClientHello                                               +----------+
                                                           +----------+
 {Finished}             -------->                          | Flight 3 |
                                                           +----------+
-~~~
+~~~~
 {: #dtls-psk title="Message Flights for resumption and PSK Handshake (No Cookie Exchange)"}
 
-~~~
+~~~~
 Client                                            Server
 
 ClientHello
@@ -4185,8 +4186,7 @@ ClientHello
 {Certificate*}                                            +----------+
 {CertificateVerify*}                                      | Flight 3 |
 {Finished}             -------->                          +----------+
-
-~~~
+~~~~
 {: #dtls-zero-rtt title="Message Flights for a zero round trip handshake"}
 
          
@@ -4195,7 +4195,7 @@ ClientHello
    (ClientHello), they start in the PREPARING state.  DTLS servers start
    in the WAITING state, but with empty buffers and no retransmit timer.
 
-~~~
+~~~~
                       +-----------+
                       | PREPARING |
                 +---> |           | <--------------------+
@@ -4242,7 +4242,7 @@ ClientHello
 
               Read retransmit
            Retransmit last flight
-~~~
+~~~~
 {: #dtls-timeout-state-machine title="DTLS Timeout and Retransmission State Machine"}
 
    The state machine has three basic states.
@@ -4940,9 +4940,9 @@ via hello messages in the TLS handshake.
 Cipher suite names follow a general naming convention composed of a series
 of component algorithm names separated by underscores:
 
-~~~
+~~~~
    CipherSuite TLS_KEA_AUTH_WITH_CIPHER_HASH = VALUE;
-~~~
+~~~~
 
 | Component | Contents |
 |:----------|:---------|
