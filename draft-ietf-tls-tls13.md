@@ -337,6 +337,7 @@ server: The endpoint which did not initiate the TLS connection.
 ##  Major Differences from TLS 1.2
 
 draft-14
+
 - Allow cookies to be longer.
 
 
@@ -388,6 +389,7 @@ draft-12
 
 - Editorial cleanup
 
+
 draft-11
 
 - Port the CFRG curves & signatures work from RFC4492bis.
@@ -407,6 +409,7 @@ draft-11
   an alert.
 
 - Reset sequence number upon key change (as proposed by Fournet et al.)
+
 
 draft-10
 
