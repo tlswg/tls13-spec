@@ -1316,10 +1316,10 @@ sequence_number
 : The sequence number for this record.
 
 length
-: Identical to the version field in a TLS 1.3 record.
+: Identical to the length field in a TLS 1.3 record.
 
 fragment
-: Identical to the version field in a TLS 1.3 record.
+: Identical to the fragment field in a TLS 1.3 record.
 
    DTLS uses an explicit sequence number, rather than an implicit one,
    carried in the sequence_number field of the record.  Sequence numbers
@@ -1363,22 +1363,12 @@ fragment
    impermissible to send data prior to completion of the first
    handshake.
 
-   Note that in the special case of a rehandshake on an existing
-   association, it is safe to process a data packet immediately, even if
-   the Finished messages have not yet been received
-   provided that either the rehandshake resumes the existing session or
-   that it uses exactly the same security parameters as the existing
-   association.  In any other case, the implementation MUST wait for the
-   receipt of the Finished message to prevent downgrade attack.
-
    As in TLS, implementations MUST either abandon an association or
-   rehandshake prior to allowing the sequence number to wrap.
+   re-key using a KeyUpdate message prior to allowing the sequence number to wrap.
 
-   Similarly, implementations MUST NOT allow the epoch to wrap, but
+   Implementations MUST NOT allow the epoch to wrap, but
    instead MUST establish a new association, terminating the old
-   association.  In practice,
-   implementations rarely rehandshake repeatedly on the same channel, so
-   this is not likely to be an issue.
+   association.
 
 ##  Transport Layer Mapping
 
@@ -1403,10 +1393,7 @@ fragment
    transport sequence numbers will be present.  Although this introduces
    a small amount of inefficiency, the transport layer and DTLS sequence
    numbers serve different purposes; therefore, for conceptual
-   simplicity, it is superior to use both sequence numbers.  In the
-   future, extensions to DTLS may be specified that allow the use of
-   only one set of sequence numbers for deployment in constrained
-   environments.
+   simplicity, it is superior to use both sequence numbers.
 
    Some transports, such as DCCP, provide congestion control for traffic
    carried over them.  If the congestion window is sufficiently narrow,
@@ -1453,8 +1440,7 @@ fragment
 
    The DTLS record layer SHOULD allow the upper layer protocol to
    discover the amount of record expansion expected by the DTLS
-   processing.  Note that this number is only an estimate because of
-   block padding and the potential use of DTLS compression.
+   processing.
 
    If there is a transport protocol indication (either via ICMP or via a
    refusal to send the datagram as in Section 14 of {{RFC4340}}), then the
@@ -1516,7 +1502,6 @@ fragment
    (How the window is implemented is a local matter, but the following
    text describes the functionality that the implementation must
    exhibit.)  A minimum window size of 32 MUST be supported, but a
-
    window size of 64 is preferred and SHOULD be employed as the default.
    Another window size (larger than the minimum) MAY be chosen by the
    receiver.  (The receiver does not notify the sender of the window
@@ -3943,7 +3928,7 @@ and MUST be ignored by a server negotiating DTLS 1.3.
    handshake.
 
    If HelloRetryRequest is used, the initial ClientHello and
-   HelloRetryRequest are not included in the calculation of the
+   HelloRetryRequest are included in the calculation of the
    handshake_messages (for the CertificateVerify message) and
    verify_data (for the Finished message).
 
