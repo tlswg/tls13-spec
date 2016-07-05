@@ -3343,10 +3343,10 @@ Base key defined in {{authentication-messages}} using HKDF (see
 
 ~~~
 client_finished_key =
-    HKDF-Expand-Label(BaseKey, "client finished", "", L)
+    HKDF-Expand-Label(BaseKey, "client finished", "", Hash.Length)
 
 server_finished_key =
-    HKDF-Expand-Label(BaseKey, "server finished", "", L)
+    HKDF-Expand-Label(BaseKey, "server finished", "", Hash.Length)
 ~~~
 
 Structure of this message:
@@ -3394,10 +3394,10 @@ from the resumption master secret:
 
 ~~~~
    resumption_psk = HKDF-Expand-Label(resumption_secret,
-                                      "resumption psk", "", L)
+                                      "resumption psk", "", Hash.Length)
 
    resumption_context = HKDF-Expand-Label(resumption_secret,
-                                          "resumption context", "", L)
+                                          "resumption context", "", Hash.Length)
 ~~~~
 
 The client MAY use this PSK for future handshakes by including
@@ -3406,7 +3406,7 @@ the ticket value in the "pre_shared_key" extension in its ClientHello
 suite. Servers may send multiple tickets on a single connection, for
 instance after post-handshake authentication. For handshakes that
 do not use a resumption_psk, the resumption_context is a string of
-L zeroes.
+Hash.Length zeroes.
 
 %%% Ticket Establishment
 
@@ -3571,8 +3571,11 @@ defined below:
 
   Derive-Secret(Secret, Label, Messages) =
        HKDF-Expand-Label(Secret, Label,
-                         Hash(Messages) + Hash(resumption_context), L)
+                         Hash(Messages) + Hash(resumption_context), Hash.Length)
 ~~~~
+
+The Hash function and the HKDF hash are the cipher suite hash function.
+Hash.Length is its output length.
 
 Given a set of n InputSecrets, the final "master secret" is computed
 by iteratively invoking HKDF-Extract with InputSecret_1, InputSecret_2,
@@ -3640,7 +3643,7 @@ called with four distinct transcripts; in a 1-RTT only exchange
 with three distinct transcripts.
 
 If a given secret is not available, then the 0-value consisting of
-a string of L zeroes is used.
+a string of Hash.Length zeroes is used.
 
 
 ## Updating Traffic Keys and IVs {#updating-traffic-keys}
@@ -3655,7 +3658,7 @@ this section then re-deriving the traffic keys as described in
 The next-generation traffic_secret is computed as:
 
   traffic_secret_N+1 = HKDF-Expand-Label(traffic_secret_N,
-                                         "application traffic secret", "", L)
+                                         "application traffic secret", "", Hash.Length)
 
 Once traffic_secret_N+1 and its associated traffic keys have been computed,
 implementations SHOULD delete traffic_secret_N. Once the directional
