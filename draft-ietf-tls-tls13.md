@@ -1296,7 +1296,7 @@ verify the TLS MAC.  The DTLS record format is shown below:
 
       struct {
            ContentType type;
-           ProtocolVersion version = { 3, 1 };
+           ProtocolVersion version = { 254, 253 };
            uint16 epoch;                         // DTLS-related field
            uint48 sequence_number;               // DTLS-related field
            uint16 length;
@@ -1307,9 +1307,8 @@ type
 : Identical to the type field in a TLS 1.3 record.
 
 version
-: Identical to the version field in a TLS 1.3 record. This value MUST 
-be set to { 3, 1 } for all records. This field is deprecated and MUST 
-be ignored for all purposes. [TBD: Decide about the version number.]
+: This specification re-uses the DTLS version 1.2 version number, namely
+{ 254, 253 }. This field is deprecated and MUST be ignored for all purposes.
 
 epoch
 : A counter value that is incremented on every cipher state change.
@@ -3817,14 +3816,17 @@ attacks.
 
 # The DTLS Handshake Protocol {#dtls}
 
-   DTLS 1.3 uses all of the same handshake messages and flows as TLS 1.3, with
-   two principal changes:
+DTLS 1.3 re-uses the TLS 1.3 handshake messages and flows, with
+the following changes:
 
 1. Modifications to the handshake header to handle message loss,
-         reordering, and DTLS message fragmentation (in order to avoid
-         IP fragmentation).
+   reordering, and DTLS message fragmentation (in order to avoid
+   IP fragmentation). Additionally, a new ACK message is introduced. 
 
 2. Retransmission timers to handle message loss.
+
+3. The TLS 1.3 KeyUpdate message is not used in DTLS 1.3
+
 
 Note that TLS 1.3 already supports a cookie extension, which used to 
 prevent denial-of-service attacks. This DoS prevention mechanism is
@@ -3954,6 +3956,7 @@ and MUST be ignored by a server negotiating DTLS 1.3.
            hello_request_RESERVED(0),
            client_hello(1),
            server_hello(2),
+           hello_verify_request_RESERVED(3),
            new_session_ticket(4),
            hello_retry_request(6),
            encrypted_extensions(8),
@@ -3964,7 +3967,7 @@ and MUST be ignored by a server negotiating DTLS 1.3.
            certificate_verify(15),
            client_key_exchange_RESERVED(16),
            finished(20),
-           key_update(24),
+           key_update_RESERVED(24),
            (255)
        } HandshakeType;
 
@@ -3989,15 +3992,26 @@ and MUST be ignored by a server negotiating DTLS 1.3.
        } Handshake;
 ~~~~
 
-The format of the ClientHello used in DTLS 1.3 differs from the 
+In addition to the handshake messages that are depricated by the TLS 1.3
+specification DTLS 1.3 furthermore depricates the HelloVerifyRequest message
+originally defined in DTLS 1.0. DTLS 1.3-compliant implements MUST NOT 
+use the HelloVerifyRequest to execute a return-routability check. A 
+dual-stack DTLS 1.2/DTLS 1.3 client must, however, be prepared to 
+interact with a DTLS 1.2 ser
+
+Furthermore, a DTLS 1.3 MUST NOT use the KeyUpdate message to update 
+keying material. Instead the epoch field is re-used, which is explained 
+in {{dtls-rekying}}. 
+
+The format of the ClientHello used by a DTLS 1.3 client differs from the 
 TLS 1.3 ClientHello format. 
  
 ~~~~
   struct {
-       ProtocolVersion client_version = { 3, 4 };    /* DTLS v1.3 */
+       ProtocolVersion client_version = { 254,252 };    /* DTLS v1.3 */
        Random random;
        opaque legacy_session_id<0..32>;
-       opaque legacy_cookie<0..2^8-1>;               // DTLS       
+       opaque legacy_cookie<0..2^8-1>;                  // DTLS       
        CipherSuite cipher_suites<2..2^16-2>;
        opaque legacy_compression_methods<1..2^8-1>;
        Extension extensions<0..2^16-1>;
@@ -4005,7 +4019,10 @@ TLS 1.3 ClientHello format.
 ~~~~
 
 client_version
-: Same as for TLS 1.3. [TBD: Decide about the version number.]
+: The version of the DTLS protocol by which the client wishes to 
+communicate during this session. This SHOULD be the latest (highest 
+valued) version supported by the client. For the DTLS 1.3 version of the 
+specification, the version will be { 254,252 }.
 
 random
 : Same as for TLS 1.3
@@ -4025,6 +4042,8 @@ legacy_compression_methods
 extensions
 : Same as for TLS 1.3
 {:br } 
+
+
 
    The first message each side transmits in each handshake always has
    message_seq = 0.  Whenever each new message is generated, the
@@ -4187,9 +4206,17 @@ ClientHello
 ~~~~
 {: #dtls-zero-rtt title="Message Flights for a zero round trip handshake"}
 
+Note: The application data sent by the client is not included in the 
+timeout and retransmission calculation. 
+
+[[TBD: More description for the use with Post-Handshake messages, such as 
+CertificateRequest, NewSessionTicket.]]
+
+### State Machine
          
    DTLS uses a simple timeout and retransmission scheme with the
-   following state machine.  Because DTLS clients send the first message
+   state machine shown in {{dtls-timeout-state-machine}. 
+   Because DTLS clients send the first message
    (ClientHello), they start in the PREPARING state.  DTLS servers start
    in the WAITING state, but with empty buffers and no retransmit timer.
 
@@ -4312,7 +4339,7 @@ ClientHello
    evidence of reordering or packet loss and retransmit their final
    flight immediately, shortcutting the retransmission timer.
 
-## Timer Values
+### Timer Values
 
    Though timer values are the choice of the implementation, mishandling
    of the timer can lead to serious congestion problems; for example, if
@@ -4374,6 +4401,9 @@ ClientHello
    off-path/blind attackers from destroying associations merely by
    sending forged ClientHellos.
 
+## Rekeying {#dtls-rekying}
+
+TBD: Add text about the absent KeyUpdate message and the use of epoch. 
 
 #  Cryptographic Computations
 
@@ -4764,6 +4794,7 @@ is listed below:
 | early_data [[this document]]             |         Yes |     Clear |
 | ticket_age [[this document]]             |         Yes |     Early |
 | cookie [[this document]]                 |         Yes | Encrypted/HelloRetryRequest |
+| cookie [[this document]]                 |         Yes | Clear/ClientHello |
 
 
 In addition, this document defines two new registries to be maintained
@@ -4794,7 +4825,7 @@ The basic design philosophy of DTLS is to construct "TLS over
 The reason that TLS cannot be used directly in
    datagram environments is simply that payloads may be lost or
    reordered.  Unreliability and reordering creates problems for TLS 
-   at two levels:
+   at three levels:
 
 1. TLS does not allow independent decryption of individual
          records.  Because the integrity check depends on the sequence
@@ -4810,6 +4841,10 @@ The reason that TLS cannot be used directly in
    larger than any given datagram, thus creating the problem of IP
    fragmentation.  DTLS provides fixes for both of these problems, 
    as described in the subsections below. 
+
+3. Not all TLS 1.3 handshake messages (such as the NewSessionTicket meesage ) 
+are acknowledged. Hence, a new acknowledgement message has to be integrated 
+to detect message loss. 
 
 The DTLS 1.3 specification changes the way how cookies are exchanged
    compared to DTLS 1.2. DTLS 1.3 re-uses the HelloRetryRequest message
