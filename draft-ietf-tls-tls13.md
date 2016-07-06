@@ -3633,7 +3633,9 @@ called with four distinct transcripts; in a 1-RTT only exchange
 with three distinct transcripts.
 
 If a given secret is not available, then the 0-value consisting of
-a string of L zeroes is used.
+a string of L zeroes is used.  Note that this does not mean skipping
+rounds, so if PSK is not in use Early Secret will still be
+HKDF-Extract(0, 0).
 
 
 ## Updating Traffic Keys and IVs {#updating-traffic-keys}
