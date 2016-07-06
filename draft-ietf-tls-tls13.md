@@ -2126,20 +2126,20 @@ extensions
 {:br }
 
 TLS 1.3 server implementations which respond to a ClientHello with a
-client_version indicating TLS 1.2 or below MUST set the first eight
+client_version indicating TLS 1.2 or below MUST set the last eight
 bytes of their Random value to the bytes:
 
       44 4F 57 4E 47 52 44 01
 
 TLS 1.2 server implementations which respond to a ClientHello with a
-client_version indicating TLS 1.1 or below SHOULD set the first eight
+client_version indicating TLS 1.1 or below SHOULD set the last eight
 bytes of their Random value to the bytes:
 
       44 4F 57 4E 47 52 44 00
 
 
 TLS 1.3 clients receiving a TLS 1.2 or below ServerHello MUST check
-that the top eight octets are not equal to either of these values. TLS
+that the last eight octets are not equal to either of these values. TLS
 1.2 clients SHOULD also perform this check if the ServerHello
 indicates TLS 1.1 or below. If a match is found, the client MUST abort
 the handshake with a fatal "illegal_parameter" alert. This mechanism
@@ -2152,13 +2152,6 @@ when static RSA is used.
 
 Note: This is an update to TLS 1.2 so in practice many TLS 1.2 clients
 and servers will not behave as specified above.
-
-Note: Versions of TLS prior to TLS 1.3 used the top 32 bits of
-the Random value to encode the time since the UNIX epoch. The
-sentinel value above was selected to avoid conflicting with any
-valid TLS 1.2 Random value and to have a low (2^{-64})
-probability of colliding with randomly selected Random
-values.
 
 
 ####  Hello Retry Request
