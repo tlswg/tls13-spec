@@ -974,6 +974,7 @@ server random
 These parameters are defined in the presentation language as:
 
 %%% Security Parameters
+
        enum { server, client } ConnectionEnd;
 
        enum { tls_kdf_sha256, tls_kdf_sha384 } KDFAlgorithm;
@@ -1050,6 +1051,7 @@ message MAY be fragmented across several records).
 Alert messages ({{alert-protocol}}) MUST NOT be fragmented across records.
 
 %%% Record Layer
+
        struct {
            uint8 major;
            uint8 minor;
@@ -1122,6 +1124,7 @@ of {{RFC5116}}. The key is either the client_write_key or the server_write_key
 and in TLS 1.3 the additional data input is empty (zero length).
 
 %%% Record Layer
+
        struct {
            ContentType opaque_type = application_data(23); /* see fragment.type */
            ProtocolVersion record_version = { 3, 1 };    /* TLS v1.x */
@@ -1305,6 +1308,7 @@ connections. Like other messages, alert messages are encrypted
 as specified by the current connection state.
 
 %%% Alert Messages
+
        enum { warning(1), fatal(2), (255) } AlertLevel;
 
        enum {
@@ -1911,6 +1915,7 @@ they are encapsulated within one or more TLSPlaintext or TLSCiphertext structure
 processed and transmitted as specified by the current active session state.
 
 %%% Handshake Protocol
+
        enum {
            hello_request_RESERVED(0),
            client_hello(1),
@@ -2084,6 +2089,7 @@ acceptable by the server, it will respond with a "handshake_failure" fatal alert
 Structure of this message:
 
 %%% Key Exchange Messages
+
        struct {
            ProtocolVersion server_version;
            Random random;
@@ -2168,6 +2174,7 @@ fatal "handshake_failure" alert.
 Structure of this message:
 
 %%% Key Exchange Messages
+
        struct {
            ProtocolVersion server_version;
            CipherSuite cipher_suite;
@@ -2215,6 +2222,7 @@ MUST abort the connection with a fatal "handshake_failure" alert.
 The extension format is:
 
 %%% Key Exchange Messages
+
        struct {
            ExtensionType extension_type;
            opaque extension_data<0..2^16-1>;
@@ -2306,6 +2314,7 @@ be taken into account when designing new extensions:
 ####  Cookie
 
 %%% Cookie Extension
+
        struct {
            opaque cookie<0..2^16-1>;
        } Cookie;
@@ -2344,6 +2353,7 @@ The "extension_data" field of this extension contains a
 "supported_signature_algorithms" value:
 
 %%% Signature Algorithm Extension
+
        enum {
            /* RSASSA-PKCS1-v1_5 algorithms */
            rsa_pkcs1_sha1 (0x0201),
@@ -2482,6 +2492,7 @@ The "extension_data" field of this extension contains a
 "NamedGroupList" value:
 
 %%% Named Group Extension
+
        enum {
            /* Elliptic Curve Groups (ECDHE) */
            obsolete_RESERVED (1..22),
@@ -2553,6 +2564,7 @@ group selection from the server at the cost of an additional round trip.
 (see {{hello-retry-request}})
 
 %%% Key Exchange Messages
+
        struct {
            NamedGroup group;
            opaque key_exchange<1..2^16-1>;
@@ -2575,6 +2587,7 @@ The "extension_data" field of this extension contains a
 "KeyShare" value:
 
 %%% Key Exchange Messages
+
        struct {
            select (role) {
                case client:
@@ -2738,6 +2751,7 @@ The "extension_data" field of this extension contains an
 "EarlyDataIndication" value:
 
 %%% Key Exchange Messages
+
        struct {
            select (Role) {
                case client:
@@ -2864,6 +2878,7 @@ risk greater exposure to replay attacks.
 #### Ticket Age
 
 %%% Key Exchange Messages
+
        struct {
            uint32 ticket_age;
        } TicketAge;
@@ -2916,6 +2931,7 @@ in the IANA registry can be sent in the client's EncryptedExtensions.
 Structure of this message:
 
 %%% Server Parameters Messages
+
        struct {
            Extension extensions<0..2^16-1>;
        } EncryptedExtensions;
@@ -2935,6 +2951,7 @@ follow EncryptedExtensions.
 Structure of this message:
 
 %%% Server Parameters Messages
+
        opaque DistinguishedName<1..2^16-1>;
 
        struct {
@@ -3094,6 +3111,7 @@ exchange algorithm and any negotiated extensions.
 Structure of this message:
 
 %%% Authentication Messages
+
        opaque ASN1Cert<1..2^24-1>;
 
        struct {
@@ -3257,6 +3275,7 @@ message.
 Structure of this message:
 
 %%% Authentication Messages
+
        struct {
             digitally-signed struct {
                opaque hashed_data[hash_length];
