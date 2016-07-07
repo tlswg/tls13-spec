@@ -2657,7 +2657,6 @@ The "extension_data" field of this extension contains an
            select (Role) {
                case client:
                    uint32 obfuscated_ticket_age;
-                   opaque context<0..255>;
 
                case server:
                   struct {};
@@ -2672,11 +2671,6 @@ obfuscated_ticket_age
   correlating sessions unless tickets are reused.  Note: because ticket
   lifetimes are restricted to a week, 32 bits is enough to represent any
   plausible age, even in milliseconds.
-
-context
-: An optional context value that can be used for anti-replay
-  (see below).
-{:br }
 
 A server MUST validate that the ticket_age is within a small
 tolerance of the time since the ticket was issued (see {{replay-time}}).
