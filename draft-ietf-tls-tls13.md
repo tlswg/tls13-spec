@@ -1189,7 +1189,8 @@ nonce.
 Note: This is a different construction from that in TLS 1.2, which
 specified a partially explicit nonce.
 
-The plaintext is the concatenation of TLSPlaintext.fragment and TLSPlaintext.type.
+The plaintext is the concatenation of TLSPlaintext.fragment, 
+TLSPlaintext.type, and any padding bytes (zeros).
 
 The AEAD output consists of the ciphertext output by the AEAD
 encryption operation. The length of the plaintext is greater than
