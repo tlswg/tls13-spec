@@ -2515,10 +2515,9 @@ Clients offer an arbitrary number of KeyShareEntry values, each representing
 a single set of key exchange parameters. For instance, a client might
 offer shares for several elliptic curves or multiple FFDHE groups.
 The key_exchange values for each KeyShareEntry MUST by generated independently.
-Clients MUST NOT offer multiple KeyShareEntry values for the same group
-and servers receiving multiple KeyShareEntry values for the same group.
+Clients MUST NOT offer multiple KeyShareEntry values for the same group.
 Clients and servers MUST NOT offer any KeyShareEntry values for
-groups not listed in the client's "supported_groups" extension
+groups not listed in the client's "supported_groups" extension.
 Servers MUST NOT offer a KeyShareEntry value for a group not offered by the
 client in its corresponding KeyShare.
 Implementations MAY check for violations of these rules and
