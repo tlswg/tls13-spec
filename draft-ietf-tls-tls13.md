@@ -3313,7 +3313,7 @@ Hash.Length zeroes.
 
      struct {
          TicketExtensionType extension_type;
-         opaque extension_data<0..2^16-1>;
+         opaque extension_data<1..2^16-1>;
      } TicketExtension;
 
      enum {
