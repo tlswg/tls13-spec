@@ -1468,7 +1468,7 @@ unknown_psk_identity
 New Alert values are assigned by IANA as described in {{iana-considerations}}.
 
 
-##  Handshake Protocol Overview
+##  Handshake Protocol
 
 The cryptographic parameters of the session state are produced by the
 TLS Handshake Protocol, which operates on top of the TLS record
@@ -1476,6 +1476,43 @@ layer. When a TLS client and server first start communicating, they
 agree on a protocol version, select cryptographic algorithms,
 optionally authenticate each other, and establish shared secret keying
 material.
+
+%%% Handshake Protocol
+
+       enum {
+           hello_request_RESERVED(0),
+           client_hello(1),
+           server_hello(2),
+           new_session_ticket(4),
+           hello_retry_request(6),
+           encrypted_extensions(8),
+           certificate(11),
+           server_key_exchange_RESERVED(12),
+           certificate_request(13),
+           server_hello_done_RESERVED(14),
+           certificate_verify(15),
+           client_key_exchange_RESERVED(16),
+           finished(20),
+           key_update(24),
+           (255)
+       } HandshakeType;
+
+       struct {
+           HandshakeType msg_type;    /* handshake type */
+           uint24 length;             /* bytes in message */
+           select (HandshakeType) {
+               case client_hello:          ClientHello;
+               case server_hello:          ServerHello;
+               case hello_retry_request:   HelloRetryRequest;
+               case encrypted_extensions:  EncryptedExtensions;
+               case certificate_request:   CertificateRequest;
+               case certificate:           Certificate;
+               case certificate_verify:    CertificateVerify;
+               case finished:              Finished;
+               case new_session_ticket:    NewSessionTicket;
+               case key_update:            KeyUpdate;
+           } body;
+       } Handshake;
 
 TLS supports three basic key exchange modes:
 
@@ -1621,6 +1658,9 @@ its promised level of security: if you negotiate AES-GCM {{GCM}} with
 a 255-bit ECDHE key exchange with a host whose certificate
 chain you have verified, you can expect that to be reasonably "secure"
 against algorithmic attacks, at least in the year 2015.]]
+
+New handshake message types are assigned by IANA as described in
+{{iana-considerations}}.
 
 ### Incorrect DHE Share
 
@@ -1806,56 +1846,10 @@ the following sections.
 
 ##  Handshake Protocol
 
-The TLS Handshake Protocol is one of the defined higher-level clients of the
-TLS Record Protocol. This protocol is used to negotiate the secure attributes
-of a session. Handshake messages are supplied to the TLS record layer, where
-they are encapsulated within one or more TLSPlaintext or TLSCiphertext structures, which are
-processed and transmitted as specified by the current active session state.
-
-%%% Handshake Protocol
-
-       enum {
-           hello_request_RESERVED(0),
-           client_hello(1),
-           server_hello(2),
-           new_session_ticket(4),
-           hello_retry_request(6),
-           encrypted_extensions(8),
-           certificate(11),
-           server_key_exchange_RESERVED(12),
-           certificate_request(13),
-           server_hello_done_RESERVED(14),
-           certificate_verify(15),
-           client_key_exchange_RESERVED(16),
-           finished(20),
-           key_update(24),
-           (255)
-       } HandshakeType;
-
-       struct {
-           HandshakeType msg_type;    /* handshake type */
-           uint24 length;             /* bytes in message */
-           select (HandshakeType) {
-               case client_hello:          ClientHello;
-               case server_hello:          ServerHello;
-               case hello_retry_request:   HelloRetryRequest;
-               case encrypted_extensions:  EncryptedExtensions;
-               case certificate_request:   CertificateRequest;
-               case certificate:           Certificate;
-               case certificate_verify:    CertificateVerify;
-               case finished:              Finished;
-               case new_session_ticket:    NewSessionTicket;
-               case key_update:            KeyUpdate;
-           } body;
-       } Handshake;
-
 The TLS Handshake Protocol messages are presented below in the order they
 MUST be sent; sending handshake messages in an unexpected order
 results in an "unexpected_message" fatal error. Unneeded handshake
 messages can be omitted, however.
-
-New handshake message types are assigned by IANA as described in
-{{iana-considerations}}.
 
 ### Key Exchange Messages
 
