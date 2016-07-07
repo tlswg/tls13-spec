@@ -4710,6 +4710,10 @@ Archives of the list can be found at:
   Mozilla \\
   mt@mozilla.com
 
+* Filippo Valsorda \\
+  CloudFlare Inc. \\
+  filippo@cloudflare.com
+
 * Tom Weinstein
 
 * Hoeteck Wee \\
