@@ -2625,7 +2625,7 @@ is within the range supplied by the client. If the server supplies an
 first offered identity. If any other value is returned, the client MUST
 generate a fatal "unknown_psk_identity" alert and close the connection.
 
-Note that, although 0-RTT data is encrypted with the first PSK identity, the
+Note that although 0-RTT data is encrypted with the first PSK identity, the
 server may fall back to 1-RTT and select a different PSK identity if multiple
 are offered.
 
@@ -2707,10 +2707,6 @@ can behave in one of two ways:
   to accept only a subset of the early data messages.
 
 [[OPEN ISSUE: are the rules below correct? https://github.com/tlswg/tls13-spec/issues/451]]
-Prior to accepting the "early_data" extension, the server MUST check the
-first PSK identity (see {{pre-shared-key-extension}}) corresponds to a
-valid ticket and validate that the session parameters are consistent
-with its current configuration.
 It MUST also validate that the extensions
 negotiated in the previous connection are identical to those being
 negotiated in the ServerHello, with the exception of the
@@ -2721,7 +2717,10 @@ following extensions:
 
 - The "padding" extension {{RFC7685}} MUST be ignored for this purpose.
 
-- The values of "key_share", "pre_shared_key", and "early_data", which MUST
+- The server MUST have accepted a PSK cipher suite and selected
+  the first key offered in the client's "pre_shared_key" extension.
+
+- The values of "key_share", and "early_data", which MUST
   be as defined in this document.
 
 If any of these checks fail, the server MUST NOT respond
