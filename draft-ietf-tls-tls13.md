@@ -4274,7 +4274,7 @@ in {{RFC7568}}, and MUST NOT be negotiated for any reason.
 Implementations MUST NOT send a ClientHello.client_version or ServerHello.server_version
 set to { 3, 0 } or less. Any endpoint receiving a Hello message with
 ClientHello.client_version or ServerHello.server_version set to { 3, 0 } MUST respond
-with a "protocol_version" alert message and close the connection.
+with a "handshake_failure" alert message and close the connection.
 
 Implementations MUST NOT use the Truncated HMAC extension, defined in
 Section 7 of [RFC6066], as it is not applicable to AEAD ciphers and has
