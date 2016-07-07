@@ -349,7 +349,7 @@ draft-13
 
 - Remove (EC)DHE 0-RTT.
 
-- Flesh out 0-RTT PSK mode and shrink EarlyDataIndiation
+- Flesh out 0-RTT PSK mode and shrink EarlyDataIndication
 
 - Turn PSK-resumption response into an index to save room
 
@@ -2516,12 +2516,14 @@ a single set of key exchange parameters. For instance, a client might
 offer shares for several elliptic curves or multiple FFDHE groups.
 The key_exchange values for each KeyShareEntry MUST by generated independently.
 Clients MUST NOT offer multiple KeyShareEntry values for the same group
-and servers receiving multiple KeyShareEntry values for the same group
-MUST abort the connection with a fatal "illegal_parameter" alert.
-Clients and servers MUST NOT offer or accept any KeyShareEntry values for
-groups not listed in the client's "supported_groups" extension.
+and servers receiving multiple KeyShareEntry values for the same group.
+Clients and servers MUST NOT offer any KeyShareEntry values for
+groups not listed in the client's "supported_groups" extension
 Servers MUST NOT offer a KeyShareEntry value for a group not offered by the
 client in its corresponding KeyShare.
+Implementations MAY check for violations of these rules and
+and MAY abort the connection with a fatal "illegal_parameter" alert
+if one is violated.
 
 If the server selects an (EC)DHE cipher suite and no mutually
 supported group is available between the two endpoints' KeyShare
