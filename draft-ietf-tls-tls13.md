@@ -4131,6 +4131,8 @@ Cryptographic details:
 - Do you use a strong and, most importantly, properly seeded random number
   generator (see {{random-number-generation-and-seeding}}) Diffie-Hellman
   private values, the ECDSA "k" parameter, and other security-critical values?
+  It is RECOMMENDED that implementations implement "deterministic ECDSA"
+  as specified in {{!RFC6979}}.
 
 - Do you zero-pad Diffie-Hellman public key values to the group size (see
   {{ffdhe-param}})?
