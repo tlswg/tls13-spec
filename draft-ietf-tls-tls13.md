@@ -2103,7 +2103,7 @@ one extension (at least "key_share" or "pre_shared_key").
 
 server_version
 : This field contains the version of TLS negotiated for this session.  Servers
-  MUST select the lower of the highest supported version and the version
+  MUST select the lower of the highest supported server version and the version
   offered by the client in the ClientHello.  In particular, servers MUST accept
   ClientHello messages with versions higher than those supported and negotiate
   the highest mutually supported version.  For this version of the
