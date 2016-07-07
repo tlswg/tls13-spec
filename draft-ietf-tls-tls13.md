@@ -3406,7 +3406,7 @@ the responses).
 
 #### Key and IV Update {#key-update}
 
-struct {} KeyUpdate;
+     struct {} KeyUpdate;
 
 The KeyUpdate handshake message is used to indicate that the sender is
 updating its sending cryptographic keys. This message can be sent by
