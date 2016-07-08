@@ -3823,7 +3823,7 @@ is listed below:
 | renegotiation_info [RFC5746]             |         Yes |        No |
 | key_share [[this document]]              |         Yes |     Clear |
 | pre_shared_key [[this document]]         |         Yes |     Clear |
-| early_data [[this document]]             |         Yes | Encrypted  |
+| early_data [[this document]]             |         Yes | Encrypted |
 | cookie [[this document]]                 |         Yes | Encrypted/HelloRetryRequest |
 
 
