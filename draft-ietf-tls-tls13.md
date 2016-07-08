@@ -236,6 +236,15 @@ informative:
          ins: G. Leurent
        seriesinfo: Network and Distributed System Security Symposium (NDSS 2016)
        date: 2016
+  AEAD-LIMITS:
+       title: "Limits on Authenticated Encryption Use in TLS"
+       author:
+       -
+         ins: A. Luytx
+       -
+         ins: K. Paterson
+       target: http://www.isg.rhul.ac.uk/~kp/TLS-AEbounds.pdf
+       date: 2016
 
 --- abstract
 
@@ -1147,6 +1156,19 @@ still be handled at the TLS layer, though.  Later documents may define
 padding selection algorithms, or define a padding policy request
 mechanism through TLS extensions or some other means.
 
+
+## Limits on Key Usage
+
+There are cryptographic limits on the amount of plaintext which can
+be safely encrypted under a given set of keys {{AEAD-LIMITS}};
+implementations SHOULD do a key update {{key-update}} prior to
+reaching these limits.
+
+For AES-GCM, up to 2^24.5 full-size records may be encrypted on a
+given connection while keeping a safety margin of approximately
+2^-57 for Authenticated Encryption (AE) security. For
+ChaCha20/Poly1305, the record sequence number will wrap before the
+safety limit is reached.
 
 #  The TLS Handshaking Protocols
 
