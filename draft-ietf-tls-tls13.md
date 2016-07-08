@@ -1309,9 +1309,8 @@ before destroying the transport.
 Error handling in the TLS Handshake Protocol is very simple. When an error is
 detected, the detecting party sends a message to its peer. Upon
 transmission or receipt of a fatal alert message, both parties immediately
-close the connection. Servers and clients MUST forget any session-identifiers,
-keys, and secrets associated with a failed connection. Thus, any connection
-terminated with a fatal alert MUST NOT be resumed.
+close the connection. Servers and clients MUST forget keys, and secrets
+associated with a failed connection.
 
 Whenever an implementation encounters a condition which is defined as a fatal
 alert, it MUST send the appropriate alert prior to closing the connection. For
@@ -3824,7 +3823,7 @@ is listed below:
 | renegotiation_info [RFC5746]             |         Yes |        No |
 | key_share [[this document]]              |         Yes |     Clear |
 | pre_shared_key [[this document]]         |         Yes |     Clear |
-| early_data [[this document]]             |         Yes | Encrypted |
+| early_data [[this document]]             |         Yes | Encrypted  |
 | cookie [[this document]]                 |         Yes | Encrypted/HelloRetryRequest |
 
 
