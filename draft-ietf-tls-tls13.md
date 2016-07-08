@@ -272,7 +272,7 @@ provide the following properties.
 - Integrity: Data sent over the channel cannot be modified by attackers.
 
 These properties should be true even in the face of an attacker who controls
-the channel, as described in {{RFC3552}}.
+the channel, as described in {{?RFC3552}}.
 See Section [TODO] for a more formal statement of the relevant security
 properties.
 
@@ -287,7 +287,9 @@ TLS consists of two primary protocol components:
 
 - A record protocol which uses the parameters established by the
   handshake protocol to protect traffic between the communicating
-  peers.
+  peers. The record protocol divides traffic up into a series of
+  records, each of which is independently protected using the
+  traffic keys.
 
 One advantage of TLS is that it is application protocol independent.
 Higher-level protocols can layer on top of TLS transparently. The TLS
@@ -532,6 +534,342 @@ draft-02
 -  Remove support for non-AEAD ciphers.
 
 
+
+# Protocol Overview
+
+The cryptographic parameters of the session state are produced by the
+TLS handshake protocol. When a TLS client and server first start
+communicating, they agree on a protocol version, select cryptographic
+algorithms, optionally authenticate each other, and establish shared
+secret keying material. Once the handshake is complete, the peers
+may use the established keys to protect application layer traffic.
+
+TLS supports three basic key exchange modes:
+
+- Diffie-Hellman (of both the finite field and elliptic curve
+  varieties).
+
+- A pre-shared symmetric key (PSK)
+
+- A combination of a symmetric key and Diffie-Hellman
+
+Which mode is used depends on the negotiated cipher suite. Conceptually,
+the handshake establishes three secrets which are used to derive all the
+keys.
+
+
+{{tls-full}} below shows the basic full TLS handshake.
+
+~~~
+       Client                                               Server
+
+Key  ^ ClientHello
+Exch | + key_share*
+     v + pre_shared_key*        -------->
+                                                       ServerHello  ^ Key
+                                                      + key_share*  | Exch
+                                                 + pre_shared_key*  v
+                                             {EncryptedExtensions}  ^  Server
+                                             {CertificateRequest*}  v  Params
+                                                    {Certificate*}  ^
+                                              {CertificateVerify*}  | Auth
+                                                        {Finished}  v
+                                 <--------     [Application Data*]
+     ^ {Certificate*}
+Auth | {CertificateVerify*}
+     v {Finished}                -------->
+       [Application Data]        <------->      [Application Data]
+
+              +  Indicates extensions sent in the
+                 previously noted message.
+
+              *  Indicates optional or situation-dependent
+                 messages that are not always sent.
+
+              {} Indicates messages protected using keys
+                 derived from handshake_traffic_secret.
+
+              [] Indicates messages protected using keys
+                 derived from traffic_secret_N
+~~~
+{: #tls-full title="Message flow for full TLS Handshake"}
+
+The handshake can be thought of as having three phases, indicated
+in the diagram above.
+
+Key Exchange: establish shared keying material and select the
+   cryptographic parameters. Everything after this phase is
+   encrypted.
+
+Server Parameters: establish other handshake parameters
+(whether the client is authenticated, application layer protocol support, etc.)
+
+Authentication: authenticate the server (and optionally the client)
+   and provide key confirmation and handshake integrity.
+
+In the Key Exchange phase, the client sends the ClientHello
+({{client-hello}}) message, which contains a random nonce
+(ClientHello.random), its offered protocol version, cipher suite, and
+extensions, and in general either one or more Diffie-Hellman key shares (in the
+"key_share" extension {{key-share}}), one or more pre-shared key labels (in the
+"pre_shared_key" extension {{pre-shared-key-extension}}), or both.
+
+The server processes the ClientHello and determines the appropriate
+cryptographic parameters for the connection. It then responds with
+its own ServerHello which indicates the negotiated connection parameters. [{{server-hello}}].
+The combination of the ClientHello and the ServerHello determines
+the values of ES and SS, as described above. If either a pure
+(EC)DHE or (EC)DHE-PSK cipher suite is in use, then the ServerHello
+will contain a "key_share" extension with the server's ephemeral
+Diffie-Hellman share which MUST be in the same group.
+If a pure PSK or an (EC)DHE-PSK cipher suite is negotiated, then the
+ServerHello will contain a "pre_shared_key" extension indicating
+which of the client's offered PSKs was selected.
+
+The server then sends two messages to establish the Server Parameters:
+
+EncryptedExtensions
+: responses to any extensions which are not required in order to
+  determine the cryptographic parameters. [{{encrypted-extensions}}]
+
+CertificateRequest
+: if certificate-based client authentication is desired, the
+  desired parameters for that certificate. This message will
+  be omitted if client authentication is not desired.
+
+Finally, the client and server exchange Authentication messages. TLS
+uses the same set of messages every time that authentication is needed.
+Specifically:
+
+Certificate
+: the certificate of the endpoint. This message is omitted if the
+  server is not authenticating with a certificate (i.e.,
+  with PSK or (EC)DHE-PSK cipher suites). Note that if raw public keys
+  {{RFC7250}} or the cached information extension
+  {{?I-D.ietf-tls-cached-info}} are in use, then this message
+  will not contain a certificate but rather some other value
+  corresponding to the server's long-term key.
+  [{{certificate}}]
+
+CertificateVerify
+: a signature over the entire handshake using the public key
+  in the Certificate message. This message is omitted if the
+  server is not authenticating via a certificate (i.e.,
+  with PSK or (EC)DHE-PSK cipher suites). [{{certificate-verify}}]
+
+Finished
+: a MAC over the entire handshake. This message provides key confirmation, binds the endpoint's identity
+  to the exchanged keys, and in PSK mode
+  also authenticates the handshake. [{{finished}}]
+{:br }
+
+Upon receiving the server's messages, the client responds with its Authentication
+messages, namely Certificate and CertificateVerify (if requested), and Finished.
+
+At this point, the handshake is complete, and the client and server may exchange
+application layer data. Application data MUST NOT be sent prior to sending the
+Finished message. Note that while the server may send application data
+prior to receiving the client's Authentication messages, any data sent at
+that point is, of course, being sent to an unauthenticated peer.
+
+[[TODO: Move this elsewhere?
+Note that higher layers should not be overly reliant on whether TLS always
+negotiates the strongest possible connection between two endpoints. There are a
+number of ways in which a man-in-the-middle attacker can attempt to make two
+entities drop down to the least secure method they support
+(i.e., perform a downgrade attack). The TLS protocol has
+been designed to minimize this risk, but there are still attacks available: for
+example, an attacker could block access to the port a secure service runs on,
+or attempt to get the peers to negotiate an unauthenticated connection. The
+fundamental rule is that higher levels must be cognizant of what their security
+requirements are and never transmit information over a channel less secure than
+what they require. The TLS protocol is secure in that any cipher suite offers
+its promised level of security: if you negotiate AES-GCM {{GCM}} with
+a 255-bit ECDHE key exchange with a host whose certificate
+chain you have verified, you can expect that to be reasonably "secure"
+against algorithmic attacks, at least in the year 2015.]]
+
+### Incorrect DHE Share
+
+If the client has not provided an appropriate "key_share" extension (e.g. it
+includes only DHE or ECDHE groups unacceptable or unsupported by the
+server), the server corrects the mismatch with a HelloRetryRequest and
+the client will need to restart the handshake with an appropriate
+"key_share" extension, as shown in Figure 2.
+If no common cryptographic parameters can be negotiated,
+the server will send a "handshake_failure" or "insufficient_security"
+fatal alert (see {{alert-protocol}}).
+
+~~~
+         Client                                               Server
+
+         ClientHello
+           + key_share             -------->
+                                   <--------       HelloRetryRequest
+
+         ClientHello
+           + key_share             -------->
+                                                         ServerHello
+                                                         + key_share
+                                               {EncryptedExtensions}
+                                               {CertificateRequest*}
+                                                      {Certificate*}
+                                                {CertificateVerify*}
+                                                          {Finished}
+                                   <--------     [Application Data*]
+         {Certificate*}
+         {CertificateVerify*}
+         {Finished}                -------->
+         [Application Data]        <------->     [Application Data]
+~~~
+{: #tls-restart title="Message flow for a full handshake with mismatched parameters"}
+
+Note: the handshake transcript includes the initial
+ClientHello/HelloRetryRequest exchange. It is not reset with the new
+ClientHello.
+
+TLS also allows several optimized variants of the basic handshake, as
+described below.
+
+### Resumption and Pre-Shared Key (PSK) {#resumption-and-psk}
+
+Although TLS PSKs can be established out of band,
+PSKs can also be established in a previous session and
+then reused ("session resumption"). Once a handshake has completed, the server can
+send the client a PSK identity which corresponds to a key derived from
+the initial handshake (See {{NewSessionTicket}}). The client
+can then use that PSK identity in future handshakes to negotiate use
+of the PSK; if the server accepts it, then the security context of the
+original connection is tied to the new connection. In TLS 1.2 and
+below, this functionality was provided by "session resumption" and
+"session tickets" {{RFC5077}}. Both mechanisms are obsoleted in TLS
+1.3.
+
+PSK cipher suites can either use PSK in combination with
+an (EC)DHE exchange in order to provide forward secrecy in combination
+with shared keys, or can use PSKs alone, at the cost of losing forward
+secrecy.
+
+{{tls-resumption-psk}} shows a pair of handshakes in which the first establishes
+a PSK and the second uses it:
+
+~~~
+       Client                                               Server
+
+Initial Handshake:
+       ClientHello
+        + key_share              -------->
+                                                       ServerHello
+                                                       + key_share
+                                             {EncryptedExtensions}
+                                             {CertificateRequest*}
+                                                    {Certificate*}
+                                              {CertificateVerify*}
+                                                        {Finished}
+                                 <--------     [Application Data*]
+       {Certificate*}
+       {CertificateVerify*}
+       {Finished}                -------->
+                                 <--------      [NewSessionTicket]
+       [Application Data]        <------->      [Application Data]
+
+
+Subsequent Handshake:
+       ClientHello
+         + pre_shared_key
+         + key_share*            -------->
+                                                       ServerHello
+                                                  + pre_shared_key
+                                                      + key_share*
+                                             {EncryptedExtensions}
+                                                        {Finished}
+                                 <--------     [Application Data*]
+       {Finished}                -------->
+       [Application Data]        <------->      [Application Data]
+~~~
+{: #tls-resumption-psk title="Message flow for resumption and PSK"}
+
+As the server is authenticating via a PSK, it does not send a
+Certificate or a CertificateVerify. When a client offers resumption
+via PSK it SHOULD also supply a "key_share" extension to the server as well; this
+allows server to decline resumption and fall back to a full handshake.
+A "key_share" extension MUST also be sent if the client is attempting to
+negotiate an (EC)DHE-PSK cipher suite.
+
+
+### Zero-RTT Data
+
+When resuming via a PSK with an appropriate ticket (i.e., one with
+the "allow_early_data" flag), clients can also send data on their first
+flight ("early data"). This data is encrypted solely under keys
+derived using the first offered PSK as the static secret.  As shown in
+{{tls-0-rtt}}, the Zero-RTT data is just added to the 1-RTT handshake
+in the first flight, the rest of the handshake uses the same messages.
+
+~~~
+         Client                                               Server
+
+         ClientHello
+           + early_data
+           + pre_shared_key
+           + key_share*
+         (Finished)
+         (Application Data*)
+         (end_of_early_data)        -------->
+                                                         ServerHello
+                                                        + early_data
+                                                    + pre_shared_key
+                                                        + key_share*
+                                               {EncryptedExtensions}
+                                               {CertificateRequest*}
+                                                          {Finished}
+                                   <--------     [Application Data*]
+         {Certificate*}
+         {CertificateVerify*}
+         {Finished}                -------->
+
+         [Application Data]        <------->      [Application Data]
+
+               *  Indicates optional or situation-dependent
+                  messages that are not always sent.
+
+               () Indicates messages protected using keys
+                  derived from early_traffic_secret.
+
+               {} Indicates messages protected using keys
+                  derived from handshake_traffic_secret.
+
+               [] Indicates messages protected using keys
+                  derived from traffic_secret_N
+~~~
+{: #tls-0-rtt title="Message flow for a zero round trip handshake"}
+
+[[OPEN ISSUE: Should it be possible to combine 0-RTT with the
+server authenticating via a signature
+https://github.com/tlswg/tls13-spec/issues/443]]
+
+
+IMPORTANT NOTE: The security properties for 0-RTT data (regardless of
+the cipher suite) are weaker than those for other kinds of TLS data.
+Specifically:
+
+1. This data is not forward secret, because it is encrypted solely
+with the PSK.
+
+2. There are no guarantees of non-replay between connections.
+Unless the server takes special measures outside those provided by TLS (See
+{{replay-time}}), the server has no guarantee that the same
+0-RTT data was not transmitted on multiple 0-RTT connections.
+This is especially relevant if the data is authenticated either
+with TLS client authentication or inside the application layer
+protocol. However, 0-RTT data cannot be duplicated within a connection (i.e., the server
+will not process the same data twice for the same connection) and
+an attacker will not be able to make 0-RTT data appear to be
+1-RTT data (because it is protected with different keys.)
+
+The remainder of this document provides a detailed description of TLS.
+
+
 #  Presentation Language
 
 This document deals with the formatting of data in an external representation.
@@ -763,84 +1101,6 @@ For example:
        } Example1;
 
        Example1 ex1 = {1, 4};  /* assigns f1 = 1, f2 = 4 */
-
-##  Cryptographic Attributes
-
-The two cryptographic operations --- digital signing, and authenticated
-encryption with additional data (AEAD) --- are designated digitally-signed,
-and aead-ciphered, respectively. A field's cryptographic processing
-is specified by prepending an appropriate key word designation before
-the field's type specification.
-
-### Digital Signing
-
-A digitally-signed element is encoded as a struct DigitallySigned:
-
-       struct {
-          SignatureScheme algorithm;
-          opaque signature<0..2^16-1>;
-       } DigitallySigned;
-
-The algorithm field specifies the algorithm used (see {{signature-algorithms}}
-for the definition of this field). The signature is a digital signature
-using those algorithms over the contents of the element. The contents
-themselves do not appear on the wire but are simply calculated. The length of
-the signature is specified by the signing algorithm and key.
-
-In previous versions of TLS, the ServerKeyExchange format meant that attackers
-can obtain a signature of a message with a chosen, 32-byte prefix. Because TLS
-1.3 servers are likely to also implement prior versions, the contents of the
-element always start with 64 bytes of octet 32 in order to clear that
-chosen-prefix.
-
-Following that padding is a context string used to disambiguate
-signatures for different purposes. The context string will be
-specified whenever a digitally-signed element is used. A single 0 byte
-is appended to the context to act as a separator.
-
-Finally, the specified contents of the digitally-signed structure follow the
-0 byte after the context string. (See the example at the end of this
-section.)
-
-The combined input is then fed into the corresponding signature algorithm
-to produce the signature value on the wire. See {{signature-algorithms}} for
-algorithms defined in this specification.
-
-In the following example
-
-       struct {
-           uint8 field1;
-           uint8 field2;
-           digitally-signed opaque {
-             uint8 field3<0..255>;
-             uint8 field4;
-           };
-       } UserType;
-
-Assume that the context string for the signature was specified as "Example".
-The input for the signature/hash algorithm would be:
-
-       2020202020202020202020202020202020202020202020202020202020202020
-       2020202020202020202020202020202020202020202020202020202020202020
-       4578616d706c6500
-
-followed by the encoding of the inner struct (field3 and field4).
-
-The length of the structure, in bytes, would be equal to two
-bytes for field1 and field2, plus two bytes for the signature
-algorithm, plus two bytes for the length of the signature, plus the length of
-the output of the signing algorithm. The length of the signature is known
-because the algorithm and key used for the signing are known prior to encoding
-or decoding this structure.
-
-
-### Authenticated Encryption with Additional Data (AEAD)
-
-In AEAD encryption, the plaintext is simultaneously encrypted and integrity
-protected. The input may be of any length, and aead-ciphered output is
-generally larger than the input in order to accommodate the integrity check
-value.
-
 
 #  The TLS Record Protocol
 
@@ -1421,342 +1681,6 @@ unknown_psk_identity
 New Alert values are assigned by IANA as described in {{iana-considerations}}.
 
 
-##  Handshake Protocol Overview
-
-The cryptographic parameters of the session state are produced by the
-TLS Handshake Protocol, which operates on top of the TLS record
-layer. When a TLS client and server first start communicating, they
-agree on a protocol version, select cryptographic algorithms,
-optionally authenticate each other, and establish shared secret keying
-material.
-
-TLS supports three basic key exchange modes:
-
-- Diffie-Hellman (of both the finite field and elliptic curve
-  varieties).
-
-- A pre-shared symmetric key (PSK)
-
-- A combination of a symmetric key and Diffie-Hellman
-
-Which mode is used depends on the negotiated cipher suite. Conceptually,
-the handshake establishes three secrets which are used to derive all the
-keys.
-
-
-{{tls-full}} below shows the basic full TLS handshake.
-
-~~~
-       Client                                               Server
-
-Key  ^ ClientHello
-Exch | + key_share*
-     v + pre_shared_key*        -------->
-                                                       ServerHello  ^ Key
-                                                      + key_share*  | Exch
-                                                 + pre_shared_key*  v
-                                             {EncryptedExtensions}  ^  Server
-                                             {CertificateRequest*}  v  Params
-                                                    {Certificate*}  ^
-                                              {CertificateVerify*}  | Auth
-                                                        {Finished}  v
-                                 <--------     [Application Data*]
-     ^ {Certificate*}
-Auth | {CertificateVerify*}
-     v {Finished}                -------->
-       [Application Data]        <------->      [Application Data]
-
-              +  Indicates extensions sent in the
-                 previously noted message.
-
-              *  Indicates optional or situation-dependent
-                 messages that are not always sent.
-
-              {} Indicates messages protected using keys
-                 derived from handshake_traffic_secret.
-
-              [] Indicates messages protected using keys
-                 derived from traffic_secret_N
-~~~
-{: #tls-full title="Message flow for full TLS Handshake"}
-
-The handshake can be thought of as having three phases, indicated
-in the diagram above.
-
-Key Exchange: establish shared keying material and select the
-   cryptographic parameters. Everything after this phase is
-   encrypted.
-
-Server Parameters: establish other handshake parameters
-(whether the client is authenticated, application layer protocol support, etc.)
-
-Authentication: authenticate the server (and optionally the client)
-   and provide key confirmation and handshake integrity.
-
-In the Key Exchange phase, the client sends the ClientHello
-({{client-hello}}) message, which contains a random nonce
-(ClientHello.random), its offered protocol version, cipher suite, and
-extensions, and in general either one or more Diffie-Hellman key shares (in the
-"key_share" extension {{key-share}}), one or more pre-shared key labels (in the
-"pre_shared_key" extension {{pre-shared-key-extension}}), or both.
-
-The server processes the ClientHello and determines the appropriate
-cryptographic parameters for the connection. It then responds with
-its own ServerHello which indicates the negotiated connection parameters. [{{server-hello}}].
-The combination of the ClientHello and the ServerHello determines
-the values of ES and SS, as described above. If either a pure
-(EC)DHE or (EC)DHE-PSK cipher suite is in use, then the ServerHello
-will contain a "key_share" extension with the server's ephemeral
-Diffie-Hellman share which MUST be in the same group.
-If a pure PSK or an (EC)DHE-PSK cipher suite is negotiated, then the
-ServerHello will contain a "pre_shared_key" extension indicating
-which of the client's offered PSKs was selected.
-
-The server then sends two messages to establish the Server Parameters:
-
-EncryptedExtensions
-: responses to any extensions which are not required in order to
-  determine the cryptographic parameters. [{{encrypted-extensions}}]
-
-CertificateRequest
-: if certificate-based client authentication is desired, the
-  desired parameters for that certificate. This message will
-  be omitted if client authentication is not desired.
-
-Finally, the client and server exchange Authentication messages. TLS
-uses the same set of messages every time that authentication is needed.
-Specifically:
-
-Certificate
-: the certificate of the endpoint. This message is omitted if the
-  server is not authenticating with a certificate (i.e.,
-  with PSK or (EC)DHE-PSK cipher suites). Note that if raw public keys
-  {{RFC7250}} or the cached information extension
-  {{?I-D.ietf-tls-cached-info}} are in use, then this message
-  will not contain a certificate but rather some other value
-  corresponding to the server's long-term key.
-  [{{certificate}}]
-
-CertificateVerify
-: a signature over the entire handshake using the public key
-  in the Certificate message. This message is omitted if the
-  server is not authenticating via a certificate (i.e.,
-  with PSK or (EC)DHE-PSK cipher suites). [{{certificate-verify}}]
-
-Finished
-: a MAC over the entire handshake. This message provides key confirmation, binds the endpoint's identity
-  to the exchanged keys, and in PSK mode
-  also authenticates the handshake. [{{finished}}]
-{:br }
-
-Upon receiving the server's messages, the client responds with its Authentication
-messages, namely Certificate and CertificateVerify (if requested), and Finished.
-
-At this point, the handshake is complete, and the client and server may exchange
-application layer data. Application data MUST NOT be sent prior to sending the
-Finished message. Note that while the server may send application data
-prior to receiving the client's Authentication messages, any data sent at
-that point is, of course, being sent to an unauthenticated peer.
-
-[[TODO: Move this elsewhere?
-Note that higher layers should not be overly reliant on whether TLS always
-negotiates the strongest possible connection between two endpoints. There are a
-number of ways in which a man-in-the-middle attacker can attempt to make two
-entities drop down to the least secure method they support
-(i.e., perform a downgrade attack). The TLS protocol has
-been designed to minimize this risk, but there are still attacks available: for
-example, an attacker could block access to the port a secure service runs on,
-or attempt to get the peers to negotiate an unauthenticated connection. The
-fundamental rule is that higher levels must be cognizant of what their security
-requirements are and never transmit information over a channel less secure than
-what they require. The TLS protocol is secure in that any cipher suite offers
-its promised level of security: if you negotiate AES-GCM {{GCM}} with
-a 255-bit ECDHE key exchange with a host whose certificate
-chain you have verified, you can expect that to be reasonably "secure"
-against algorithmic attacks, at least in the year 2015.]]
-
-### Incorrect DHE Share
-
-If the client has not provided an appropriate "key_share" extension (e.g. it
-includes only DHE or ECDHE groups unacceptable or unsupported by the
-server), the server corrects the mismatch with a HelloRetryRequest and
-the client will need to restart the handshake with an appropriate
-"key_share" extension, as shown in Figure 2.
-If no common cryptographic parameters can be negotiated,
-the server will send a "handshake_failure" or "insufficient_security"
-fatal alert (see {{alert-protocol}}).
-
-~~~
-         Client                                               Server
-
-         ClientHello
-           + key_share             -------->
-                                   <--------       HelloRetryRequest
-
-         ClientHello
-           + key_share             -------->
-                                                         ServerHello
-                                                         + key_share
-                                               {EncryptedExtensions}
-                                               {CertificateRequest*}
-                                                      {Certificate*}
-                                                {CertificateVerify*}
-                                                          {Finished}
-                                   <--------     [Application Data*]
-         {Certificate*}
-         {CertificateVerify*}
-         {Finished}                -------->
-         [Application Data]        <------->     [Application Data]
-~~~
-{: #tls-restart title="Message flow for a full handshake with mismatched parameters"}
-
-Note: the handshake transcript includes the initial
-ClientHello/HelloRetryRequest exchange. It is not reset with the new
-ClientHello.
-
-TLS also allows several optimized variants of the basic handshake, as
-described below.
-
-### Resumption and Pre-Shared Key (PSK) {#resumption-and-psk}
-
-Although TLS PSKs can be established out of band,
-PSKs can also be established in a previous session and
-then reused ("session resumption"). Once a handshake has completed, the server can
-send the client a PSK identity which corresponds to a key derived from
-the initial handshake (See {{NewSessionTicket}}). The client
-can then use that PSK identity in future handshakes to negotiate use
-of the PSK; if the server accepts it, then the security context of the
-original connection is tied to the new connection. In TLS 1.2 and
-below, this functionality was provided by "session resumption" and
-"session tickets" {{RFC5077}}. Both mechanisms are obsoleted in TLS
-1.3.
-
-PSK cipher suites can either use PSK in combination with
-an (EC)DHE exchange in order to provide forward secrecy in combination
-with shared keys, or can use PSKs alone, at the cost of losing forward
-secrecy.
-
-{{tls-resumption-psk}} shows a pair of handshakes in which the first establishes
-a PSK and the second uses it:
-
-~~~
-       Client                                               Server
-
-Initial Handshake:
-       ClientHello
-        + key_share              -------->
-                                                       ServerHello
-                                                       + key_share
-                                             {EncryptedExtensions}
-                                             {CertificateRequest*}
-                                                    {Certificate*}
-                                              {CertificateVerify*}
-                                                        {Finished}
-                                 <--------     [Application Data*]
-       {Certificate*}
-       {CertificateVerify*}
-       {Finished}                -------->
-                                 <--------      [NewSessionTicket]
-       [Application Data]        <------->      [Application Data]
-
-
-Subsequent Handshake:
-       ClientHello
-         + pre_shared_key
-         + key_share*            -------->
-                                                       ServerHello
-                                                  + pre_shared_key
-                                                      + key_share*
-                                             {EncryptedExtensions}
-                                                        {Finished}
-                                 <--------     [Application Data*]
-       {Finished}                -------->
-       [Application Data]        <------->      [Application Data]
-~~~
-{: #tls-resumption-psk title="Message flow for resumption and PSK"}
-
-As the server is authenticating via a PSK, it does not send a
-Certificate or a CertificateVerify. When a client offers resumption
-via PSK it SHOULD also supply a "key_share" extension to the server as well; this
-allows server to decline resumption and fall back to a full handshake.
-A "key_share" extension MUST also be sent if the client is attempting to
-negotiate an (EC)DHE-PSK cipher suite.
-
-
-### Zero-RTT Data
-
-When resuming via a PSK with an appropriate ticket (i.e., one with
-the "allow_early_data" flag), clients can also send data on their first
-flight ("early data"). This data is encrypted solely under keys
-derived using the first offered PSK as the static secret.  As shown in
-{{tls-0-rtt}}, the Zero-RTT data is just added to the 1-RTT handshake
-in the first flight, the rest of the handshake uses the same messages.
-
-~~~
-         Client                                               Server
-
-         ClientHello
-           + early_data
-           + pre_shared_key
-           + key_share*
-         (Finished)
-         (Application Data*)
-         (end_of_early_data)        -------->
-                                                         ServerHello
-                                                        + early_data
-                                                    + pre_shared_key
-                                                        + key_share*
-                                               {EncryptedExtensions}
-                                               {CertificateRequest*}
-                                                          {Finished}
-                                   <--------     [Application Data*]
-         {Certificate*}
-         {CertificateVerify*}
-         {Finished}                -------->
-
-         [Application Data]        <------->      [Application Data]
-
-               *  Indicates optional or situation-dependent
-                  messages that are not always sent.
-
-               () Indicates messages protected using keys
-                  derived from early_traffic_secret.
-
-               {} Indicates messages protected using keys
-                  derived from handshake_traffic_secret.
-
-               [] Indicates messages protected using keys
-                  derived from traffic_secret_N
-~~~
-{: #tls-0-rtt title="Message flow for a zero round trip handshake"}
-
-[[OPEN ISSUE: Should it be possible to combine 0-RTT with the
-server authenticating via a signature
-https://github.com/tlswg/tls13-spec/issues/443]]
-
-
-IMPORTANT NOTE: The security properties for 0-RTT data (regardless of
-the cipher suite) are weaker than those for other kinds of TLS data.
-Specifically:
-
-1. This data is not forward secret, because it is encrypted solely
-with the PSK.
-
-2. There are no guarantees of non-replay between connections.
-Unless the server takes special measures outside those provided by TLS (See
-{{replay-time}}), the server has no guarantee that the same
-0-RTT data was not transmitted on multiple 0-RTT connections.
-This is especially relevant if the data is authenticated either
-with TLS client authentication or inside the application layer
-protocol. However, 0-RTT data cannot be duplicated within a connection (i.e., the server
-will not process the same data twice for the same connection) and
-an attacker will not be able to make 0-RTT data appear to be
-1-RTT data (because it is protected with different keys.)
-
-The contents and significance of each message will be presented in detail in
-the following sections.
-
-
 ##  Handshake Protocol
 
 The TLS Handshake Protocol is one of the defined higher-level clients of the
@@ -2261,7 +2185,7 @@ RSASSA-PKCS1-v1_5 algorithms
   with the corresponding hash algorithm as defined in {{SHS}}. These values
   refer solely to signatures which appear in certificates (see
   {{server-certificate-selection}}) and are not defined for use in signed
-  TLS handshake messages (see {{digital-signing}}).
+  TLS handshake messages.
 
 ECDSA algorithms
 : Indicates a signature algorithm using ECDSA {{ECDSA}}, the corresponding
@@ -2273,9 +2197,8 @@ RSASSA-PSS algorithms
 : Indicates a signature algorithm using RSASSA-PSS {{RFC3447}} with
   MGF1. The digest used in the mask generation function and the digest
   being signed are both the corresponding hash algorithm as defined in
-  {{SHS}}. When used in signed TLS handshake messages (see
-  {{digital-signing}}), the length of the salt MUST be equal to the length
-  of the digest output.
+  {{SHS}}. When used in signed TLS handshake messages, the length of
+  the salt MUST be equal to the length of the digest output.
 
 EdDSA algorithms
 : Indicates a signature algorithm using EdDSA as defined in
@@ -2877,7 +2800,7 @@ client authentication.
 
 ### Authentication Messages
 
-As discussed in {{handshake-protocol-overview}}, TLS uses a common
+As discussed in {{protocol-overview}}, TLS uses a common
 set of messages for authentication, key confirmation, and handshake
 integrity: Certificate, CertificateVerify, and Finished. These
 messages are always sent as the last messages in their handshake
@@ -3119,28 +3042,54 @@ Structure of this message:
 %%% Authentication Messages
 
        struct {
-            digitally-signed struct {
-               opaque hashed_data[hash_length];
-            };
+            SignatureScheme algorithm;
+            opaque signature<0..2^16-1>;
        } CertificateVerify;
 
-> Where hashed_data is the hash output described in
-{{authentication-messages}}, namely Hash(Handshake Context +
-Certificate) + Hash(resumption_context). For concreteness, this means that the value that is
-signed is:
+The algorithm field specifies the signature algorithm used (see
+{{signature-algorithms}} for the definition of this field). The
+signature is a digital signature using that algorithm that covers the
+hash output described in {{authentication-messages}} namely:
 
-~~~~
-       padding + context_string + 00 + hashed_data
-~~~~
-> The context string for a server signature is "TLS 1.3, server CertificateVerify"
-and for a client signature is "TLS 1.3, client CertificateVerify". A
-hash of the handshake messages is signed rather than the messages themselves
-because the digitally-signed format requires padding and context bytes at the
-beginning of the input. Thus, by signing a digest of the messages, an
-implementation only needs to maintain a single running hash per hash type for
-CertificateVerify, Finished and other messages.
+       Hash(Handshake Context + Certificate) + Hash(resumption_context)
 
-> If sent by a server, the signature algorithm MUST be one offered in the
+In TLS 1.3, the digital signature process takes as input:
+
+- A signing key
+- A context string
+- The actual content to be signed
+
+The digital signature is then computed using the signing key over
+the concatenation of:
+
+- 64 bytes of octet 32
+- The context string
+- A single 0 byte which servers as the separator
+- The content to be signed
+
+This structure is intended to prevent an attack on previous versions
+of previous versions of TLS in which the ServerKeyExchange format meant that
+attackers could obtain a signature of a message with a chosen, 32-byte
+prefix. The initial 64 byte pad clears that prefix.
+
+The context string for a server signature is
+"TLS 1.3, server CertificateVerify"
+and for a client signature is "TLS 1.3, client
+CertificateVerify". 
+
+For example, if Hash(Handshake Context + Certificate) was 32 bytes
+of 01 and Hash(resumption_context) was 32 bytes of 02 (these lengths
+would make sense for SHA-256, the input to the final signing process
+for a server CertificateVerify would be:
+
+       2020202020202020202020202020202020202020202020202020202020202020
+       2020202020202020202020202020202020202020202020202020202020202020
+       544c5320312e332c207365727665722043657274696669636174655665726966 
+       00
+       0101010101010101010101010101010101010101010101010101010101010101
+       0202020202020202020202020202020202020202020202020202020202020202
+
+If sent by a server, the signature algorithm MUST be one offered in the
 client's "signature_algorithms" extension unless no valid certificate chain can be
 produced without unsupported algorithms (see {{signature-algorithms}}). Note that
 there is a possibility for inconsistencies here. For instance, the client might
@@ -3150,12 +3099,12 @@ MUST check any candidate cipher suites against the "signature_algorithms"
 extension before selecting them. This is somewhat inelegant but is a compromise
 designed to minimize changes to the original cipher suite design.
 
-> If sent by a client, the signature algorithm used in the
+If sent by a client, the signature algorithm used in the
 signature MUST be one of those present in the
 supported_signature_algorithms field of the CertificateRequest
 message.
 
-> In addition, the signature algorithm MUST be compatible with the key
+In addition, the signature algorithm MUST be compatible with the key
 in the sender's end-entity certificate. RSA signatures MUST use an
 RSASSA-PSS algorithm, regardless of whether RSASSA-PKCS1-v1_5 algorithms
 appear in "signature_algorithms". SHA-1 MUST NOT be used in any signatures in
@@ -4070,8 +4019,8 @@ Cryptographic details:
 -  What countermeasures do you use to prevent timing attacks against
   RSA signing operations {{TIMING}}?
 
-- When verifying RSA signatures, do you accept both NULL and missing parameters
-  (see {{cryptographic-attributes}})? Do you verify that the RSA padding
+- When verifying RSA signatures, do you accept both NULL and missing parameters?
+  Do you verify that the RSA padding
   doesn't have additional data after the hash value? {{FI06}}
 
 -  When using Diffie-Hellman key exchange, do you correctly preserve
