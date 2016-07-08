@@ -1291,7 +1291,9 @@ Error handling in the TLS Handshake Protocol is very simple. When an error is
 detected, the detecting party sends a message to its peer. Upon
 transmission or receipt of a fatal alert message, both parties immediately
 close the connection. Servers and clients MUST forget keys, and secrets
-associated with a failed connection.
+associated with a failed connection. Stateful implementations of session
+tickets (as in many clients) SHOULD discard tickets associated with failed
+connections.
 
 Whenever an implementation encounters a condition which is defined as a fatal
 alert, it MUST send the appropriate alert prior to closing the connection. For
