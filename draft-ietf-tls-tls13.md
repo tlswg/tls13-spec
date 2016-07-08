@@ -560,25 +560,10 @@ protocol has incorporated an optional session caching scheme to reduce the
 number of connections that need to be established from scratch. Additionally,
 care has been taken to reduce network activity.
 
-
-#  Goals of This Document
-
-This document and the TLS protocol itself have evolved from the SSL 3.0 Protocol
-Specification as published by Netscape. The differences between this version
-and previous versions are significant enough that the various
-versions of TLS and SSL 3.0 do not interoperate (although each protocol
-incorporates a mechanism by which an implementation can back down to prior
-versions). This document is intended primarily for readers who will be
-implementing the protocol and for those doing cryptographic analysis of it. The
-specification has been written with this in mind, and it is intended to reflect
-the needs of those two groups. For that reason, many of the algorithm-dependent
-data structures and rules are included in the body of the text (as opposed to
-in an appendix), providing easier access to them.
-
-This document is not intended to supply any details of service definition or of
-interface definition, although it does cover select areas of policy as they are
-required for the maintenance of solid security.
-
+This document defines TLS version 1.3. While TLS 1.3 is not directly compatible
+with previous versions, all versions of TLS incorporate a versioning mechanism
+which allows clients and servers to interoperably negotiate a common version
+if one is supported.
 
 #  Presentation Language
 
