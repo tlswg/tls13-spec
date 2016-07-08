@@ -240,7 +240,7 @@ informative:
 --- abstract
 
 This document specifies Version 1.3 of the Transport Layer Security
-(TLS) protocol.  The TLS protocol allows client/server applications to
+(TLS) protocol.  TLS allows client/server applications to
 communicate over the Internet in a way that is designed to prevent eavesdropping,
 tampering, and message forgery.
 --- middle
@@ -257,51 +257,50 @@ https://github.com/tlswg/tls13-spec. Instructions are on that page as
 well. Editorial changes can be managed in GitHub, but any substantive
 change should be discussed on the TLS mailing list.
 
-The primary goal of the TLS protocol is to provide privacy and data integrity
-between two communicating peers. The TLS protocol is composed of two layers:
-the TLS Record Protocol and the TLS Handshake Protocol. At the lowest level,
-layered on top of some reliable transport protocol (e.g., TCP {{RFC0793}}), is
-the TLS Record Protocol. The TLS Record Protocol provides connection security
-that has two basic properties:
+The primary goal of TLS is to provide a secure channel
+between two communicating peers. Specifically, the channel should
+provide the following properties.
 
-- The connection is private.  Symmetric cryptography is used for
-  data encryption (e.g., AES {{AES}}).  The keys for
-  this symmetric encryption are generated uniquely for each
-  connection and are based on a secret negotiated by another
-  the TLS Handshake Protocol.
+- Authentication: The server side of the channel is always
+  authenticated; the client side is optionally
+  authenticated. Authentication can happen via asymmetric cryptography
+  (e.g., RSA {{RSA}}, ECDSA {{ECDSA}}) or a pre-shared symmetric key.
 
-- The connection is reliable.  Messages include an authentication
-  tag which protects them against modification.
+- Confidentiality: Data sent over the channel is not visible to
+  attackers.
+  
+- Integrity: Data sent over the channel cannot be modified by attackers.
 
-The TLS Record Protocol is used for encapsulation of various higher-level
-protocols. One such encapsulated protocol, the TLS Handshake Protocol, allows
-the server and client to authenticate each other and to negotiate an encryption
-algorithm and cryptographic keys before the application protocol transmits or
-receives its first byte of data. The TLS Handshake Protocol provides connection
-security that has three basic properties:
+These properties should be true even in the face of an attacker who controls
+the channel, as described in {{RFC3552}}.
+See Section [TODO] for a more formal statement of the relevant security
+properties.
 
+TLS consists of two primary protocol components:
 
-- The peer's identity can be authenticated using asymmetric (public key)
-  cryptography (e.g., RSA {{RSA}}, ECDSA {{ECDSA}}) or a pre-shared
-  symmetric key. The TLS server is always authenticated; client authentication
-  is optional.
+- A handshake protocol which authenticates the communicating parties,
+  negotiates cryptographic modes and parameters, and establishes
+  shared keying material. The handshake protocol is designed to
+  resist tampering; an active attacker should not be able to force
+  the peers to negotiate different parameters than they would
+  if the connection were not under attack.
 
-- The negotiation of a shared secret is secure: the negotiated
-  secret is unavailable to eavesdroppers, and for any authenticated
-  connection the secret cannot be obtained, even by an attacker who
-  can place himself in the middle of the connection.
-
-- The negotiation is reliable: no attacker can modify the
-  negotiation communication without being detected by the parties to
-  the communication.
-
+- A record protocol which uses the parameters established by the
+  handshake protocol to protect traffic between the communicating
+  peers.
 
 One advantage of TLS is that it is application protocol independent.
-Higher-level protocols can layer on top of the TLS protocol transparently. The
-TLS standard, however, does not specify how protocols add security with TLS;
-the decisions on how to initiate TLS handshaking and how to interpret the
-authentication certificates exchanged are left to the judgment of the designers
-and implementors of protocols that run on top of TLS.
+Higher-level protocols can layer on top of TLS transparently. The TLS
+standard, however, does not specify how protocols add security with
+TLS; the decisions on how to initiate TLS handshaking and how to
+interpret the authentication certificates exchanged are left to the
+judgment of the designers and implementors of protocols that run on
+top of TLS.
+
+This document defines TLS version 1.3. While TLS 1.3 is not directly
+compatible with previous versions, all versions of TLS incorporate a
+versioning mechanism which allows clients and servers to interoperably
+negotiate a common version if one is supported.
 
 ##  Conventions and Terminology
 
@@ -532,34 +531,6 @@ draft-02
 
 -  Remove support for non-AEAD ciphers.
 
-
-#  Goals
-
-The goals of the TLS protocol, in order of priority, are as follows:
-
-1. Cryptographic security: TLS should be used to establish a secure connection
-between two parties.
-
-2. Interoperability: Independent programmers should be able to develop
-applications utilizing TLS that can successfully exchange cryptographic
-parameters without knowledge of one another's code.
-
-3. Extensibility: TLS seeks to provide a framework into which new public key
-and record protection methods can be incorporated as necessary. This will also
-accomplish two sub-goals\: preventing the need to create a new protocol (and
-risking the introduction of possible new weaknesses) and avoiding the need to
-implement an entire new security library.
-
-4. Relative efficiency: Cryptographic operations tend to be highly CPU
-intensive, particularly public key operations. For this reason, the TLS
-protocol has incorporated an optional session caching scheme to reduce the
-number of connections that need to be established from scratch. Additionally,
-care has been taken to reduce network activity.
-
-This document defines TLS version 1.3. While TLS 1.3 is not directly compatible
-with previous versions, all versions of TLS incorporate a versioning mechanism
-which allows clients and servers to interoperably negotiate a common version
-if one is supported.
 
 #  Presentation Language
 
