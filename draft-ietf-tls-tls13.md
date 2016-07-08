@@ -1053,7 +1053,8 @@ sequence number
 
   Sequence numbers are of type uint64 and MUST NOT exceed 2^64-1.
   Sequence numbers do not wrap.  If a TLS implementation would need to
-  wrap a sequence number, it MUST either rekey ({{key-update}}) or
+  wrap a sequence number, it MUST either rekey (see {{key-update}} for
+  TLS 1.3 or {{dtls-epoch}} for DTLS 1.3) or
   terminate the connection.
 {:br }
 
@@ -1336,7 +1337,8 @@ fragment
    be multiple records on the wire with the same sequence number but
    from different cipher states.  The epoch field allows recipients to
    distinguish such packets.  The epoch number is initially zero and is
-   incremented each time a KeyUpdate message is sent.  In order
+   incremented each time keying material changes and a sender aims to rekey. 
+ More details are provided in {{dtls-epoch}}. In order
    to ensure that any given sequence/epoch pair is unique,
    implementations MUST NOT allow the same epoch value to be reused
    within two times the TCP maximum segment lifetime. 
@@ -3999,9 +4001,9 @@ use the HelloVerifyRequest to execute a return-routability check. A
 dual-stack DTLS 1.2/DTLS 1.3 client must, however, be prepared to 
 interact with a DTLS 1.2 ser
 
-Furthermore, a DTLS 1.3 MUST NOT use the KeyUpdate message to update 
-keying material. Instead the epoch field is re-used, which is explained 
-in {{dtls-rekying}}. 
+A DTLS 1.3 MUST NOT use the KeyUpdate message to change keying material 
+used for the protection of traffic data. Instead the epoch field is used, 
+which is explained in {{dtls-epoch}}. 
 
 The format of the ClientHello used by a DTLS 1.3 client differs from the 
 TLS 1.3 ClientHello format. 
@@ -4042,8 +4044,6 @@ legacy_compression_methods
 extensions
 : Same as for TLS 1.3
 {:br } 
-
-
 
    The first message each side transmits in each handshake always has
    message_seq = 0.  Whenever each new message is generated, the
@@ -4401,11 +4401,39 @@ CertificateRequest, NewSessionTicket.]]
    off-path/blind attackers from destroying associations merely by
    sending forged ClientHellos.
 
-## Rekeying {#dtls-rekying}
+## Epoch Values and Rekeying {#dtls-epoch}
 
-TBD: Add text about the absent KeyUpdate message and the use of epoch. 
+A recipient of a DTLS message needs to select the correct keying material
+in order to process an incoming message. With the possibility of message
+ loss and re-order an identifier is needed to determine which cipher state 
+has been used to protect the record payload. The epoch value fulfills this 
+role in DTLS. In addition to the key derivation steps described in 
+{{cryptographic-computation}} triggered by the states during the handshake
+a sender may want to rekey at any time during 
+the lifetime of the connection and has to have a way to indicate that it is 
+updating its sending cryptographic keys. 
 
-#  Cryptographic Computations
+The following epoch values are reserved and correspond to phases in the handshake and allow
+identification of the correct cipher state:
+
+   * epoch value (0) for use with unencrypted messages, namely ClientHello, 
+ServerHello, and HelloRetryRequest.
+   * epoch value (1) for the Finished message protected using the 0-RTT 
+handshake key.
+   * epoch value (2) for 0-RTT 'Application Data' protected using keys derived from the  
+early_traffic_secret.
+   * epoch value (3) for messages protected using keys derived from the 
+handshake_traffic_secret, namely the EncryptedExtensions to the Finished message sent by the client).
+   * epoch value (4) for application data payloads protected using keys derived from the initial traffic_secret_0.
+   * epoch value (5 to 2^16-1) for application data payloads protected using keys from the traffic_secret_N (N>0).
+
+Using these reserved epoch values a receiver knows what cipher state has been used to encrypt and integrity protect a message. Implementations that receive a payload with an epoch value for which no corresponding cipher state can be determined MUST generate a fatal "unexpected_message" alert. For example, client incorrectly uses epoch value 5 when sending application data in a 0-RTT exchange with the first message. A server will not be able to compute the appropriate keys and will therefore have to respond with a fatal alert. 
+
+Increasing the epoch value by a sender (starting with value 5 upwards) corresponds semantically to rekeying using the KeyUpdate message in TLS 1.3. Instead of utilizing an dedicated message in DTLS 1.3 the sender uses an increase in the epoch value to signal rekeying. Hence, a sender that decides to increment the epoch value (with value starting at 5) MUST send all its traffic using the next generation of keys, computed as described in {{updating-traffic-keys}}. Upon receiving a payload with such a new epoch value, the receiver MUST update their receiving keys and if they have not already updated their sending state up to or past the then current receiving generation MUST send messages with the new epoch value prior to sending any other messages. For epoch values lower than 5 the key schedule described in {{key-schedule}} is applicable.
+
+Note that epoch values do not wrap. If a TLS implementation would need to wrap the epoch value, it MUST terminate the connection.
+
+#  Cryptographic Computations {#cryptographic-computation}
 
 In order to begin connection protection, the TLS Record Protocol
 requires specification of a suite of algorithms, a master secret, and
@@ -4415,7 +4443,7 @@ cipher_suite selected by the server and revealed in the ServerHello
 message. The random values are exchanged in the hello messages. All
 that remains is to calculate the key schedule.
 
-## Key Schedule
+## Key Schedule {#key-schedule}
 
 The TLS handshake establishes one or more input secrets which
 are combined to create the actual working keying material, as detailed
@@ -4519,8 +4547,8 @@ a string of L zeroes is used.
 ## Updating Traffic Keys and IVs {#updating-traffic-keys}
 
 Once the handshake is complete, it is possible for either side to
-update its sending traffic keys using the KeyUpdate handshake message
-{{key-update}}.  The next generation of traffic keys is computed by
+update its sending traffic keys, as explained in 
+{{key-update}} for TLS 1.3 and in {{dtls-epoch}} for DTLS 1.3.  The next generation of traffic keys is computed by
 generating traffic_secret_N+1 from traffic_secret_N as described in
 this section then re-deriving the traffic keys as described in
 {{traffic-key-calculation}}.
@@ -4571,8 +4599,8 @@ The following table indicates the purpose values for each type of key:
 | server_write_iv  | "server write iv"  |
 
 All the traffic keying material is recomputed whenever the
-underlying Secret changes (e.g., when changing from the handshake to
-application data keys or upon a key update).
+underlying secret changes (e.g., when changing from the handshake to
+application data keys).
 
 
 ###  Diffie-Hellman
