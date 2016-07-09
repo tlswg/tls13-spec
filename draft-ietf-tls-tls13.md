@@ -3842,27 +3842,6 @@ in such a way absent explicit configuration or a specific application
 profile.
 
 
-## Changes to RFC 4492
-
-RFC 4492 {{RFC4492}} adds Elliptic Curve cipher suites to TLS. This document
-changes some of the structures used in that document. This section details the
-required changes for implementors of both RFC 4492 and TLS 1.2. Implementors of
-TLS 1.2 who are not implementing RFC 4492 do not need to read this section.
-
-This document adds an "algorithm" field to the digitally-signed
-element in order to identify the signature and digest algorithms used to create
-a signature. This change applies to digital signatures formed using ECDSA as
-well, thus allowing ECDSA signatures to be used with digest algorithms other
-than SHA-1, provided such use is compatible with the certificate and any
-restrictions imposed by future revisions of {{RFC5280}}.
-
-As described in {{server-certificate-selection}}, the restrictions on the signature
-algorithms used to sign certificates are no longer tied to the cipher suite.
-Thus, the restrictions on the algorithm used to sign certificates specified in
-Sections 2 and 3 of RFC 4492 are also relaxed. As in this document, the
-restrictions on the keys in the end-entity certificate remain.
-
-
 # Implementation Notes
 
 The TLS protocol cannot prevent many common security mistakes. This section
