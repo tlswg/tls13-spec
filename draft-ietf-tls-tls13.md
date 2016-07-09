@@ -689,7 +689,7 @@ a 255-bit ECDHE key exchange with a host whose certificate
 chain you have verified, you can expect that to be reasonably "secure"
 against algorithmic attacks, at least in the year 2015.]]
 
-### Incorrect DHE Share
+## Incorrect DHE Share
 
 If the client has not provided an appropriate "key_share" extension (e.g. it
 includes only DHE or ECDHE groups unacceptable or unsupported by the
@@ -731,7 +731,7 @@ ClientHello.
 TLS also allows several optimized variants of the basic handshake, as
 described below.
 
-### Resumption and Pre-Shared Key (PSK) {#resumption-and-psk}
+## Resumption and Pre-Shared Key (PSK) {#resumption-and-psk}
 
 Although TLS PSKs can be established out of band,
 PSKs can also be established in a previous session and
@@ -797,7 +797,7 @@ A "key_share" extension MUST also be sent if the client is attempting to
 negotiate an (EC)DHE-PSK cipher suite.
 
 
-### Zero-RTT Data
+## Zero-RTT Data
 
 When resuming via a PSK with an appropriate ticket (i.e., one with
 the "allow_early_data" flag), clients can also send data on their first
@@ -1109,26 +1109,15 @@ the data into manageable blocks, protects the records, and transmits
 the result. Received data is decrypted and verified, reassembled, and
 then delivered to higher-level clients.
 
-Three protocols that use the TLS Record Protocol are described in this document: the TLS
-Handshake Protocol, the Alert Protocol, and
-the application data protocol. In order to allow extension of the TLS protocol,
-additional record content types can be supported by the TLS Record Protocol. New
-record content type values are assigned by IANA in the TLS Content Type
-Registry as described in {{iana-considerations}}.
-
-Implementations MUST NOT send record types not defined in this document unless
-negotiated by some extension. If a TLS implementation receives an unexpected
-record type, it MUST send an "unexpected_message" alert.
-
-Any protocol designed for use over TLS must be carefully designed to deal with
-all possible attacks against it. As a practical matter, this means that the
-protocol designer must be aware of what security properties TLS does and does
-not provide and cannot safely rely on the latter.
-
-Note in particular that the length of a record or absence of traffic
-itself is not protected by encryption unless the sender uses the
-supplied padding mechanism -- see {{record-padding}} for more details.
-
+TLS records are typed, which allows multiple higher level protocols to
+be multiplexed over the same record layer. This document specifies
+three content types: handshake, application data, and alert.
+Implementations MUST NOT send record types not defined in this
+document unless negotiated by some extension. If a TLS implementation
+receives an unexpected record type, it MUST send an
+"unexpected_message" alert.  New record content type values are
+assigned by IANA in the TLS Content Type Registry as described in
+{{iana-considerations}}.
 
 ## Record Layer
 
@@ -1174,7 +1163,7 @@ record_version
   This field is deprecated and MUST be ignored for all purposes.
 
 length
-: The length (in bytes) of the following TLSPlaintext.fragment.  The
+: The length (in bytes) of the following TLSPlaintext.fragment. The
   length MUST NOT exceed 2^14.
 
 fragment
@@ -1208,20 +1197,35 @@ as opposed to previous versions of TLS, all ciphers are modeled as
 "Authenticated Encryption with Additional Data" (AEAD) {{RFC5116}}.
 AEAD functions provide a unified encryption and authentication
 operation which turns plaintext into authenticated ciphertext and
-back again.
+back again. Each encrypted record consists of a plaintext header followed
+by an encrypted body, which itself contains a type and optional padding.
 
 %%% Record Layer
-
+       struct {
+          opaque content[TLSPlaintext.length];
+          ContentType type;
+          uint8 zeros[length_of_padding];
+       } TLSInnerPlaintext;
+       
        struct {
            ContentType opaque_type = application_data(23); /* see fragment.type */
            ProtocolVersion record_version = { 3, 1 };    /* TLS v1.x */
            uint16 length;
-           aead-ciphered struct {
-              opaque content[TLSPlaintext.length];
-              ContentType type;
-              uint8 zeros[length_of_padding];
-           } fragment;
+           opaque encrypted_record[length];
        } TLSCiphertext;
+
+content
+: The cleartext of TLSPlaintext.fragment.
+
+type
+: The content type of the record.
+
+zeros
+: An arbitrary-length run of zero-valued bytes may
+  appear in the cleartext after the type field.  This provides an
+  opportunity for senders to pad any TLS record by a chosen amount as
+  long as the total stays within record size limits.  See
+  {{record-padding}} for more details.
 
 opaque_type
 : The outer opaque_type field of a TLSCiphertext record is always set to the
@@ -1236,33 +1240,21 @@ record_version
   the protocol version, so this value is redundant.
 
 length
-: The length (in bytes) of the following TLSCiphertext.fragment.  The length
-  MUST NOT exceed 2^14 + 256.  An endpoint that receives a record that exceeds
-  this length MUST generate a fatal "record_overflow" alert.
+: The length (in bytes) of the following TLSCiphertext.fragment, which
+  is the sum of the lengths of the content and the padding, plus one
+  for the inner content type. The length MUST NOT exceed 2^14 + 256.
+  An endpoint that receives a record that exceeds this length MUST
+  generate a fatal "record_overflow" alert.
 
-fragment.content
-: The cleartext of TLSPlaintext.fragment.
-
-fragment.type
-: The actual content type of the record.
-
-fragment.zeros
-: An arbitrary-length run of zero-valued bytes may
-  appear in the cleartext after the type field.  This provides an
-  opportunity for senders to pad any TLS record by a chosen amount as
-  long as the total stays within record size limits.  See
-  {{record-padding}} for more details.
-
-fragment
-: The AEAD encrypted form of TLSPlaintext.fragment + TLSPlaintext.type + zeros,
-  where "+" denotes concatenation.
+encrypted_record
+: The AEAD encrypted form of the serialized TLSInnerPlaintext structure.
 {:br }
 
 
 AEAD ciphers take as input a single key, a nonce, a plaintext, and "additional
 data" to be included in the authentication check, as described in Section 2.1
 of {{RFC5116}}. The key is either the client_write_key or the server_write_key,
-the nonce is derived from the a sequence number (see {{nonce}}) and the
+the nonce is derived from the sequence number (see {{nonce}}) and the
 client_write_iv or server_write_iv, and the additional data input is empty
 (zero length).  Derivation of traffic keys is defined in {{traffic-key-calculation}}.
 
