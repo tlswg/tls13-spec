@@ -2650,7 +2650,7 @@ ticket_lifetime
   ticket_lifetime.
 
 ticket_age_add
-: A randomly 32-bit value that is used to obscure the age of the ticket that the
+: A randomly generated 32-bit value that is used to obscure the age of the ticket that the
   client includes in the "early_data" extension.  The actual ticket age is
   added to this value modulo 2^32 to obtain the value that is transmitted by
   the client.
@@ -2889,7 +2889,8 @@ The traffic keying material is generated from the following input values:
 The keying material is computed using:
 
        key = HKDF-Expand-Label(Secret,
-                               phase + ", " + purpose, "",
+                               phase + ", " + purpose,
+                               "",
                                key_length)
 
 The following table describes the inputs to the key calculation for
