@@ -254,6 +254,41 @@ informative:
          ins: H. Krawczyk
        seriesinfo: Proceedings of Eurocrypt 2001
        date: 2001
+  BBFKZG16:
+       title: "Downgrade Resilience in Key-Exchange Protocols"
+       author:
+       -
+         ins: K. Bhargavan
+       -
+         ins: C. Brzuska
+       -
+         ins: C. Fournet
+       -
+         ins: M. Kohlweiss
+       -
+         ins: S. Zanella-Beguelin
+       -
+         ins: M. Green
+       seriesinfo: Proceedings of IEEE Symposium on Security and Privacy (Oakland) 2016
+       date: 2016
+  DOW92:
+       title: “Authentication and authenticated key exchanges”
+       author:
+       -
+         ins: W. Diffie
+       -
+         ins: P. van Oorschot
+       -
+         ins: M. Wiener
+       seriesinfo: Designs, Codes and Cryptography
+       data: 1992
+  SIGMA:
+       title: "SIGMA: the 'SIGn-and-MAc' approach to authenticated Di e-Hellman and its use in the IKE protocols"
+       author:
+       -
+         ins: H. Krawczyk
+       seriesinfo: Proceedings of CRYPTO 2003
+       date: 2003       
 --- abstract
 
 This document specifies version 1.3 of the Transport Layer Security
@@ -4188,20 +4223,100 @@ of the handshake, each side outputs its view on the following properties.
 - A set of cryptographic parameters (algorithms, etc.)
 - The identities of the communicating parties.
 
-The handshake should provide the following properties.
+We assume that the attacker has complete control of the network in
+between the parties {{RFC3552}}. Even under these conditions, the
+handshake should provide the properties listed below. Note that
+these properties are not necessarily independent, but reflect
+the protocol consumer's needs.
 
-Establishing the same key:
+Establishing the same session key.
 : The handshake needs to output the same session key on both sides of the
 handshake (See {{CK01}}; defn 1, part 1).
 
-Secrecy of the session key: 
+Secrecy of the session key.
 : The shared session key should be known only to the communicating
 parties, not to the attacker (See {{CK01; defn 1, part 2).  Note that
 in a unilaterally authenticated connection, the attacker can establish
 its own session keys with the server, but those session keys are
 distinct from those established by the client.
 
+Peer Authentication.
+: The client's view of the peer identity should reflect the server's
+identity. If the client is authenticated, the server's view of the
+peer identity should match the client's identity.
+
+Uniqueness of the session key:
+: Any two distinct handshakes should produce distinct, unrelated session
+keys [REF: Need cite.]
+
+Downgrade protection.
+: The cryptographic parameters should be the same on both sides and
+should be the same as if the peers had been communicating in the
+absence of an attack (See {{BBFKZG16}}; defns 8 and 9}).
+
+Forward secret
+: If the long-term authentication keys (signature keys in certificate-based
+authentication modes or the PSK in PSK-(EC)DHE modes) are compromised after
+the handshake is complete, this does not compromise the security of the
+session key (See {{DOW92}}).
+
+Protection of endpoint identities.
+The server's identity (certificate) should be protected against passive
+attackers. The client's identity should be protected against both passive
+and active attackers.
 {:br}
+
+Informally, the signature-based modes of TLS 1.3 provide for the
+establishment of a unique, secret, shared, key established by an
+(EC)DHE key exchange and authenticated by the server's signature over
+the handshake transcript, as well as tied to the server's identity by
+a MAC. If the client is authenticated by a certificate, it also signs
+over the handshake transcript and provides a MAC tied to both
+identities. {{SIGMA}} provides an overview of the analysis of this
+type of key exchange protocol. If fresh (EC)DHE keys are used for each
+connection, then the output keys are forward secret.
+
+The PSK and resumption-PSK modes bootstrap from a long-term shared
+secret into a unique per-connection short-term session key. This
+secret may have been established in a previous handshake. If
+PSK-(EC)DHE modes are used, this session key will also be forward
+secret. The resumption-PSK mode has been designed so that the
+resumption master secret computed by connection N and needed to form
+connection N+1 is separate from the traffic keys used by connection N,
+thus providing forward secrecy between the connections.
+
+For all handshake modes, the Finished MAC (and where present, the
+signature), prevents downgrade attacks. In addition, the random
+tainting mechanism described in {{server-hello}} allows the detection
+of downgrade to previous TLS versions.
+
+As soon as the client and the server have exchanged enough information
+to establish shared keys, the remainder of the handshake is encrypted,
+thus providing protection against passive attackers. Because the server
+authenticates before the client, the client can ensure that it only
+reveals its identity to an authentic server.
+
+The 0-RTT mode of operation generally provides the same security
+properties as 1-RTT data, with the two exceptions that the 0-RTT
+encryption keys do not provide full forward secrecy and that the
+the server is not able to guarantee full uniqueness of the handshake
+(non-replayability) without keeping potentially undue amounts of
+state. See {{early-data-indication}} for one mechanism to limit
+the exposure to replay.
+
+The reader should refer to the following references for analysis of the
+degree to which TLS 1.3 provides these properties. [TODO]
+
+
+
+
+
+
+
+
+
+
+
 
 
 
