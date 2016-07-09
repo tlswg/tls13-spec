@@ -1721,10 +1721,6 @@ completed handshake to change what groups they offer to a server in
 subsequent connections.
 
 
-[[TODO: IANA Considerations.]]
-
-
-
 ### Key Share
 
 The "key_share" extension contains the endpoint's cryptographic parameters
