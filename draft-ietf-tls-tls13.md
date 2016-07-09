@@ -4277,29 +4277,67 @@ The reader should refer to the following references for analysis of the
 degree to which TLS 1.3 provides these properties. [TODO]
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## Record Layer {#security-record-layer}
 
+The record layer depends on the handshake producing a strong session
+key which can be used to derive bidirectional traffic keys and nonces.
+Assuming that is true, and the keys are used for no more data than
+indicated in [TODO] then the record layer should provide the following
+guarantees:
+
+Confidentiality.
+: An attacker should not be able to determine the plaintext contents
+of a given record. More formally it should not be able to distinguish
+between multiple encryptions of the same versus different plaintexts.
+(formally, IND-CPA security [REF]).
+
+Integrity.
+: An attacker should not be able to craft a new record which is
+different from an existing record which will be accepted by the receiver
+with more than negligible probability (formally, INT-CTXT security [REF]).
+
+Order protection/non-replayability
+: An attacker should not be able to cause the receiver to accept a
+record which it has already accepted or cause the receiver to accept
+record N+1 without having first processed record N.
+
+Length concealment.
+: Given a record with a given external length, the attacker should not be able
+to determine the amount of the record that is content versus padding.
+
+Forward security after key change.
+If the traffic key update mechanism described in {{key-update}} has been
+used and the previous generation key is deleted, an attacker who compromises
+the endpoint should not be able to decrypt traffic encrypted with the old key.
+{:br}
+
+Informally, TLS 1.3 provides these properties by AEAD-protecting the
+plaintext with a strong key. AEAD encryption protects confidentiality
+and integrity for the data. Non-replayability is provided by using
+a separate nonce for each record, with the nonce being derived from
+the record sequence number (Section {{nonce}}), with the sequence
+number being maintained independently at both sides thus records which
+are delivered out of order result in AEAD deprotection failures.
+
+The plaintext protected by the AEAD function consists of content plus
+variable-length padding. Because the padding is also encrypted, the
+attacker cannot directly determine the length of the padding, but
+may be able to measure it indirectly by the use of timing channels
+exposed during record processing (i.e., seeing how long it takes to
+process a record). In general, it is not known how to remove this
+type of channel because even a constant time padding removal
+function will then feed the content into data-dependent functions.
+
+Generation N+1 keys are derived from generation N keys via a key
+derivation function. As long as this function is truly one way, it
+is not possible to compute the previous keys after a key change
+(forward secrecy). However, TLS does not provide backward secrecy
+after key updates; systems which want backward secrecy must do
+a fresh handshake and establish a new session key with an (EC)DHE
+exchange.
+
+The reader should refer to the following references for analysis of the
+degree to which TLS 1.3 provides these properties. [TODO]
 
 # Working Group Information
 
