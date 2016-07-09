@@ -1102,548 +1102,6 @@ For example:
 
        Example1 ex1 = {1, 4};  /* assigns f1 = 1, f2 = 4 */
 
-#  The TLS Record Protocol
-
-The TLS Record Protocol takes messages to be transmitted, fragments
-the data into manageable blocks, protects the records, and transmits
-the result. Received data is decrypted and verified, reassembled, and
-then delivered to higher-level clients.
-
-TLS records are typed, which allows multiple higher level protocols to
-be multiplexed over the same record layer. This document specifies
-three content types: handshake, application data, and alert.
-Implementations MUST NOT send record types not defined in this
-document unless negotiated by some extension. If a TLS implementation
-receives an unexpected record type, it MUST send an
-"unexpected_message" alert.  New record content type values are
-assigned by IANA in the TLS Content Type Registry as described in
-{{iana-considerations}}.
-
-## Record Layer
-
-The TLS record layer receives uninterpreted data from higher layers in
-non-empty blocks of arbitrary size.
-
-The record layer fragments information blocks into TLSPlaintext records
-carrying data in chunks of 2^14 bytes or less. Message boundaries are
-not preserved in the record layer (i.e., multiple messages of the same
-ContentType MAY be coalesced into a single TLSPlaintext record, or a single
-message MAY be fragmented across several records).
-Alert messages ({{alert-protocol}}) MUST NOT be fragmented across records.
-
-%%% Record Layer
-
-       struct {
-           uint8 major;
-           uint8 minor;
-       } ProtocolVersion;
-
-       enum {
-           invalid_RESERVED(0),
-           change_cipher_spec_RESERVED(20),
-           alert(21),
-           handshake(22),
-           application_data(23)
-           (255)
-       } ContentType;
-
-       struct {
-           ContentType type;
-           ProtocolVersion record_version = { 3, 1 };    /* TLS v1.x */
-           uint16 length;
-           opaque fragment[TLSPlaintext.length];
-       } TLSPlaintext;
-
-type
-: The higher-level protocol used to process the enclosed fragment.
-
-record_version
-: The protocol version the current record is compatible with.
-  This value MUST be set to { 3, 1 } for all records.
-  This field is deprecated and MUST be ignored for all purposes.
-
-length
-: The length (in bytes) of the following TLSPlaintext.fragment. The
-  length MUST NOT exceed 2^14.
-
-fragment
-: The application data.  This data is transparent and treated as an
-  independent block to be dealt with by the higher-level protocol
-  specified by the type field.
-{:br }
-
-This document describes TLS Version 1.3, which uses the version { 3, 4 }.
-The version value 3.4 is historical, deriving from the use of { 3, 1 }
-for TLS 1.0 and { 3, 0 } for SSL 3.0. In order to maximize backwards
-compatibility, the record layer version identifies as simply TLS 1.0.
-Endpoints supporting other versions negotiate the version to use
-by following the procedure and requirements in {{backward-compatibility}}.
-
-Implementations MUST NOT send zero-length fragments of Handshake or
-Alert types, even if those fragments contain padding. Zero-length
-fragments of Application data MAY be sent as they are potentially
-useful as a traffic analysis countermeasure.
-
-When record protection has not yet been engaged, TLSPlaintext
-structures are written directly onto the wire. Once record protection
-has started, TLSPlaintext records are protected and sent as
-described in the following section.
-
-## Record Payload Protection
-
-The record protection functions translate a TLSPlaintext structure into a
-TLSCiphertext. The deprotection functions reverse the process. In TLS 1.3
-as opposed to previous versions of TLS, all ciphers are modeled as
-"Authenticated Encryption with Additional Data" (AEAD) {{RFC5116}}.
-AEAD functions provide a unified encryption and authentication
-operation which turns plaintext into authenticated ciphertext and
-back again. Each encrypted record consists of a plaintext header followed
-by an encrypted body, which itself contains a type and optional padding.
-
-%%% Record Layer
-       struct {
-          opaque content[TLSPlaintext.length];
-          ContentType type;
-          uint8 zeros[length_of_padding];
-       } TLSInnerPlaintext;
-       
-       struct {
-           ContentType opaque_type = application_data(23); /* see fragment.type */
-           ProtocolVersion record_version = { 3, 1 };    /* TLS v1.x */
-           uint16 length;
-           opaque encrypted_record[length];
-       } TLSCiphertext;
-
-content
-: The cleartext of TLSPlaintext.fragment.
-
-type
-: The content type of the record.
-
-zeros
-: An arbitrary-length run of zero-valued bytes may
-  appear in the cleartext after the type field.  This provides an
-  opportunity for senders to pad any TLS record by a chosen amount as
-  long as the total stays within record size limits.  See
-  {{record-padding}} for more details.
-
-opaque_type
-: The outer opaque_type field of a TLSCiphertext record is always set to the
-  value 23 (application_data) for outward compatibility with
-  middleboxes accustomed to parsing previous versions of TLS.  The
-  actual content type of the record is found in fragment.type after
-  decryption.
-
-record_version
-: The record_version field is identical to TLSPlaintext.record_version and is always { 3, 1 }.
-  Note that the handshake protocol including the ClientHello and ServerHello messages authenticates
-  the protocol version, so this value is redundant.
-
-length
-: The length (in bytes) of the following TLSCiphertext.fragment, which
-  is the sum of the lengths of the content and the padding, plus one
-  for the inner content type. The length MUST NOT exceed 2^14 + 256.
-  An endpoint that receives a record that exceeds this length MUST
-  generate a fatal "record_overflow" alert.
-
-encrypted_record
-: The AEAD encrypted form of the serialized TLSInnerPlaintext structure.
-{:br }
-
-
-AEAD ciphers take as input a single key, a nonce, a plaintext, and "additional
-data" to be included in the authentication check, as described in Section 2.1
-of {{RFC5116}}. The key is either the client_write_key or the server_write_key,
-the nonce is derived from the sequence number (see {{nonce}}) and the
-client_write_iv or server_write_iv, and the additional data input is empty
-(zero length).  Derivation of traffic keys is defined in {{traffic-key-calculation}}.
-
-The plaintext is the concatenation of TLSPlaintext.fragment, 
-TLSPlaintext.type, and any padding bytes (zeros).
-
-The AEAD output consists of the ciphertext output by the AEAD
-encryption operation. The length of the plaintext is greater than
-TLSPlaintext.length due to the inclusion of TLSPlaintext.type and
-however much padding is supplied by the sender.  The length of the
-AEAD output will generally be larger than the plaintext, but by an
-amount that varies with the AEAD cipher. Since the ciphers might
-incorporate padding, the amount of overhead could vary with different
-lengths of plaintext. Symbolically,
-
-       AEADEncrypted =
-           AEAD-Encrypt(write_key, nonce, plaintext of fragment)
-
-In order to decrypt and verify, the cipher takes as input the key,
-nonce, and the AEADEncrypted value. The output is either the plaintext
-or an error indicating that the decryption failed. There is no
-separate integrity check. That is:
-
-       plaintext of fragment =
-           AEAD-Decrypt(write_key, nonce, AEADEncrypted)
-
-If the decryption fails, a fatal "bad_record_mac" alert MUST be generated.
-
-An AEAD cipher MUST NOT produce an expansion of greater than 255
-bytes.  An endpoint that receives a record from its peer with
-TLSCipherText.length larger than 2^14 + 256 octets MUST generate a
-fatal "record_overflow" alert.  This limit is derived from the maximum
-TLSPlaintext length of 2^14 octets + 1 octet for ContentType + the
-maximum AEAD expansion of 255 octets.
-
-
-## Per-Record Nonce {#nonce}
-
-A 64-bit sequence number is maintained separately for reading and writing
-records.  Each sequence number is set to zero at the beginning of a connection
-and whenever the key is changed.
-
-The sequence number is incremented after reading or writing each record.
-The first record transmitted under a particular set of traffic keys
-record key MUST use sequence number 0.
-
-Sequence numbers do not wrap.  If a TLS implementation would need to
-wrap a sequence number, it MUST either rekey ({{key-update}}) or
-terminate the connection.
-
-The length of the per-record nonce (iv_length) is set to max(8 bytes,
-N_MIN) for the AEAD algorithm (see {{RFC5116}} Section 4). An AEAD
-algorithm where N_MAX is less than 8 bytes MUST NOT be used with TLS.
-The per-record nonce for the AEAD construction is formed as follows:
-
-  1. The 64-bit record sequence number is padded to the left with zeroes
-     to iv_length.
-
-  2. The padded sequence number is XORed with the static client_write_iv
-     or server_write_iv, depending on the role.
-
-The resulting quantity (of length iv_length) is used as the per-record
-nonce.
-
-Note: This is a different construction from that in TLS 1.2, which
-specified a partially explicit nonce.
-
-
-## Record Padding
-
-All encrypted TLS records can be padded to inflate the size of the
-TLSCipherText.  This allows the sender to hide the size of the
-traffic from an observer.
-
-When generating a TLSCiphertext record, implementations MAY choose to
-pad.  An unpadded record is just a record with a padding length of
-zero.  Padding is a string of zero-valued bytes appended
-to the ContentType field before encryption.  Implementations MUST set
-the padding octets to all zeros before encrypting.
-
-Application Data records may contain a zero-length fragment.content if
-the sender desires.  This permits generation of plausibly-sized cover
-traffic in contexts where the presence or absence of activity may be
-sensitive.  Implementations MUST NOT send Handshake or Alert records
-that have a zero-length fragment.content.
-
-The padding sent is automatically verified by the record protection
-mechanism: Upon successful decryption of a TLSCiphertext.fragment,
-the receiving implementation scans the field from the end toward the
-beginning until it finds a non-zero octet. This non-zero octet is the
-content type of the message.
-This padding scheme was selected because it allows padding of any encrypted
-TLS record by an arbitrary size (from zero up to TLS record size
-limits) without introducing new content types.  The design also
-enforces all-zero padding octets, which allows for quick detection of
-padding errors.
-
-Implementations MUST limit their scanning to the cleartext returned
-from the AEAD decryption.  If a receiving implementation does not find
-a non-zero octet in the cleartext, it should treat the record as
-having an unexpected ContentType, sending an "unexpected_message"
-alert.
-
-The presence of padding does not change the overall record size
-limitations -- the full fragment plaintext may not exceed 2^14 octets.
-
-Selecting a padding policy that suggests when and how much to pad is a
-complex topic, and is beyond the scope of this specification. If the
-application layer protocol atop TLS permits padding, it may be
-preferable to pad application_data TLS records within the application
-layer.  Padding for encrypted handshake and alert TLS records must
-still be handled at the TLS layer, though.  Later documents may define
-padding selection algorithms, or define a padding policy request
-mechanism through TLS extensions or some other means.
-
-
-#  Alert Protocol
-
-One of the content types supported by the TLS record layer is the alert type.
-Alert messages convey the severity of the message (warning or fatal) and a
-description of the alert. Alert messages with a level of fatal result in the
-immediate termination of the connection. In this case, other connections
-corresponding to the session may continue, but the session identifier MUST be
-invalidated, preventing the failed session from being used to establish new
-connections. Like other messages, alert messages are encrypted
-as specified by the current connection state.
-
-%%% Alert Messages
-
-       enum { warning(1), fatal(2), (255) } AlertLevel;
-
-       enum {
-           close_notify(0),
-           end_of_early_data(1),
-           unexpected_message(10),               /* fatal */
-           bad_record_mac(20),                   /* fatal */
-           decryption_failed_RESERVED(21),       /* fatal */
-           record_overflow(22),                  /* fatal */
-           decompression_failure_RESERVED(30),   /* fatal */
-           handshake_failure(40),                /* fatal */
-           no_certificate_RESERVED(41),          /* fatal */
-           bad_certificate(42),
-           unsupported_certificate(43),
-           certificate_revoked(44),
-           certificate_expired(45),
-           certificate_unknown(46),
-           illegal_parameter(47),                /* fatal */
-           unknown_ca(48),                       /* fatal */
-           access_denied(49),                    /* fatal */
-           decode_error(50),                     /* fatal */
-           decrypt_error(51),                    /* fatal */
-           export_restriction_RESERVED(60),      /* fatal */
-           protocol_version(70),                 /* fatal */
-           insufficient_security(71),            /* fatal */
-           internal_error(80),                   /* fatal */
-           inappropriate_fallback(86),           /* fatal */
-           user_canceled(90),
-           no_renegotiation_RESERVED(100),       /* fatal */
-           missing_extension(109),               /* fatal */
-           unsupported_extension(110),           /* fatal */
-           certificate_unobtainable(111),
-           unrecognized_name(112),
-           bad_certificate_status_response(113), /* fatal */
-           bad_certificate_hash_value(114),      /* fatal */
-           unknown_psk_identity(115),
-           (255)
-       } AlertDescription;
-
-       struct {
-           AlertLevel level;
-           AlertDescription description;
-       } Alert;
-
-##  Closure Alerts
-
-The client and the server must share knowledge that the connection is ending in
-order to avoid a truncation attack. Failure to properly close a connection does
-not prohibit a session from being resumed.
-
-close_notify
-: This alert notifies the recipient that the sender will not send
-  any more messages on this connection. Any data received after a
-  closure MUST be ignored.
-
-end_of_early_data
-: This alert is sent by the client to indicate that all 0-RTT
-  application_data messages have been transmitted (or none will
-  be sent at all) and that this is the end of the flight. This
-  alert MUST be at the warning level. Servers MUST NOT send this
-  alert and clients receiving it MUST terminate the connection
-  with an "unexpected_message" alert.
-
-user_canceled
-: This alert notifies the recipient that the sender is canceling the
-  handshake for some reason unrelated to a protocol failure. If a user
-  cancels an operation after the handshake is complete, just closing the
-  connection by sending a "close_notify" is more appropriate. This alert
-  SHOULD be followed by a "close_notify". This alert is generally a warning.
-{:br }
-
-Either party MAY initiate a close by sending a "close_notify" alert. Any data
-received after a closure alert is ignored. If a transport-level close is
-received prior to a "close_notify", the receiver cannot know that all the
-data that was sent has been received.
-
-Each party MUST send a "close_notify" alert before closing the write side
-of the connection, unless some other fatal alert has been transmitted. The
-other party MUST respond with a "close_notify" alert of its own and close down
-the connection immediately, discarding any pending writes. The initiator of the
-close need not wait for the responding "close_notify" alert before closing the
-read side of the connection.
-
-If the application protocol using TLS provides that any data may be carried
-over the underlying transport after the TLS connection is closed, the TLS
-implementation must receive the responding "close_notify" alert before indicating
-to the application layer that the TLS connection has ended. If the application
-protocol will not transfer any additional data, but will only close the
-underlying transport connection, then the implementation MAY choose to close
-the transport without waiting for the responding "close_notify". No part of this
-standard should be taken to dictate the manner in which a usage profile for TLS
-manages its data transport, including when connections are opened or closed.
-
-Note: It is assumed that closing a connection reliably delivers pending data
-before destroying the transport.
-
-##  Error Alerts
-
-Error handling in the TLS Handshake Protocol is very simple. When an error is
-detected, the detecting party sends a message to its peer. Upon
-transmission or receipt of a fatal alert message, both parties immediately
-close the connection. Servers and clients MUST forget keys, and secrets
-associated with a failed connection. Stateful implementations of session
-tickets (as in many clients) SHOULD discard tickets associated with failed
-connections.
-
-Whenever an implementation encounters a condition which is defined as a fatal
-alert, it MUST send the appropriate alert prior to closing the connection. For
-all errors where an alert level is not explicitly specified, the sending party
-MAY determine at its discretion whether to treat this as a fatal error or not.
-If the implementation chooses to send an alert but intends to close the
-connection immediately afterwards, it MUST send that alert at the fatal alert
-level.
-
-If an alert with a level of warning is sent and received, generally the
-connection can continue normally. If the receiving party decides not to proceed
-with the connection (e.g., after having received a "user_canceled" alert that
-it is not willing to accept), it SHOULD send a fatal alert to terminate the
-connection. Given this, the sending peer cannot, in general, know how the
-receiving party will behave. Therefore, warning alerts are not very useful when
-the sending party wants to continue the connection, and thus are sometimes
-omitted. For example, if a party decides to accept an expired certificate
-(perhaps after confirming this with the user) and wants to continue the
-connection, it would not generally send a "certificate_expired" alert.
-
-The following error alerts are defined:
-
-unexpected_message
-: An inappropriate message was received.  This alert is always fatal
-  and should never be observed in communication between proper
-  implementations.
-
-bad_record_mac
-: This alert is returned if a record is received which cannot be
-  deprotected. Because AEAD algorithms combine decryption and
-  verification, this alert is used for all deprotection failures.
-  This alert is always fatal and should never be observed in
-  communication between proper implementations (except when messages
-  were corrupted in the network).
-
-record_overflow
-: A TLSCiphertext record was received that had a length more than
-  2^14 + 256 bytes, or a record decrypted to a TLSPlaintext record
-  with more than 2^14 bytes.  This alert is always fatal and
-  should never be observed in communication between proper
-  implementations (except when messages were corrupted in the
-  network).
-
-handshake_failure
-: Reception of a "handshake_failure" alert message indicates that the
-  sender was unable to negotiate an acceptable set of security
-  parameters given the options available.
-  This alert is always fatal.
-
-bad_certificate
-: A certificate was corrupt, contained signatures that did not
-  verify correctly, etc.
-
-unsupported_certificate
-: A certificate was of an unsupported type.
-
-certificate_revoked
-: A certificate was revoked by its signer.
-
-certificate_expired
-: A certificate has expired or is not currently valid.
-
-certificate_unknown
-: Some other (unspecified) issue arose in processing the
-  certificate, rendering it unacceptable.
-
-illegal_parameter
-: A field in the handshake was out of range or inconsistent with
-  other fields.  This alert is always fatal.
-
-unknown_ca
-: A valid certificate chain or partial chain was received, but the
-  certificate was not accepted because the CA certificate could not
-  be located or couldn't be matched with a known, trusted CA.  This
-  alert is always fatal.
-
-access_denied
-: A valid certificate or PSK was received, but when access control was
-  applied, the sender decided not to proceed with negotiation.  This
-  alert is always fatal.
-
-decode_error
-: A message could not be decoded because some field was out of the
-  specified range or the length of the message was incorrect.  This
-  alert is always fatal and should never be observed in
-  communication between proper implementations (except when messages
-  were corrupted in the network).
-
-decrypt_error
-: A handshake cryptographic operation failed, including being unable
-  to correctly verify a signature or validate a Finished message.
-  This alert is always fatal.
-
-protocol_version
-: The protocol version the peer has attempted to negotiate is
-  recognized but not supported.  (For example, old protocol versions
-  might be avoided for security reasons.)  This alert is always
-  fatal.
-
-insufficient_security
-: Returned instead of "handshake_failure" when a negotiation has
-  failed specifically because the server requires ciphers more
-  secure than those supported by the client.  This alert is always
-  fatal.
-
-internal_error
-: An internal error unrelated to the peer or the correctness of the
-  protocol (such as a memory allocation failure) makes it impossible
-  to continue.  This alert is always fatal.
-
-inappropriate_fallback
-: Sent by a server in response to an invalid connection retry attempt
-  from a client. (see [RFC7507]) This alert is always fatal.
-
-missing_extension
-: Sent by endpoints that receive a hello message not containing an
-  extension that is mandatory to send for the offered TLS version.
-  This message is always fatal.
-[[TODO: IANA Considerations.]]
-
-unsupported_extension
-: Sent by endpoints receiving any hello message containing an extension
-  known to be prohibited for inclusion in the given hello message, including
-  any extensions in a ServerHello not first offered in the corresponding
-  ClientHello. This alert is always fatal.
-
-certificate_unobtainable
-: Sent by servers when unable to obtain a certificate from a URL
-  provided by the client via the "client_certificate_url" extension
-  [RFC6066].
-
-unrecognized_name
-: Sent by servers when no server exists identified by the name
-  provided by the client via the "server_name" extension
-  [RFC6066].
-
-bad_certificate_status_response
-: Sent by clients when an invalid or unacceptable OCSP response is
-  provided by the server via the "status_request" extension
-  [RFC6066]. This alert is always fatal.
-
-bad_certificate_hash_value
-: Sent by servers when a retrieved object does not have the correct hash
-  provided by the client via the "client_certificate_url" extension
-  [RFC6066]. This alert is always fatal.
-
-unknown_psk_identity
-: Sent by servers when a PSK cipher suite is selected but no
- acceptable PSK identity is provided by the client. Sending this alert
- is OPTIONAL; servers MAY instead choose to send a "decrypt_error"
- alert to merely indicate an invalid PSK identity.
-{:br }
-
-New Alert values are assigned by IANA as described in {{iana-considerations}}.
-
 
 #  Handshake Protocol
 
@@ -3530,6 +2988,549 @@ the value is computed as:
 
     HKDF-Expand-Label(exporter_secret,
                       label, context_value, key_length)
+
+
+#  The TLS Record Protocol
+
+The TLS Record Protocol takes messages to be transmitted, fragments
+the data into manageable blocks, protects the records, and transmits
+the result. Received data is decrypted and verified, reassembled, and
+then delivered to higher-level clients.
+
+TLS records are typed, which allows multiple higher level protocols to
+be multiplexed over the same record layer. This document specifies
+three content types: handshake, application data, and alert.
+Implementations MUST NOT send record types not defined in this
+document unless negotiated by some extension. If a TLS implementation
+receives an unexpected record type, it MUST send an
+"unexpected_message" alert.  New record content type values are
+assigned by IANA in the TLS Content Type Registry as described in
+{{iana-considerations}}.
+
+## Record Layer
+
+The TLS record layer receives uninterpreted data from higher layers in
+non-empty blocks of arbitrary size.
+
+The record layer fragments information blocks into TLSPlaintext records
+carrying data in chunks of 2^14 bytes or less. Message boundaries are
+not preserved in the record layer (i.e., multiple messages of the same
+ContentType MAY be coalesced into a single TLSPlaintext record, or a single
+message MAY be fragmented across several records).
+Alert messages ({{alert-protocol}}) MUST NOT be fragmented across records.
+
+%%% Record Layer
+
+       struct {
+           uint8 major;
+           uint8 minor;
+       } ProtocolVersion;
+
+       enum {
+           invalid_RESERVED(0),
+           change_cipher_spec_RESERVED(20),
+           alert(21),
+           handshake(22),
+           application_data(23)
+           (255)
+       } ContentType;
+
+       struct {
+           ContentType type;
+           ProtocolVersion record_version = { 3, 1 };    /* TLS v1.x */
+           uint16 length;
+           opaque fragment[TLSPlaintext.length];
+       } TLSPlaintext;
+
+type
+: The higher-level protocol used to process the enclosed fragment.
+
+record_version
+: The protocol version the current record is compatible with.
+  This value MUST be set to { 3, 1 } for all records.
+  This field is deprecated and MUST be ignored for all purposes.
+
+length
+: The length (in bytes) of the following TLSPlaintext.fragment. The
+  length MUST NOT exceed 2^14.
+
+fragment
+: The application data.  This data is transparent and treated as an
+  independent block to be dealt with by the higher-level protocol
+  specified by the type field.
+{:br }
+
+This document describes TLS Version 1.3, which uses the version { 3, 4 }.
+The version value 3.4 is historical, deriving from the use of { 3, 1 }
+for TLS 1.0 and { 3, 0 } for SSL 3.0. In order to maximize backwards
+compatibility, the record layer version identifies as simply TLS 1.0.
+Endpoints supporting other versions negotiate the version to use
+by following the procedure and requirements in {{backward-compatibility}}.
+
+Implementations MUST NOT send zero-length fragments of Handshake or
+Alert types, even if those fragments contain padding. Zero-length
+fragments of Application data MAY be sent as they are potentially
+useful as a traffic analysis countermeasure.
+
+When record protection has not yet been engaged, TLSPlaintext
+structures are written directly onto the wire. Once record protection
+has started, TLSPlaintext records are protected and sent as
+described in the following section.
+
+## Record Payload Protection
+
+The record protection functions translate a TLSPlaintext structure into a
+TLSCiphertext. The deprotection functions reverse the process. In TLS 1.3
+as opposed to previous versions of TLS, all ciphers are modeled as
+"Authenticated Encryption with Additional Data" (AEAD) {{RFC5116}}.
+AEAD functions provide a unified encryption and authentication
+operation which turns plaintext into authenticated ciphertext and
+back again. Each encrypted record consists of a plaintext header followed
+by an encrypted body, which itself contains a type and optional padding.
+
+%%% Record Layer
+       struct {
+          opaque content[TLSPlaintext.length];
+          ContentType type;
+          uint8 zeros[length_of_padding];
+       } TLSInnerPlaintext;
+       
+       struct {
+           ContentType opaque_type = application_data(23); /* see fragment.type */
+           ProtocolVersion record_version = { 3, 1 };    /* TLS v1.x */
+           uint16 length;
+           opaque encrypted_record[length];
+       } TLSCiphertext;
+
+content
+: The cleartext of TLSPlaintext.fragment.
+
+type
+: The content type of the record.
+
+zeros
+: An arbitrary-length run of zero-valued bytes may
+  appear in the cleartext after the type field.  This provides an
+  opportunity for senders to pad any TLS record by a chosen amount as
+  long as the total stays within record size limits.  See
+  {{record-padding}} for more details.
+
+opaque_type
+: The outer opaque_type field of a TLSCiphertext record is always set to the
+  value 23 (application_data) for outward compatibility with
+  middleboxes accustomed to parsing previous versions of TLS.  The
+  actual content type of the record is found in fragment.type after
+  decryption.
+
+record_version
+: The record_version field is identical to TLSPlaintext.record_version and is always { 3, 1 }.
+  Note that the handshake protocol including the ClientHello and ServerHello messages authenticates
+  the protocol version, so this value is redundant.
+
+length
+: The length (in bytes) of the following TLSCiphertext.fragment, which
+  is the sum of the lengths of the content and the padding, plus one
+  for the inner content type. The length MUST NOT exceed 2^14 + 256.
+  An endpoint that receives a record that exceeds this length MUST
+  generate a fatal "record_overflow" alert.
+
+encrypted_record
+: The AEAD encrypted form of the serialized TLSInnerPlaintext structure.
+{:br }
+
+
+AEAD ciphers take as input a single key, a nonce, a plaintext, and "additional
+data" to be included in the authentication check, as described in Section 2.1
+of {{RFC5116}}. The key is either the client_write_key or the server_write_key,
+the nonce is derived from the sequence number (see {{nonce}}) and the
+client_write_iv or server_write_iv, and the additional data input is empty
+(zero length).  Derivation of traffic keys is defined in {{traffic-key-calculation}}.
+
+The plaintext is the concatenation of TLSPlaintext.fragment, 
+TLSPlaintext.type, and any padding bytes (zeros).
+
+The AEAD output consists of the ciphertext output by the AEAD
+encryption operation. The length of the plaintext is greater than
+TLSPlaintext.length due to the inclusion of TLSPlaintext.type and
+however much padding is supplied by the sender.  The length of the
+AEAD output will generally be larger than the plaintext, but by an
+amount that varies with the AEAD cipher. Since the ciphers might
+incorporate padding, the amount of overhead could vary with different
+lengths of plaintext. Symbolically,
+
+       AEADEncrypted =
+           AEAD-Encrypt(write_key, nonce, plaintext of fragment)
+
+In order to decrypt and verify, the cipher takes as input the key,
+nonce, and the AEADEncrypted value. The output is either the plaintext
+or an error indicating that the decryption failed. There is no
+separate integrity check. That is:
+
+       plaintext of fragment =
+           AEAD-Decrypt(write_key, nonce, AEADEncrypted)
+
+If the decryption fails, a fatal "bad_record_mac" alert MUST be generated.
+
+An AEAD cipher MUST NOT produce an expansion of greater than 255
+bytes.  An endpoint that receives a record from its peer with
+TLSCipherText.length larger than 2^14 + 256 octets MUST generate a
+fatal "record_overflow" alert.  This limit is derived from the maximum
+TLSPlaintext length of 2^14 octets + 1 octet for ContentType + the
+maximum AEAD expansion of 255 octets.
+
+
+## Per-Record Nonce {#nonce}
+
+A 64-bit sequence number is maintained separately for reading and writing
+records.  Each sequence number is set to zero at the beginning of a connection
+and whenever the key is changed.
+
+The sequence number is incremented after reading or writing each record.
+The first record transmitted under a particular set of traffic keys
+record key MUST use sequence number 0.
+
+Sequence numbers do not wrap.  If a TLS implementation would need to
+wrap a sequence number, it MUST either rekey ({{key-update}}) or
+terminate the connection.
+
+The length of the per-record nonce (iv_length) is set to max(8 bytes,
+N_MIN) for the AEAD algorithm (see {{RFC5116}} Section 4). An AEAD
+algorithm where N_MAX is less than 8 bytes MUST NOT be used with TLS.
+The per-record nonce for the AEAD construction is formed as follows:
+
+  1. The 64-bit record sequence number is padded to the left with zeroes
+     to iv_length.
+
+  2. The padded sequence number is XORed with the static client_write_iv
+     or server_write_iv, depending on the role.
+
+The resulting quantity (of length iv_length) is used as the per-record
+nonce.
+
+Note: This is a different construction from that in TLS 1.2, which
+specified a partially explicit nonce.
+
+
+## Record Padding
+
+All encrypted TLS records can be padded to inflate the size of the
+TLSCipherText.  This allows the sender to hide the size of the
+traffic from an observer.
+
+When generating a TLSCiphertext record, implementations MAY choose to
+pad.  An unpadded record is just a record with a padding length of
+zero.  Padding is a string of zero-valued bytes appended
+to the ContentType field before encryption.  Implementations MUST set
+the padding octets to all zeros before encrypting.
+
+Application Data records may contain a zero-length fragment.content if
+the sender desires.  This permits generation of plausibly-sized cover
+traffic in contexts where the presence or absence of activity may be
+sensitive.  Implementations MUST NOT send Handshake or Alert records
+that have a zero-length fragment.content.
+
+The padding sent is automatically verified by the record protection
+mechanism: Upon successful decryption of a TLSCiphertext.fragment,
+the receiving implementation scans the field from the end toward the
+beginning until it finds a non-zero octet. This non-zero octet is the
+content type of the message.
+This padding scheme was selected because it allows padding of any encrypted
+TLS record by an arbitrary size (from zero up to TLS record size
+limits) without introducing new content types.  The design also
+enforces all-zero padding octets, which allows for quick detection of
+padding errors.
+
+Implementations MUST limit their scanning to the cleartext returned
+from the AEAD decryption.  If a receiving implementation does not find
+a non-zero octet in the cleartext, it should treat the record as
+having an unexpected ContentType, sending an "unexpected_message"
+alert.
+
+The presence of padding does not change the overall record size
+limitations -- the full fragment plaintext may not exceed 2^14 octets.
+
+Selecting a padding policy that suggests when and how much to pad is a
+complex topic, and is beyond the scope of this specification. If the
+application layer protocol atop TLS permits padding, it may be
+preferable to pad application_data TLS records within the application
+layer.  Padding for encrypted handshake and alert TLS records must
+still be handled at the TLS layer, though.  Later documents may define
+padding selection algorithms, or define a padding policy request
+mechanism through TLS extensions or some other means.
+
+
+#  Alert Protocol
+
+One of the content types supported by the TLS record layer is the alert type.
+Alert messages convey the severity of the message (warning or fatal) and a
+description of the alert. Alert messages with a level of fatal result in the
+immediate termination of the connection. In this case, other connections
+corresponding to the session may continue, but the session identifier MUST be
+invalidated, preventing the failed session from being used to establish new
+connections. Like other messages, alert messages are encrypted
+as specified by the current connection state.
+
+%%% Alert Messages
+
+       enum { warning(1), fatal(2), (255) } AlertLevel;
+
+       enum {
+           close_notify(0),
+           end_of_early_data(1),
+           unexpected_message(10),               /* fatal */
+           bad_record_mac(20),                   /* fatal */
+           decryption_failed_RESERVED(21),       /* fatal */
+           record_overflow(22),                  /* fatal */
+           decompression_failure_RESERVED(30),   /* fatal */
+           handshake_failure(40),                /* fatal */
+           no_certificate_RESERVED(41),          /* fatal */
+           bad_certificate(42),
+           unsupported_certificate(43),
+           certificate_revoked(44),
+           certificate_expired(45),
+           certificate_unknown(46),
+           illegal_parameter(47),                /* fatal */
+           unknown_ca(48),                       /* fatal */
+           access_denied(49),                    /* fatal */
+           decode_error(50),                     /* fatal */
+           decrypt_error(51),                    /* fatal */
+           export_restriction_RESERVED(60),      /* fatal */
+           protocol_version(70),                 /* fatal */
+           insufficient_security(71),            /* fatal */
+           internal_error(80),                   /* fatal */
+           inappropriate_fallback(86),           /* fatal */
+           user_canceled(90),
+           no_renegotiation_RESERVED(100),       /* fatal */
+           missing_extension(109),               /* fatal */
+           unsupported_extension(110),           /* fatal */
+           certificate_unobtainable(111),
+           unrecognized_name(112),
+           bad_certificate_status_response(113), /* fatal */
+           bad_certificate_hash_value(114),      /* fatal */
+           unknown_psk_identity(115),
+           (255)
+       } AlertDescription;
+
+       struct {
+           AlertLevel level;
+           AlertDescription description;
+       } Alert;
+
+##  Closure Alerts
+
+The client and the server must share knowledge that the connection is ending in
+order to avoid a truncation attack. Failure to properly close a connection does
+not prohibit a session from being resumed.
+
+close_notify
+: This alert notifies the recipient that the sender will not send
+  any more messages on this connection. Any data received after a
+  closure MUST be ignored.
+
+end_of_early_data
+: This alert is sent by the client to indicate that all 0-RTT
+  application_data messages have been transmitted (or none will
+  be sent at all) and that this is the end of the flight. This
+  alert MUST be at the warning level. Servers MUST NOT send this
+  alert and clients receiving it MUST terminate the connection
+  with an "unexpected_message" alert.
+
+user_canceled
+: This alert notifies the recipient that the sender is canceling the
+  handshake for some reason unrelated to a protocol failure. If a user
+  cancels an operation after the handshake is complete, just closing the
+  connection by sending a "close_notify" is more appropriate. This alert
+  SHOULD be followed by a "close_notify". This alert is generally a warning.
+{:br }
+
+Either party MAY initiate a close by sending a "close_notify" alert. Any data
+received after a closure alert is ignored. If a transport-level close is
+received prior to a "close_notify", the receiver cannot know that all the
+data that was sent has been received.
+
+Each party MUST send a "close_notify" alert before closing the write side
+of the connection, unless some other fatal alert has been transmitted. The
+other party MUST respond with a "close_notify" alert of its own and close down
+the connection immediately, discarding any pending writes. The initiator of the
+close need not wait for the responding "close_notify" alert before closing the
+read side of the connection.
+
+If the application protocol using TLS provides that any data may be carried
+over the underlying transport after the TLS connection is closed, the TLS
+implementation must receive the responding "close_notify" alert before indicating
+to the application layer that the TLS connection has ended. If the application
+protocol will not transfer any additional data, but will only close the
+underlying transport connection, then the implementation MAY choose to close
+the transport without waiting for the responding "close_notify". No part of this
+standard should be taken to dictate the manner in which a usage profile for TLS
+manages its data transport, including when connections are opened or closed.
+
+Note: It is assumed that closing a connection reliably delivers pending data
+before destroying the transport.
+
+##  Error Alerts
+
+Error handling in the TLS Handshake Protocol is very simple. When an error is
+detected, the detecting party sends a message to its peer. Upon
+transmission or receipt of a fatal alert message, both parties immediately
+close the connection. Servers and clients MUST forget keys, and secrets
+associated with a failed connection. Stateful implementations of session
+tickets (as in many clients) SHOULD discard tickets associated with failed
+connections.
+
+Whenever an implementation encounters a condition which is defined as a fatal
+alert, it MUST send the appropriate alert prior to closing the connection. For
+all errors where an alert level is not explicitly specified, the sending party
+MAY determine at its discretion whether to treat this as a fatal error or not.
+If the implementation chooses to send an alert but intends to close the
+connection immediately afterwards, it MUST send that alert at the fatal alert
+level.
+
+If an alert with a level of warning is sent and received, generally the
+connection can continue normally. If the receiving party decides not to proceed
+with the connection (e.g., after having received a "user_canceled" alert that
+it is not willing to accept), it SHOULD send a fatal alert to terminate the
+connection. Given this, the sending peer cannot, in general, know how the
+receiving party will behave. Therefore, warning alerts are not very useful when
+the sending party wants to continue the connection, and thus are sometimes
+omitted. For example, if a party decides to accept an expired certificate
+(perhaps after confirming this with the user) and wants to continue the
+connection, it would not generally send a "certificate_expired" alert.
+
+The following error alerts are defined:
+
+unexpected_message
+: An inappropriate message was received.  This alert is always fatal
+  and should never be observed in communication between proper
+  implementations.
+
+bad_record_mac
+: This alert is returned if a record is received which cannot be
+  deprotected. Because AEAD algorithms combine decryption and
+  verification, this alert is used for all deprotection failures.
+  This alert is always fatal and should never be observed in
+  communication between proper implementations (except when messages
+  were corrupted in the network).
+
+record_overflow
+: A TLSCiphertext record was received that had a length more than
+  2^14 + 256 bytes, or a record decrypted to a TLSPlaintext record
+  with more than 2^14 bytes.  This alert is always fatal and
+  should never be observed in communication between proper
+  implementations (except when messages were corrupted in the
+  network).
+
+handshake_failure
+: Reception of a "handshake_failure" alert message indicates that the
+  sender was unable to negotiate an acceptable set of security
+  parameters given the options available.
+  This alert is always fatal.
+
+bad_certificate
+: A certificate was corrupt, contained signatures that did not
+  verify correctly, etc.
+
+unsupported_certificate
+: A certificate was of an unsupported type.
+
+certificate_revoked
+: A certificate was revoked by its signer.
+
+certificate_expired
+: A certificate has expired or is not currently valid.
+
+certificate_unknown
+: Some other (unspecified) issue arose in processing the
+  certificate, rendering it unacceptable.
+
+illegal_parameter
+: A field in the handshake was out of range or inconsistent with
+  other fields.  This alert is always fatal.
+
+unknown_ca
+: A valid certificate chain or partial chain was received, but the
+  certificate was not accepted because the CA certificate could not
+  be located or couldn't be matched with a known, trusted CA.  This
+  alert is always fatal.
+
+access_denied
+: A valid certificate or PSK was received, but when access control was
+  applied, the sender decided not to proceed with negotiation.  This
+  alert is always fatal.
+
+decode_error
+: A message could not be decoded because some field was out of the
+  specified range or the length of the message was incorrect.  This
+  alert is always fatal and should never be observed in
+  communication between proper implementations (except when messages
+  were corrupted in the network).
+
+decrypt_error
+: A handshake cryptographic operation failed, including being unable
+  to correctly verify a signature or validate a Finished message.
+  This alert is always fatal.
+
+protocol_version
+: The protocol version the peer has attempted to negotiate is
+  recognized but not supported.  (For example, old protocol versions
+  might be avoided for security reasons.)  This alert is always
+  fatal.
+
+insufficient_security
+: Returned instead of "handshake_failure" when a negotiation has
+  failed specifically because the server requires ciphers more
+  secure than those supported by the client.  This alert is always
+  fatal.
+
+internal_error
+: An internal error unrelated to the peer or the correctness of the
+  protocol (such as a memory allocation failure) makes it impossible
+  to continue.  This alert is always fatal.
+
+inappropriate_fallback
+: Sent by a server in response to an invalid connection retry attempt
+  from a client. (see [RFC7507]) This alert is always fatal.
+
+missing_extension
+: Sent by endpoints that receive a hello message not containing an
+  extension that is mandatory to send for the offered TLS version.
+  This message is always fatal.
+[[TODO: IANA Considerations.]]
+
+unsupported_extension
+: Sent by endpoints receiving any hello message containing an extension
+  known to be prohibited for inclusion in the given hello message, including
+  any extensions in a ServerHello not first offered in the corresponding
+  ClientHello. This alert is always fatal.
+
+certificate_unobtainable
+: Sent by servers when unable to obtain a certificate from a URL
+  provided by the client via the "client_certificate_url" extension
+  [RFC6066].
+
+unrecognized_name
+: Sent by servers when no server exists identified by the name
+  provided by the client via the "server_name" extension
+  [RFC6066].
+
+bad_certificate_status_response
+: Sent by clients when an invalid or unacceptable OCSP response is
+  provided by the server via the "status_request" extension
+  [RFC6066]. This alert is always fatal.
+
+bad_certificate_hash_value
+: Sent by servers when a retrieved object does not have the correct hash
+  provided by the client via the "client_certificate_url" extension
+  [RFC6066]. This alert is always fatal.
+
+unknown_psk_identity
+: Sent by servers when a PSK cipher suite is selected but no
+ acceptable PSK identity is provided by the client. Sending this alert
+ is OPTIONAL; servers MAY instead choose to send a "decrypt_error"
+ alert to merely indicate an invalid PSK identity.
+{:br }
+
+New Alert values are assigned by IANA as described in {{iana-considerations}}.
 
 #  Mandatory Algorithms
 
