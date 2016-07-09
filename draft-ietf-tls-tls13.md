@@ -672,23 +672,6 @@ Finished message. Note that while the server may send application data
 prior to receiving the client's Authentication messages, any data sent at
 that point is, of course, being sent to an unauthenticated peer.
 
-[[TODO: Move this elsewhere?
-Note that higher layers should not be overly reliant on whether TLS always
-negotiates the strongest possible connection between two endpoints. There are a
-number of ways in which a man-in-the-middle attacker can attempt to make two
-entities drop down to the least secure method they support
-(i.e., perform a downgrade attack). The TLS protocol has
-been designed to minimize this risk, but there are still attacks available: for
-example, an attacker could block access to the port a secure service runs on,
-or attempt to get the peers to negotiate an unauthenticated connection. The
-fundamental rule is that higher levels must be cognizant of what their security
-requirements are and never transmit information over a channel less secure than
-what they require. The TLS protocol is secure in that any cipher suite offers
-its promised level of security: if you negotiate AES-GCM {{GCM}} with
-a 255-bit ECDHE key exchange with a host whose certificate
-chain you have verified, you can expect that to be reasonably "secure"
-against algorithmic attacks, at least in the year 2015.]]
-
 ## Incorrect DHE Share
 
 If the client has not provided an appropriate "key_share" extension (e.g. it
