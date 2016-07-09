@@ -1378,7 +1378,8 @@ selected_group
 The server_version, cipher_suite, and extensions fields have the
 same meanings as their corresponding values in the ServerHello. The
 server SHOULD send only the extensions necessary for the client to
-generate a correct ClientHello pair. As with ServerHello, a
+generate a correct ClientHello pair (currently no such extensions
+exist.) As with ServerHello, a
 HelloRetryRequest MUST NOT contain any extensions that were not first
 offered by the client in its ClientHello.
 
@@ -1455,10 +1456,10 @@ ServerHello messages, the extensions MAY appear in any order. There MUST NOT be
 more than one extension of the same type.
 
 Finally, note that extensions can be sent both when starting a new session and
-when requesting session resumption or 0-RTT mode. Indeed, a client that requests session
+when in resumption-PSK mode. Indeed, a client that requests session
 resumption does not in general know whether the server will accept this
-request, and therefore it SHOULD send the same extensions as it would send if
-it were not attempting resumption.
+request, and therefore it SHOULD send the same extensions as it would send
+normally.
 
 In general, the specification of each extension type needs to describe the
 effect of the extension both during full handshake and session resumption. Most
@@ -1488,15 +1489,6 @@ be taken into account when designing new extensions:
   Designers and implementors should be aware of the fact that until the
   handshake has been authenticated, active attackers can modify messages and
   insert, remove, or replace extensions.
-
-- It would be technically possible to use extensions to change major aspects
-  of the design of TLS; for example, the design of cipher suite negotiation.
-  This is not recommended; it would be more appropriate to define a new version
-  of TLS --- particularly since the TLS handshake algorithms have specific
-  protection against version rollback attacks based on the version number, and
-  the possibility of version rollback should be a significant consideration in
-  any major design change.
-
 
 ###  Cookie
 
