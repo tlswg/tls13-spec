@@ -1904,7 +1904,7 @@ generate a fatal "unknown_psk_identity" alert and close the connection.
 
 Note that although 0-RTT data is encrypted with the first PSK identity, the
 server may fall back to 1-RTT and select a different PSK identity if multiple
-are offered.
+identities are offered.
 
 
 ### OCSP Status Extensions
@@ -2029,9 +2029,8 @@ send the ServerHello, rather than waiting for the client's
 
 #### Replay Properties {#replay-time}
 
-As noted in {{zero-rtt-data}}, TLS provides only a limited
-inter-connection mechanism for replay protection for data sent by the
-client in the first flight.
+As noted in {{zero-rtt-data}}, TLS provides a limited mechanism for
+replay protection for data sent by the client in the first flight.
 
 The "obfuscated_ticket_age" parameter in the client's "early_data" extension SHOULD be used by
 servers to limit the time over which the first flight might be
@@ -2050,9 +2049,10 @@ time prior to sending the NewSessionTicket message and account for
 that in the value it saves.
 
 To properly validate the ticket age, a server needs to save at least two items:
-* The time that the server generated the session ticket and the estimated round
+
+- The time that the server generated the session ticket and the estimated round
   trip time can be added together to form a baseline time.
-* The "ticket_age_add" parameter from the NewSessionTicket is needed to recover
+- The "ticket_age_add" parameter from the NewSessionTicket is needed to recover
   the ticket age from the "obfuscated_ticket_age" parameter.
 
 There are several potential sources of error that make an exact
