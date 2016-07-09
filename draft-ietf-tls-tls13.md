@@ -1371,35 +1371,7 @@ padding selection algorithms, or define a padding policy request
 mechanism through TLS extensions or some other means.
 
 
-#  The TLS Handshaking Protocols
-
-TLS has two subprotocols that are used to allow peers to agree upon security
-parameters for the record layer, to authenticate themselves, to instantiate
-negotiated security parameters, and to report error conditions to each other.
-
-The TLS Handshake Protocol is responsible for negotiating a session, which consists
-of the following items:
-
-peer certificate
-: X509v3 {{RFC5280}} certificate of the peer.  This element of the state
-  may be null.
-
-cipher spec
-: Specifies the authentication and key establishment algorithms,
-  the hash for use with HKDF to generate keying
-  material, and the record protection algorithm
-
-resumption master secret
-: a secret shared between the client and server that can be used
-  as a pre-shared symmetric key (PSK) in future connections.
-{:br }
-
-These items are then used to create security parameters for use by the record
-layer when protecting application data. Many connections can be instantiated
-using the same session using a PSK established in an initial handshake.
-
-
-##  Alert Protocol
+#  Alert Protocol
 
 One of the content types supported by the TLS record layer is the alert type.
 Alert messages convey the severity of the message (warning or fatal) and a
@@ -1456,7 +1428,7 @@ as specified by the current connection state.
            AlertDescription description;
        } Alert;
 
-###  Closure Alerts
+##  Closure Alerts
 
 The client and the server must share knowledge that the connection is ending in
 order to avoid a truncation attack. Failure to properly close a connection does
@@ -1508,7 +1480,7 @@ manages its data transport, including when connections are opened or closed.
 Note: It is assumed that closing a connection reliably delivers pending data
 before destroying the transport.
 
-###  Error Alerts
+##  Error Alerts
 
 Error handling in the TLS Handshake Protocol is very simple. When an error is
 detected, the detecting party sends a message to its peer. Upon
@@ -1673,7 +1645,7 @@ unknown_psk_identity
 New Alert values are assigned by IANA as described in {{iana-considerations}}.
 
 
-##  Handshake Protocol
+#  Handshake Protocol
 
 The TLS Handshake Protocol is one of the defined higher-level clients of the
 TLS Record Protocol. This protocol is used to negotiate the secure attributes
@@ -1726,13 +1698,13 @@ messages can be omitted, however.
 New handshake message types are assigned by IANA as described in
 {{iana-considerations}}.
 
-### Key Exchange Messages
+## Key Exchange Messages
 
 The key exchange messages are used to exchange security capabilities
 between the client and server and to establish the traffic keys used to protect
 the handshake and the data.
 
-####  Client Hello
+###  Client Hello
 
 When this message will be sent:
 
@@ -1843,7 +1815,7 @@ formats; if not, then it MUST send a fatal "decode_error" alert.
 After sending the ClientHello message, the client waits for a ServerHello
 or HelloRetryRequest message.
 
-####  Server Hello
+###  Server Hello
 
 When this message will be sent:
 
@@ -1929,7 +1901,7 @@ Note: This is an update to TLS 1.2 so in practice many TLS 1.2 clients
 and servers will not behave as specified above.
 
 
-####  Hello Retry Request
+###  Hello Retry Request
 
 When this message will be sent:
 
@@ -1986,7 +1958,7 @@ the selected CipherSuite and NamedGroup match that supplied in
 the HelloRetryRequest. If either of these values differ, the client
 MUST abort the connection with a fatal "handshake_failure" alert.
 
-###  Hello Extensions
+##  Hello Extensions
 
 The extension format is:
 
@@ -2079,7 +2051,7 @@ be taken into account when designing new extensions:
   any major design change.
 
 
-####  Cookie
+###  Cookie
 
 %%% Cookie Extension
 
@@ -2106,7 +2078,7 @@ new ClientHello, the client MUST echo the value of the extension.
 Clients MUST NOT use cookies in subsequent connections.
 
 
-####  Signature Algorithms
+###  Signature Algorithms
 
 The client uses the "signature_algorithms" extension to indicate to the server
 which signature algorithms may be used in digital signatures.
@@ -2231,7 +2203,7 @@ willing to negotiate TLS 1.2 MUST behave in accordance with the requirements of
 * ecdsa_secp256r1_sha256, etc., align with TLS 1.2's ECDSA hash/signature pairs.
   However, the old semantics did not constrain the signing curve.
 
-#### Negotiated Groups
+### Negotiated Groups
 
 When sent by the client, the "supported_groups" extension indicates
 the named groups which the client supports, ordered from most preferred
@@ -2314,7 +2286,7 @@ subsequent connections.
 
 
 
-#### Key Share
+### Key Share
 
 The "key_share" extension contains the endpoint's cryptographic parameters
 for non-PSK key establishment methods (currently DHE or ECDHE).
@@ -2402,7 +2374,7 @@ the server MUST NOT negotiate an (EC)DHE cipher suite.
 [[TODO: Recommendation about what the client offers.
 Presumably which integer DH groups and which curves.]]
 
-#####  Diffie-Hellman Parameters {#ffdhe-param}
+####  Diffie-Hellman Parameters {#ffdhe-param}
 
 Diffie-Hellman {{DH}} parameters for both clients and servers are encoded in
 the opaque key_exchange field of a KeyShareEntry in a KeyShare structure.
@@ -2413,7 +2385,7 @@ encoded as a big-endian integer, padded with zeros to the size of p.
 Note: For a given Diffie-Hellman group, the padding results in all public keys
 having the same length.
 
-##### ECDHE Parameters {#ecdhe-param}
+#### ECDHE Parameters {#ecdhe-param}
 
 ECDHE parameters for both clients and servers are encoded in the
 the opaque key_exchange field of a KeyShareEntry in a KeyShare structure.
@@ -2436,7 +2408,7 @@ Note: Versions of TLS prior to 1.3 permitted point negotiation;
 TLS 1.3 removes this feature in favor of a single point format
 for each curve.
 
-#### Pre-Shared Key Extension
+### Pre-Shared Key Extension
 
 The "pre_shared_key" extension is used to indicate the identity of the
 pre-shared key to be used with a given handshake in association
@@ -2498,7 +2470,7 @@ server may fall back to 1-RTT and select a different PSK identity if multiple
 are offered.
 
 
-#### OCSP Status Extensions
+### OCSP Status Extensions
 
 {{!RFC6066}} and {{!RFC6961}} provide extensions to negotiate the server
 sending OCSP responses to the client. In TLS 1.2 and below, the
@@ -2516,7 +2488,7 @@ the existing behavior for SignedCertificateTimestamps {{?RFC6962}},
 and is more easily extensible in the handshake state machine.
 
 
-#### Early Data Indication
+### Early Data Indication
 
 When PSK resumption is used, the client can send application data
 in its first flight of messages. If the client opts to do so, it MUST
@@ -2609,7 +2581,7 @@ an accepted "early_data" extension MUST produce a fatal
 
 [[TODO: How does the client behave if the indication is rejected.]]
 
-##### Processing Order
+#### Processing Order
 
 Clients are permitted to "stream" 0-RTT data until they
 receive the server's Finished, only then sending the "end_of_early_data"
@@ -2618,7 +2590,7 @@ servers MUST process the client's Finished and then immediately
 send the ServerHello, rather than waiting for the client's
 "end_of_early_data" alert.
 
-##### Replay Properties {#replay-time}
+#### Replay Properties {#replay-time}
 
 As noted in {{zero-rtt-data}}, TLS provides only a limited
 inter-connection mechanism for replay protection for data sent by the
@@ -2659,7 +2631,7 @@ is advisable.  However, any allowance also increases the opportunity
 for replay.  In this case, it is better to reject early data than to
 risk greater exposure to replay attacks.
 
-####  Encrypted Extensions
+###  Encrypted Extensions
 
 When this message will be sent:
 
@@ -2697,7 +2669,7 @@ extensions
 : A list of extensions.
 {:br }
 
-####  Certificate Request
+###  Certificate Request
 
 When this message will be sent:
 
@@ -2790,7 +2762,7 @@ certificate_extensions
 Note: It is a fatal "handshake_failure" alert for an anonymous server to request
 client authentication.
 
-### Authentication Messages
+## Authentication Messages
 
 As discussed in {{protocol-overview}}, TLS uses a common
 set of messages for authentication, key confirmation, and handshake
@@ -2843,7 +2815,7 @@ for each scenario:
 Note: The Handshake Context for the last three rows does not include any 0-RTT
   handshake messages, regardless of whether 0-RTT is used.
 
-####  Certificate
+###  Certificate
 
 When this message will be sent:
 
@@ -2906,7 +2878,7 @@ send an empty certificate list if it does not have an appropriate
 certificate to send in response to the server's authentication
 request.
 
-##### Server Certificate Selection
+#### Server Certificate Selection
 
 The following rules apply to the certificates sent by the server:
 
@@ -2957,7 +2929,7 @@ TLS protocol, they will imply the certificate format and the required encoded
 keying information.
 
 
-##### Client Certificate Selection
+#### Client Certificate Selection
 
 The following rules apply to certificates sent by the client:
 
@@ -2983,7 +2955,7 @@ Note that, as with the server certificate, there are certificates that use
 algorithm combinations that cannot be currently used with TLS.
 
 
-##### Receiving a Certificate Message
+#### Receiving a Certificate Message
 
 In general, detailed certificate validation procedures are out of scope for
 TLS (see {{RFC5280}}). This section provides TLS-specific requirements.
@@ -3014,7 +2986,7 @@ MAY be signed using a different signature algorithm (for instance,
 an RSA key signed with an ECDSA key).
 
 
-####  Certificate Verify
+###  Certificate Verify
 
 When this message will be sent:
 
@@ -3118,7 +3090,7 @@ authentication with pure PSK modes (i.e., those where the
 PSK was not derived from a previous non-PSK handshake).
 
 
-####  Finished
+###  Finished
 
 When this message will be sent:
 
@@ -3175,13 +3147,13 @@ Hash used for the handshake.
 Note: Alerts and any other record types are not handshake messages
 and are not included in the hash computations.
 
-### Post-Handshake Messages
+## Post-Handshake Messages
 
 TLS also allows other messages to be sent after the main handshake.
 These messages use a handshake content type and are encrypted under the application
 traffic key.
 
-#### New Session Ticket Message {#NewSessionTicket}
+### New Session Ticket Message {#NewSessionTicket}
 
 At any time after the server has received the client Finished message, it MAY send
 a NewSessionTicket message. This message creates a pre-shared key
@@ -3282,7 +3254,7 @@ the cipher suite negotiated for this connection. If no flags are set
 that the client recognizes, it MUST ignore the ticket.
 
 
-#### Post-Handshake Authentication
+### Post-Handshake Authentication
 
 The server is permitted to request client authentication at any time
 after the handshake has completed by sending a CertificateRequest
@@ -3301,7 +3273,7 @@ certificate_request_context value allows the server to disambiguate
 the responses).
 
 
-#### Key and IV Update {#key-update}
+### Key and IV Update {#key-update}
 
      struct {} KeyUpdate;
 
