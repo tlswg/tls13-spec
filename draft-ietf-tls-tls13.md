@@ -2553,7 +2553,7 @@ Structure of this message:
 %%% Authentication Messages
 
        struct {
-           opaque verify_data[verify_data_length];
+           opaque verify_data[Hash.length];
        } Finished;
 
 
@@ -2561,10 +2561,13 @@ The verify_data value is computed as follows:
 
        verify_data =
            HMAC(finished_key, Hash(
-                  Handshake Context + Certificate* + CertificateVerify*
-               ) + Hash(resumption_context)
-               )
-
+                                   Handshake Context +
+                                   Certificate* +
+                                   CertificateVerify*
+                              ) +
+                              Hash(resumption_context)
+           )
+ 
        * Only included if present.
 
 Where HMAC {{RFC2104}} uses the Hash algorithm for the handshake.
