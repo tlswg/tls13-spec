@@ -4230,7 +4230,7 @@ the handshake is complete, this does not compromise the security of the
 session key (See {{DOW92}}).
 
 Protection of endpoint identities.
-The server's identity (certificate) should be protected against passive
+: The server's identity (certificate) should be protected against passive
 attackers. The client's identity should be protected against both passive
 and active attackers.
 {:br}
@@ -4241,9 +4241,9 @@ establishment of a unique, secret, shared, key established by an
 the handshake transcript, as well as tied to the server's identity by
 a MAC. If the client is authenticated by a certificate, it also signs
 over the handshake transcript and provides a MAC tied to both
-identities. {{SIGMA}} provides an overview of the analysis of this
-type of key exchange protocol. If fresh (EC)DHE keys are used for each
-connection, then the output keys are forward secret.
+identities. {{SIGMA}} describes of the analysis of this type of key
+exchange protocol. If fresh (EC)DHE keys are used for each connection,
+then the output keys are forward secret.
 
 The PSK and resumption-PSK modes bootstrap from a long-term shared
 secret into a unique per-connection short-term session key. This
@@ -4263,7 +4263,9 @@ As soon as the client and the server have exchanged enough information
 to establish shared keys, the remainder of the handshake is encrypted,
 thus providing protection against passive attackers. Because the server
 authenticates before the client, the client can ensure that it only
-reveals its identity to an authentic server.
+reveals its identity to an authentic server. Note that implementations
+must use the provided record padding mechanism during the handshake
+to avoid leaking information about the identities due to length.
 
 The 0-RTT mode of operation generally provides the same security
 properties as 1-RTT data, with the two exceptions that the 0-RTT
@@ -4315,7 +4317,7 @@ Informally, TLS 1.3 provides these properties by AEAD-protecting the
 plaintext with a strong key. AEAD encryption protects confidentiality
 and integrity for the data. Non-replayability is provided by using
 a separate nonce for each record, with the nonce being derived from
-the record sequence number (Section {{nonce}}), with the sequence
+the record sequence number ({{nonce}}), with the sequence
 number being maintained independently at both sides thus records which
 are delivered out of order result in AEAD deprotection failures.
 
