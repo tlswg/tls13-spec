@@ -1822,6 +1822,11 @@ encoded as a big-endian integer, padded with zeros to the size of p.
 Note: For a given Diffie-Hellman group, the padding results in all public keys
 having the same length.
 
+Peers SHOULD validate each other's public key Y by ensuring that 1 < Y
+< p-1. This check ensures that the remote peer is properly behaved and
+isn't forcing the local system into a small subgroup.
+
+
 #### ECDHE Parameters {#ecdhe-param}
 
 ECDHE parameters for both clients and servers are encoded in the
@@ -3948,8 +3953,7 @@ Cryptographic details:
   leading zero bytes in the negotiated key (see {{diffie-hellman}})?
 
 -  Does your TLS client check that the Diffie-Hellman parameters sent
-  by the server are acceptable (see
-  {{diffie-hellman-key-exchange-with-authentication}})?
+  by the server are acceptable, (see {{ffdhe-param}})?
 
 - Do you use a strong and, most importantly, properly seeded random number
   generator (see {{random-number-generation-and-seeding}}) Diffie-Hellman
@@ -4107,139 +4111,7 @@ been shown to be insecure in some scenarios.
 
 #  Security Analysis
 
-[[TODO: The entire security analysis needs a rewrite.]]
-
-The TLS protocol is designed to establish a secure connection between a client
-and a server communicating over an insecure channel. This document makes
-several traditional assumptions, including that attackers have substantial
-computational resources and cannot obtain secret information from sources
-outside the protocol. Attackers are assumed to have the ability to capture,
-modify, delete, replay, and otherwise tamper with messages sent over the
-communication channel. This appendix outlines how TLS has been designed to
-resist a variety of attacks.
-
-
-## Handshake Protocol
-
-The TLS Handshake Protocol is responsible for selecting a cipher spec and
-generating a master secret, which together comprise the primary cryptographic
-parameters associated with a secure session. The TLS Handshake Protocol can also
-optionally authenticate parties who have certificates signed by a trusted
-certificate authority.
-
-###  Authentication and Key Exchange
-
-TLS supports three authentication modes: authentication of both parties, server
-authentication with an unauthenticated client, and total anonymity. Whenever
-the server is authenticated, the channel is secure against man-in-the-middle
-attacks, but completely anonymous sessions are inherently vulnerable to such
-attacks. Anonymous servers cannot authenticate clients. If the server is
-authenticated, its certificate message must provide a valid certificate chain
-leading to an acceptable certificate authority. Similarly, authenticated
-clients must supply an acceptable certificate to the server. Each party is
-responsible for verifying that the other's certificate is valid and has not
-expired or been revoked.
-
-[[TODO: Rewrite this because the master_secret is not used this way any
-more after Hugo's changes.]]
-The general goal of the key exchange process is to create a master_secret
-known to the communicating parties and not to attackers (see
-{{key-schedule}}). The master_secret is required to generate the
-Finished messages and record protection keys (see {{finished}} and
-{{traffic-key-calculation}}). By sending a correct Finished message, parties thus prove
-that they know the correct master_secret.
-
-####  Diffie-Hellman Key Exchange with Authentication
-
-When Diffie-Hellman key exchange is used, the client and server use
-the "key_share" extension to send
-temporary Diffie-Hellman parameters. The signature in the certificate
-verify message (if present) covers the entire handshake up to that
-point and thus attests the certificate holder's desire to use
-the ephemeral DHE keys.
-
-Peers SHOULD validate each other's public key Y by ensuring that
-1 < Y < p-1.  This simple check ensures that the remote peer is properly
-behaved and isn't forcing the local system into a small subgroup.
-
-Additionally, using a fresh key for each handshake provides Perfect
-Forward Secrecy. Implementations SHOULD generate a new X for each
-handshake when using DHE cipher suites.
-
-###  Version Rollback Attacks
-
-Because TLS includes substantial improvements over SSL Version 2.0, attackers
-may try to make TLS-capable clients and servers fall back to Version 2.0. This
-attack can occur if (and only if) two TLS-capable parties use an SSL 2.0
-handshake. (See also {{backwards-compatibility-security-restrictions}}.)
-
-Although the solution using non-random PKCS #1 block type 2 message padding is
-inelegant, it provides a reasonably secure way for Version 3.0 servers to
-detect the attack. This solution is not secure against attackers who can
-brute-force the key and substitute a new ENCRYPTED-KEY-DATA message containing
-the same key (but with normal padding) before the application-specified wait
-threshold has expired. Altering the padding of the least-significant 8 bytes of
-the PKCS padding does not impact security for the size of the signed hashes and
-RSA key lengths used in the protocol, since this is essentially equivalent to
-increasing the input block size by 8 bytes.
-
-###  Detecting Attacks Against the Handshake Protocol
-
-An attacker might try to influence the handshake exchange to make the parties
-select different encryption algorithms than they would normally choose.
-
-For this attack, an attacker must actively change one or more handshake
-messages. If this occurs, the client and server will compute different values
-for the handshake message hashes. As a result, the parties will not accept each
-others' Finished messages. Without the static secret, the attacker cannot
-repair the Finished messages, so the attack will be discovered.
-
-
-## Protecting Application Data
-
-The shared secrets are hashed with the handshake transcript
-to produce unique record protection secrets for each connection.
-
-Outgoing data is protected using an AEAD algorithm before transmission. The
-authentication data includes the sequence number, message type, message length,
-and the message contents. The message type field is necessary to ensure that messages
-intended for one TLS record layer client are not redirected to another. The
-sequence number ensures that attempts to delete or reorder messages will be
-detected. Since sequence numbers are 64 bits long, they should never overflow.
-Messages from one party cannot be inserted into the other's output, since they
-use independent keys.
-
-
-## Denial of Service
-
-TLS is susceptible to a number of denial-of-service (DoS) attacks. In
-particular, an attacker who initiates a large number of TCP connections can
-cause a server to consume large amounts of CPU doing asymmetric crypto
-operations. However, because TLS is generally used over TCP, it is difficult for the
-attacker to hide their point of origin if proper TCP SYN randomization is used
-{{RFC1948}} by the TCP stack.
-
-Because TLS runs over TCP, it is also susceptible to a number of DoS attacks on
-individual connections. In particular, attackers can forge RSTs, thereby
-terminating connections, or forge partial TLS records, thereby causing the
-connection to stall. These attacks cannot in general be defended against by a
-TCP-using protocol. Implementors or users who are concerned with this class of
-attack should use IPsec AH {{RFC4302}} or ESP {{RFC4303}}.
-
-
-## Final Notes
-
-For TLS to be able to provide a secure connection, both the client and server
-systems, keys, and applications must be secure. In addition, the implementation
-must be free of security errors.
-
-The system is only as strong as the weakest key exchange and authentication
-algorithm supported, and only trustworthy cryptographic functions should be
-used. Short public keys and anonymous servers should be used with great
-caution. Implementations and users must be careful when deciding which
-certificates and certificate authorities are acceptable; a dishonest
-certificate authority can do tremendous damage.
-
+[[TODO]]
 
 # Working Group Information
 
