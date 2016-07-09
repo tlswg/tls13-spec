@@ -4196,7 +4196,7 @@ We assume that the attacker has complete control of the network in
 between the parties {{RFC3552}}. Even under these conditions, the
 handshake should provide the properties listed below. Note that
 these properties are not necessarily independent, but reflect
-the protocol consumer's needs.
+the protocol consumers' needs.
 
 Establishing the same session key.
 : The handshake needs to output the same session key on both sides of the
@@ -4204,7 +4204,7 @@ handshake (See {{CK01}}; defn 1, part 1).
 
 Secrecy of the session key.
 : The shared session key should be known only to the communicating
-parties, not to the attacker (See {{CK01; defn 1, part 2).  Note that
+parties, not to the attacker (See {{CK01}}; defn 1, part 2).  Note that
 in a unilaterally authenticated connection, the attacker can establish
 its own session keys with the server, but those session keys are
 distinct from those established by the client.
@@ -4307,7 +4307,7 @@ Length concealment.
 : Given a record with a given external length, the attacker should not be able
 to determine the amount of the record that is content versus padding.
 
-Forward security after key change.
+: Forward security after key change.
 If the traffic key update mechanism described in {{key-update}} has been
 used and the previous generation key is deleted, an attacker who compromises
 the endpoint should not be able to decrypt traffic encrypted with the old key.
@@ -4331,7 +4331,7 @@ type of channel because even a constant time padding removal
 function will then feed the content into data-dependent functions.
 
 Generation N+1 keys are derived from generation N keys via a key
-derivation function. As long as this function is truly one way, it
+derivation function {{updating-traffic-keys}}. As long as this function is truly one way, it
 is not possible to compute the previous keys after a key change
 (forward secrecy). However, TLS does not provide backward secrecy
 after key updates; systems which want backward secrecy must do
