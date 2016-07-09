@@ -245,6 +245,15 @@ informative:
          ins: K. Paterson
        target: http://www.isg.rhul.ac.uk/~kp/TLS-AEbounds.pdf
        date: 2016
+  CK01:
+       title: "Analysis of Key-Exchange Protocols and Their Use for Building Secure Channels"
+       author:
+       -
+         ins: R. Canetti
+       -
+         ins: H. Krawczyk
+       seriesinfo: Proceedings of Eurocrypt 2001
+       date: 2001
 --- abstract
 
 This document specifies version 1.3 of the Transport Layer Security
