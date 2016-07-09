@@ -2271,8 +2271,8 @@ Meaning of this message:
 
 > This message conveys the endpoint's certificate chain to the peer.
 
-> The certificate MUST be appropriate for the negotiated cipher suite's key
-exchange algorithm and any negotiated extensions.
+> The certificate MUST be appropriate for the negotiated cipher suite's
+authentication algorithm and any negotiated extensions.
 
 Structure of this message:
 
@@ -2288,8 +2288,7 @@ Structure of this message:
 certificate_request_context:
 : If this message is in response to a CertificateRequest, the
   value of certificate_request_context in that message. Otherwise,
-  in the case of server authentication or client authentication
-  in 0-RTT, this field SHALL be zero length.
+  in the case of server authentication this field SHALL be zero length.
 
 certificate_list
 : This is a sequence (chain) of certificates. The sender's
@@ -2323,13 +2322,8 @@ The following rules apply to the certificates sent by the server:
   otherwise (e.g., {{RFC5081}}).
 
 - The server's end-entity certificate's public key (and associated
-  restrictions) MUST be compatible with the selected key exchange
-  algorithm.
-
-| Key Exchange Alg.    | Certificate Key Type       |
-|----------------------|----------------------------|
-| DHE_RSA or ECDHE_RSA | RSA public key             |
-| ECDHE_ECDSA          | ECDSA or EdDSA public key  |
+  restrictions) MUST be compatible with the selected authentication
+  algorithm (currently RSA or ECDSA).
 
 - The certificate MUST allow the key to be used for signing (i.e., the
   digitalSignature bit MUST be set if the Key Usage extension is present) with
@@ -2379,10 +2373,10 @@ In particular:
   message was non-empty, one of the certificates in the certificate
   chain SHOULD be issued by one of the listed CAs.
 
-- The certificates MUST be signed using an acceptable hash/
-  signature algorithm pair, as described in {{certificate-request}}.  Note
-  that this relaxes the constraints on certificate-signing
-  algorithms found in prior versions of TLS.
+- The certificates MUST be signed using an acceptable signature
+  algorithm, as described in {{certificate-request}}.  Note that this
+  relaxes the constraints on certificate-signing algorithms found in
+  prior versions of TLS.
 
 - If the certificate_extensions list in the certificate request message
   was non-empty, the end-entity certificate MUST match the extension OIDs
@@ -2409,11 +2403,7 @@ handshake (considering the client unauthenticated) or send a fatal alert.
 
 Any endpoint receiving any certificate signed using any signature algorithm
 using an MD5 hash MUST send a "bad_certificate" alert message and close
-the connection.
-
-SHA-1 is deprecated and therefore NOT RECOMMENDED.
-Endpoints that reject certification paths due to use of a deprecated hash MUST send
-a fatal "bad_certificate" alert message before closing the connection.
+the connection. SHA-1 is deprecated and therefore NOT RECOMMENDED.
 All endpoints are RECOMMENDED to transition to SHA-256 or better as soon
 as possible to maintain interoperability with implementations
 currently in the process of phasing out SHA-1 support.
@@ -2421,6 +2411,10 @@ currently in the process of phasing out SHA-1 support.
 Note that a certificate containing a key for one signature algorithm
 MAY be signed using a different signature algorithm (for instance,
 an RSA key signed with an ECDSA key).
+
+Endpoints that reject certification paths due to use of a deprecated
+hash MUST send a fatal "bad_certificate" alert message before closing
+the connection.
 
 
 ###  Certificate Verify
@@ -2494,7 +2488,7 @@ If sent by a server, the signature algorithm MUST be one offered in the
 client's "signature_algorithms" extension unless no valid certificate chain can be
 produced without unsupported algorithms (see {{signature-algorithms}}). Note that
 there is a possibility for inconsistencies here. For instance, the client might
-offer ECDHE_ECDSA key exchange but omit any ECDSA and EdDSA values from its
+offer an ECDHE_ECDSA cipher suite but omit any ECDSA and EdDSA values from its
 "signature_algorithms" extension. In order to negotiate correctly, the server
 MUST check any candidate cipher suites against the "signature_algorithms"
 extension before selecting them. This is somewhat inelegant but is a compromise
