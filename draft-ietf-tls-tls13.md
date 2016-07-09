@@ -245,7 +245,6 @@ informative:
          ins: K. Paterson
        target: http://www.isg.rhul.ac.uk/~kp/TLS-AEbounds.pdf
        date: 2016
-
 --- abstract
 
 This document specifies version 1.3 of the Transport Layer Security
@@ -4159,9 +4158,55 @@ Section 7 of [RFC6066], as it is not applicable to AEAD ciphers and has
 been shown to be insecure in some scenarios.
 
 
-#  Security Analysis
+#  Overview of Security Properties {#security-analysis}
 
-[[TODO]]
+A complete security analysis of TLS is outside the scope of this document.
+In this section, we provide an informal description the desired properties
+as well as references to more detailed work in the research literature
+which provides more formal definitions.
+
+Because TLS is a modular protocol, we cover properties of the handshake
+separately from those of the record layer.
+
+## Handshake {#security-handshake}
+
+The TLS handshake is an Authenticated Key Exchange (AKE) protocol which
+is intended to provide both one-way authenticated (server-only) and
+mutually authenticated (client and server) functionality. At the completion
+of the handshake, each side outputs its view on the following properties.
+
+- A "session key" from which can be derived a set of working keys.
+- A set of cryptographic parameters (algorithms, etc.)
+- The identities of the communicating parties.
+
+The handshake should provide the following properties.
+
+Establishing the same key:
+: The handshake needs to output the same session key on both sides of the
+handshake (See {{CK01}}; defn 1, part 1).
+
+Secrecy of the session key: 
+: The shared session key should be known only to the communicating
+parties, not to the attacker (See {{CK01; defn 1, part 2).  Note that
+in a unilaterally authenticated connection, the attacker can establish
+its own session keys with the server, but those session keys are
+distinct from those established by the client.
+
+{:br}
+
+
+
+
+
+
+
+
+
+
+
+
+## Record Layer {#security-record-layer}
+
 
 # Working Group Information
 
