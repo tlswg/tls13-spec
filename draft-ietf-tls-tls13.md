@@ -723,7 +723,7 @@ send the client a PSK identity which corresponds to a key derived from
 the initial handshake (See {{NewSessionTicket}}). The client
 can then use that PSK identity in future handshakes to negotiate use
 of the PSK; if the server accepts it, then the security context of the
-original connection is tied to the new connection. In TLS 1.2 and
+new connection is tied to the original connection. In TLS 1.2 and
 below, this functionality was provided by "session resumption" and
 "session tickets" {{RFC5077}}. Both mechanisms are obsoleted in TLS
 1.3.
@@ -1154,9 +1154,15 @@ ClientHello as its first message. The client will also send a
 ClientHello when the server has responded to its ClientHello with a
 ServerHello that selects cryptographic parameters that don't match the
 client's "key_share" extension. In that case, the client MUST send the same
-ClientHello (without modification) except including a new KeyShareEntry
-as the lowest priority share (i.e., appended to the list of shares in
-the "key_share" extension). If a server receives a ClientHello at any other time, it MUST send
+ClientHello (without modification) except:
+
+- Including a new KeyShareEntry as the lowest priority share
+  (i.e., appended to the list of shares in the "key_share" extension).
+
+- Removing the EarlyDataIndication {{early-data-indication}} extension
+  if one was present. Early data is not permitted after HelloRetryRequest.
+  
+If a server receives a ClientHello at any other time, it MUST send
 a fatal "unexpected_message" alert and close the connection.
 
 Structure of this message:
