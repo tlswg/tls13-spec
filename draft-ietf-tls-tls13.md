@@ -277,7 +277,7 @@ provide the following properties.
 
 - Confidentiality: Data sent over the channel is not visible to
   attackers.
-  
+
 - Integrity: Data sent over the channel cannot be modified by attackers.
 
 These properties should be true even in the face of an attacker who controls
@@ -347,7 +347,7 @@ draft-14
 
 - Remove the "context" from EarlyDataIndication as it was undefined
   and nobody used it (*)
-  
+
 - Remove 0-RTT EncryptedExtensions and replace the ticket_age extension
   with an obfuscated version. Also necessitates a change to
   NewSessionTicket (*).
@@ -356,7 +356,7 @@ draft-14
   to accomodate tlsdate (*).
 
 - Define ecdsa_sha1 (*).
-  
+
 - Allow resumption even after fatal alerts. This matches current
   practice.
 
@@ -1202,7 +1202,7 @@ ClientHello (without modification) except:
 
 - Removing the EarlyDataIndication {{early-data-indication}} extension
   if one was present. Early data is not permitted after HelloRetryRequest.
-  
+
 If a server receives a ClientHello at any other time, it MUST send
 a fatal "unexpected_message" alert and close the connection.
 
@@ -2521,7 +2521,7 @@ prefix. The initial 64 byte pad clears that prefix.
 The context string for a server signature is
 "TLS 1.3, server CertificateVerify"
 and for a client signature is "TLS 1.3, client
-CertificateVerify". 
+CertificateVerify".
 
 For example, if Hash(Handshake Context + Certificate) was 32 bytes
 of 01 and Hash(resumption_context) was 32 bytes of 02 (these lengths
@@ -2619,7 +2619,7 @@ The verify_data value is computed as follows:
                               ) +
                               Hash(resumption_context)
            )
- 
+
        * Only included if present.
 
 Where HMAC {{RFC2104}} uses the Hash algorithm for the handshake.
@@ -2904,7 +2904,7 @@ by an encrypted body, which itself contains a type and optional padding.
           ContentType type;
           uint8 zeros[length_of_padding];
        } TLSInnerPlaintext;
-       
+
        struct {
            ContentType opaque_type = application_data(23); /* see fragment.type */
            ProtocolVersion record_version = { 3, 1 };    /* TLS v1.x */
@@ -2956,7 +2956,7 @@ the nonce is derived from the sequence number (see {{nonce}}) and the
 client_write_iv or server_write_iv, and the additional data input is empty
 (zero length).  Derivation of traffic keys is defined in {{traffic-key-calculation}}.
 
-The plaintext is the concatenation of TLSPlaintext.fragment, 
+The plaintext is the concatenation of TLSPlaintext.fragment,
 TLSPlaintext.type, and any padding bytes (zeros).
 
 The AEAD output consists of the ciphertext output by the AEAD
@@ -3374,16 +3374,16 @@ defined below:
 ~~~~
     HKDF-Expand-Label(Secret, Label, HashValue, Length) =
          HKDF-Expand(Secret, HkdfLabel, Length)
-  
+
     Where HkdfLabel is specified as:
-  
+
     struct HkdfLabel
     {
       uint16 length = Length;
       opaque label<9..255> = "TLS 1.3, " + Label;
       opaque hash_value<0..255> = HashValue;
     };
-  
+
     Derive-Secret(Secret, Label, Messages) =
          HKDF-Expand-Label(Secret, Label,
                            Hash(Messages) +
