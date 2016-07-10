@@ -697,7 +697,7 @@ CertificateVerify.
   with PSK or (EC)DHE-PSK cipher suites). [{{certificate-verify}}]
 
 Finished.
-: a MAC (message authentication code) over the entire handshake.
+: a MAC (Message Authentication Code) over the entire handshake.
   This message provides key confirmation, binds the endpoint's identity
   to the exchanged keys, and in PSK mode
   also authenticates the handshake. [{{finished}}]
@@ -815,7 +815,7 @@ Subsequent Handshake:
 As the server is authenticating via a PSK, it does not send a
 Certificate or a CertificateVerify. When a client offers resumption
 via PSK it SHOULD also supply a "key_share" extension to the server as well
-to allow it to decline resumption and fall back to a full handshake, if needed.
+to allow the server to decline resumption and fall back to a full handshake, if needed.
 A "key_share" extension MUST also be sent if the client is attempting to
 negotiate an (EC)DHE-PSK cipher suite.
 
@@ -1272,7 +1272,7 @@ cipher_suites
 
 legacy_compression_methods
 : Versions of TLS before 1.3 supported compression with the list of
-  supported compression methods supplied in this field. For every TLS 1.3
+  supported compression methods being send in this field. For every TLS 1.3
   ClientHello, this vector MUST contain exactly one byte set to
   zero, which corresponds to the "null" compression method in
   prior versions of TLS. If a TLS 1.3 ClientHello is
@@ -1393,8 +1393,8 @@ and servers will not behave as specified above.
 When this message will be sent:
 
 > Servers send this message in response to a ClientHello
-message when it was able to find an acceptable set of algorithms and
-groups that are mutually supported, however
+message if they were able to find an acceptable set of algorithms and
+groups that are mutually supported, but
 the client's KeyShare did not contain an acceptable
 offer. If it cannot find such a match, it will respond with a
 fatal "handshake_failure" alert.
