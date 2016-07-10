@@ -1272,7 +1272,7 @@ cipher_suites
 
 legacy_compression_methods
 : Versions of TLS before 1.3 supported compression with the list of
-  supported compression methods being send in this field. For every TLS 1.3
+  supported compression methods being sent in this field. For every TLS 1.3
   ClientHello, this vector MUST contain exactly one byte set to
   zero, which corresponds to the "null" compression method in
   prior versions of TLS. If a TLS 1.3 ClientHello is
