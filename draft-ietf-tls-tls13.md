@@ -344,7 +344,38 @@ server: The endpoint which did not initiate the TLS connection.
 
 draft-14
 
-- Allow cookies to be longer.
+- Allow cookies to be longer (*)
+
+- Remove the "context" from EarlyDataIndication as it was undefined
+  and nobody used it (*)
+  
+- Remove 0-RTT EncryptedExtensions and replace the ticket_age extension
+  with an obfuscated version. Also necessitates a change to
+  NewSessionTicket (*).
+
+- Move the downgrade sentinel to the end of ServerHello.Random
+  to accomodate tlsdate (*).
+
+- Define ecdsa_sha1 (*).
+  
+- Allow resumption even after fatal alerts. This matches current
+  practice.
+
+- Make the rules for accepting 0-RTT less restrictive.
+
+- Clarify 0-RTT backward-compatibility rules.
+
+- Clarify how 0-RTT and PSK identities interact.
+
+- Add a section describing the data limits for each cipher.
+
+- Major editorial restructuring.
+
+- Remove the Security Analysis section. It will be replaced with
+  something more modern.
+
+(*) indicates changes to the wire protocol which may require implementations
+    to update.
 
 
 draft-13
