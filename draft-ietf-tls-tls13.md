@@ -1184,6 +1184,11 @@ cipher suites, and process the remaining ones as usual.
 
 %%% Key Exchange Messages
        struct {
+           uint8 major;
+           uint8 minor;
+       } ProtocolVersion;
+
+       struct {
            opaque random_bytes[32];
        } Random;
 
@@ -2751,227 +2756,6 @@ encrypted with the new key. Failure to do so may allow message truncation
 attacks.
 
 
-#  Cryptographic Computations
-
-In order to begin connection protection, the TLS Record Protocol
-requires specification of a suite of algorithms, a master secret, and
-the client and server random values. The authentication, key
-exchange, and record protection algorithms are determined by the
-cipher_suite selected by the server and revealed in the ServerHello
-message. The random values are exchanged in the hello messages. All
-that remains is to calculate the key schedule.
-
-## Key Schedule
-
-The TLS handshake establishes one or more input secrets which
-are combined to create the actual working keying material, as detailed
-below.
-The key derivation process makes use of the HKDF-Extract and HKDF-Expand
-functions as defined for HKDF {{RFC5869}}, as well as the functions
-defined below:
-
-~~~~
-  HKDF-Expand-Label(Secret, Label, HashValue, Length) =
-       HKDF-Expand(Secret, HkdfLabel, Length)
-
-  Where HkdfLabel is specified as:
-
-  struct HkdfLabel
-  {
-    uint16 length = Length;
-    opaque label<9..255> = "TLS 1.3, " + Label;
-    opaque hash_value<0..255> = HashValue;
-  };
-
-  Derive-Secret(Secret, Label, Messages) =
-       HKDF-Expand-Label(Secret, Label,
-                         Hash(Messages) + Hash(resumption_context), Hash.Length)
-~~~~
-
-The Hash function and the HKDF hash are the cipher suite hash function.
-Hash.Length is its output length.
-
-Given a set of n InputSecrets, the final "master secret" is computed
-by iteratively invoking HKDF-Extract with InputSecret_1, InputSecret_2,
-etc.  The initial secret is simply a string of zeroes as long as the size
-of the Hash that is the basis for the HKDF. Concretely, for the
-present version of TLS 1.3, secrets are added in the following order:
-
-- PSK
-- (EC)DHE shared secret
-
-This produces a full key derivation schedule shown in the diagram below.
-In this diagram, the following formatting conventions apply:
-
-- HKDF-Extract is drawn as taking the Salt argument from the top and the IKM argument
-  from the left.
-- Derive-Secret's Secret argument is indicated by the arrow coming in
-  from the left. For instance, the Early Secret is the Secret for
-  generating the early_traffic-secret.
-
-~~~~
-                 0
-                 |
-                 v
-   PSK ->  HKDF-Extract
-                 |
-                 v
-           Early Secret  --> Derive-Secret(., "early traffic secret",
-                 |                         ClientHello)
-                 |                         = early_traffic_secret
-                 v
-(EC)DHE -> HKDF-Extract
-                 |
-                 v
-              Handshake
-               Secret -----> Derive-Secret(., "handshake traffic secret",
-                 |                         ClientHello + ServerHello)
-                 |                         = handshake_traffic_secret
-                 v
-      0 -> HKDF-Extract
-                 |
-                 v
-            Master Secret
-                 |
-                 +---------> Derive-Secret(., "application traffic secret",
-                 |                         ClientHello...Server Finished)
-                 |                         = traffic_secret_0
-                 |
-                 +---------> Derive-Secret(., "exporter master secret",
-                 |                         ClientHello...Client Finished)
-                 |                         = exporter_secret
-                 |
-                 +---------> Derive-Secret(., "resumption master secret",
-                                           ClientHello...Client Finished)
-                                           = resumption_secret
-~~~~
-
-The general pattern here is that the secrets shown down the left side
-of the diagram are just raw entropy without context, whereas the
-secrets down the right side include handshake context and therefore
-can be used to derive working keys without additional context.
-Note that the different
-calls to Derive-Secret may take different Messages arguments,
-even with the same secret. In a 0-RTT exchange, Derive-Secret is
-called with four distinct transcripts; in a 1-RTT only exchange
-with three distinct transcripts.
-
-If a given secret is not available, then the 0-value consisting of
-a string of L zeroes is used.  Note that this does not mean skipping
-rounds, so if PSK is not in use Early Secret will still be
-HKDF-Extract(0, 0).
-
-
-## Updating Traffic Keys and IVs {#updating-traffic-keys}
-
-Once the handshake is complete, it is possible for either side to
-update its sending traffic keys using the KeyUpdate handshake message
-{{key-update}}.  The next generation of traffic keys is computed by
-generating traffic_secret_N+1 from traffic_secret_N as described in
-this section then re-deriving the traffic keys as described in
-{{traffic-key-calculation}}.
-
-The next-generation traffic_secret is computed as:
-
-  traffic_secret_N+1 = HKDF-Expand-Label(traffic_secret_N,
-                                         "application traffic secret", "", Hash.Length)
-
-Once traffic_secret_N+1 and its associated traffic keys have been computed,
-implementations SHOULD delete traffic_secret_N. Once the directional
-keys are no longer needed, they SHOULD be deleted as well.
-
-
-## Traffic Key Calculation
-
-The traffic keying material is generated from the following input values:
-
-* A secret value
-* A phase value indicating the phase of the protocol the keys are
-  being generated for.
-* A purpose value indicating the specific value being generated
-* The length of the key.
-
-The keying material is computed using:
-
-       key = HKDF-Expand-Label(Secret,
-                               phase + ", " + purpose,
-                               "",
-                               key_length)
-
-The following table describes the inputs to the key calculation for
-each class of traffic keys:
-
-| Record Type | Secret | Phase |
-|:------------|--------|-------|
-| 0-RTT Handshake   | early_traffic_secret | "early handshake key expansion" |
-| 0-RTT Application | early_traffic_secret | "early application data key expansion" |
-| Handshake         | handshake_traffic_secret | "handshake key expansion" |
-| Application Data  | traffic_secret_N | "application data key expansion" |
-
-The following table indicates the purpose values for each type of key:
-
-| Key Type         | Purpose            |
-|:-----------------|:-------------------|
-| client_write_key | "client write key" |
-| server_write_key | "server write key" |
-| client_write_iv  | "client write iv"  |
-| server_write_iv  | "server write iv"  |
-
-All the traffic keying material is recomputed whenever the
-underlying Secret changes (e.g., when changing from the handshake to
-application data keys or upon a key update).
-
-
-###  Diffie-Hellman
-
-A conventional Diffie-Hellman computation is performed. The negotiated key (Z)
-is converted to byte string by encoding in big-endian, padded with zeros up to
-the size of the prime. This byte string is used as the shared secret, and is
-used in the key schedule as specified above.
-
-Note that this construction differs from previous versions of TLS which remove
-leading zeros.
-
-### Elliptic Curve Diffie-Hellman
-
-For secp256r1, secp384r1 and secp521r1, ECDH calculations (including parameter
-and key generation as well as the shared secret calculation) are
-performed according to {{IEEE1363}} using the ECKAS-DH1 scheme with the identity
-map as key derivation function (KDF), so that the shared secret is the
-x-coordinate of the ECDH shared secret elliptic curve point represented
-as an octet string.  Note that this octet string (Z in IEEE 1363 terminology)
-as output by FE2OSP, the Field Element to Octet String Conversion
-Primitive, has constant length for any given field; leading zeros
-found in this octet string MUST NOT be truncated.
-
-(Note that this use of the identity KDF is a technicality.  The
-complete picture is that ECDH is employed with a non-trivial KDF
-because TLS does not directly use this secret for anything
-other than for computing other secrets.)
-
-ECDH functions are used as follows:
-
-* The public key to put into the KeyShareEntry.key_exchange structure is the
-  result of applying the ECDH function to the secret key of appropriate length
-  (into scalar input) and the standard public basepoint (into u-coordinate point
-  input).
-* The ECDH shared secret is the result of applying ECDH function to the secret
-  key (into scalar input) and the peer's public key (into u-coordinate point
-  input). The output is used raw, with no processing.
-
-For X25519 and X448, see {{RFC7748}}.
-
-### Exporters
-
-{{!RFC5705}} defines keying material exporters for TLS in terms of
-the TLS PRF. This document replaces the PRF with HKDF, thus requiring
-a new construction. The exporter interface remains the same, however
-the value is computed as:
-
-    HKDF-Expand-Label(exporter_secret,
-                      label, context_value, key_length)
-
-
 #  The TLS Record Protocol
 
 The TLS Record Protocol takes messages to be transmitted, fragments
@@ -2989,6 +2773,10 @@ receives an unexpected record type, it MUST send an
 assigned by IANA in the TLS Content Type Registry as described in
 {{iana-considerations}}.
 
+Application data messages are carried by the record layer and are
+fragmented and encrypted as described below. The messages are treated
+as transparent data to the record layer.
+
 ## Record Layer
 
 The TLS record layer receives uninterpreted data from higher layers in
@@ -3002,11 +2790,6 @@ message MAY be fragmented across several records).
 Alert messages ({{alert-protocol}}) MUST NOT be fragmented across records.
 
 %%% Record Layer
-
-       struct {
-           uint8 major;
-           uint8 minor;
-       } ProtocolVersion;
 
        enum {
            invalid_RESERVED(0),
@@ -3037,7 +2820,7 @@ length
   length MUST NOT exceed 2^14.
 
 fragment
-: The application data.  This data is transparent and treated as an
+: The data being transmitted. This value transparent and treated as an
   independent block to be dealt with by the higher-level protocol
   specified by the type field.
 {:br }
@@ -3514,6 +3297,227 @@ unknown_psk_identity
 
 New Alert values are assigned by IANA as described in {{iana-considerations}}.
 
+#  Cryptographic Computations
+
+In order to begin connection protection, the TLS Record Protocol
+requires specification of a suite of algorithms, a master secret, and
+the client and server random values. The authentication, key
+exchange, and record protection algorithms are determined by the
+cipher_suite selected by the server and revealed in the ServerHello
+message. The random values are exchanged in the hello messages. All
+that remains is to calculate the key schedule.
+
+## Key Schedule
+
+The TLS handshake establishes one or more input secrets which
+are combined to create the actual working keying material, as detailed
+below.
+The key derivation process makes use of the HKDF-Extract and HKDF-Expand
+functions as defined for HKDF {{RFC5869}}, as well as the functions
+defined below:
+
+~~~~
+  HKDF-Expand-Label(Secret, Label, HashValue, Length) =
+       HKDF-Expand(Secret, HkdfLabel, Length)
+
+  Where HkdfLabel is specified as:
+
+  struct HkdfLabel
+  {
+    uint16 length = Length;
+    opaque label<9..255> = "TLS 1.3, " + Label;
+    opaque hash_value<0..255> = HashValue;
+  };
+
+  Derive-Secret(Secret, Label, Messages) =
+       HKDF-Expand-Label(Secret, Label,
+                         Hash(Messages) + Hash(resumption_context), Hash.Length)
+~~~~
+
+The Hash function and the HKDF hash are the cipher suite hash function.
+Hash.Length is its output length.
+
+Given a set of n InputSecrets, the final "master secret" is computed
+by iteratively invoking HKDF-Extract with InputSecret_1, InputSecret_2,
+etc.  The initial secret is simply a string of zeroes as long as the size
+of the Hash that is the basis for the HKDF. Concretely, for the
+present version of TLS 1.3, secrets are added in the following order:
+
+- PSK
+- (EC)DHE shared secret
+
+This produces a full key derivation schedule shown in the diagram below.
+In this diagram, the following formatting conventions apply:
+
+- HKDF-Extract is drawn as taking the Salt argument from the top and the IKM argument
+  from the left.
+- Derive-Secret's Secret argument is indicated by the arrow coming in
+  from the left. For instance, the Early Secret is the Secret for
+  generating the early_traffic-secret.
+
+~~~~
+                 0
+                 |
+                 v
+   PSK ->  HKDF-Extract
+                 |
+                 v
+           Early Secret  --> Derive-Secret(., "early traffic secret",
+                 |                         ClientHello)
+                 |                         = early_traffic_secret
+                 v
+(EC)DHE -> HKDF-Extract
+                 |
+                 v
+              Handshake
+               Secret -----> Derive-Secret(., "handshake traffic secret",
+                 |                         ClientHello + ServerHello)
+                 |                         = handshake_traffic_secret
+                 v
+      0 -> HKDF-Extract
+                 |
+                 v
+            Master Secret
+                 |
+                 +---------> Derive-Secret(., "application traffic secret",
+                 |                         ClientHello...Server Finished)
+                 |                         = traffic_secret_0
+                 |
+                 +---------> Derive-Secret(., "exporter master secret",
+                 |                         ClientHello...Client Finished)
+                 |                         = exporter_secret
+                 |
+                 +---------> Derive-Secret(., "resumption master secret",
+                                           ClientHello...Client Finished)
+                                           = resumption_secret
+~~~~
+
+The general pattern here is that the secrets shown down the left side
+of the diagram are just raw entropy without context, whereas the
+secrets down the right side include handshake context and therefore
+can be used to derive working keys without additional context.
+Note that the different
+calls to Derive-Secret may take different Messages arguments,
+even with the same secret. In a 0-RTT exchange, Derive-Secret is
+called with four distinct transcripts; in a 1-RTT only exchange
+with three distinct transcripts.
+
+If a given secret is not available, then the 0-value consisting of
+a string of L zeroes is used.  Note that this does not mean skipping
+rounds, so if PSK is not in use Early Secret will still be
+HKDF-Extract(0, 0).
+
+
+## Updating Traffic Keys and IVs {#updating-traffic-keys}
+
+Once the handshake is complete, it is possible for either side to
+update its sending traffic keys using the KeyUpdate handshake message
+{{key-update}}.  The next generation of traffic keys is computed by
+generating traffic_secret_N+1 from traffic_secret_N as described in
+this section then re-deriving the traffic keys as described in
+{{traffic-key-calculation}}.
+
+The next-generation traffic_secret is computed as:
+
+  traffic_secret_N+1 = HKDF-Expand-Label(traffic_secret_N,
+                                         "application traffic secret", "", Hash.Length)
+
+Once traffic_secret_N+1 and its associated traffic keys have been computed,
+implementations SHOULD delete traffic_secret_N. Once the directional
+keys are no longer needed, they SHOULD be deleted as well.
+
+
+## Traffic Key Calculation
+
+The traffic keying material is generated from the following input values:
+
+* A secret value
+* A phase value indicating the phase of the protocol the keys are
+  being generated for.
+* A purpose value indicating the specific value being generated
+* The length of the key.
+
+The keying material is computed using:
+
+       key = HKDF-Expand-Label(Secret,
+                               phase + ", " + purpose,
+                               "",
+                               key_length)
+
+The following table describes the inputs to the key calculation for
+each class of traffic keys:
+
+| Record Type | Secret | Phase |
+|:------------|--------|-------|
+| 0-RTT Handshake   | early_traffic_secret | "early handshake key expansion" |
+| 0-RTT Application | early_traffic_secret | "early application data key expansion" |
+| Handshake         | handshake_traffic_secret | "handshake key expansion" |
+| Application Data  | traffic_secret_N | "application data key expansion" |
+
+The following table indicates the purpose values for each type of key:
+
+| Key Type         | Purpose            |
+|:-----------------|:-------------------|
+| client_write_key | "client write key" |
+| server_write_key | "server write key" |
+| client_write_iv  | "client write iv"  |
+| server_write_iv  | "server write iv"  |
+
+All the traffic keying material is recomputed whenever the
+underlying Secret changes (e.g., when changing from the handshake to
+application data keys or upon a key update).
+
+
+###  Diffie-Hellman
+
+A conventional Diffie-Hellman computation is performed. The negotiated key (Z)
+is converted to byte string by encoding in big-endian, padded with zeros up to
+the size of the prime. This byte string is used as the shared secret, and is
+used in the key schedule as specified above.
+
+Note that this construction differs from previous versions of TLS which remove
+leading zeros.
+
+### Elliptic Curve Diffie-Hellman
+
+For secp256r1, secp384r1 and secp521r1, ECDH calculations (including parameter
+and key generation as well as the shared secret calculation) are
+performed according to {{IEEE1363}} using the ECKAS-DH1 scheme with the identity
+map as key derivation function (KDF), so that the shared secret is the
+x-coordinate of the ECDH shared secret elliptic curve point represented
+as an octet string.  Note that this octet string (Z in IEEE 1363 terminology)
+as output by FE2OSP, the Field Element to Octet String Conversion
+Primitive, has constant length for any given field; leading zeros
+found in this octet string MUST NOT be truncated.
+
+(Note that this use of the identity KDF is a technicality.  The
+complete picture is that ECDH is employed with a non-trivial KDF
+because TLS does not directly use this secret for anything
+other than for computing other secrets.)
+
+ECDH functions are used as follows:
+
+* The public key to put into the KeyShareEntry.key_exchange structure is the
+  result of applying the ECDH function to the secret key of appropriate length
+  (into scalar input) and the standard public basepoint (into u-coordinate point
+  input).
+* The ECDH shared secret is the result of applying ECDH function to the secret
+  key (into scalar input) and the peer's public key (into u-coordinate point
+  input). The output is used raw, with no processing.
+
+For X25519 and X448, see {{RFC7748}}.
+
+### Exporters
+
+{{!RFC5705}} defines keying material exporters for TLS in terms of
+the TLS PRF. This document replaces the PRF with HKDF, thus requiring
+a new construction. The exporter interface remains the same, however
+the value is computed as:
+
+    HKDF-Expand-Label(exporter_secret,
+                      label, context_value, key_length)
+
+
 #  Mandatory Algorithms
 
 ##  MTI Cipher Suites
@@ -3574,14 +3578,6 @@ lacking a "server_name" extension with a fatal "missing_extension" alert.
 Servers MUST NOT send the "signature_algorithms" extension; if a client
 receives this extension it MUST respond with a fatal "unsupported_extension" alert
 and close the connection.
-
-
-#  Application Data Protocol
-
-Application data messages are carried by the record layer and are fragmented
-and encrypted based on the current connection state. The messages
-are treated as transparent data to the record layer.
-
 
 #  Security Considerations
 
