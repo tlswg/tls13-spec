@@ -2002,7 +2002,7 @@ can behave in one of two ways:
   process the early data. It is not possible for the server
   to accept only a subset of the early data messages.
 
-In order to accept, early data, the server server MUST have accepted a
+In order to accept early data, the server server MUST have accepted a
 PSK cipher suite and selected the the first key offered in the
 client's "pre_shared_key" extension. In addition, it MUST verify that
 the following values are consistent with those negotiated in the
