@@ -3098,7 +3098,7 @@ Fatal-level messages are used to indicate abortive closure of the
 connection (See {{error-alerts}}). Upon receiving a fatal-level alert,
 the TLS implementation SHOULD indicate an error to the application and
 MUST NOT allow any further data to be sent or received on the
-connection.  Servers and clients MUST forget keys, and secrets
+connection.  Servers and clients MUST forget keys and secrets
 associated with a failed connection. Stateful implementations of
 session tickets (as in many clients) SHOULD discard tickets associated
 with failed connections.
