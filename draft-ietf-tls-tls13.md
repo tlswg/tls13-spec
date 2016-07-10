@@ -1978,8 +1978,8 @@ obfuscated_ticket_age
 A server MUST validate that the ticket_age is within a small
 tolerance of the time since the ticket was issued (see {{replay-time}}).
 
-All of the parameters for the 0-RTT data (symmetric cipher suite,
-ALPN, etc.) MUST be those which were negotiated in the connection
+The parameters for the 0-RTT data (symmetric cipher suite,
+ALPN, etc.) are the same as those which were negotiated in the connection
 which established the PSK.  The PSK used to encrypt the early data
 MUST be the first PSK listed in the client's "pre_shared_key" extension.
 
@@ -2002,22 +2002,18 @@ can behave in one of two ways:
   process the early data. It is not possible for the server
   to accept only a subset of the early data messages.
 
-[[OPEN ISSUE: are the rules below correct? https://github.com/tlswg/tls13-spec/issues/451]]
-It MUST also validate that the extensions
-negotiated in the previous connection are identical to those being
-negotiated in the ServerHello, with the exception of the
-following extensions:
+In order to accept, early data, the server server MUST have accepted a
+PSK cipher suite and selected the the first key offered in the
+client's "pre_shared_key" extension. In addition, it MUST verify that
+the following values are consistent with those negotiated in the
+connection during which the ticket was established.
 
-- The use of "signed_certificate_timestamp" {{!RFC6962}} MUST
-  be identical but the server's SCT extension value may differ.
+- The TLS version number, symmetric ciphersuite, and the hash for HKDF.
+- The selected ALPN {{!RFC7443}} value, if any.
+- The server_name {{RFC6066}} value provided by the client,
+  if any.
 
-- The "padding" extension {{RFC7685}} MUST be ignored for this purpose.
-
-- The server MUST have accepted a PSK cipher suite and selected
-  the first key offered in the client's "pre_shared_key" extension.
-
-- The values of "key_share", and "early_data", which MUST
-  be as defined in this document.
+Future extensions MUST define their interaction with 0-RTT.
 
 If any of these checks fail, the server MUST NOT respond
 with the extension and must discard all the remaining first
@@ -2035,7 +2031,13 @@ Specifically, decryption failure of any 0-RTT record following
 an accepted "early_data" extension MUST produce a fatal
 "bad_record_mac" alert as per {{record-payload-protection}}.
 
-[[TODO: How does the client behave if the indication is rejected.]]
+If the server rejects the "early_data" extension, the client
+application MAY opt to retransmit the data once the handshake has
+been completed. TLS stacks SHOULD not do this automatically and
+client applications MUST take care that the negotiated parameters
+are consistent with those it expected. For example, if the
+ALPN value has changed, it is likely unsafe to retransmit the
+original application layer data.
 
 #### Processing Order
 
