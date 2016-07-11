@@ -288,7 +288,48 @@ informative:
        -
          ins: H. Krawczyk
        seriesinfo: Proceedings of CRYPTO 2003
-       date: 2003       
+       date: 2003
+  CHSV16:
+       title: "Automated Analysis and Verification of TLS 1.3: 0-RTT, Resumption and Delayed Authentication"
+       author:
+       -
+         ins: C. Cremers
+       -
+         ins: M. Horvat
+       -
+         ins: S. Scott
+       -
+         ins: T. van der Merwe
+       seriesinfo: Proceedings of IEEE Symposium on Security and Privacy (Oakland) 2016
+       date: 2016
+  FGSW16:
+       title: "Key Confirmation in Key Exchange: A Formal Treatment and Implications for TLS 1.3"
+       author:
+       -
+         ins: M. Fischlin
+       -
+         ins: F. Guenther
+       -
+         ins: B. Schmidt
+       -
+         ins: B. Warinschi
+       seriesinfo: Proceedings of IEEE Symposium on Security and Privacy (Oakland) 2016
+       date: 2016
+  LXZFH16:
+       title: "Multiple Handshakes Security of TLS 1.3 Candidates"
+       author:
+       -
+         ins: X. Li
+       -
+         ins: J. Xu
+       -
+         ins: D. Feng
+       -
+         ins: Z. Zhang
+       -
+         ins: H. Hu
+       seriesinfo: Proceedings of IEEE Symposium on Security and Privacy (Oakland) 2016
+       date: 2016
 --- abstract
 
 This document specifies Version 1.3 of the Transport Layer Security
@@ -4178,15 +4219,14 @@ In this section, we provide an informal description the desired properties
 as well as references to more detailed work in the research literature
 which provides more formal definitions.
 
-Because TLS is a modular protocol, we cover properties of the handshake
-separately from those of the record layer.
+We cover properties of the handshake separately from those of the record layer.
 
 ## Handshake {#security-handshake}
 
 The TLS handshake is an Authenticated Key Exchange (AKE) protocol which
 is intended to provide both one-way authenticated (server-only) and
 mutually authenticated (client and server) functionality. At the completion
-of the handshake, each side outputs its view on the following properties.
+of the handshake, each side outputs its view on the following values:
 
 - A "session key" from which can be derived a set of working keys.
 - A set of cryptographic parameters (algorithms, etc.)
@@ -4241,7 +4281,7 @@ establishment of a unique, secret, shared, key established by an
 the handshake transcript, as well as tied to the server's identity by
 a MAC. If the client is authenticated by a certificate, it also signs
 over the handshake transcript and provides a MAC tied to both
-identities. {{SIGMA}} describes of the analysis of this type of key
+identities. {{SIGMA}} describes the analysis of this type of key
 exchange protocol. If fresh (EC)DHE keys are used for each connection,
 then the output keys are forward secret.
 
@@ -4263,7 +4303,7 @@ As soon as the client and the server have exchanged enough information
 to establish shared keys, the remainder of the handshake is encrypted,
 thus providing protection against passive attackers. Because the server
 authenticates before the client, the client can ensure that it only
-reveals its identity to an authentic server. Note that implementations
+reveals its identity to an authenticated server. Note that implementations
 must use the provided record padding mechanism during the handshake
 to avoid leaking information about the identities due to length.
 
@@ -4276,8 +4316,7 @@ state. See {{early-data-indication}} for one mechanism to limit
 the exposure to replay.
 
 The reader should refer to the following references for analysis of the
-degree to which TLS 1.3 provides these properties. [TODO]
-
+TLS handshake.
 
 ## Record Layer {#security-record-layer}
 
@@ -4339,7 +4378,8 @@ a fresh handshake and establish a new session key with an (EC)DHE
 exchange.
 
 The reader should refer to the following references for analysis of the
-degree to which TLS 1.3 provides these properties. [TODO]
+degree to which TLS 1.3 provides these properties:
+{{CHSV16}} {{FGSW16}} {{LXZFH16}}
 
 # Working Group Information
 
