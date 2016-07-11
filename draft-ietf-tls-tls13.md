@@ -4271,7 +4271,8 @@ the protocol consumers' needs.
 
 Establishing the same session key.
 : The handshake needs to output the same session key on both sides of the
-handshake (See {{CK01}}; defn 1, part 1).
+handshake, provided that it completes successfully on each endpoint
+(See {{CK01}}; defn 1, part 1).
 
 Secrecy of the session key.
 : The shared session key should be known only to the communicating
@@ -4373,6 +4374,8 @@ Order protection/non-replayability
 : An attacker should not be able to cause the receiver to accept a
 record which it has already accepted or cause the receiver to accept
 record N+1 without having first processed record N.
+[[TODO: If we merge in DTLS to this document, we will need to update
+this guarantee.]]
 
 Length concealment.
 : Given a record with a given external length, the attacker should not be able
@@ -4404,8 +4407,9 @@ function will then feed the content into data-dependent functions.
 Generation N+1 keys are derived from generation N keys via a key
 derivation function {{updating-traffic-keys}}. As long as this function is truly one way, it
 is not possible to compute the previous keys after a key change
-(forward secrecy). However, TLS does not provide backward secrecy
-after key updates; systems which want backward secrecy must do
+(forward secrecy). However, TLS does not provide security for
+data which is sent after the traffic secret is compromised,
+even afer a key update (backward secrecy); systems which want backward secrecy must do
 a fresh handshake and establish a new session key with an (EC)DHE
 exchange.
 
