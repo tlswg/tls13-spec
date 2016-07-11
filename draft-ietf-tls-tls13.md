@@ -240,7 +240,7 @@ informative:
        title: "Limits on Authenticated Encryption Use in TLS"
        author:
        -
-         ins: A. Luytx
+         ins: A. Luykx
        -
          ins: K. Paterson
        target: http://www.isg.rhul.ac.uk/~kp/TLS-AEbounds.pdf
@@ -3073,10 +3073,11 @@ mechanism through TLS extensions or some other means.
 
 ## Limits on Key Usage
 
-There are cryptographic limits on the amount of plaintext which can
-be safely encrypted under a given set of keys {{AEAD-LIMITS}};
-implementations SHOULD do a key update {{key-update}} prior to
-reaching these limits.
+There are cryptographic limits on the amount of plaintext which can be
+safely encrypted under a given set of keys.  {{AEAD-LIMITS}} provides
+an analysis of these limits under the assumption that the underlying
+primitive (AES or ChaCha20) has no weaknesses. Implementations SHOULD
+do a key update {{key-update}} prior to reaching these limits.
 
 For AES-GCM, up to 2^24.5 full-size records may be encrypted on a
 given connection while keeping a safety margin of approximately
