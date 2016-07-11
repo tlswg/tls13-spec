@@ -3084,11 +3084,28 @@ safety limit is reached.
 #  Alert Protocol
 
 One of the content types supported by the TLS record layer is the
-alert type.  Alert messages convey the severity of the message
-(warning or fatal) and a description of the alert. Alert messages with
-a level of fatal result in the immediate termination of the
-connection. Like other messages, alert messages are encrypted as
+alert type.  Like other messages, alert messages are encrypted as
 specified by the current connection state.
+
+Alert messages convey the severity of the message (warning or fatal)
+and a description of the alert. Warning-level messages are used to
+indicate orderly closure of the connection (see {{closure-alerts}}).
+Upon receiving a warning-level alert, the TLS implementation SHOULD
+indicate end-of-data to the application and, if appropriate for
+the alert type, send a closure alert in response.
+
+Fatal-level messages are used to indicate abortive closure of the
+connection (See {{error-alerts}}). Upon receiving a fatal-level alert,
+the TLS implementation SHOULD indicate an error to the application and
+MUST NOT allow any further data to be sent or received on the
+connection.  Servers and clients MUST forget keys and secrets
+associated with a failed connection. Stateful implementations of
+session tickets (as in many clients) SHOULD discard tickets associated
+with failed connections.
+
+All the alerts listed in {{error-alerts}} MUST be sent as fatal and
+MUST be treated as fatal regardless of the AlertLevel in the
+message. Unknown alert types MUST be treated as fatal.
 
 %%% Alert Messages
 
@@ -3097,36 +3114,36 @@ specified by the current connection state.
        enum {
            close_notify(0),
            end_of_early_data(1),
-           unexpected_message(10),               /* fatal */
-           bad_record_mac(20),                   /* fatal */
-           decryption_failed_RESERVED(21),       /* fatal */
-           record_overflow(22),                  /* fatal */
-           decompression_failure_RESERVED(30),   /* fatal */
-           handshake_failure(40),                /* fatal */
-           no_certificate_RESERVED(41),          /* fatal */
+           unexpected_message(10),
+           bad_record_mac(20),
+           decryption_failed_RESERVED(21),
+           record_overflow(22),
+           decompression_failure_RESERVED(30),
+           handshake_failure(40),
+           no_certificate_RESERVED(41),
            bad_certificate(42),
            unsupported_certificate(43),
            certificate_revoked(44),
            certificate_expired(45),
            certificate_unknown(46),
-           illegal_parameter(47),                /* fatal */
-           unknown_ca(48),                       /* fatal */
-           access_denied(49),                    /* fatal */
-           decode_error(50),                     /* fatal */
-           decrypt_error(51),                    /* fatal */
-           export_restriction_RESERVED(60),      /* fatal */
-           protocol_version(70),                 /* fatal */
-           insufficient_security(71),            /* fatal */
-           internal_error(80),                   /* fatal */
-           inappropriate_fallback(86),           /* fatal */
+           illegal_parameter(47),
+           unknown_ca(48),
+           access_denied(49),
+           decode_error(50),
+           decrypt_error(51),
+           export_restriction_RESERVED(60),
+           protocol_version(70),
+           insufficient_security(71),
+           internal_error(80),
+           inappropriate_fallback(86),
            user_canceled(90),
-           no_renegotiation_RESERVED(100),       /* fatal */
-           missing_extension(109),               /* fatal */
-           unsupported_extension(110),           /* fatal */
+           no_renegotiation_RESERVED(100),
+           missing_extension(109),
+           unsupported_extension(110),
            certificate_unobtainable(111),
            unrecognized_name(112),
-           bad_certificate_status_response(113), /* fatal */
-           bad_certificate_hash_value(114),      /* fatal */
+           bad_certificate_status_response(113),
+           bad_certificate_hash_value(114),
            unknown_psk_identity(115),
            (255)
        } AlertDescription;
@@ -3190,32 +3207,12 @@ before destroying the transport.
 
 ##  Error Alerts
 
-Error handling in TLS is very simple. When an error is
-detected, the detecting party sends a message to its peer. Upon
-transmission or receipt of a fatal alert message, both parties immediately
-close the connection. Servers and clients MUST forget keys, and secrets
-associated with a failed connection. Stateful implementations of session
-tickets (as in many clients) SHOULD discard tickets associated with failed
-connections.
-
-Whenever an implementation encounters a condition which is defined as a fatal
-alert, it MUST send the appropriate alert prior to closing the connection. For
-all errors where an alert level is not explicitly specified, the sending party
-MAY determine at its discretion whether to treat this as a fatal error or not.
-If the implementation chooses to send an alert but intends to close the
-connection immediately afterwards, it MUST send that alert at the fatal alert
-level.
-
-If an alert with a level of warning is sent and received, generally the
-connection can continue normally. If the receiving party decides not to proceed
-with the connection (e.g., after having received a "user_canceled" alert that
-it is not willing to accept), it SHOULD send a fatal alert to terminate the
-connection. Given this, the sending peer cannot, in general, know how the
-receiving party will behave. Therefore, warning alerts are not very useful when
-the sending party wants to continue the connection, and thus are sometimes
-omitted. For example, if a party decides to accept an expired certificate
-(perhaps after confirming this with the user) and wants to continue the
-connection, it would not generally send a "certificate_expired" alert.
+Error handling in the TLS Handshake Protocol is very simple. When an
+error is detected, the detecting party sends a message to its
+peer. Upon transmission or receipt of a fatal alert message, both
+parties immediately close the connection.  Whenever an implementation
+encounters a condition which is defined as a fatal alert, it MUST send
+the appropriate alert prior to closing the connection.
 
 The following error alerts are defined:
 
