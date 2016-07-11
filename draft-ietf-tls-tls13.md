@@ -364,8 +364,8 @@ provide the following properties.
 
 - Integrity: Data sent over the channel cannot be modified by attackers.
 
-These properties should be true even in the face of an attacker who controls
-the channel, as described in {{?RFC3552}}.
+These properties should be true even in the face of an attacker who has complete
+control of the network, as described in {{?RFC3552}}.
 See {{security-analysis}} for a more complete statement of the relevant security
 properties.
 
@@ -4259,7 +4259,7 @@ is intended to provide both one-way authenticated (server-only) and
 mutually authenticated (client and server) functionality. At the completion
 of the handshake, each side outputs its view on the following values:
 
-- A "session key" from which can be derived a set of working keys.
+- A "session key" (the master secret) from which can be derived a set of working keys.
 - A set of cryptographic parameters (algorithms, etc.)
 - The identities of the communicating parties.
 
@@ -4287,7 +4287,7 @@ peer identity should match the client's identity.
 
 Uniqueness of the session key:
 : Any two distinct handshakes should produce distinct, unrelated session
-keys [REF: Need cite.]
+keys {::comment}TODO{:/comment}
 
 Downgrade protection.
 : The cryptographic parameters should be the same on both sides and
@@ -4326,9 +4326,9 @@ connection N+1 is separate from the traffic keys used by connection N,
 thus providing forward secrecy between the connections.
 
 For all handshake modes, the Finished MAC (and where present, the
-signature), prevents downgrade attacks. In addition, the random
-tainting mechanism described in {{server-hello}} allows the detection
-of downgrade to previous TLS versions.
+signature), prevents downgrade attacks. In addition, the use of
+certain bytes in the random nonces as described in {{server-hello}}
+allows the detection of downgrade to previous TLS versions.
 
 As soon as the client and the server have exchanged enough information
 to establish shared keys, the remainder of the handshake is encrypted,
@@ -4347,26 +4347,27 @@ state. See {{early-data-indication}} for one mechanism to limit
 the exposure to replay.
 
 The reader should refer to the following references for analysis of the
-TLS handshake.
+TLS handshake {{CHSV16}} {{FGSW16}} {{LXZFH16}}.
 
 ## Record Layer {#security-record-layer}
 
 The record layer depends on the handshake producing a strong session
 key which can be used to derive bidirectional traffic keys and nonces.
 Assuming that is true, and the keys are used for no more data than
-indicated in [TODO] then the record layer should provide the following
+indicated in {{limits-on-key-usage}} then the record layer should provide the following
 guarantees:
 
 Confidentiality.
 : An attacker should not be able to determine the plaintext contents
 of a given record. More formally it should not be able to distinguish
 between multiple encryptions of the same versus different plaintexts.
-(formally, IND-CPA security [REF]).
+{::comment}Cite IND-CPA?{:/comment}
 
 Integrity.
 : An attacker should not be able to craft a new record which is
 different from an existing record which will be accepted by the receiver
-with more than negligible probability (formally, INT-CTXT security [REF]).
+with more than negligible probability.
+{::comment}Cite INT-CTXT?{:/comment}
 
 Order protection/non-replayability
 : An attacker should not be able to cause the receiver to accept a
@@ -4409,8 +4410,7 @@ a fresh handshake and establish a new session key with an (EC)DHE
 exchange.
 
 The reader should refer to the following references for analysis of the
-degree to which TLS 1.3 provides these properties:
-{{CHSV16}} {{FGSW16}} {{LXZFH16}}
+TLS record layer.
 
 # Working Group Information
 
