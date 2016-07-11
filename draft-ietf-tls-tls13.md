@@ -3918,10 +3918,6 @@ client-authenticated) cipher suites which are currently available in TLS 1.3:
 | TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256 | {0xCC,0xA9}   | [RFC7905] |
 | TLS_DHE_RSA_WITH_CHACHA20_POLY1305_SHA256     | {0xCC,0xAA}   | [RFC7905] |
 
-Note: The values listed for ChaCha/Poly are preliminary but are being
-or will be used for interop testing and therefore are likely to be
-assigned.
-
 Note: ECDHE AES GCM was not yet standards track prior to the publication of
 this specification. This document promotes the above-listed ciphers to
 standards track.
@@ -4419,7 +4415,7 @@ TLS record layer.
 
 The discussion list for the IETF TLS working group is located at the e-mail
 address <tls@ietf.org>. Information on the group and information on how to
-subscribe to the list is at <https://www1.ietf.org/mailman/listinfo/tls>
+subscribe to the list is at <https://www.ietf.org/mailman/listinfo/tls>
 
 Archives of the list can be found at:
 <https://www.ietf.org/mail-archive/web/tls/current/index.html>
