@@ -4297,7 +4297,7 @@ should be the same as if the peers had been communicating in the
 absence of an attack (See {{BBFKZG16}}; defns 8 and 9}).
 
 Forward secret
-: If the long-term authentication keys (signature keys in certificate-based
+: If the long-term keying material (in this case the signature keys in certificate-based
 authentication modes or the PSK in PSK-(EC)DHE modes) are compromised after
 the handshake is complete, this does not compromise the security of the
 session key (See {{DOW92}}).
