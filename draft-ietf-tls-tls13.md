@@ -457,8 +457,7 @@ draft-14
 
 - Major editorial restructuring.
 
-- Remove the Security Analysis section. It will be replaced with
-  something more modern.
+- Replace the Security Analysis section with a WIP draft.
 
 (*) indicates changes to the wire protocol which may require implementations
     to update.
@@ -4244,6 +4243,8 @@ been shown to be insecure in some scenarios.
 
 
 #  Overview of Security Properties {#security-analysis}
+
+[[TODO: This section is still a WIP and needs a bunch more work.]]
 
 A complete security analysis of TLS is outside the scope of this document.
 In this section, we provide an informal description the desired properties
