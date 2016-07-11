@@ -245,7 +245,91 @@ informative:
          ins: K. Paterson
        target: http://www.isg.rhul.ac.uk/~kp/TLS-AEbounds.pdf
        date: 2016
-
+  CK01:
+       title: "Analysis of Key-Exchange Protocols and Their Use for Building Secure Channels"
+       author:
+       -
+         ins: R. Canetti
+       -
+         ins: H. Krawczyk
+       seriesinfo: Proceedings of Eurocrypt 2001
+       date: 2001
+  BBFKZG16:
+       title: "Downgrade Resilience in Key-Exchange Protocols"
+       author:
+       -
+         ins: K. Bhargavan
+       -
+         ins: C. Brzuska
+       -
+         ins: C. Fournet
+       -
+         ins: M. Kohlweiss
+       -
+         ins: S. Zanella-Beguelin
+       -
+         ins: M. Green
+       seriesinfo: Proceedings of IEEE Symposium on Security and Privacy (Oakland) 2016
+       date: 2016
+  DOW92:
+       title: “Authentication and authenticated key exchanges”
+       author:
+       -
+         ins: W. Diffie
+       -
+         ins: P. van Oorschot
+       -
+         ins: M. Wiener
+       seriesinfo: Designs, Codes and Cryptography
+       data: 1992
+  SIGMA:
+       title: "SIGMA: the 'SIGn-and-MAc' approach to authenticated Di e-Hellman and its use in the IKE protocols"
+       author:
+       -
+         ins: H. Krawczyk
+       seriesinfo: Proceedings of CRYPTO 2003
+       date: 2003
+  CHSV16:
+       title: "Automated Analysis and Verification of TLS 1.3: 0-RTT, Resumption and Delayed Authentication"
+       author:
+       -
+         ins: C. Cremers
+       -
+         ins: M. Horvat
+       -
+         ins: S. Scott
+       -
+         ins: T. van der Merwe
+       seriesinfo: Proceedings of IEEE Symposium on Security and Privacy (Oakland) 2016
+       date: 2016
+  FGSW16:
+       title: "Key Confirmation in Key Exchange: A Formal Treatment and Implications for TLS 1.3"
+       author:
+       -
+         ins: M. Fischlin
+       -
+         ins: F. Guenther
+       -
+         ins: B. Schmidt
+       -
+         ins: B. Warinschi
+       seriesinfo: Proceedings of IEEE Symposium on Security and Privacy (Oakland) 2016
+       date: 2016
+  LXZFH16:
+       title: "Multiple Handshakes Security of TLS 1.3 Candidates"
+       author:
+       -
+         ins: X. Li
+       -
+         ins: J. Xu
+       -
+         ins: D. Feng
+       -
+         ins: Z. Zhang
+       -
+         ins: H. Hu
+       seriesinfo: Proceedings of IEEE Symposium on Security and Privacy (Oakland) 2016
+       date: 2016
 --- abstract
 
 This document specifies version 1.3 of the Transport Layer Security
@@ -4159,9 +4243,174 @@ Section 7 of [RFC6066], as it is not applicable to AEAD ciphers and has
 been shown to be insecure in some scenarios.
 
 
-#  Security Analysis
+#  Overview of Security Properties {#security-analysis}
 
-[[TODO]]
+A complete security analysis of TLS is outside the scope of this document.
+In this section, we provide an informal description the desired properties
+as well as references to more detailed work in the research literature
+which provides more formal definitions.
+
+We cover properties of the handshake separately from those of the record layer.
+
+## Handshake {#security-handshake}
+
+The TLS handshake is an Authenticated Key Exchange (AKE) protocol which
+is intended to provide both one-way authenticated (server-only) and
+mutually authenticated (client and server) functionality. At the completion
+of the handshake, each side outputs its view on the following values:
+
+- A "session key" from which can be derived a set of working keys.
+- A set of cryptographic parameters (algorithms, etc.)
+- The identities of the communicating parties.
+
+We assume that the attacker has complete control of the network in
+between the parties {{RFC3552}}. Even under these conditions, the
+handshake should provide the properties listed below. Note that
+these properties are not necessarily independent, but reflect
+the protocol consumers' needs.
+
+Establishing the same session key.
+: The handshake needs to output the same session key on both sides of the
+handshake (See {{CK01}}; defn 1, part 1).
+
+Secrecy of the session key.
+: The shared session key should be known only to the communicating
+parties, not to the attacker (See {{CK01}}; defn 1, part 2).  Note that
+in a unilaterally authenticated connection, the attacker can establish
+its own session keys with the server, but those session keys are
+distinct from those established by the client.
+
+Peer Authentication.
+: The client's view of the peer identity should reflect the server's
+identity. If the client is authenticated, the server's view of the
+peer identity should match the client's identity.
+
+Uniqueness of the session key:
+: Any two distinct handshakes should produce distinct, unrelated session
+keys [REF: Need cite.]
+
+Downgrade protection.
+: The cryptographic parameters should be the same on both sides and
+should be the same as if the peers had been communicating in the
+absence of an attack (See {{BBFKZG16}}; defns 8 and 9}).
+
+Forward secret
+: If the long-term authentication keys (signature keys in certificate-based
+authentication modes or the PSK in PSK-(EC)DHE modes) are compromised after
+the handshake is complete, this does not compromise the security of the
+session key (See {{DOW92}}).
+
+Protection of endpoint identities.
+: The server's identity (certificate) should be protected against passive
+attackers. The client's identity should be protected against both passive
+and active attackers.
+{:br}
+
+Informally, the signature-based modes of TLS 1.3 provide for the
+establishment of a unique, secret, shared, key established by an
+(EC)DHE key exchange and authenticated by the server's signature over
+the handshake transcript, as well as tied to the server's identity by
+a MAC. If the client is authenticated by a certificate, it also signs
+over the handshake transcript and provides a MAC tied to both
+identities. {{SIGMA}} describes the analysis of this type of key
+exchange protocol. If fresh (EC)DHE keys are used for each connection,
+then the output keys are forward secret.
+
+The PSK and resumption-PSK modes bootstrap from a long-term shared
+secret into a unique per-connection short-term session key. This
+secret may have been established in a previous handshake. If
+PSK-(EC)DHE modes are used, this session key will also be forward
+secret. The resumption-PSK mode has been designed so that the
+resumption master secret computed by connection N and needed to form
+connection N+1 is separate from the traffic keys used by connection N,
+thus providing forward secrecy between the connections.
+
+For all handshake modes, the Finished MAC (and where present, the
+signature), prevents downgrade attacks. In addition, the random
+tainting mechanism described in {{server-hello}} allows the detection
+of downgrade to previous TLS versions.
+
+As soon as the client and the server have exchanged enough information
+to establish shared keys, the remainder of the handshake is encrypted,
+thus providing protection against passive attackers. Because the server
+authenticates before the client, the client can ensure that it only
+reveals its identity to an authenticated server. Note that implementations
+must use the provided record padding mechanism during the handshake
+to avoid leaking information about the identities due to length.
+
+The 0-RTT mode of operation generally provides the same security
+properties as 1-RTT data, with the two exceptions that the 0-RTT
+encryption keys do not provide full forward secrecy and that the
+the server is not able to guarantee full uniqueness of the handshake
+(non-replayability) without keeping potentially undue amounts of
+state. See {{early-data-indication}} for one mechanism to limit
+the exposure to replay.
+
+The reader should refer to the following references for analysis of the
+TLS handshake.
+
+## Record Layer {#security-record-layer}
+
+The record layer depends on the handshake producing a strong session
+key which can be used to derive bidirectional traffic keys and nonces.
+Assuming that is true, and the keys are used for no more data than
+indicated in [TODO] then the record layer should provide the following
+guarantees:
+
+Confidentiality.
+: An attacker should not be able to determine the plaintext contents
+of a given record. More formally it should not be able to distinguish
+between multiple encryptions of the same versus different plaintexts.
+(formally, IND-CPA security [REF]).
+
+Integrity.
+: An attacker should not be able to craft a new record which is
+different from an existing record which will be accepted by the receiver
+with more than negligible probability (formally, INT-CTXT security [REF]).
+
+Order protection/non-replayability
+: An attacker should not be able to cause the receiver to accept a
+record which it has already accepted or cause the receiver to accept
+record N+1 without having first processed record N.
+
+Length concealment.
+: Given a record with a given external length, the attacker should not be able
+to determine the amount of the record that is content versus padding.
+
+: Forward security after key change.
+If the traffic key update mechanism described in {{key-update}} has been
+used and the previous generation key is deleted, an attacker who compromises
+the endpoint should not be able to decrypt traffic encrypted with the old key.
+{:br}
+
+Informally, TLS 1.3 provides these properties by AEAD-protecting the
+plaintext with a strong key. AEAD encryption {{RFC5116}} provides confidentiality
+and integrity for the data. Non-replayability is provided by using
+a separate nonce for each record, with the nonce being derived from
+the record sequence number ({{nonce}}), with the sequence
+number being maintained independently at both sides thus records which
+are delivered out of order result in AEAD deprotection failures.
+
+The plaintext protected by the AEAD function consists of content plus
+variable-length padding. Because the padding is also encrypted, the
+attacker cannot directly determine the length of the padding, but
+may be able to measure it indirectly by the use of timing channels
+exposed during record processing (i.e., seeing how long it takes to
+process a record). In general, it is not known how to remove this
+type of channel because even a constant time padding removal
+function will then feed the content into data-dependent functions.
+
+Generation N+1 keys are derived from generation N keys via a key
+derivation function {{updating-traffic-keys}}. As long as this function is truly one way, it
+is not possible to compute the previous keys after a key change
+(forward secrecy). However, TLS does not provide backward secrecy
+after key updates; systems which want backward secrecy must do
+a fresh handshake and establish a new session key with an (EC)DHE
+exchange.
+
+The reader should refer to the following references for analysis of the
+degree to which TLS 1.3 provides these properties:
+{{CHSV16}} {{FGSW16}} {{LXZFH16}}
 
 # Working Group Information
 
