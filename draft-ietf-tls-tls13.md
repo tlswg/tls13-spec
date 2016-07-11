@@ -320,23 +320,41 @@ document are to be interpreted as described in RFC 2119 {{RFC2119}}.
 
 The following terms are used:
 
-client: The endpoint initiating the TLS connection.
+client:
 
-connection: A transport-layer connection between two endpoints.
+: The endpoint initiating the TLS connection.
 
-endpoint: Either the client or server of the connection.
+connection:
 
-handshake: An initial negotiation between client and server that establishes the parameters of their transactions.
+: A transport-layer connection between two endpoints.
 
-peer: An endpoint. When discussing a particular endpoint, "peer" refers to the endpoint that is remote to the primary subject of discussion.
+endpoint:
 
-receiver: An endpoint that is receiving records.
+: Either the client or server of the connection.
 
-sender: An endpoint that is transmitting records.
+handshake:
 
-session: An association between a client and a server resulting from a handshake.
+: An initial negotiation between client and server that establishes the parameters of their transactions.
 
-server: The endpoint which did not initiate the TLS connection.
+peer:
+
+: An endpoint. When discussing a particular endpoint, "peer" refers to the endpoint that is remote to the primary subject of discussion.
+
+receiver:
+
+: An endpoint that is receiving records.
+
+sender:
+
+: An endpoint that is transmitting records.
+
+session:
+
+: An association between a client and a server resulting from a handshake.
+
+server:
+
+: The endpoint which did not initiate the TLS connection.
 
 
 ##  Major Differences from TLS 1.2
