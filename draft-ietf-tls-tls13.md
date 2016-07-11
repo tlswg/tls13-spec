@@ -360,6 +360,9 @@ draft-14
 - Allow resumption even after fatal alerts. This matches current
   practice.
 
+- Remove non-closure warning alerts. Require treating unknown alerts as
+  fatal.
+
 - Make the rules for accepting 0-RTT less restrictive.
 
 - Clarify 0-RTT backward-compatibility rules.
