@@ -3215,36 +3215,36 @@ error is detected, the detecting party sends a message to its
 peer. Upon transmission or receipt of a fatal alert message, both
 parties immediately close the connection.  Whenever an implementation
 encounters a condition which is defined as a fatal alert, it MUST send
-the appropriate alert prior to closing the connection.
+the appropriate alert prior to closing the connection. All alerts defined
+in this section below, as well as all unknown alerts are universally
+considered fatal as of TLS 1.3 (see {{alert-protocol}}).
 
 The following error alerts are defined:
 
 unexpected_message
-: An inappropriate message was received.  This alert is always fatal
-  and should never be observed in communication between proper
-  implementations.
+: An inappropriate message was received. This alert should never be
+  observed in communication between proper implementations.
 
 bad_record_mac
 : This alert is returned if a record is received which cannot be
   deprotected. Because AEAD algorithms combine decryption and
   verification, this alert is used for all deprotection failures.
-  This alert is always fatal and should never be observed in
-  communication between proper implementations (except when messages
-  were corrupted in the network).
+  This alert should never be observed in communication between
+  proper implementations, except when messages were corrupted
+  in the network.
 
 record_overflow
 : A TLSCiphertext record was received that had a length more than
   2^14 + 256 bytes, or a record decrypted to a TLSPlaintext record
-  with more than 2^14 bytes.  This alert is always fatal and
-  should never be observed in communication between proper
-  implementations (except when messages were corrupted in the
-  network).
+  with more than 2^14 bytes.
+  This alert should never be observed in communication between
+  proper implementations, except when messages were corrupted
+  in the network.
 
 handshake_failure
 : Reception of a "handshake_failure" alert message indicates that the
   sender was unable to negotiate an acceptable set of security
   parameters given the options available.
-  This alert is always fatal.
 
 bad_certificate
 : A certificate was corrupt, contained signatures that did not
@@ -3265,63 +3265,56 @@ certificate_unknown
 
 illegal_parameter
 : A field in the handshake was out of range or inconsistent with
-  other fields.  This alert is always fatal.
+  other fields.
 
 unknown_ca
 : A valid certificate chain or partial chain was received, but the
   certificate was not accepted because the CA certificate could not
-  be located or couldn't be matched with a known, trusted CA.  This
-  alert is always fatal.
+  be located or couldn't be matched with a known, trusted CA.
 
 access_denied
 : A valid certificate or PSK was received, but when access control was
-  applied, the sender decided not to proceed with negotiation.  This
-  alert is always fatal.
+  applied, the sender decided not to proceed with negotiation.
 
 decode_error
 : A message could not be decoded because some field was out of the
-  specified range or the length of the message was incorrect.  This
-  alert is always fatal and should never be observed in
-  communication between proper implementations (except when messages
-  were corrupted in the network).
+  specified range or the length of the message was incorrect.
+  This alert should never be observed in communication between
+  proper implementations, except when messages were corrupted
+  in the network.
 
 decrypt_error
 : A handshake cryptographic operation failed, including being unable
   to correctly verify a signature or validate a Finished message.
-  This alert is always fatal.
 
 protocol_version
 : The protocol version the peer has attempted to negotiate is
-  recognized but not supported.  (For example, old protocol versions
-  might be avoided for security reasons.)  This alert is always
-  fatal.
+  recognized but not supported. (see {{backward-compatibility}})
 
 insufficient_security
 : Returned instead of "handshake_failure" when a negotiation has
   failed specifically because the server requires ciphers more
-  secure than those supported by the client.  This alert is always
-  fatal.
+  secure than those supported by the client.
 
 internal_error
 : An internal error unrelated to the peer or the correctness of the
   protocol (such as a memory allocation failure) makes it impossible
-  to continue.  This alert is always fatal.
+  to continue.
 
 inappropriate_fallback
 : Sent by a server in response to an invalid connection retry attempt
-  from a client. (see [RFC7507]) This alert is always fatal.
+  from a client. (see [RFC7507])
 
 missing_extension
 : Sent by endpoints that receive a hello message not containing an
   extension that is mandatory to send for the offered TLS version.
-  This message is always fatal.
 [[TODO: IANA Considerations.]]
 
 unsupported_extension
 : Sent by endpoints receiving any hello message containing an extension
   known to be prohibited for inclusion in the given hello message, including
   any extensions in a ServerHello not first offered in the corresponding
-  ClientHello. This alert is always fatal.
+  ClientHello.
 
 certificate_unobtainable
 : Sent by servers when unable to obtain a certificate from a URL
@@ -3341,7 +3334,7 @@ bad_certificate_status_response
 bad_certificate_hash_value
 : Sent by servers when a retrieved object does not have the correct hash
   provided by the client via the "client_certificate_url" extension
-  [RFC6066]. This alert is always fatal.
+  [RFC6066].
 
 unknown_psk_identity
 : Sent by servers when a PSK cipher suite is selected but no
