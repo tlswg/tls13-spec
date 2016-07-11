@@ -4361,14 +4361,12 @@ guarantees:
 
 Confidentiality.
 : An attacker should not be able to determine the plaintext contents
-of a given record. More formally it should not be able to distinguish
-between multiple encryptions of the same versus different plaintexts.
+of a given record.
 {::comment}Cite IND-CPA?{:/comment}
 
 Integrity.
 : An attacker should not be able to craft a new record which is
-different from an existing record which will be accepted by the receiver
-with more than negligible probability.
+different from an existing record which will be accepted by the receiver.
 {::comment}Cite INT-CTXT?{:/comment}
 
 Order protection/non-replayability
