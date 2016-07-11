@@ -4353,7 +4353,7 @@ the endpoint should not be able to decrypt traffic encrypted with the old key.
 {:br}
 
 Informally, TLS 1.3 provides these properties by AEAD-protecting the
-plaintext with a strong key. AEAD encryption provides confidentiality
+plaintext with a strong key. AEAD encryption {{RFC5116}} provides confidentiality
 and integrity for the data. Non-replayability is provided by using
 a separate nonce for each record, with the nonce being derived from
 the record sequence number ({{nonce}}), with the sequence
