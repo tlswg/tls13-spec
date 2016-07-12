@@ -3941,7 +3941,7 @@ suites which are currently available in TLS 1.3:
 | TLS_ECDHE_PSK_WITH_CHACHA20_POLY1305_SHA256   | {0xCC,0xAC}   | [RFC7905] |
 | TLS_DHE_PSK_WITH_CHACHA20_POLY1305_SHA256     | {0xCC,0xAD}   | [RFC7905] |
 
-Note: The values listed for ECDHE and ChaCha/Poly are preliminary but
+Note: The values listed for ECDHE PSK AES suites are preliminary but
 are being or will be used for interop testing and therefore are likely to be
 assigned.
 
