@@ -53,7 +53,7 @@ Building The Draft
 ------------------
 
 You will need kramdown-rfc2629 (https://github.com/cabo/kramdown-rfc2629)
-and xml2rfc (http://xml2rfc.tools.ietf.org/).
+and xml2rfc (https://xml2rfc.tools.ietf.org/).
 
 
 NOTE WELL
