@@ -2719,6 +2719,10 @@ Hash used for the handshake.
 Note: Alerts and any other record types are not handshake messages
 and are not included in the hash computations.
 
+Any records following a 1-RTT Finished message MUST be encrypted under the
+application traffic key. In particular, this includes any alerts sent by the
+server in response to client Certificate and CertificateVerify messages.
+
 ## Post-Handshake Messages
 
 TLS also allows other messages to be sent after the main handshake.
