@@ -2275,7 +2275,7 @@ certificate_request_context
   which will be echoed in the client's Certificate message. The
   certificate_request_context MUST be unique within the scope
   of this connection (thus preventing replay of client
-  CertificateVerify messages).
+  CertificateVerify messages). Within the handshake, this field MUST be empty.
 
 supported_signature_algorithms
 : A list of the signature algorithms that the server is
