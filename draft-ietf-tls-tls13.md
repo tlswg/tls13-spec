@@ -2773,8 +2773,8 @@ Hash.Length zeroes.
          uint32 ticket_lifetime;
          uint32 flags;
          uint32 ticket_age_add;
-         TicketExtension extensions<2..2^16-2>;
-         opaque ticket<0..2^16-1>;
+         TicketExtension extensions<0..2^16-2>;
+         opaque ticket<1..2^16-1>;
      } NewSessionTicket;
 
 
