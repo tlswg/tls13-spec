@@ -678,11 +678,6 @@ TLS supports three basic key exchange modes:
 
 - A combination of a symmetric key and Diffie-Hellman
 
-Which mode is used depends on the negotiated cipher suite. Conceptually,
-the handshake establishes three secrets which are used to derive all the
-keys.
-
-
 {{tls-full}} below shows the basic full TLS handshake:
 
 ~~~
@@ -734,21 +729,22 @@ in the diagram above.
 
 In the Key Exchange phase, the client sends the ClientHello
 ({{client-hello}}) message, which contains a random nonce
-(ClientHello.random), its offered protocol version, cipher suite, and
-extensions, and in general either one or more Diffie-Hellman key shares (in the
+(ClientHello.random), its offered protocol version, a list of
+symmetric ciphers, some set of Diffie-Hellman key shares (in the
 "key_share" extension {{key-share}}), one or more pre-shared key labels (in the
-"pre_shared_key" extension {{pre-shared-key-extension}}), or both.
+"pre_shared_key" extension {{pre-shared-key-extension}}), or both,
+and some extensions.
 
 The server processes the ClientHello and determines the appropriate
 cryptographic parameters for the connection. It then responds with its
 own ServerHello which indicates the negotiated connection
-parameters. [{{server-hello}}].  The combination of the ClientHello
-and the ServerHello determines the shared keys. If either a pure
-(EC)DHE or (EC)DHE-PSK cipher suite is in use, then the ServerHello
+parameters. [{{server-hello}}]. The combination of the ClientHello
+and the ServerHello determines the shared keys. If pure
+(EC)DHE or (EC)DHE-PSK key establishment is in use, then the ServerHello
 will contain a "key_share" extension with the server's ephemeral
 Diffie-Hellman share which MUST be in the same group as one of the
-client's shares. If a pure PSK or an (EC)DHE-PSK cipher suite is
-negotiated, then the ServerHello will contain a "pre_shared_key"
+client's shares. If pure PSK or (EC)DHE-PSK key establishment is
+in use, then the ServerHello will contain a "pre_shared_key"
 extension indicating which of the client's offered PSKs was selected.
 
 The server then sends two messages to establish the Server Parameters:
@@ -768,19 +764,16 @@ Specifically:
 
 Certificate.
 : the certificate of the endpoint. This message is omitted if the
-  server is not authenticating with a certificate (i.e.,
-  with PSK or (EC)DHE-PSK cipher suites). Note that if raw public keys
-  {{RFC7250}} or the cached information extension
-  {{?I-D.ietf-tls-cached-info}} are in use, then this message
-  will not contain a certificate but rather some other value
-  corresponding to the server's long-term key.
-  [{{certificate}}]
+  server is not authenticating with a certificate. Note that if raw
+  public keys {{RFC7250}} or the cached information extension
+  {{?I-D.ietf-tls-cached-info}} are in use, then this message will not
+  contain a certificate but rather some other value corresponding to
+  the server's long-term key.  [{{certificate}}]
 
 CertificateVerify.
 : a signature over the entire handshake using the public key
   in the Certificate message. This message is omitted if the
-  server is not authenticating via a certificate (i.e.,
-  with PSK or (EC)DHE-PSK cipher suites). [{{certificate-verify}}]
+  server is not authenticating via a certificate. [{{certificate-verify}}]
 
 Finished.
 : a MAC (Message Authentication Code) over the entire handshake.
@@ -854,10 +847,9 @@ below, this functionality was provided by "session IDs" and
 "session tickets" {{RFC5077}}. Both mechanisms are obsoleted in TLS
 1.3.
 
-PSK cipher suites can either use PSK in combination with
-an (EC)DHE exchange in order to provide forward secrecy in combination
-with shared keys, or can use PSKs alone, at the cost of losing forward
-secrecy.
+PSKs can be used with (EC)DHE exchange in order to provide forward
+secrecy in combination with shared keys, or can be used alone, at the
+cost of losing forward secrecy.
 
 {{tls-resumption-psk}} shows a pair of handshakes in which the first establishes
 a PSK and the second uses it:
@@ -901,9 +893,11 @@ Subsequent Handshake:
 As the server is authenticating via a PSK, it does not send a
 Certificate or a CertificateVerify. When a client offers resumption
 via PSK it SHOULD also supply a "key_share" extension to the server as well
-to allow the server to decline resumption and fall back to a full handshake, if needed.
-A "key_share" extension MUST also be sent if the client is attempting to
-negotiate an (EC)DHE-PSK cipher suite.
+to allow the server to decline resumption and fall back to a full handshake,
+if needed. The server responds with a "pre_shared_key" extension
+to negotiate use of PSK key establishment and can (as shown here)
+respond with a "key_share" extension to do (EC)DHE key
+establishment, thus providing forward secrecy.
 
 
 ## Zero-RTT Data
@@ -958,9 +952,8 @@ server authenticating via a signature
 https://github.com/tlswg/tls13-spec/issues/443]]
 
 
-IMPORTANT NOTE: The security properties for 0-RTT data (regardless of
-the cipher suite) are weaker than those for other kinds of TLS data.
-Specifically:
+IMPORTANT NOTE: The security properties for 0-RTT data are weaker than
+those for other kinds of TLS data.  Specifically:
 
 1. This data is not forward secret, because it is encrypted solely
 with the PSK.
@@ -1345,16 +1338,13 @@ legacy_session_id
   set by a pre-TLS 1.3 server.
 
 cipher_suites
-: This is a list of the cryptographic options supported by the client,
-  with the client's first preference first.  Each cipher suite defines
-  a key exchange algorithm, a record protection algorithm (including
-  secret key length) and a hash to be used with HKDF. The server will
-  select a cipher suite or, if no acceptable choices are presented,
-  return a "handshake_failure" alert and close the connection. If the
-  list contains cipher suites the server does not recognize, support,
-  or wish to use, the server MUST ignore those cipher suites, and
-  process the remaining ones as usual.  Values are defined in
-  {{cipher-suites}}.
+: This is a list of the symmetric cipher options supported by the
+  client, specifically the record protection algorithm (including
+  secret key length) and a hash to be used with HKDF, in descending
+  order of client preference. If the list contains cipher suites
+  the server does not recognize, support, or wish to use, the server
+  MUST ignore those cipher suites, and process the remaining ones as
+  usual. Values are defined in {{cipher-suites}}.
 
 legacy_compression_methods
 : Versions of TLS before 1.3 supported compression with the list of
@@ -1422,9 +1412,7 @@ random
 
 cipher_suite
 : The single cipher suite selected by the server from the list in
-  ClientHello.cipher_suites.  For resumed sessions, this field is
-  the value from the state of the session being resumed.
-  [[TODO: interaction with PSK.]]
+  ClientHello.cipher_suites.
 
 extensions
 : A list of extensions.  Note that only extensions offered by the
@@ -1491,7 +1479,6 @@ Structure of this message:
 
        struct {
            ProtocolVersion server_version;
-           CipherSuite cipher_suite;
            NamedGroup selected_group;
            Extension extensions<0..2^16-1>;
        } HelloRetryRequest;
@@ -1501,11 +1488,9 @@ selected_group
   is requesting a retried ClientHello/KeyShare for.
 {:br }
 
-The server_version, cipher_suite, and extensions fields have the
+The server_version and extensions fields have the
 same meanings as their corresponding values in the ServerHello.
-[[NOTE: cipher_suite may disappear. https://github.com/tlswg/tls13-spec/issues/528]]
-The
-server SHOULD send only the extensions necessary for the client to
+The server SHOULD send only the extensions necessary for the client to
 generate a correct ClientHello pair (currently no such extensions
 exist). As with ServerHello, a
 HelloRetryRequest MUST NOT contain any extensions that were not first
@@ -1530,7 +1515,7 @@ in its original KeyShare.
 
 Upon re-sending the ClientHello and receiving the
 server's ServerHello/KeyShare, the client MUST verify that
-the selected CipherSuite and NamedGroup match that supplied in
+the selected NamedGroup matches that supplied in
 the HelloRetryRequest. If either of these values differ, the client
 MUST abort the connection with a fatal "handshake_failure" alert.
 
@@ -1648,16 +1633,14 @@ Clients MUST NOT use cookies in subsequent connections.
 ###  Signature Algorithms
 
 The client uses the "signature_algorithms" extension to indicate to the server
-which signature algorithms may be used in digital signatures.
-
-Clients which offer one or more cipher suites which use certificate authentication
-(i.e., any non-PSK cipher suite) MUST send the "signature_algorithms" extension.
-If this extension is not provided and no alternative cipher suite is available,
+which signature algorithms may be used in digital signatures. If a server
+is authenticating via a certificate and the client has not sent a
+"signature_algorithms" extension then the server MUST
 the server MUST close the connection with a fatal "missing_extension" alert.
 (see {{mti-extensions}})
 
-The "extension_data" field of this extension contains a
-"supported_signature_algorithms" value:
+The "extension_data" field of this extension contains a "supported_signature_algorithms"
+value:
 
 %%% Signature Algorithm Extension
 
@@ -1737,10 +1720,6 @@ EdDSA algorithms
   the "PureEdDSA" algorithms and not the "prehash" variants.
 {:br }
 
-The semantics of this extension are somewhat complicated because the cipher
-suite adds additional constraints on signature algorithms.
-{{server-certificate-selection}} describes the appropriate rules.
-
 rsa_pkcs1_sha1, dsa_sha1, and ecdsa_sha1 SHOULD NOT be offered. Clients
 offering these values for backwards compatibility MUST list them as the lowest
 priority (listed after all other algorithms in the
@@ -1781,19 +1760,6 @@ Note: In versions of TLS prior to TLS 1.3, this extension was named
 {{I-D.ietf-tls-negotiated-ff-dhe}}. This extension was also used to negotiate
 ECDSA curves. Signature algorithms are now negotiated independently (see
 {{signature-algorithms}}).
-
-Clients which offer one or more (EC)DHE cipher suites MUST send at least one
-supported NamedGroup value and servers MUST NOT negotiate any of these
-cipher suites unless a supported value was provided.
-If this extension is not provided and no alternative cipher suite is available,
-the server MUST close the connection with a fatal "missing_extension" alert.
-(see {{mti-extensions}})
-If the extension is provided, but no compatible group is offered, the
-server MUST NOT negotiate a cipher suite of the relevant type. For
-instance, if a client supplies only ECDHE groups, the server MUST NOT
-negotiate finite field Diffie-Hellman. If no acceptable group can be
-selected across all cipher suites, then the server MUST generate a
-fatal "handshake_failure" alert.
 
 The "extension_data" field of this extension contains a
 "NamedGroupList" value:
@@ -1854,14 +1820,6 @@ subsequent connections.
 The "key_share" extension contains the endpoint's cryptographic parameters
 for non-PSK key establishment methods (currently DHE or ECDHE).
 
-Clients which offer one or more (EC)DHE cipher suites MUST send this
-extension and SHOULD send at least one supported KeyShareEntry value.
-Servers MUST NOT negotiate any of these cipher suites unless a supported
-value was provided.
-If this extension is not provided in a ServerHello or ClientHello,
-and the peer is offering (EC)DHE cipher suites, then the endpoint MUST close
-the connection with a fatal "missing_extension" alert.
-(see {{mti-extensions}})
 Clients MAY send an empty client_shares vector in order to request
 group selection from the server at the cost of an additional round trip.
 (see {{hello-retry-request}})
@@ -1908,7 +1866,8 @@ client_shares
   in the "supported_groups" extension.
 
 server_share
-: A single KeyShareEntry value for the negotiated cipher suite.
+: A single KeyShareEntry value that is in the same group as one of the
+  client's shares.
 {:br }
 
 Clients offer an arbitrary number of KeyShareEntry values, each
@@ -1916,25 +1875,16 @@ representing a single set of key exchange parameters. For instance, a
 client might offer shares for several elliptic curves or multiple
 FFDHE groups.  The key_exchange values for each KeyShareEntry MUST by
 generated independently.  Clients MUST NOT offer multiple
-KeyShareEntry values for the same group.  Clients MUST NOT offer
-any KeyShareEntry values for groups not listed in the client's
-"supported_groups" extension.
+KeyShareEntry values for the same group.  Clients MUST NOT offer any
+KeyShareEntry values for groups not listed in the client's
+"supported_groups" extension.  Servers MAY check for violations of
+these rules and and MAY abort the connection with a fatal
+"illegal_parameter" alert if one is violated.
 
-Servers offer exactly one KeyShareEntry value, which corresponds to
-the key exchange used for the negotiated cipher suite.  Servers MUST
-NOT offer a KeyShareEntry value for a group not offered by the client
-in its corresponding KeyShare or "supported_groups" extension.
-
-Implementations MAY check for violations of these rules and
-and MAY abort the connection with a fatal "illegal_parameter" alert
-if one is violated.
-
-If the server selects an (EC)DHE cipher suite and no mutually
-supported group is available between the two endpoints' KeyShare
-offers, yet there is a mutually supported group that can be found via
-the "supported_groups" extension, then the server MUST reply with a
-HelloRetryRequest.  If there is no mutually supported group at all,
-the server MUST NOT negotiate an (EC)DHE cipher suite.
+Servers offer exactly one KeyShareEntry which corresponds to one of
+the KeyShareEntries offered by the client. Servers MUST NOT send
+a KeyShareEntry for any group not indicated in the "supported_groups"
+extension.
 
 [[TODO: Recommendation about what the client offers.
 Presumably which integer DH groups and which curves.]]
@@ -1985,20 +1935,21 @@ The "pre_shared_key" extension is used to indicate the identity of the
 pre-shared key to be used with a given handshake in association
 with a PSK or (EC)DHE-PSK cipher suite (see {{RFC4279}} for background).
 
-Clients which offer one or more PSK cipher suites
-MUST send at least one supported psk_identity value and
-servers MUST NOT negotiate any of these cipher suites unless a supported
-value was provided.
-If this extension is not provided and no alternative cipher suite is available,
-the server MUST close the connection with a fatal "missing_extension" alert.
-(see {{mti-extensions}})
-
 The "extension_data" field of this extension contains a
 "PreSharedKeyExtension" value:
 
 %%% Key Exchange Messages
 
+       enum { psk_ke(0), psk_dhe_ke(1), (255) } PskKeyExchangeModes;
+       enum { psk_auth(0), psk_sign_auth(1), (255) } PskAuthenticationModes;
+
        opaque psk_identity<0..2^16-1>;
+
+       struct {
+           PskKeMode ke_modes<1..255>;
+           PskAuthMode auth_modes<1..255>;
+           opaque identity<0..2^16-1>;
+       } PskIdentity;
 
        struct {
            select (Role) {
@@ -2006,6 +1957,8 @@ The "extension_data" field of this extension contains a
                    psk_identity identities<2..2^16-1>;
 
                case server:
+                   PskKeMode ke_mode;
+                   PskAuthMode auth_mode;
                    uint16 selected_identity;
            }
        } PreSharedKeyExtension;
@@ -2021,25 +1974,51 @@ selected_identity
   the identies in the client's list.
 {: br}
 
-If no suitable identity is provided, the server MUST NOT negotiate
-a PSK cipher suite and MAY respond with an "unknown_psk_identity"
-alert message. Sending this alert is OPTIONAL; servers MAY instead
-choose to send a "decrypt_error" alert to merely indicate an
-invalid PSK identity or instead negotiate use of a non-PSK cipher
-suite, if available.
 
-If the server selects a PSK cipher suite, it MUST send a
-"pre_shared_key" extension with the identity that it selected.
-The client MUST verify that the server's selected_identity
-is within the range supplied by the client. If the server supplies an
-"early_data" extension, the client MUST verify that the server selected the
-first offered identity. If any other value is returned, the client MUST
-generate a fatal "unknown_psk_identity" alert and close the connection.
+Each PSK offered by the client also indicates the authentication and
+key exchange modes with which the server can use it, with each
+list being in the order of the client's preference, with most
+preferred first. 
+PskKeyExchangeModes have the following meanings:
 
-Note that although 0-RTT data is encrypted with the first PSK identity, the
-server MAY fall back to 1-RTT and select a different PSK identity if multiple
-identities are offered.
+psk_ke
+: PSK-only key establishment. In this mode, the server MUST not
+supply a "key_share" value.
 
+psk_dhe_ke
+: PSK key establishment with (EC)DHE key establishment. In this mode,
+the client and servers MUST supply "key_share" values as described
+in {{key-share}}.
+{:br}
+
+PskAuthenticationModes have the following meanings:
+
+psk_auth
+: PSK-only authentication. In this mode, the server MUST NOT supply
+either a Certificate or CertificateVerify message.
+
+psk_sign_auth
+: PSK authentication plus a digital signature from the server. In this
+mode, the server MUST send Certificate ({{certificate}}) and CertificateVerify
+({{certificate-verify}}) messages.
+{:br}
+
+In order to accept PSK key establishment, the server sends a
+"pre_shared_key" extension with the identity and the PSK authentication
+and key exchange modes that it has selected.
+Clients MUST verify that the server's selected_identity is within the
+range supplied by the client and that the modes are modes it
+offered. If any of these values does not match, the client MUST
+generate a fatal "illegal_parameter" alert and close the connection.
+
+If the server supplies an "early_data" extension, the client MUST
+verify that the server selected the first offered identity. If any
+other value is returned, the client MUST generate a fatal
+"unknown_psk_identity" alert and close the connection.
+
+Note that although 0-RTT data is encrypted with the first PSK
+identity, the server MAY fall back to 1-RTT and select a different PSK
+identity if multiple identities are offered.
 
 ### Early Data Indication
 
@@ -2105,7 +2084,7 @@ client's "pre_shared_key" extension. In addition, it MUST verify that
 the following values are consistent with those negotiated in the
 connection during which the ticket was established.
 
-- The TLS version number, symmetric ciphersuite, and the hash for HKDF.
+- The TLS version number, symmetric cipher suite, and the hash for HKDF.
 - The selected ALPN {{!RFC7443}} value, if any.
 - The server_name {{RFC6066}} value provided by the client,
   if any.
@@ -2247,8 +2226,8 @@ extensions
 
 When this message will be sent:
 
-> A non-anonymous server can optionally request a certificate from the client,
-if appropriate for the selected cipher suite. This message, if sent, will
+> A server which is authenticating with a certificate can optionally
+request a certificate from the client. This message, if sent, will
 follow EncryptedExtensions.
 
 Structure of this message:
@@ -2408,9 +2387,6 @@ Meaning of this message:
 
 > This message conveys the endpoint's certificate chain to the peer.
 
-> The certificate MUST be appropriate for the negotiated cipher suite's
-authentication algorithm and any negotiated extensions.
-
 Structure of this message:
 
 %%% Authentication Messages
@@ -2492,10 +2468,6 @@ If the server has multiple certificates, it chooses one of them based on the
 above-mentioned criteria (in addition to other criteria, such as transport
 layer endpoint, local configuration and preferences).
 
-As cipher suites that specify new key exchange methods are specified for the
-TLS protocol, they will imply the certificate format and the required encoded
-keying information.
-
 
 #### Client Certificate Selection
 
@@ -2561,8 +2533,8 @@ When this message will be sent:
 > This message is used to provide explicit proof that an endpoint
 possesses the private key corresponding to its certificate
 and also provides integrity for the handshake up
-to this point. Servers MUST send this message when using
-a cipher suite which is authenticated via a certificate.
+to this point. Servers MUST send this message when
+authenticating via a certificate.
 Clients MUST send this
 message whenever authenticating via a Certificate (i.e., when
 the Certificate message is non-empty). When sent, this message MUST appear immediately
@@ -2624,18 +2596,11 @@ for a server CertificateVerify would be:
 
 If sent by a server, the signature algorithm MUST be one offered in the
 client's "signature_algorithms" extension unless no valid certificate chain can be
-produced without unsupported algorithms (see {{signature-algorithms}}). Note that
-there is a possibility for inconsistencies here. For instance, the client might
-offer an ECDHE_ECDSA cipher suite but omit any ECDSA and EdDSA values from its
-"signature_algorithms" extension. In order to negotiate correctly, the server
-MUST check any candidate cipher suites against the "signature_algorithms"
-extension before selecting them. This is somewhat inelegant but is a compromise
-designed to minimize changes to the original cipher suite design.
+produced without unsupported algorithms (see {{signature-algorithms}}).
 
-If sent by a client, the signature algorithm used in the
-signature MUST be one of those present in the
-supported_signature_algorithms field of the CertificateRequest
-message.
+If sent by a client, the signature algorithm used in the signature
+MUST be one of those present in the supported_signature_algorithms
+field of the CertificateRequest message.
 
 In addition, the signature algorithm MUST be compatible with the key
 in the sender's end-entity certificate. RSA signatures MUST use an
@@ -2746,13 +2711,18 @@ from the resumption master secret:
                             "resumption context", "", Hash.Length)
 ~~~~
 
-The client MAY use this PSK for future handshakes by including
-the ticket value in the "pre_shared_key" extension in its ClientHello
-({{pre-shared-key-extension}}) and supplying a suitable PSK cipher
-suite. Servers may send multiple tickets on a single connection, for
-instance after post-handshake authentication. For handshakes that
-do not use a resumption_psk, the resumption_context is a string of
-Hash.Length zeroes.
+The client MAY use this PSK for future handshakes by including the
+ticket value in the "pre_shared_key" extension in its ClientHello
+({{pre-shared-key-extension}}). Servers may send multiple tickets on a
+single connection, for instance after post-handshake
+authentication. For handshakes that do not use a resumption_psk, the
+resumption_context is a string of [[TBD: This is not safe now
+that we allow additional server signatures with PSK: 
+OPEN ISSUE https://github.com/tlswg/tls13-spec/issues/558]]
+
+Any ticket MUST only be resumed with a cipher suite that is identical
+to that negotiated connection where the ticket was established.
+
 
 %%% Ticket Establishment
 
@@ -2763,24 +2733,21 @@ Hash.Length zeroes.
          opaque extension_data<1..2^16-1>;
      } TicketExtension;
 
-     enum {
-       allow_early_data(1),
-       allow_dhe_resumption(2),
-       allow_psk_resumption(4)
-     } TicketFlags;
-
      struct {
          uint32 ticket_lifetime;
-         uint32 flags;
-         uint32 ticket_age_add;
-         TicketExtension extensions<0..2^16-2>;
+         PskKeMode ke_modes<1..255>;
+         PskAuthMode auth_modes<1..255>;
          opaque ticket<1..2^16-1>;
+         TicketExtension extensions<0..2^16-2>;
      } NewSessionTicket;
 
+ke_modes
+: The key exchange modes with which this ticket can be used in descending
+order of server preference.
 
-flags
-: A 32-bit value indicating the ways in which this ticket may
-  be used (as a bitwise OR of the flags values).
+auth_modes
+: The authentication modes with which this ticket can be used in descending
+order of server preference.
 
 ticket_lifetime
 : Indicates the lifetime in seconds as a 32-bit unsigned integer in
@@ -2793,43 +2760,36 @@ ticket_lifetime
   for a shorter period of time than what is stated in the
   ticket_lifetime.
 
-ticket_age_add
-: A randomly generated 32-bit value that is used to obscure the age of the ticket that the
-  client includes in the "early_data" extension.  The actual ticket age is
-  added to this value modulo 2^32 to obtain the value that is transmitted by
-  the client.
-
-ticket_extensions
-: A placeholder for extensions in the ticket. Clients MUST ignore
-  unrecognized extensions.
-
 ticket
 : The value of the ticket to be used as the PSK identifier.
 The ticket itself is an opaque label. It MAY either be a database
 lookup key or a self-encrypted and self-authenticated value. Section
 4 of {{RFC5077}} describes a recommended ticket construction mechanism.
+
+
+ticket_extensions
+: A placeholder for extensions in the ticket. Clients MUST ignore
+  unrecognized extensions.
 {:br }
 
-The meanings of the flags are as follows:
+This document defines one ticket extension, "ticket_early_data_info"
 
-allow_early_data
-: When resuming with this ticket, the client MAY send data in its
-first flight (early data) encrypted under a key derived from
-this PSK.
+~~~~
+   struct {
+       uint32 ticket_age_add;
+   } TicketEarlyDataInfo;
+~~~~
 
-allow_dhe_resumption
-: This ticket MAY be used with (EC)DHE-PSK cipher
-  suite.
+This extension indicates that the ticket may be used to send 0-RTT data
+({{early-data-indication}})). It contains one value:
 
-allow_psk_resumption
-: This ticket MAY be used with a pure PSK cipher
-  suite.
+
+ticket_age_add
+: A randomly generated 32-bit value that is used to obscure the age of the ticket that the
+  client includes in the "early_data" extension.  The actual ticket age is
+  added to this value modulo 2^32 to obtain the value that is transmitted by
+  the client.
 {:br }
-
-In all cases, the PSK or (EC)DHE-PSK cipher suites that the client
-offers/uses MUST have the same symmetric parameters (cipher/hash) as
-the cipher suite negotiated for this connection. If no flags are set
-that the client recognizes, it MUST ignore the ticket.
 
 
 ### Post-Handshake Authentication
@@ -3425,7 +3385,7 @@ bad_certificate_hash_value
   [RFC6066].
 
 unknown_psk_identity
-: Sent by servers when a PSK cipher suite is selected but no
+: Sent by servers when PSK key establishment is desired but no
  acceptable PSK identity is provided by the client. Sending this alert
  is OPTIONAL; servers MAY instead choose to send a "decrypt_error"
  alert to merely indicate an invalid PSK identity.
@@ -3437,11 +3397,7 @@ New Alert values are assigned by IANA as described in {{iana-considerations}}.
 
 In order to begin connection protection, the TLS Record Protocol
 requires specification of a suite of algorithms, a master secret, and
-the client and server random values. The authentication, key
-exchange, and record protection algorithms are determined by the
-cipher_suite selected by the server and revealed in the ServerHello
-message. The random values are exchanged in the hello messages. All
-that remains is to calculate the key schedule.
+the client and server random values.
 
 ## Key Schedule
 
@@ -3872,91 +3828,35 @@ and renegotiation_info {{RFC5746}}.
 
 ## Cipher Suites
 
-A cipher suite defines a cipher specification supported in TLS and negotiated
-via hello messages in the TLS handshake.
-Cipher suite names follow a general naming convention composed of a series
-of component algorithm names separated by underscores:
+A symmetric cipher suite defines the pair of the AEAD cipher and hash
+function to be used with HKDF. Cipher suites follow the naming convention:
+Cipher suite names follow the naming convention:
 
 ~~~
-   CipherSuite TLS_KEA_AUTH_WITH_CIPHER_HASH = VALUE;
+   CipherSuite TLS13_CIPHER_HASH = VALUE;
 ~~~
 
 | Component | Contents |
 |:----------|:---------|
-| TLS       | The string "TLS" |
-| KEA       | The key exchange algorithm (e.g. ECDHE, DHE) |
-| AUTH      | The authentication algorithm (e.g. certificates, PSK) |
-| WITH      | The string "WITH" |
+| TLS13     | The string "TLS13" |
 | CIPHER    | The symmetric cipher used for record protection |
 | HASH      | The hash algorithm used with HKDF |
 | VALUE     | The two byte ID assigned for this cipher suite |
 
 The "CIPHER" component commonly has sub-components used to designate
 the cipher name, bits, and mode, if applicable. For example, "AES_256_GCM"
-represents 256-bit AES in the GCM mode of operation. Cipher suite names that
-lack a "HASH" value that are defined for use with TLS 1.2 or later use the
-SHA-256 hash algorithm by default.
+represents 256-bit AES in the GCM mode of operation. 
 
-The primary key exchange algorithm used in TLS is Ephemeral Diffie-Hellman
-{{DH}}. The finite field based version is denoted "DHE" and the elliptic
-curve based version is denoted "ECDHE". Prior versions of TLS supported
-non-ephemeral key exchanges, however these are not supported by TLS 1.3.
+|       Cipher Suite Name         |    Value    | Specification |
+|:--------------------------------|:------------|:--------------|
+| TLS13_AES_128_GCM_SHA256        | {0x13,0x01} |   [This RFC]  |
+| TLS13_AES_256_GCM_SHA384        | {0x13,0x02} |   [This RFC]  |
+| TLS13__CHACHA20_POLY1305_SHA256 | {0x13,0x02} |   [This RFC]  |
 
-See the definitions of each cipher suite in its specification document for
-the full details of each combination of algorithms that is specified.
-
-The following is a list of standards track server-authenticated (and optionally
-client-authenticated) cipher suites which are currently available in TLS 1.3:
-
-|              Cipher Suite Name                |    Value    | Specification |
-|:----------------------------------------------|:------------|:--------------|
-| TLS_DHE_RSA_WITH_AES_128_GCM_SHA256           | {0x00,0x9E} | [RFC5288]     |
-| TLS_DHE_RSA_WITH_AES_256_GCM_SHA384           | {0x00,0x9F} | [RFC5288]     |
-| TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256       | {0xC0,0x2B} | [RFC5289]     |
-| TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384       | {0xC0,0x2C} | [RFC5289]     |
-| TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256         | {0xC0,0x2F} | [RFC5289]     |
-| TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384         | {0xC0,0x30} | [RFC5289]     |
-| TLS_DHE_RSA_WITH_AES_128_CCM                  | {0xC0,0x9E} | [RFC6655]     |
-| TLS_DHE_RSA_WITH_AES_256_CCM                  | {0xC0,0x9F} | [RFC6655]     |
-| TLS_DHE_RSA_WITH_AES_128_CCM_8                | {0xC0,0xA2} | [RFC6655]     |
-| TLS_DHE_RSA_WITH_AES_256_CCM_8                | {0xC0,0xA3} | [RFC6655]     |
-| TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256   | {0xCC,0xA8}   | [RFC7905] |
-| TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256 | {0xCC,0xA9}   | [RFC7905] |
-| TLS_DHE_RSA_WITH_CHACHA20_POLY1305_SHA256     | {0xCC,0xAA}   | [RFC7905] |
-
-Note: ECDHE AES GCM was not yet standards track prior to the publication of
-this specification. This document promotes the above-listed ciphers to
-standards track.
-
-The following is a list of standards track ephemeral pre-shared key cipher
-suites which are currently available in TLS 1.3:
-
-|              Cipher Suite Name                |    Value    | Specification |
-|:----------------------------------------------|:------------|:--------------|
-| TLS_DHE_PSK_WITH_AES_128_GCM_SHA256           | {0x00,0xAA} | [RFC5487]     |
-| TLS_DHE_PSK_WITH_AES_256_GCM_SHA384           | {0x00,0xAB} | [RFC5487]     |
-| TLS_DHE_PSK_WITH_AES_128_CCM                  | {0xC0,0xA6} | [RFC6655]     |
-| TLS_DHE_PSK_WITH_AES_256_CCM                  | {0xC0,0xA7} | [RFC6655]     |
-| TLS_PSK_DHE_WITH_AES_128_CCM_8                | {0xC0,0xAA} | [RFC6655]     |
-| TLS_PSK_DHE_WITH_AES_256_CCM_8                | {0xC0,0xAB} | [RFC6655]     |
-| TLS_ECDHE_PSK_WITH_AES_128_GCM_SHA256         | {0xD0,0x01}   | [I-D.mattsson-tls-ecdhe-psk-aead] |
-| TLS_ECDHE_PSK_WITH_AES_256_GCM_SHA384         | {0xD0,0x02}   | [I-D.mattsson-tls-ecdhe-psk-aead] |
-| TLS_ECDHE_PSK_WITH_AES_128_CCM_8_SHA256       | {0xD0,0x03}   | [I-D.mattsson-tls-ecdhe-psk-aead] |
-| TLS_ECDHE_PSK_WITH_AES_128_CCM_SHA256         | {0xD0,0x04}   | [I-D.mattsson-tls-ecdhe-psk-aead] |
-| TLS_ECDHE_PSK_WITH_AES_256_CCM_SHA384         | {0xD0,0x05}   | [I-D.mattsson-tls-ecdhe-psk-aead] |
-| TLS_ECDHE_PSK_WITH_CHACHA20_POLY1305_SHA256   | {0xCC,0xAC}   | [RFC7905] |
-| TLS_DHE_PSK_WITH_CHACHA20_POLY1305_SHA256     | {0xCC,0xAD}   | [RFC7905] |
-
-Note: The values listed for ECDHE PSK AES suites are preliminary but
-are being or will be used for interop testing and therefore are likely to be
-assigned.
-
-Note: [RFC6655] is inconsistent with respect to the ordering of components
-within PSK AES CCM cipher suite names. The names above are as defined.
-
-All cipher suites in this section are specified for use with both TLS 1.2
-and TLS 1.3, as well as the corresponding versions of DTLS.
-(see {{backward-compatibility}})
+Although TLS 1.3 uses the same cipher suite space as previous versions
+of TLS, TLS 1.3 cipher suites are defined differently, only specifying
+the symmetric ciphers, and cannot it be used for TLS 1.2. Similarly,
+TLS 1.2 and lower cipher suites cannot be used with TLS 1.3
 
 New cipher suite values are assigned by IANA as described in
 {{iana-considerations}}.
