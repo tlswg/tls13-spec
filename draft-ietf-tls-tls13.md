@@ -3492,6 +3492,8 @@ In this diagram, the following formatting conventions apply:
   from the left. For instance, the Early Secret is the Secret for
   generating the early_traffic-secret.
 
+Note that the 0-RTT Finished message is not included in the Derive-Secret
+operation.
 ~~~~
                  0
                  |
