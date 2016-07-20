@@ -3508,7 +3508,7 @@ In this diagram, the following formatting conventions apply:
                  v
               Handshake
                Secret -----> Derive-Secret(., "handshake traffic secret",
-                 |                         ClientHello + ServerHello)
+                 |                         ClientHello...ServerHello)
                  |                         = handshake_traffic_secret
                  v
       0 -> HKDF-Extract
