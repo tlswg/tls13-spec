@@ -1742,13 +1742,15 @@ RSASSA-PSS algorithms
   digest used in the mask generation function and the digest being signed are
   both the corresponding hash algorithm as defined in {{SHS}}. When used in
   signed TLS handshake messages, the length of the salt MUST be equal to the
-  length of the digest output.  These codepoints are newly defined for use with
-  TLS 1.2 as well as TLS 1.3.
+  length of the digest output.  This codepoint is defined for use with TLS 1.2
+  as well as TLS 1.3.  A server uses RSASSA-PSS signatures with RSA cipher
+  suites.
 
 EdDSA algorithms
 : Indicates a signature algorithm using EdDSA as defined in
-  {{I-D.irtf-cfrg-eddsa}} or its successors. Note that these correspond to
-  the "PureEdDSA" algorithms and not the "prehash" variants.
+  {{I-D.irtf-cfrg-eddsa}} or its successors. Note that these correspond to the
+  "PureEdDSA" algorithms and not the "prehash" variants.  A server uses EdDSA
+  signatures with ECDSA cipher suites.
 {:br }
 
 The semantics of this extension are somewhat complicated because the cipher
