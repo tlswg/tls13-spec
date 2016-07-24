@@ -659,6 +659,19 @@ draft-02
 -  Remove support for non-AEAD ciphers.
 
 
+## Updates Affecting TLS 1.2
+
+This document defines several changes that optionally affect implementations of
+TLS 1.2:
+
+* A version downgrade protection mechanism is described in {{server-hello}}.
+
+* RSASSA-PSS signature schemes are defined in {{signature-algorithms}}.
+
+An implementation of TLS 1.3 that also supports TLS 1.2 might need to include
+changes to support these changes even when TLS 1.3 is not in use.  See the
+referenced sections for more details.
+
 
 # Protocol Overview
 
@@ -1725,11 +1738,12 @@ ECDSA algorithms
   represented as a DER-encoded {{X690}} ECDSA-Sig-Value structure.
 
 RSASSA-PSS algorithms
-: Indicates a signature algorithm using RSASSA-PSS {{RFC3447}} with
-  MGF1. The digest used in the mask generation function and the digest
-  being signed are both the corresponding hash algorithm as defined in
-  {{SHS}}. When used in signed TLS handshake messages, the length of
-  the salt MUST be equal to the length of the digest output.
+: Indicates a signature algorithm using RSASSA-PSS {{RFC3447}} with MGF1. The
+  digest used in the mask generation function and the digest being signed are
+  both the corresponding hash algorithm as defined in {{SHS}}. When used in
+  signed TLS handshake messages, the length of the salt MUST be equal to the
+  length of the digest output.  These codepoints are newly defined for use with
+  TLS 1.2 as well as TLS 1.3.
 
 EdDSA algorithms
 : Indicates a signature algorithm using EdDSA as defined in
@@ -1758,7 +1772,7 @@ Note that TLS 1.2 defines this extension differently. TLS 1.3 implementations
 willing to negotiate TLS 1.2 MUST behave in accordance with the requirements of
 {{RFC5246}} when negotiating that version. In particular:
 
-* TLS 1.2 ClientHellos may omit this extension.
+* TLS 1.2 ClientHellos MAY omit this extension.
 
 * In TLS 1.2, the extension contained hash/signature pairs. The pairs are
   encoded in two octets, so SignatureScheme values have been allocated to
@@ -1767,8 +1781,15 @@ willing to negotiate TLS 1.2 MUST behave in accordance with the requirements of
   negotiated by any implementation. In particular, MD5 {{SLOTH}} and SHA-224
   MUST NOT be used.
 
-* ecdsa_secp256r1_sha256, etc., align with TLS 1.2's ECDSA hash/signature pairs.
-  However, the old semantics did not constrain the signing curve.
+* ECDSA signature schemes align with TLS 1.2's ECDSA hash/signature pairs.
+  However, the old semantics did not constrain the signing curve.  If TLS 1.2 is
+  negotiated, implementations MUST be prepared to accept a signature that uses
+  any curve that they advertised in the "supported_groups" extension.
+
+* Implementations that advertise support for RSASSA-PSS (which is mandatory in
+  TLS 1.3), MUST be prepared to accept a signature using that scheme even when
+  TLS 1.2 is negotiated.
+
 
 ### Negotiated Groups
 
