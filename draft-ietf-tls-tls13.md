@@ -1308,7 +1308,7 @@ Structure of this message:
        uint8 CipherSuite[2];    /* Cryptographic suite selector */
 
        struct {
-           ProtocolVersion client_version = { 3, 4 };    /* TLS v1.3 */
+           ProtocolVersion max_supported_version = { 3, 4 };    /* TLS v1.3 */
            Random random;
            opaque legacy_session_id<0..32>;
            CipherSuite cipher_suites<2..2^16-2>;
@@ -1325,7 +1325,7 @@ before extensions were defined.
 As of TLS 1.3, all clients and servers will send at least
 one extension (at least "key_share" or "pre_shared_key").
 
-client_version
+max_supported_version
 : The latest (highest valued) version of the TLS protocol offered by the
   client. This SHOULD be the same as the latest version supported. For this
   version of the specification, the version will be { 3, 4 }. (See
@@ -1401,13 +1401,13 @@ Structure of this message:
 %%% Key Exchange Messages
 
        struct {
-           ProtocolVersion server_version;
+           ProtocolVersion version;
            Random random;
            CipherSuite cipher_suite;
            Extension extensions<0..2^16-1>;
        } ServerHello;
 
-server_version
+version
 : This field contains the version of TLS negotiated for this session.  Servers
   MUST select the lower of the highest supported server version and the version
   offered by the client in the ClientHello.  In particular, servers MUST accept
@@ -1446,13 +1446,13 @@ extensions
 TLS 1.3 has a downgrade protection mechanism embedded in the server's
 random value.
 TLS 1.3 server implementations which respond to a ClientHello with a
-client_version indicating TLS 1.2 or below MUST set the last eight
+max_supported_version indicating TLS 1.2 or below MUST set the last eight
 bytes of their Random value to the bytes:
 
       44 4F 57 4E 47 52 44 01
 
 TLS 1.2 server implementations which respond to a ClientHello with a
-client_version indicating TLS 1.1 or below SHOULD set the last eight
+max_supported_version indicating TLS 1.1 or below SHOULD set the last eight
 bytes of their Random value to the bytes:
 
       44 4F 57 4E 47 52 44 00
@@ -1490,7 +1490,7 @@ Structure of this message:
 %%% Key Exchange Messages
 
        struct {
-           ProtocolVersion server_version;
+           ProtocolVersion version;
            CipherSuite cipher_suite;
            NamedGroup selected_group;
            Extension extensions<0..2^16-1>;
@@ -1501,7 +1501,7 @@ selected_group
   is requesting a retried ClientHello/KeyShare for.
 {:br }
 
-The server_version, cipher_suite, and extensions fields have the
+The version, cipher_suite, and extensions fields have the
 same meanings as their corresponding values in the ServerHello.
 [[NOTE: cipher_suite may disappear. https://github.com/tlswg/tls13-spec/issues/528]]
 The
@@ -2945,8 +2945,7 @@ type
 : The higher-level protocol used to process the enclosed fragment.
 
 record_version
-: The protocol version the current record is compatible with.
-  This value MUST be set to { 3, 1 } for all records.
+: This value MUST be set to { 3, 1 } for all records.
   This field is deprecated and MUST be ignored for all purposes.
 
 length
@@ -4125,7 +4124,7 @@ Prior versions of TLS used the record layer version number for various
 purposes. (TLSPlaintext.record_version & TLSCiphertext.record_version)
 As of TLS 1.3, this field is deprecated and its value MUST be ignored by all
 implementations. Version negotiation is performed using only the handshake versions.
-(ClientHello.client_version & ServerHello.server_version)
+(ClientHello.max_supported_version & ServerHello.version)
 In order to maximize interoperability with older endpoints, implementations
 that negotiate the use of TLS 1.0-1.2 SHOULD set the record layer
 version number to the negotiated version for the ServerHello and all
@@ -4147,7 +4146,7 @@ whenever TLS 1.3 is used.
 
 A TLS 1.3 client who wishes to negotiate with such older servers will send a
 normal TLS 1.3 ClientHello containing { 3, 4 } (TLS 1.3) in
-ClientHello.client_version. If the server does not support this version it
+ClientHello.max_supported_version. If the server does not support this version it
 will respond with a ServerHello containing an older version number. If the
 client agrees to use this version, the negotiation will proceed as appropriate
 for the negotiated protocol. A client resuming a session SHOULD initiate the
@@ -4178,10 +4177,10 @@ to downgrade attacks and is NOT RECOMMENDED.
 A TLS server can also receive a ClientHello containing a version number smaller
 than the highest supported version. If the server wishes to negotiate with old
 clients, it will proceed as appropriate for the highest version supported by
-the server that is not greater than ClientHello.client_version. For example, if
-the server supports TLS 1.0, 1.1, and 1.2, and client_version is TLS 1.0, the
+the server that is not greater than ClientHello.max_supported_version. For example, if
+the server supports TLS 1.0, 1.1, and 1.2, and max_supported_version is TLS 1.0, the
 server will proceed with a TLS 1.0 ServerHello. If the server only supports
-versions greater than client_version, it MUST send a "protocol_version"
+versions greater than max_supported_version, it MUST send a "protocol_version"
 alert message and close the connection.
 
 Note that earlier versions of TLS did not clearly specify the record layer
@@ -4234,9 +4233,9 @@ Implementations MUST NOT send or accept any records with a version less than { 3
 The security of SSL 3.0 {{SSL3}} is considered insufficient for the reasons enumerated
 in {{RFC7568}}, and MUST NOT be negotiated for any reason.
 
-Implementations MUST NOT send a ClientHello.client_version or ServerHello.server_version
+Implementations MUST NOT send a ClientHello.max_supported_version or ServerHello.version
 set to { 3, 0 } or less. Any endpoint receiving a Hello message with
-ClientHello.client_version or ServerHello.server_version set to { 3, 0 } MUST respond
+ClientHello.max_supported_version or ServerHello.version set to { 3, 0 } MUST respond
 with a "protocol_version" alert message and close the connection.
 
 Implementations MUST NOT use the Truncated HMAC extension, defined in
