@@ -730,7 +730,7 @@ in the diagram above.
 In the Key Exchange phase, the client sends the ClientHello
 ({{client-hello}}) message, which contains a random nonce
 (ClientHello.random), its offered protocol version, a list of
-symmetric ciphers, some set of Diffie-Hellman key shares (in the
+symmetric cipher/HKDF hash pairs, some set of Diffie-Hellman key shares (in the
 "key_share" extension {{key-share}}), one or more pre-shared key labels (in the
 "pre_shared_key" extension {{pre-shared-key-extension}}), or both,
 and some extensions.
@@ -1516,8 +1516,43 @@ in its original KeyShare.
 Upon re-sending the ClientHello and receiving the
 server's ServerHello/KeyShare, the client MUST verify that
 the selected NamedGroup matches that supplied in
-the HelloRetryRequest. If either of these values differ, the client
+the HelloRetryRequest. If these values differ, the client
 MUST abort the connection with a fatal "handshake_failure" alert.
+
+## Cryptographic Negotiation
+
+TLS cryptographic negotiation proceeds by the client offering the
+following four sets of options:
+
+- A list of cipher suites which indicates the AEAD cipher/HKDF hash
+  pairs which the client supports
+- A "supported_group" ({{negotiated-groups}}) extension which indicates the (EC)DHE groups
+  which the client supports and a "key_share" ({{key-share}}) extension which contains
+  (EC)DHE shares in some or all of these groups
+- A "signature_algorithms" ({{signature-algorithms}}) extension which indicates the signature
+  algorithms which the client can accept.
+- A "pre_shared_key" ({{pre-shared-key-extension}}) extension which contain the identities
+  of symmetric keys known to the client and the key exchange
+  modes which each PSK supports.
+
+If the server does not select a PSK, then the first three of these
+options are entirely orthogonal: the server independently selects a
+cipher suite, an (EC)DHE group and key share for key establishment,
+and a signature algorithm/certificate pair to authenticate itself.
+If there is no overlap on any of these parameters, then the handshake
+will fail. If there is overlap in the "supported_group" extension
+but the client did not offer a compatible "key_share" extension,
+then the server will respond with a HelloRetryRequest message.
+
+If the server selects a PSK, then the PSK will indicate which key
+establishment modes it can be used with (PSK alone or (EC)DHE-PSK)
+and which authentication modes it can be used with (PSK alone or
+PSK with signatures). The server can then select those parameters
+to be consistent both with the PSK and the other extensions supplied
+by the client. Note that if the PSK can be used without (EC)DHE
+or without signatures, then non-overlap in either of these parameters
+need not be fatal.
+
 
 ##  Hello Extensions
 
@@ -1633,7 +1668,9 @@ Clients MUST NOT use cookies in subsequent connections.
 ###  Signature Algorithms
 
 The client uses the "signature_algorithms" extension to indicate to the server
-which signature algorithms may be used in digital signatures. If a server
+which signature algorithms may be used in digital signatures. Clients which
+desire the server to authenticate via a certificate MUST send this algorithm.
+If a server
 is authenticating via a certificate and the client has not sent a
 "signature_algorithms" extension then the server MUST
 the server MUST close the connection with a fatal "missing_extension" alert.
@@ -1817,8 +1854,7 @@ subsequent connections.
 
 ### Key Share
 
-The "key_share" extension contains the endpoint's cryptographic parameters
-for non-PSK key establishment methods (currently DHE or ECDHE).
+The "key_share" extension contains the endpoint's cryptographic parameters.
 
 Clients MAY send an empty client_shares vector in order to request
 group selection from the server at the cost of an additional round trip.
@@ -1881,10 +1917,11 @@ KeyShareEntry values for groups not listed in the client's
 these rules and and MAY abort the connection with a fatal
 "illegal_parameter" alert if one is violated.
 
-Servers offer exactly one KeyShareEntry which corresponds to one of
-the KeyShareEntries offered by the client. Servers MUST NOT send
-a KeyShareEntry for any group not indicated in the "supported_groups"
-extension.
+If using (EC)DHE key establishment, servers offer exactly one
+KeyShareEntry which corresponds to one of the KeyShareEntries offered
+by the client, that the server has selected for the negotiated key exchange.
+Servers MUST NOT send a KeyShareEntry for any group not
+indicated in the "supported_groups" extension.
 
 [[TODO: Recommendation about what the client offers.
 Presumably which integer DH groups and which curves.]]
@@ -1978,7 +2015,8 @@ selected_identity
 Each PSK offered by the client also indicates the authentication and
 key exchange modes with which the server can use it, with each
 list being in the order of the client's preference, with most
-preferred first. 
+preferred first.
+
 PskKeyExchangeModes have the following meanings:
 
 psk_ke
@@ -2084,7 +2122,7 @@ client's "pre_shared_key" extension. In addition, it MUST verify that
 the following values are consistent with those negotiated in the
 connection during which the ticket was established.
 
-- The TLS version number, symmetric cipher suite, and the hash for HKDF.
+- The TLS version number, AEAD algorithm, and the hash for HKDF.
 - The selected ALPN {{!RFC7443}} value, if any.
 - The server_name {{RFC6066}} value provided by the client,
   if any.
@@ -2713,9 +2751,15 @@ from the resumption master secret:
 
 The client MAY use this PSK for future handshakes by including the
 ticket value in the "pre_shared_key" extension in its ClientHello
-({{pre-shared-key-extension}}). Servers may send multiple tickets on a
-single connection, for instance after post-handshake
-authentication. For handshakes that do not use a resumption_psk, the
+({{pre-shared-key-extension}}). Servers MAY send multiple tickets on a
+single connection, either immediately after each other or
+after specific events. For instance, the server might send
+a new ticket after post-handshake
+authentication in order to encapsulate the additional client
+authentication state. Clients SHOULD attempt to use each
+ticket no more than once, with more recent tickets being used
+first.
+For handshakes that do not use a resumption_psk, the
 resumption_context is a string of [[TBD: This is not safe now
 that we allow additional server signatures with PSK: 
 OPEN ISSUE https://github.com/tlswg/tls13-spec/issues/558]]
@@ -2768,7 +2812,7 @@ lookup key or a self-encrypted and self-authenticated value. Section
 
 
 ticket_extensions
-: A placeholder for extensions in the ticket. Clients MUST ignore
+: A set of extension values for the ticket. Clients MUST ignore
   unrecognized extensions.
 {:br }
 
@@ -2786,7 +2830,7 @@ This extension indicates that the ticket may be used to send 0-RTT data
 
 ticket_age_add
 : A randomly generated 32-bit value that is used to obscure the age of the ticket that the
-  client includes in the "early_data" extension.  The actual ticket age is
+  client includes in the "early_data" extension.  The client-side ticket age is
   added to this value modulo 2^32 to obtain the value that is transmitted by
   the client.
 {:br }
@@ -3838,7 +3882,7 @@ Cipher suite names follow the naming convention:
 
 | Component | Contents |
 |:----------|:---------|
-| TLS13     | The string "TLS13" |
+| TLS     | The string "TLS13" |
 | CIPHER    | The symmetric cipher used for record protection |
 | HASH      | The hash algorithm used with HKDF |
 | VALUE     | The two byte ID assigned for this cipher suite |
@@ -3849,9 +3893,9 @@ represents 256-bit AES in the GCM mode of operation.
 
 |       Cipher Suite Name         |    Value    | Specification |
 |:--------------------------------|:------------|:--------------|
-| TLS13_AES_128_GCM_SHA256        | {0x13,0x01} |   [This RFC]  |
-| TLS13_AES_256_GCM_SHA384        | {0x13,0x02} |   [This RFC]  |
-| TLS13__CHACHA20_POLY1305_SHA256 | {0x13,0x02} |   [This RFC]  |
+| TLS_AES_128_GCM_SHA256        | {0x13,0x01} |   [This RFC]  |
+| TLS_AES_256_GCM_SHA384        | {0x13,0x02} |   [This RFC]  |
+| TLS_CHACHA20_POLY1305_SHA256  | {0x13,0x03} |   [This RFC]  |
 
 Although TLS 1.3 uses the same cipher suite space as previous versions
 of TLS, TLS 1.3 cipher suites are defined differently, only specifying
