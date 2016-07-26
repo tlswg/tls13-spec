@@ -1265,6 +1265,53 @@ The key exchange messages are used to exchange security capabilities
 between the client and server and to establish the traffic keys used to protect
 the handshake and data.
 
+
+### Cryptographic Negotiation
+
+TLS cryptographic negotiation proceeds by the client offering the
+following four sets of options in its ClientHello.
+
+- A list of cipher suites which indicates the AEAD cipher/HKDF hash
+  pairs which the client supports
+- A "supported_group" ({{negotiated-groups}}) extension which indicates the (EC)DHE groups
+  which the client supports and a "key_share" ({{key-share}}) extension which contains
+  (EC)DHE shares for some or all of these groups
+- A "signature_algorithms" ({{signature-algorithms}}) extension which indicates the signature
+  algorithms which the client can accept.
+- A "pre_shared_key" ({{pre-shared-key-extension}}) extension which contains the identities
+  of symmetric keys known to the client and the key exchange
+  modes which each PSK supports.
+
+If the server does not select a PSK, then the first three of these
+options are entirely orthogonal: the server independently selects a
+cipher suite, an (EC)DHE group and key share for key establishment,
+and a signature algorithm/certificate pair to authenticate itself.
+If there is no overlap on any of these parameters, then the handshake
+will fail. If there is overlap in the "supported_group" extension
+but the client did not offer a compatible "key_share" extension,
+then the server will respond with a HelloRetryRequest ({{hello-retry-request}}) message.
+
+If the server selects a PSK, then the PSK will indicate which key
+establishment modes it can be used with (PSK alone or (EC)DHE-PSK)
+and which authentication modes it can be used with (PSK alone or
+PSK with signatures). The server can then select those parameters
+to be consistent both with the PSK and the other extensions supplied
+by the client. Note that if the PSK can be used without (EC)DHE
+or without signatures, then non-overlap in either of these parameters
+need not be fatal.
+
+The server indicates its selected parameters in the ServerHello
+as follows. If PSK is being used then the server will send a
+"pre_shared_key" extension indicating the selected key. The
+extension will also contain indicators of whether (EC)DHE and/or
+certificate-based authentication are in use. If PSK is not being
+used, then (EC)DHE and certificate-based authentication are always
+used. When (EC)DHE is in use, the server will also provide a "key_share"
+extension. When authenticating via a certificate, the server will
+also send Certificate ({{certificate}}) and CertificateVerify
+({{certificate-verify}}) messages.
+
+
 ###  Client Hello
 
 When this message will be sent:
@@ -1518,41 +1565,6 @@ server's ServerHello/KeyShare, the client MUST verify that
 the selected NamedGroup matches that supplied in
 the HelloRetryRequest. If these values differ, the client
 MUST abort the connection with a fatal "handshake_failure" alert.
-
-## Cryptographic Negotiation
-
-TLS cryptographic negotiation proceeds by the client offering the
-following four sets of options:
-
-- A list of cipher suites which indicates the AEAD cipher/HKDF hash
-  pairs which the client supports
-- A "supported_group" ({{negotiated-groups}}) extension which indicates the (EC)DHE groups
-  which the client supports and a "key_share" ({{key-share}}) extension which contains
-  (EC)DHE shares in some or all of these groups
-- A "signature_algorithms" ({{signature-algorithms}}) extension which indicates the signature
-  algorithms which the client can accept.
-- A "pre_shared_key" ({{pre-shared-key-extension}}) extension which contain the identities
-  of symmetric keys known to the client and the key exchange
-  modes which each PSK supports.
-
-If the server does not select a PSK, then the first three of these
-options are entirely orthogonal: the server independently selects a
-cipher suite, an (EC)DHE group and key share for key establishment,
-and a signature algorithm/certificate pair to authenticate itself.
-If there is no overlap on any of these parameters, then the handshake
-will fail. If there is overlap in the "supported_group" extension
-but the client did not offer a compatible "key_share" extension,
-then the server will respond with a HelloRetryRequest message.
-
-If the server selects a PSK, then the PSK will indicate which key
-establishment modes it can be used with (PSK alone or (EC)DHE-PSK)
-and which authentication modes it can be used with (PSK alone or
-PSK with signatures). The server can then select those parameters
-to be consistent both with the PSK and the other extensions supplied
-by the client. Note that if the PSK can be used without (EC)DHE
-or without signatures, then non-overlap in either of these parameters
-need not be fatal.
-
 
 ##  Hello Extensions
 
