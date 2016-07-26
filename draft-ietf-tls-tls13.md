@@ -2936,7 +2936,7 @@ Alert messages ({{alert-protocol}}) MUST NOT be fragmented across records.
 
        struct {
            ContentType type;
-           ProtocolVersion record_version = { 3, 1 };    /* TLS v1.x */
+           ProtocolVersion legacy_record_version = { 3, 1 };    /* TLS v1.x */
            uint16 length;
            opaque fragment[TLSPlaintext.length];
        } TLSPlaintext;
@@ -2944,7 +2944,7 @@ Alert messages ({{alert-protocol}}) MUST NOT be fragmented across records.
 type
 : The higher-level protocol used to process the enclosed fragment.
 
-record_version
+legacy_record_version
 : This value MUST be set to { 3, 1 } for all records.
   This field is deprecated and MUST be ignored for all purposes.
 
@@ -2996,7 +2996,7 @@ by an encrypted body, which itself contains a type and optional padding.
 
        struct {
            ContentType opaque_type = application_data(23); /* see fragment.type */
-           ProtocolVersion record_version = { 3, 1 };    /* TLS v1.x */
+           ProtocolVersion legacy_record_version = { 3, 1 };    /* TLS v1.x */
            uint16 length;
            opaque encrypted_record[length];
        } TLSCiphertext;
@@ -3021,8 +3021,8 @@ opaque_type
   actual content type of the record is found in fragment.type after
   decryption.
 
-record_version
-: The record_version field is identical to TLSPlaintext.record_version and is always { 3, 1 }.
+legacy_record_version
+: The legacy_record_version field is identical to TLSPlaintext.legacy_record_version and is always { 3, 1 }.
   Note that the handshake protocol including the ClientHello and ServerHello messages authenticates
   the protocol version, so this value is redundant.
 
@@ -4121,7 +4121,7 @@ remains compatible and the client supports the highest protocol version availabl
 in the server.
 
 Prior versions of TLS used the record layer version number for various
-purposes. (TLSPlaintext.record_version & TLSCiphertext.record_version)
+purposes. (TLSPlaintext.legacy_record_version & TLSCiphertext.legacy_record_version)
 As of TLS 1.3, this field is deprecated and its value MUST be ignored by all
 implementations. Version negotiation is performed using only the handshake versions.
 (ClientHello.max_supported_version & ServerHello.version)
@@ -4184,7 +4184,7 @@ versions greater than max_supported_version, it MUST send a "protocol_version"
 alert message and close the connection.
 
 Note that earlier versions of TLS did not clearly specify the record layer
-version number value in all cases (TLSPlaintext.record_version). Servers
+version number value in all cases (TLSPlaintext.legacy_record_version). Servers
 will receive various TLS 1.x versions in this field, however its value
 MUST always be ignored.
 
