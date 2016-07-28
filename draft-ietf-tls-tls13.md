@@ -2729,6 +2729,10 @@ TLS also allows other messages to be sent after the main handshake.
 These messages use a handshake content type and are encrypted under the application
 traffic key.
 
+Handshake messages sent after the handshake MUST NOT be interleaved with
+application data. That is, if a message is split over two or more handshake
+records, there MUST NOT be any application data records between them.
+
 ### New Session Ticket Message {#NewSessionTicket}
 
 At any time after the server has received the client Finished message, it MAY send
