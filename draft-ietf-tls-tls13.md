@@ -1389,7 +1389,7 @@ or HelloRetryRequest message.
 
 The next message the client sends will be under a different key, so the server
 MUST check that the end of the ClientHello message aligns with a record
-boundary.
+boundary; if not, then it MUST send a fatal "unexpected_message" alert.
 
 ###  Server Hello
 
@@ -1478,7 +1478,8 @@ Note: This is an update to TLS 1.2 so in practice many TLS 1.2 clients
 and servers will not behave as specified above.
 
 ServerHello signals a key change, so the client MUST check that the end of the
-ServerHello message aligns with a record boundary.
+ServerHello message aligns with a record boundary; if not, then it MUST send a
+fatal "unexpected_message" alert.
 
 
 ###  Hello Retry Request
@@ -2728,9 +2729,10 @@ and are not included in the hash computations.
 
 Any records following a 1-RTT Finished message MUST be encrypted under the
 application traffic key. In particular, this includes any alerts sent by the
-server in response to client Certificate and CertificateVerify messages. The
-receiver MUST check that the end of the Finished message aligns with a record
-boundary.
+server in response to client Certificate and CertificateVerify messages.
+
+The receiver MUST check that the end of the Finished message aligns with a
+record boundary; if not, then it MUST send a fatal "unexpected_message" alert.
 
 ## Post-Handshake Messages
 
@@ -2899,7 +2901,8 @@ encrypted with the new key. Failure to do so may allow message truncation
 attacks.
 
 KeyUpdate signals a key change, so the receiver MUST check that the end of the
-KeyUpdate message aligns with a record boundary.
+KeyUpdate message aligns with a record boundary; if not, then it MUST send a
+fatal "unexpected_message" alert.
 
 
 #  Record Protocol
