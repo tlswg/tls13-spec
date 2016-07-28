@@ -2244,8 +2244,10 @@ hidden by TCP.
 
 A small allowance for errors in clocks and variations in measurements
 is advisable.  However, any allowance also increases the opportunity
-for replay.  In this case, it is better to reject early data than to
-risk greater exposure to replay attacks.
+for replay.  In this case, it is better to reject early data and fall back
+to a full 1-RTT handshake than to risk greater exposure to replay attacks,
+so in common network topologies, a small allowance on the order of ten
+seconds is reasonable.
 
 ### OCSP Status Extensions
 
