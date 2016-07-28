@@ -4377,8 +4377,8 @@ Length concealment.
 : Given a record with a given external length, the attacker should not be able
 to determine the amount of the record that is content versus padding.
 
-: Forward security after key change.
-If the traffic key update mechanism described in {{key-update}} has been
+Forward security after key change.
+: If the traffic key update mechanism described in {{key-update}} has been
 used and the previous generation key is deleted, an attacker who compromises
 the endpoint should not be able to decrypt traffic encrypted with the old key.
 {:br}
