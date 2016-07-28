@@ -3994,17 +3994,12 @@ provides several recommendations to assist implementors.
 ## Random Number Generation and Seeding
 
 TLS requires a cryptographically secure pseudorandom number generator (PRNG).
-Care must be taken in designing and seeding PRNGs. PRNGs based on secure hash
-operations, most notably SHA-256, are acceptable, but cannot provide more
-security than the size of the random number generator state.
-
-To estimate the amount of seed material being produced, add the number of bits
-of unpredictable information in each seed byte. For example, keystroke timing
-values taken from a PC compatible 18.2 Hz timer provide 1 or 2 secure bits
-each, even though the total size of the counter value is 16 bits or more.
-Seeding a 128-bit PRNG would thus require approximately 100 such timer values.
-
-{{RFC4086}} provides guidance on the generation of random values.
+In most cases, the operating system provides an appropriate facility such
+as /dev/urandom, which should be used absent other (performance) concerns.
+It is generally preferrable to use an existing PRNG implementation in
+preference to crafting a new one, and many adequate cryptographic libraries
+are already available under favorable license terms.  Should those prove
+unsatisfactory, {{RFC4086}} provides guidance on the generation of random values.
 
 
 ## Certificates and Authentication
