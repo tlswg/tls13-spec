@@ -771,7 +771,7 @@ Certificate.
   server is not authenticating with a certificate (i.e.,
   with PSK or (EC)DHE-PSK cipher suites). Note that if raw public keys
   {{RFC7250}} or the cached information extension
-  {{?I-D.ietf-tls-cached-info}} are in use, then this message
+  {{?RFC7924}} are in use, then this message
   will not contain a certificate but rather some other value
   corresponding to the server's long-term key.
   [{{certificate}}]
