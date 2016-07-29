@@ -2194,9 +2194,8 @@ server sends an empty extension to indicate negotiation of this
 extension and the OCSP information is carried in a CertificateStatus
 message. In TLS 1.3, the server's OCSP information is
 carried in an extension in EncryptedExtensions. Specifically:
-The body of the "status_request" or "status_request_v2" extension
-from the server MUST be a CertificateStatus structure as defined
-in {{RFC6066}} and {{RFC6961}} respectively.
+The body of the "status_request_v2" extension from the server MUST
+be a CertificateStatus structure as defined in {{RFC6961}}.
 
 Note: This means that the certificate status appears prior to the
 certificates it applies to. This is slightly anomalous but matches
@@ -3416,8 +3415,8 @@ unrecognized_name
 
 bad_certificate_status_response
 : Sent by clients when an invalid or unacceptable OCSP response is
-  provided by the server via the "status_request" extension
-  [RFC6066]. This alert is always fatal.
+  provided by the server via the "status_request_v2" extension
+  [RFC6961]. This alert is always fatal.
 
 bad_certificate_hash_value
 : Sent by servers when a retrieved object does not have the correct hash
