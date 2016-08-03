@@ -1285,8 +1285,9 @@ following four sets of options in its ClientHello.
 If the server does not select a PSK, then the first three of these
 options are entirely orthogonal: the server independently selects a
 cipher suite, an (EC)DHE group and key share for key establishment,
-and a signature algorithm/certificate pair to authenticate itself.
-If there is no overlap on any of these parameters, then the handshake
+and a signature algorithm/certificate pair to authenticate itself to
+the client. If any of these parameters has no overlap between the
+client and server parameters, then the handshake
 will fail. If there is overlap in the "supported_group" extension
 but the client did not offer a compatible "key_share" extension,
 then the server will respond with a HelloRetryRequest ({{hello-retry-request}}) message.
