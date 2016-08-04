@@ -1517,8 +1517,8 @@ in the "supported_groups" extension in the original ClientHello.  It
 MUST then verify that the selected_group field does not correspond
 to a group which was provided in the "key_share" extension in the
 original ClientHello. If either of these checks fails, then the client
-MUST abort the handshake with a fatal "handshake_failure"
-alert. Clients SHOULD also abort with "handshake_failure" in response
+MUST abort the handshake with a fatal "illegal_parameter"
+alert. Clients SHOULD also abort with "unexpected_message" in response
 to any second HelloRetryRequest which was sent in the same connection
 (i.e., where the ClientHello was itself in response to a
 HelloRetryRequest).
@@ -1532,7 +1532,7 @@ Upon re-sending the ClientHello and receiving the
 server's ServerHello/KeyShare, the client MUST verify that
 the selected CipherSuite and NamedGroup match that supplied in
 the HelloRetryRequest. If either of these values differ, the client
-MUST abort the connection with a fatal "handshake_failure" alert.
+MUST abort the connection with a fatal "illegal_parameter" alert.
 
 ##  Hello Extensions
 
@@ -2333,8 +2333,8 @@ certificate_extensions
   extensions.
 {:br }
 
-Note: It is a fatal "handshake_failure" alert for an anonymous server to request
-client authentication.
+Note: It is a fatal "unexpected_message" alert for an anonymous server to
+request client authentication.
 
 ## Authentication Messages
 
