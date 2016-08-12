@@ -3690,22 +3690,21 @@ In the absence of an application profile standard specifying otherwise, a
 TLS-compliant application MUST implement the following cipher suites:
 
 ~~~~
-    TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
-    TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+    TLS_AES_128_GCM_SHA256
 ~~~~
-
-These cipher suites MUST support both digital signatures and key exchange
-with secp256r1 (NIST P-256) and SHOULD support key exchange with X25519
-{{RFC7748}}.
 
 A TLS-compliant application SHOULD implement the following cipher suites:
 
 ~~~~
-    TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
-    TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256
-    TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-    TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+    TLS_AES_256_GCM_SHA384
+    TLS_CHACHA20_POLY1305_SHA256
 ~~~~
+
+A TLS-compliant application MUST support digital signatures with
+rsa_pkcs1_sha256 (for certificates), rsa_pss_sha256 (for
+CertificateVerify and certificates), and ecdsa_secp256r1_sha256. A
+TLS-compliant application MUST support key exchange with secp256r1
+(NIST P-256) and SHOULD support key exchange with X25519 {{RFC7748}}.
 
 ##  MTI Extensions
 
@@ -3918,6 +3917,8 @@ represents 256-bit AES in the GCM mode of operation.
 | TLS_AES_128_GCM_SHA256        | {0x13,0x01} |   [This RFC]  |
 | TLS_AES_256_GCM_SHA384        | {0x13,0x02} |   [This RFC]  |
 | TLS_CHACHA20_POLY1305_SHA256  | {0x13,0x03} |   [This RFC]  |
+| TLS_AES_128_CCM_SHA256        | {0x13,0x04} |   [This RFC]  |
+| TLS_AES_128_CCM_8_SHA256      | {0x13,0x05} |   [This RFC]  |
 
 Although TLS 1.3 uses the same cipher suite space as previous versions
 of TLS, TLS 1.3 cipher suites are defined differently, only specifying
