@@ -1304,7 +1304,7 @@ used without (EC)DHE or without signatures, then non-overlap in either
 of these parameters need not be fatal.
 
 The server indicates its selected parameters in the ServerHello as
-follow: If PSK is being used then the server will send a
+follows: If PSK is being used then the server will send a
 "pre_shared_key" extension indicating the selected key.  If PSK is not
 being used, then (EC)DHE and certificate-based authentication are
 always used. When (EC)DHE is in use, the server will also provide a
@@ -1691,7 +1691,7 @@ desire the server to authenticate via a certificate MUST send this extension.
 If a server
 is authenticating via a certificate and the client has not sent a
 "signature_algorithms" extension then the server MUST
-close the connection with a fatal "missing_extension" alert.
+close the connection with a fatal "missing_extension" alert
 (see {{mti-extensions}}).
 
 Servers which are authenticating via a certificate MUST indicate so
@@ -1732,7 +1732,7 @@ value:
            obsolete_RESERVED (0x0000..0x0200),
            obsolete_RESERVED (0x0204..0x0400),
            obsolete_RESERVED (0x0404..0x0500),
-cd            obsolete_RESERVED (0x0504..0x0600),
+           obsolete_RESERVED (0x0504..0x0600),
            obsolete_RESERVED (0x0604..0x06FF),
            private_use (0xFE00..0xFFFF),
            (0xFFFF)
