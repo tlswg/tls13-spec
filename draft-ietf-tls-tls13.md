@@ -739,13 +739,15 @@ The server processes the ClientHello and determines the appropriate
 cryptographic parameters for the connection. It then responds with its
 own ServerHello which indicates the negotiated connection
 parameters. [{{server-hello}}]. The combination of the ClientHello
-and the ServerHello determines the shared keys. If pure
-(EC)DHE or (EC)DHE-PSK key establishment is in use, then the ServerHello
+and the ServerHello determines the shared keys. If (EC)DHE or
+key establishment is in use, then the ServerHello
 will contain a "key_share" extension with the server's ephemeral
 Diffie-Hellman share which MUST be in the same group as one of the
-client's shares. If pure PSK or (EC)DHE-PSK key establishment is
+client's shares. If PSK key establishment is
 in use, then the ServerHello will contain a "pre_shared_key"
 extension indicating which of the client's offered PSKs was selected.
+Note that implementations can use (EC)DHE and PSK together, in which
+case both extensions will be supplied.
 
 The server then sends two messages to establish the Server Parameters:
 
@@ -1293,24 +1295,26 @@ but the client did not offer a compatible "key_share" extension,
 then the server will respond with a HelloRetryRequest ({{hello-retry-request}}) message.
 
 If the server selects a PSK, then the PSK will indicate which key
-establishment modes it can be used with (PSK alone or (EC)DHE-PSK)
-and which authentication modes it can be used with (PSK alone or
-PSK with signatures). The server can then select those parameters
-to be consistent both with the PSK and the other extensions supplied
-by the client. Note that if the PSK can be used without (EC)DHE
-or without signatures, then non-overlap in either of these parameters
-need not be fatal.
+establishment modes it can be used with (PSK alone or with (EC)DHE) and
+which authentication modes it can be used with (PSK alone or PSK with
+signatures). The server can then select those key establishment and
+authentication parameters to be consistent both with the PSK and the
+other extensions supplied by the client. Note that if the PSK can be
+used without (EC)DHE or without signatures, then non-overlap in either
+of these parameters need not be fatal.
 
-The server indicates its selected parameters in the ServerHello
-as follows. If PSK is being used then the server will send a
-"pre_shared_key" extension indicating the selected key. The
-extension will also contain indicators of whether (EC)DHE and/or
-certificate-based authentication are in use. If PSK is not being
-used, then (EC)DHE and certificate-based authentication are always
-used. When (EC)DHE is in use, the server will also provide a "key_share"
-extension. When authenticating via a certificate, the server will
-also send Certificate ({{certificate}}) and CertificateVerify
-({{certificate-verify}}) messages.
+The server indicates its selected parameters in the ServerHello as
+follow: If PSK is being used then the server will send a
+"pre_shared_key" extension indicating the selected key.  If PSK is not
+being used, then (EC)DHE and certificate-based authentication are
+always used. When (EC)DHE is in use, the server will also provide a
+"key_share" extension. When authenticating via a certificate, the
+server will send an empty "signature_algorithnms" extension in
+the ServerHello and will subsequently send Certificate ({{certificate}}) and
+CertificateVerify ({{certificate-verify}}) messages.
+
+If the server is unable to negotiate a supported set of parameters, it
+MUST return a "handshake_failure" alert and close the connection.
 
 
 ###  Client Hello
@@ -1392,7 +1396,7 @@ cipher_suites
   order of client preference. If the list contains cipher suites
   the server does not recognize, support, or wish to use, the server
   MUST ignore those cipher suites, and process the remaining ones as
-  usual. Values are defined in {{cipher-suites}}.
+o  usual. Values are defined in {{cipher-suites}}.
 
 legacy_compression_methods
 : Versions of TLS before 1.3 supported compression with the list of
@@ -1564,8 +1568,9 @@ in its original KeyShare.
 Upon re-sending the ClientHello and receiving the
 server's ServerHello/KeyShare, the client MUST verify that
 the selected NamedGroup matches that supplied in
-the HelloRetryRequest. If these values differ, the client
-MUST abort the connection with a fatal "handshake_failure" alert.
+the HelloRetryRequest and
+MUST abort the connection with a fatal "handshake_failure" alert
+if it does not.
 
 ##  Hello Extensions
 
@@ -1682,12 +1687,15 @@ Clients MUST NOT use cookies in subsequent connections.
 
 The client uses the "signature_algorithms" extension to indicate to the server
 which signature algorithms may be used in digital signatures. Clients which
-desire the server to authenticate via a certificate MUST send this algorithm.
+desire the server to authenticate via a certificate MUST send this extension.
 If a server
 is authenticating via a certificate and the client has not sent a
 "signature_algorithms" extension then the server MUST
-the server MUST close the connection with a fatal "missing_extension" alert.
-(see {{mti-extensions}})
+close the connection with a fatal "missing_extension" alert.
+(see {{mti-extensions}}).
+
+Servers which are authenticating via a certificate MUST indicate so
+by sending the client an empty "signature_algorithms" extension.
 
 The "extension_data" field of this extension contains a "supported_signature_algorithms"
 value:
@@ -1724,7 +1732,7 @@ value:
            obsolete_RESERVED (0x0000..0x0200),
            obsolete_RESERVED (0x0204..0x0400),
            obsolete_RESERVED (0x0404..0x0500),
-           obsolete_RESERVED (0x0504..0x0600),
+cd            obsolete_RESERVED (0x0504..0x0600),
            obsolete_RESERVED (0x0604..0x06FF),
            private_use (0xFE00..0xFFFF),
            (0xFFFF)
@@ -1931,7 +1939,7 @@ these rules and and MAY abort the connection with a fatal
 "illegal_parameter" alert if one is violated.
 
 If using (EC)DHE key establishment, servers offer exactly one
-KeyShareEntry which corresponds to one of the KeyShareEntries offered
+KeyShareEntry which corresponds to one of the KeyShareEntry values offered
 by the client, that the server has selected for the negotiated key exchange.
 Servers MUST NOT send a KeyShareEntry for any group not
 indicated in the "supported_groups" extension.
@@ -1983,7 +1991,7 @@ for each curve.
 
 The "pre_shared_key" extension is used to indicate the identity of the
 pre-shared key to be used with a given handshake in association
-with a PSK or (EC)DHE-PSK cipher suite (see {{RFC4279}} for background).
+with PSK key establishment (see {{RFC4279}} for background).
 
 The "extension_data" field of this extension contains a
 "PreSharedKeyExtension" value:
@@ -2007,8 +2015,6 @@ The "extension_data" field of this extension contains a
                    psk_identity identities<2..2^16-1>;
 
                case server:
-                   PskKeMode ke_mode;
-                   PskAuthMode auth_mode;
                    uint16 selected_identity;
            }
        } PreSharedKeyExtension;
@@ -2046,21 +2052,24 @@ PskAuthenticationModes have the following meanings:
 
 psk_auth
 : PSK-only authentication. In this mode, the server MUST NOT supply
-either a Certificate or CertificateVerify message.
+either a Certificate or CertificateVerify message. [TODO: Add a signing mode.]
 
+{::comment}
 psk_sign_auth
 : PSK authentication plus a digital signature from the server. In this
 mode, the server MUST send Certificate ({{certificate}}) and CertificateVerify
 ({{certificate-verify}}) messages.
+{:/comment}
 {:br}
 
 In order to accept PSK key establishment, the server sends a
-"pre_shared_key" extension with the identity and the PSK authentication
-and key exchange modes that it has selected.
+"pre_shared_key" extension with the selected identity.
 Clients MUST verify that the server's selected_identity is within the
-range supplied by the client and that the modes are modes it
-offered. If any of these values does not match, the client MUST
-generate a fatal "illegal_parameter" alert and close the connection.
+range supplied by the client and that the "key_share" and
+"signature_algorithms" extensions are consistent with the
+indicated ke_modes and auth_modes values. If these values
+are not consistent, the client MUST generate an "illegal_parameter"
+alert and close the connection.
 
 If the server supplies an "early_data" extension, the client MUST
 verify that the server selected the first offered identity. If any
@@ -3895,7 +3904,7 @@ Cipher suite names follow the naming convention:
 
 | Component | Contents |
 |:----------|:---------|
-| TLS     | The string "TLS13" |
+| TLS     | The string "TLS" |
 | CIPHER    | The symmetric cipher used for record protection |
 | HASH      | The hash algorithm used with HKDF |
 | VALUE     | The two byte ID assigned for this cipher suite |
@@ -3913,7 +3922,7 @@ represents 256-bit AES in the GCM mode of operation.
 Although TLS 1.3 uses the same cipher suite space as previous versions
 of TLS, TLS 1.3 cipher suites are defined differently, only specifying
 the symmetric ciphers, and cannot it be used for TLS 1.2. Similarly,
-TLS 1.2 and lower cipher suites cannot be used with TLS 1.3
+TLS 1.2 and lower cipher suites cannot be used with TLS 1.3.
 
 New cipher suite values are assigned by IANA as described in
 {{iana-considerations}}.
