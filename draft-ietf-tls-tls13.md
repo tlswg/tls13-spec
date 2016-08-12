@@ -1652,8 +1652,6 @@ which signature algorithms may be used in digital signatures.
 
 Clients which offer one or more cipher suites which use certificate authentication
 (i.e., any non-PSK cipher suite) MUST send the "signature_algorithms" extension.
-If this extension is not provided and no alternative cipher suite is available,
-the server MUST close the connection with a fatal "missing_extension" alert.
 (see {{mti-extensions}})
 
 The "extension_data" field of this extension contains a
@@ -1785,8 +1783,6 @@ ECDSA curves. Signature algorithms are now negotiated independently (see
 Clients which offer one or more (EC)DHE cipher suites MUST send at least one
 supported NamedGroup value and servers MUST NOT negotiate any of these
 cipher suites unless a supported value was provided.
-If this extension is not provided and no alternative cipher suite is available,
-the server MUST close the connection with a fatal "missing_extension" alert.
 (see {{mti-extensions}})
 If the extension is provided, but no compatible group is offered, the
 server MUST NOT negotiate a cipher suite of the relevant type. For
@@ -1858,8 +1854,8 @@ Clients which offer one or more (EC)DHE cipher suites MUST send this
 extension and SHOULD send at least one supported KeyShareEntry value.
 Servers MUST NOT negotiate any of these cipher suites unless a supported
 value was provided.
-If this extension is not provided in a ServerHello or ClientHello,
-and the peer is offering (EC)DHE cipher suites, then the endpoint MUST close
+If this extension is not provided in a ServerHello,
+and the client selected an (EC)DHE cipher suite, then the client MUST close
 the connection with a fatal "missing_extension" alert.
 (see {{mti-extensions}})
 Clients MAY send an empty client_shares vector in order to request
@@ -1989,8 +1985,6 @@ Clients which offer one or more PSK cipher suites
 MUST send at least one supported psk_identity value and
 servers MUST NOT negotiate any of these cipher suites unless a supported
 value was provided.
-If this extension is not provided and no alternative cipher suite is available,
-the server MUST close the connection with a fatal "missing_extension" alert.
 (see {{mti-extensions}})
 
 The "extension_data" field of this extension contains a
@@ -2030,6 +2024,8 @@ suite, if available.
 
 If the server selects a PSK cipher suite, it MUST send a
 "pre_shared_key" extension with the identity that it selected.
+If this extension is not provided, the client MUST close the connection with a
+fatal "missing_extension" alert.
 The client MUST verify that the server's selected_identity
 is within the range supplied by the client. If the server supplies an
 "early_data" extension, the client MUST verify that the server selected the
