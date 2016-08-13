@@ -1822,7 +1822,7 @@ ECDSA curves. Signature algorithms are now negotiated independently (see
 The "extension_data" field of this extension contains a
 "NamedGroupList" value:
 
-%%% Named Group Extension
+%%% Supported Groups Extension
 
        enum {
            /* Elliptic Curve Groups (ECDHE) */
@@ -3859,7 +3859,7 @@ might receive them from older TLS implementations.
 %%### Key Exchange Messages
 %%#### Cookie Extension
 %%#### Signature Algorithm Extension
-%%#### Named Group Extension
+%%#### Supported Groups Extension
 
 Values within "obsolete_RESERVED" ranges were used in previous versions
 of TLS and MUST NOT be offered or negotiated by TLS 1.3 implementations.
