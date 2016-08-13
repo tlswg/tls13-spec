@@ -739,7 +739,7 @@ The server processes the ClientHello and determines the appropriate
 cryptographic parameters for the connection. It then responds with its
 own ServerHello which indicates the negotiated connection
 parameters. [{{server-hello}}]. The combination of the ClientHello
-and the ServerHello determines the shared keys. If (EC)DHE or
+and the ServerHello determines the shared keys. If (EC)DHE
 key establishment is in use, then the ServerHello
 will contain a "key_share" extension with the server's ephemeral
 Diffie-Hellman share which MUST be in the same group as one of the
