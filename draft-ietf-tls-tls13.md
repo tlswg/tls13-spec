@@ -3953,6 +3953,14 @@ profile.
 The TLS protocol cannot prevent many common security mistakes. This section
 provides several recommendations to assist implementors.
 
+## API considerations for 0-RTT
+
+0-RTT data has very different security properties from data
+transmitted after a completed handshake: it can be
+replayed. Implementations SHOULD provide different functions for
+reading and writing 0-RTT data and data transmitted after the
+handshake, and SHOULD NOT automatically resend 0-RTT data if it is
+rejected by the server.
 
 ## Random Number Generation and Seeding
 
