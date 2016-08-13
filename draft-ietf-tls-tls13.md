@@ -3512,10 +3512,11 @@ In this diagram, the following formatting conventions apply:
   from the left.
 - Derive-Secret's Secret argument is indicated by the arrow coming in
   from the left. For instance, the Early Secret is the Secret for
-  generating the early_traffic-secret.
+  generating the early_traffic_secret.
 
 Note that the 0-RTT Finished message is not included in the Derive-Secret
 operation.
+
 ~~~~
                  0
                  |
