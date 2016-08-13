@@ -3687,18 +3687,9 @@ the value is computed as:
 ##  MTI Cipher Suites
 
 In the absence of an application profile standard specifying otherwise, a
-TLS-compliant application MUST implement the following cipher suites:
-
-~~~~
-    TLS_AES_128_GCM_SHA256
-~~~~
-
-A TLS-compliant application SHOULD implement the following cipher suites:
-
-~~~~
-    TLS_AES_256_GCM_SHA384
-    TLS_CHACHA20_POLY1305_SHA256
-~~~~
+TLS-compliant application MUST implement the TLS_AES_128_GCM_SHA256
+cipher suite and SHOULD implement the TLS_AES_256_GCM_SHA384 and 
+TLS_CHACHA20_POLY1305_SHA256 cipher suites.
 
 A TLS-compliant application MUST support digital signatures with
 rsa_pkcs1_sha256 (for certificates), rsa_pss_sha256 (for
