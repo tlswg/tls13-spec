@@ -1,4 +1,5 @@
 MD_PREPROCESSOR := python mk-appendix.py
+XML_RESOURCE_ORG_PREFIX = http://xml2rfc.ietf.org/public/rfc
 
 include lib/main.mk
 
