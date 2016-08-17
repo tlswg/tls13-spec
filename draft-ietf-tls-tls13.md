@@ -2807,9 +2807,10 @@ authentication in order to encapsulate the additional client
 authentication state. Clients SHOULD attempt to use each
 ticket no more than once, with more recent tickets being used
 first.
-For handshakes that do not use a resumption_psk, the
-resumption_context is a string of [[TBD: This is not safe now
-that we allow additional server signatures with PSK:
+For handshakes that do not use a
+resumption_psk, the resumption_context is a string of Hash.Length
+zeroes. [[Note: this will not be safe if/when we add
+additional server signatures with PSK:
 OPEN ISSUE https://github.com/tlswg/tls13-spec/issues/558]]
 
 Any ticket MUST only be resumed with a cipher suite that is identical
