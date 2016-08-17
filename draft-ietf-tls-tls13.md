@@ -746,7 +746,7 @@ In the Key Exchange phase, the client sends the ClientHello
 symmetric cipher/HKDF hash pairs, some set of Diffie-Hellman key shares (in the
 "key_share" extension {{key-share}}), one or more pre-shared key labels (in the
 "pre_shared_key" extension {{pre-shared-key-extension}}), or both,
-and some extensions.
+and potentially some other extensions.
 
 The server processes the ClientHello and determines the appropriate
 cryptographic parameters for the connection. It then responds with its
@@ -1409,7 +1409,7 @@ cipher_suites
   order of client preference. If the list contains cipher suites
   the server does not recognize, support, or wish to use, the server
   MUST ignore those cipher suites, and process the remaining ones as
-o  usual. Values are defined in {{cipher-suites}}.
+  usual. Values are defined in {{cipher-suites}}.
 
 legacy_compression_methods
 : Versions of TLS before 1.3 supported compression with the list of
@@ -1961,8 +1961,8 @@ these rules and and MAY abort the connection with a fatal
 "illegal_parameter" alert if one is violated.
 
 If using (EC)DHE key establishment, servers offer exactly one
-KeyShareEntry which corresponds to one of the KeyShareEntry values offered
-by the client, that the server has selected for the negotiated key exchange.
+KeyShareEntry. This value MUST correspond to the KeyShareEntry value offered
+by the client that the server has selected for the negotiated key exchange.
 Servers MUST NOT send a KeyShareEntry for any group not
 indicated in the "supported_groups" extension.
 
