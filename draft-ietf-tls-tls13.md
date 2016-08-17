@@ -2809,7 +2809,7 @@ ticket no more than once, with more recent tickets being used
 first.
 For handshakes that do not use a resumption_psk, the
 resumption_context is a string of [[TBD: This is not safe now
-that we allow additional server signatures with PSK: 
+that we allow additional server signatures with PSK:
 OPEN ISSUE https://github.com/tlswg/tls13-spec/issues/558]]
 
 Any ticket MUST only be resumed with a cipher suite that is identical
@@ -3714,7 +3714,7 @@ the value is computed as:
 
 In the absence of an application profile standard specifying otherwise, a
 TLS-compliant application MUST implement the TLS_AES_128_GCM_SHA256
-cipher suite and SHOULD implement the TLS_AES_256_GCM_SHA384 and 
+cipher suite and SHOULD implement the TLS_AES_256_GCM_SHA384 and
 TLS_CHACHA20_POLY1305_SHA256 cipher suites.
 
 A TLS-compliant application MUST support digital signatures with
@@ -3826,7 +3826,7 @@ is listed below:
 | client_certificate_url [RFC6066]         |         Yes | Encrypted |
 | trusted_ca_keys [RFC6066]                |         Yes | Encrypted |
 | truncated_hmac [RFC6066]                 |         Yes |        No |
-| status_request [RFC6066]                 |         Yes |        No |
+| status_request [RFC6066]                 |         Yes | Encrypted |
 | user_mapping [RFC4681]                   |         Yes | Encrypted |
 | client_authz [RFC5878]                   |          No | Encrypted |
 | server_authz [RFC5878]                   |          No | Encrypted |
@@ -3927,7 +3927,7 @@ Cipher suite names follow the naming convention:
 
 The "CIPHER" component commonly has sub-components used to designate
 the cipher name, bits, and mode, if applicable. For example, "AES_256_GCM"
-represents 256-bit AES in the GCM mode of operation. 
+represents 256-bit AES in the GCM mode of operation.
 
 |       Cipher Suite Name         |    Value    | Specification |
 |:--------------------------------|:------------|:--------------|
