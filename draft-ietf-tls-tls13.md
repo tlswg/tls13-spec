@@ -425,6 +425,35 @@ server: The endpoint which did not initiate the TLS connection.
 
 ##  Major Differences from TLS 1.2
 
+(*) indicates changes to the wire protocol which may require implementations
+    to update.
+
+draft-15
+
+- New negotiation syntax as discussed in Berlin (*)
+
+- Require CertificateRequest.context to be empty during handshake (*)
+
+- Forbid empty tickets (*)
+
+- Forbid application data messages in between post-handshake messages
+  from the same flight (*)
+
+- Clean up alert guidance (*)
+
+- Clearer guidance on what is needed for TLS 1.2.
+
+- Guidance on 0-RTT time windows.
+
+- Rename a bunch of fields.
+
+- Remove old PRNG text.
+
+- Explicitly require checking that handshake records not span
+  key changes.
+
+
+
 draft-14
 
 - Allow cookies to be longer (*)
@@ -458,9 +487,6 @@ draft-14
 - Major editorial restructuring.
 
 - Replace the Security Analysis section with a WIP draft.
-
-(*) indicates changes to the wire protocol which may require implementations
-    to update.
 
 
 draft-13
