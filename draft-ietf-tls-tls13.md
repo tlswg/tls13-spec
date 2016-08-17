@@ -1448,8 +1448,8 @@ When this message will be sent:
 
 > The server will send this message in response to a ClientHello message when
 it was able to find an acceptable set of algorithms and the client's
-"key_share" extension was acceptable. If the client proposed groups are not
-acceptable by the server, it will respond with a "handshake_failure" fatal alert.
+"key_share" extension was acceptable. If it is not able to find an acceptable
+set of parameters, the server will respond with a "handshake_failure" fatal alert.
 
 Structure of this message:
 
