@@ -2474,7 +2474,7 @@ for each scenario:
 | 0-RTT | ClientHello | early_traffic_secret|
 | 1-RTT (Server) | ClientHello ... later of EncryptedExtensions/CertificateRequest | handshake_traffic_secret |
 | 1-RTT (Client) | ClientHello ... ServerFinished     | handshake_traffic_secret |
-| Post-Handshake | ClientHello ... ClientFinished + CertificateRequest | traffic_secret_0 |
+| Post-Handshake | ClientHello ... ClientFinished + CertificateRequest | traffic_secret_N |
 
 Note: The Handshake Context for the last three rows does not include any 0-RTT
   handshake messages, regardless of whether 0-RTT is used.
