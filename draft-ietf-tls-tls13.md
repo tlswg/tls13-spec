@@ -2906,7 +2906,14 @@ the responses).
 
 ### Key and IV Update {#key-update}
 
-     struct {} KeyUpdate;
+       struct {
+           uint64 receive_generation;
+       } KeyUpdate;
+
+receive_generation
+: The generation of the receive traffic keys in use by the sender
+  of the KeyUpdate message. This value equals the number of KeyUpdate
+  messages that the sender has received.
 
 The KeyUpdate handshake message is used to indicate that the sender is
 updating its sending cryptographic keys. This message can be sent by
@@ -2942,6 +2949,9 @@ a KeyUpdate with the old key is received before accepting any messages
 encrypted with the new key. Failure to do so may allow message truncation
 attacks.
 
+An endpoint MAY use the receive_generation field in a received
+KeyUpdate message to confirm that the other side has received and
+acted upon an earlier KeyUpdate message.
 
 #  Record Protocol
 
