@@ -2945,6 +2945,13 @@ a KeyUpdate with the old key is received before accepting any messages
 encrypted with the new key. Failure to do so may allow message truncation
 attacks.
 
+## Handshake Layer and Key Changes
+
+Handshake messages MUST NOT span key changes. Because
+the ServerHello, Finished, and KeyUpdate messages signal a key change,
+upon receiving these messages a receiver MUST verify that they end
+of these messages aligns with a record boundary; if not, then it MUST
+send a fatal "unexpected_message" alert.
 
 #  Record Protocol
 
