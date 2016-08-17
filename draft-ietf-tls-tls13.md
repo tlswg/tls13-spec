@@ -948,7 +948,8 @@ the "allow_early_data" flag), clients can also send data on their first
 flight ("early data"). This data is encrypted solely under keys
 derived using the first offered PSK as the static secret.  As shown in
 {{tls-0-rtt}}, the Zero-RTT data is just added to the 1-RTT handshake
-in the first flight. The rest of the handshake uses the same messages.
+in the first flight. The rest of the handshake uses the same messages
+as with a 1-RTT handshake with PSK resumption.
 
 ~~~
          Client                                               Server
@@ -965,11 +966,8 @@ in the first flight. The rest of the handshake uses the same messages.
                                                     + pre_shared_key
                                                         + key_share*
                                                {EncryptedExtensions}
-                                               {CertificateRequest*}
                                                           {Finished}
                                    <--------     [Application Data*]
-         {Certificate*}
-         {CertificateVerify*}
          {Finished}                -------->
 
          [Application Data]        <------->      [Application Data]
