@@ -2949,7 +2949,7 @@ attacks.
 
 Handshake messages MUST NOT span key changes. Because
 the ServerHello, Finished, and KeyUpdate messages signal a key change,
-upon receiving these messages a receiver MUST verify that they end
+upon receiving these messages a receiver MUST verify that the end
 of these messages aligns with a record boundary; if not, then it MUST
 send a fatal "unexpected_message" alert.
 
