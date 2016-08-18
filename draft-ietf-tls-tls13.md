@@ -2072,11 +2072,11 @@ The "extension_data" field of this extension contains a
        } PskIdentity;
 
        struct {
-           select (Role) {
-               case client:
+           select (Handshake.msg_type) {
+               case client_hello:
                    PskIdentity identities<6..2^16-1>;
 
-               case server:
+               case server_hello:
                    uint16 selected_identity;
            }
        } PreSharedKeyExtension;
@@ -2155,11 +2155,11 @@ The "extension_data" field of this extension contains an
 %%% Key Exchange Messages
 
        struct {
-           select (Role) {
-               case client:
+           select (Handshake.msg_type) {
+               case client_hello:
                    uint32 obfuscated_ticket_age;
 
-               case server:
+               case server_hello:
                   struct {};
            }
        } EarlyDataIndication;
