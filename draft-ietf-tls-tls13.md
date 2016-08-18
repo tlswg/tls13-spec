@@ -1580,7 +1580,8 @@ The server SHOULD send only the extensions necessary for the client to
 generate a correct ClientHello pair (currently no such extensions
 exist). As with ServerHello, a
 HelloRetryRequest MUST NOT contain any extensions that were not first
-offered by the client in its ClientHello.
+offered by the client in its ClientHello, with the exception of optionally the
+"cookie" (see {{cookie}}) extension.
 
 Upon receipt of a HelloRetryRequest, the client MUST verify that the extensions
 block is not empty and otherwise abort the handshake with a fatal
@@ -1592,9 +1593,9 @@ Otherwise, the client MUST process all extensions in the HelloRetryRequest and
 send a second updated ClientHello. The HelloRetryRequest extensions defined in
 this specification are:
 
-- cookie [{{cookie}}]
+- cookie (see {{cookie}})
 
-- key_share [{{key-share}}]
+- key_share (see {{key-share}})
 
 Note that HelloRetryRequest extensions are defined such that the original
 ClientHello may be computed from the new one, given minimal state about which
@@ -1995,6 +1996,9 @@ these checks fails, then the client MUST abort the handshake with a fatal
 client MUST append a new KeyShareEntry for the group indicated in the
 selected_group field to the groups in its original KeyShare. The remaining
 KeyShareEntry values MUST be preserved.
+
+Note that a HelloRetryRequest might not include the "key_share" extension if
+other extensions are sent, such as if the server is only sending a cookie.
 
 If using (EC)DHE key establishment, servers offer exactly one
 KeyShareEntry in the ServerHello. This value MUST correspond to the KeyShareEntry value offered
@@ -3856,6 +3860,12 @@ is listed below:
    this registry to include the "key_share", "pre_shared_key", and
    "early_data" extensions as defined in this document.
 
+   IANA [shall update/has updated] this registry to add a
+   "Recommended" column. IANA [shall/has] initially populated this
+   column with the values in the table below. This table has been generated
+   by marking Standards Track RFCs as "Yes" and all others as
+   "No".
+
    IANA [shall update/has updated] this registry to include a "TLS
    1.3" column with the following four values: "Client", indicating
    that the server shall not send them. "Clear", indicating
@@ -3863,44 +3873,45 @@ is listed below:
    they shall be in the EncryptedExtensions block, and "No" indicating
    that they are not used in TLS 1.3. This column [shall be/has been]
    initially populated with the values in this document.
-   IANA [shall update/has updated] this registry to add a
-   "Recommended" column. IANA [shall/has] initially populated this
-   column with the values in the table below. This table has been generated
-   by marking Standards Track RFCs as "Yes" and all others as
-   "No".
 
-| Extension                                | Recommended |  TLS 1.3  |
-|:-----------------------------------------|------------:|----------:|
-| server_name [RFC6066]                    |         Yes | Encrypted |
-| max_fragment_length [RFC6066]            |         Yes | Encrypted |
-| client_certificate_url [RFC6066]         |         Yes | Encrypted |
-| trusted_ca_keys [RFC6066]                |         Yes | Encrypted |
-| truncated_hmac [RFC6066]                 |         Yes |        No |
-| status_request [RFC6066]                 |         Yes | Encrypted |
-| user_mapping [RFC4681]                   |         Yes | Encrypted |
-| client_authz [RFC5878]                   |          No | Encrypted |
-| server_authz [RFC5878]                   |          No | Encrypted |
-| cert_type [RFC6091]                      |         Yes | Encrypted |
-| supported_groups [RFC-ietf-tls-negotiated-ff-dhe] | Yes | Encrypted |
-| ec_point_formats [RFC4492]               |         Yes |        No |
-| srp [RFC5054]                            |          No |        No |
-| signature_algorithms [RFC5246]           |         Yes |    Client |
-| use_srtp [RFC5764]                       |         Yes | Encrypted |
-| heartbeat [RFC6520]                      |         Yes | Encrypted |
-| application_layer_protocol_negotiation [RFC7301] | Yes | Encrypted |
-| status_request_v2 [RFC6961]              |         Yes | Encrypted |
-| signed_certificate_timestamp [RFC6962]   |          No | Encrypted |
-| client_certificate_type [RFC7250]        |         Yes | Encrypted |
-| server_certificate_type [RFC7250]        |         Yes | Encrypted |
-| padding [RFC7685]                        |         Yes |    Client |
-| encrypt_then_mac [RFC7366]               |         Yes |        No |
-| extended_master_secret [RFC7627]         |         Yes |        No |
-| SessionTicket TLS [RFC4507]              |         Yes |        No |
-| renegotiation_info [RFC5746]             |         Yes |        No |
-| key_share [[this document]]              |         Yes |     Clear |
-| pre_shared_key [[this document]]         |         Yes |     Clear |
-| early_data [[this document]]             |         Yes | Encrypted |
-| cookie [[this document]]                 |         Yes | Encrypted/HelloRetryRequest |
+   IANA [shall update/has updated] this registry to include a
+   "HelloRetryRequest" column with the following two values: "Yes", indicating
+   it may be sent in HelloRetryRequest, and "No", indicating it may not be sent
+   in HelloRetryRequest. This column [shall be/has been] initially populated
+   with the values in this document.
+
+| Extension                                | Recommended |  TLS 1.3  | HelloRetryRequest |
+|:-----------------------------------------|------------:|----------:|------------------:|
+| server_name [RFC6066]                    |         Yes | Encrypted | No                |
+| max_fragment_length [RFC6066]            |         Yes | Encrypted | No                |
+| client_certificate_url [RFC6066]         |         Yes | Encrypted | No                |
+| trusted_ca_keys [RFC6066]                |         Yes | Encrypted | No                |
+| truncated_hmac [RFC6066]                 |         Yes |        No | No                |
+| status_request [RFC6066]                 |         Yes | Encrypted | No                |
+| user_mapping [RFC4681]                   |         Yes | Encrypted | No                |
+| client_authz [RFC5878]                   |          No | Encrypted | No                |
+| server_authz [RFC5878]                   |          No | Encrypted | No                |
+| cert_type [RFC6091]                      |         Yes | Encrypted | No                |
+| supported_groups [RFC-ietf-tls-negotiated-ff-dhe] | Yes | Encrypted | No                |
+| ec_point_formats [RFC4492]               |         Yes |        No | No                |
+| srp [RFC5054]                            |          No |        No | No                |
+| signature_algorithms [RFC5246]           |         Yes |    Client | No                |
+| use_srtp [RFC5764]                       |         Yes | Encrypted | No                |
+| heartbeat [RFC6520]                      |         Yes | Encrypted | No                |
+| application_layer_protocol_negotiation [RFC7301] | Yes | Encrypted | No                |
+| status_request_v2 [RFC6961]              |         Yes | Encrypted | No                |
+| signed_certificate_timestamp [RFC6962]   |          No | Encrypted | No                |
+| client_certificate_type [RFC7250]        |         Yes | Encrypted | No                |
+| server_certificate_type [RFC7250]        |         Yes | Encrypted | No                |
+| padding [RFC7685]                        |         Yes |    Client | No                |
+| encrypt_then_mac [RFC7366]               |         Yes |        No | No                |
+| extended_master_secret [RFC7627]         |         Yes |        No | No                |
+| SessionTicket TLS [RFC4507]              |         Yes |        No | No                |
+| renegotiation_info [RFC5746]             |         Yes |        No | No                |
+| key_share [[this document]]              |         Yes |     Clear | Yes               |
+| pre_shared_key [[this document]]         |         Yes |     Clear | No                |
+| early_data [[this document]]             |         Yes | Encrypted | No                |
+| cookie [[this document]]                 |         Yes |    Client | Yes               |
 
 
 In addition, this document defines two new registries to be maintained
