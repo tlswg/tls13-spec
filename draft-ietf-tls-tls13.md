@@ -47,7 +47,6 @@ normative:
   RFC7251:
   RFC7748:
   RFC7905:
-  I-D.ietf-tls-ecdhe-psk-aead:
   I-D.irtf-cfrg-eddsa:
 
   AES:
