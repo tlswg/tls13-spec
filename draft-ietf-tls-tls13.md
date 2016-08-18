@@ -1558,9 +1558,10 @@ When this message will be sent:
 > Servers send this message in response to a ClientHello
 message if they were able to find an acceptable set of algorithms and
 groups that are mutually supported, but
-the client's KeyShare did not contain an acceptable
-offer. If it cannot find such a match, it will respond with a
-fatal "handshake_failure" alert.
+the client's ClientHello did not contain sufficient information to
+proceed with the handshake.
+If a server cannot successfully select algorithms, it will respond with a
+fatal "handshake_failure" alert instead.
 
 Structure of this message:
 
@@ -1568,13 +1569,9 @@ Structure of this message:
 
        struct {
            ProtocolVersion server_version;
-           NamedGroup selected_group;
-           Extension extensions<0..2^16-1>;
+           Extension extensions<2..2^16-1>;
        } HelloRetryRequest;
 
-selected_group
-: The mutually supported group the server intends to negotiate and
-  is requesting a retried ClientHello/KeyShare for.
 {:br }
 
 The version and extensions fields have the
@@ -1585,28 +1582,25 @@ exist). As with ServerHello, a
 HelloRetryRequest MUST NOT contain any extensions that were not first
 offered by the client in its ClientHello.
 
-Upon receipt of a HelloRetryRequest, the client MUST first verify that
-the selected_group field corresponds to a group which was provided
-in the "supported_groups" extension in the original ClientHello.  It
-MUST then verify that the selected_group field does not correspond
-to a group which was provided in the "key_share" extension in the
-original ClientHello. If either of these checks fails, then the client
-MUST abort the handshake with a fatal "illegal_parameter"
-alert. Clients SHOULD also abort with "unexpected_message" in response
-to any second HelloRetryRequest which was sent in the same connection
-(i.e., where the ClientHello was itself in response to a
-HelloRetryRequest).
+Upon receipt of a HelloRetryRequest, the client MUST verify that the extensions
+block is not empty and otherwise abort the handshake with a fatal
+"decode_error" alert.  Clients SHOULD also abort with "unexpected_message" in
+response to any second HelloRetryRequest which was sent in the same connection
+(i.e., where the ClientHello was itself in response to a HelloRetryRequest).
 
-Otherwise, the client MUST send a ClientHello with an updated KeyShare
-extension to the server. The client MUST append a new KeyShareEntry
-for the group indicated in the selected_group field to the groups
-in its original KeyShare.
+Otherwise, the client MUST process all extensions in the HelloRetryRequest and
+send a second updated ClientHello. The HelloRetryRequest extensions defined in
+this specification are:
 
-Upon re-sending the ClientHello and receiving the server's
-ServerHello/KeyShare, the client MUST verify that the selected
-NamedGroup matches that supplied in the HelloRetryRequest and MUST
-abort the connection with a fatal "illegal_parameter" alert if it does
-not.
+- cookie [{{cookie}}]
+
+- key_share [{{key-share}}]
+
+Note that HelloRetryRequest extensions are defined such that the original
+ClientHello may be computed from the new one, given minimal state about which
+HelloRetryRequest extensions were sent. For example, the key_share extension
+causes the new KeyShareEntry to be appended to the client_shares field, rather
+than replacing it.
 
 ##  Hello Extensions
 
@@ -1953,11 +1947,14 @@ The "extension_data" field of this extension contains a
 %%% Key Exchange Messages
 
        struct {
-           select (role) {
-               case client:
+           select (Handshake.msg_type) {
+               case client_hello:
                    KeyShareEntry client_shares<0..2^16-1>;
 
-               case server:
+               case hello_retry_request:
+                   NamedGroup selected_group;
+
+               case server_hello:
                    KeyShareEntry server_share;
            }
        } KeyShare;
@@ -1967,6 +1964,10 @@ client_shares
   This vector MAY be empty if the client is requesting a HelloRetryRequest.
   The ordering of values here SHOULD match that of the ordering of offered support
   in the "supported_groups" extension.
+
+selected_group
+: The mutually supported group the server intends to negotiate and
+  is requesting a retried ClientHello/KeyShare for.
 
 server_share
 : A single KeyShareEntry value that is in the same group as one of the
@@ -1984,11 +1985,25 @@ KeyShareEntry values for groups not listed in the client's
 these rules and and MAY abort the connection with a fatal
 "illegal_parameter" alert if one is violated.
 
+Upon receipt of this extension in a HelloRetryRequest, the client MUST first
+verify that the selected_group field corresponds to a group which was provided
+in the "supported_groups" extension in the original ClientHello. It MUST then
+verify that the selected_group field does not correspond to a group which was
+provided in the "key_share" extension in the original ClientHello. If either of
+these checks fails, then the client MUST abort the handshake with a fatal
+"illegal_parameter" alert.  Otherwise, when sending the new ClientHello, the
+client MUST append a new KeyShareEntry for the group indicated in the
+selected_group field to the groups in its original KeyShare. The remaining
+KeyShareEntry values MUST be preserved.
+
 If using (EC)DHE key establishment, servers offer exactly one
-KeyShareEntry. This value MUST correspond to the KeyShareEntry value offered
+KeyShareEntry in the ServerHello. This value MUST correspond to the KeyShareEntry value offered
 by the client that the server has selected for the negotiated key exchange.
 Servers MUST NOT send a KeyShareEntry for any group not
 indicated in the "supported_groups" extension.
+If a HelloRetryRequest was received, the client MUST verify that the
+selected NamedGroup matches that supplied in the selected_group field and MUST
+abort the connection with a fatal "illegal_parameter" alert if it does not.
 
 [[TODO: Recommendation about what the client offers.
 Presumably which integer DH groups and which curves.]]
