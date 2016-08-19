@@ -3949,7 +3949,7 @@ function to be used with HKDF. Cipher suites follow the naming convention:
 Cipher suite names follow the naming convention:
 
 ~~~
-   CipherSuite TLS13_CIPHER_HASH = VALUE;
+   CipherSuite TLS_CIPHER_HASH = VALUE;
 ~~~
 
 | Component | Contents |
