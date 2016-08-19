@@ -781,7 +781,8 @@ parameters. [{{server-hello}}]. The combination of the ClientHello
 and the ServerHello determines the shared keys. If (EC)DHE
 key establishment is in use, then the ServerHello
 will contain a "key_share" extension with the server's ephemeral
-Diffie-Hellman share which MUST be in the same group as one of the
+Diffie-Hellman share which MUST be using a same key exchange method (in the
+same group) as one of the
 client's shares. If PSK key establishment is
 in use, then the ServerHello will contain a "pre_shared_key"
 extension indicating which of the client's offered PSKs was selected.
@@ -835,7 +836,7 @@ that point is, of course, being sent to an unauthenticated peer.
 ## Incorrect DHE Share
 
 If the client has not provided a sufficient "key_share" extension (e.g. it
-includes only DHE or ECDHE groups unacceptable or unsupported by the
+includes only key exchange methods unacceptable or unsupported by the
 server), the server corrects the mismatch with a HelloRetryRequest and
 the client will need to restart the handshake with an appropriate
 "key_share" extension, as shown in Figure 2.
@@ -1312,9 +1313,10 @@ following four sets of options in its ClientHello.
 
 - A list of cipher suites which indicates the AEAD cipher/HKDF hash
   pairs which the client supports
-- A "supported_group" ({{negotiated-groups}}) extension which indicates the (EC)DHE groups
+- A "supported_kems" ({{negotiated-kems}}) extension which indicates the (EC)DHE groups
   which the client supports and a "key_share" ({{key-share}}) extension which contains
-  (EC)DHE shares for some or all of these groups
+  (EC)DHE shares for some or all of these groups; this extension may support
+  other key exchange methods (KEMs) than Diffie-Hellman type key exchange in future
 - A "signature_algorithms" ({{signature-algorithms}}) extension which indicates the signature
   algorithms which the client can accept.
 - A "pre_shared_key" ({{pre-shared-key-extension}}) extension which contains the identities
@@ -1323,11 +1325,12 @@ following four sets of options in its ClientHello.
 
 If the server does not select a PSK, then the first three of these
 options are entirely orthogonal: the server independently selects a
-cipher suite, an (EC)DHE group and key share for key establishment,
+cipher suite, a key exchange method with respect to a (EC)DHE group
+and key share for key establishment,
 and a signature algorithm/certificate pair to authenticate itself to
 the client. If any of these parameters has no overlap between the
 client and server parameters, then the handshake
-will fail. If there is overlap in the "supported_group" extension
+will fail. If there is overlap in the "supported_kems" extension
 but the client did not offer a compatible "key_share" extension,
 then the server will respond with a HelloRetryRequest ({{hello-retry-request}}) message.
 
@@ -1557,7 +1560,7 @@ When this message will be sent:
 
 > Servers send this message in response to a ClientHello
 message if they were able to find an acceptable set of algorithms and
-groups that are mutually supported, but
+key exchange methods (KEMs) that are mutually supported, but
 the client's KeyShare did not contain an acceptable
 offer. If it cannot find such a match, it will respond with a
 fatal "handshake_failure" alert.
@@ -1568,12 +1571,12 @@ Structure of this message:
 
        struct {
            ProtocolVersion server_version;
-           NamedGroup selected_group;
+           KeyExchangeMethod selected_kem;
            Extension extensions<0..2^16-1>;
        } HelloRetryRequest;
 
-selected_group
-: The mutually supported group the server intends to negotiate and
+selected_kem
+: The mutually supported key exchange method the server intends to negotiate and
   is requesting a retried ClientHello/KeyShare for.
 {:br }
 
@@ -1586,10 +1589,10 @@ HelloRetryRequest MUST NOT contain any extensions that were not first
 offered by the client in its ClientHello.
 
 Upon receipt of a HelloRetryRequest, the client MUST first verify that
-the selected_group field corresponds to a group which was provided
-in the "supported_groups" extension in the original ClientHello.  It
-MUST then verify that the selected_group field does not correspond
-to a group which was provided in the "key_share" extension in the
+the selected_kem field corresponds to a key exchange method which was provided
+in the "supported_kems" extension in the original ClientHello.  It
+MUST then verify that the selected_kem field does not correspond
+to a key exchange method which was provided in the "key_share" extension in the
 original ClientHello. If either of these checks fails, then the client
 MUST abort the handshake with a fatal "illegal_parameter"
 alert. Clients SHOULD also abort with "unexpected_message" in response
@@ -1599,12 +1602,12 @@ HelloRetryRequest).
 
 Otherwise, the client MUST send a ClientHello with an updated KeyShare
 extension to the server. The client MUST append a new KeyShareEntry
-for the group indicated in the selected_group field to the groups
+for the key exchange method indicated in the selected_kem field to the kems
 in its original KeyShare.
 
 Upon re-sending the ClientHello and receiving the server's
 ServerHello/KeyShare, the client MUST verify that the selected
-NamedGroup matches that supplied in the HelloRetryRequest and MUST
+KeyExchangeMethod matches that supplied in the HelloRetryRequest and MUST
 abort the connection with a fatal "illegal_parameter" alert if it does
 not.
 
@@ -1620,7 +1623,7 @@ The extension format is:
        } Extension;
 
        enum {
-           supported_groups(10),
+           supported_kems(10),
            signature_algorithms(13),
            key_share(40),
            pre_shared_key(41),
@@ -1846,18 +1849,19 @@ willing to negotiate TLS 1.2 MUST behave in accordance with the requirements of
 * ECDSA signature schemes align with TLS 1.2's ECDSA hash/signature pairs.
   However, the old semantics did not constrain the signing curve.  If TLS 1.2 is
   negotiated, implementations MUST be prepared to accept a signature that uses
-  any curve that they advertised in the "supported_groups" extension.
+  any curve that they advertised in the "supported_kems" extension.
 
 * Implementations that advertise support for RSASSA-PSS (which is mandatory in
   TLS 1.3), MUST be prepared to accept a signature using that scheme even when
   TLS 1.2 is negotiated.
 
 
-### Negotiated Groups
+### Negotiated methods
 
-When sent by the client, the "supported_groups" extension indicates
-the named groups which the client supports for key exchange, ordered
-from most preferred to least preferred.
+When sent by the client, the "supported_kems" extension indicates
+the key exchange methods and the parameters that used for specific methods
+which the client supports for key exchange, ordered from most preferred to
+least preferred.
 
 Note: In versions of TLS prior to TLS 1.3, this extension was named
 "elliptic_curves" and only contained elliptic curve groups. See {{RFC4492}} and
@@ -1866,9 +1870,9 @@ ECDSA curves. Signature algorithms are now negotiated independently (see
 {{signature-algorithms}}).
 
 The "extension_data" field of this extension contains a
-"NamedGroupList" value:
+"KeyExchangeMethodList" value:
 
-%%% Supported Groups Extension
+%%% Supported Methods Extension
 
        enum {
            /* Elliptic Curve Groups (ECDHE) */
@@ -1881,16 +1885,19 @@ The "extension_data" field of this extension contains a
            ffdhe2048 (256), ffdhe3072 (257), ffdhe4096 (258),
            ffdhe6144 (259), ffdhe8192 (260),
 
+           /* New Key Exchange Methods */
+           new_key_exchange_methods (0x0200..0x02FF),
+
            /* Reserved Code Points */
            ffdhe_private_use (0x01FC..0x01FF),
            ecdhe_private_use (0xFE00..0xFEFF),
            obsolete_RESERVED (0xFF01..0xFF02),
            (0xFFFF)
-       } NamedGroup;
+       } KeyExchangeMethod;
 
        struct {
-           NamedGroup named_group_list<1..2^16-1>;
-       } NamedGroupList;
+           KeyExchangeMethod kem_list<1..2^16-1>;
+       } KeyExchangeMethodList;
 
 Elliptic Curve Groups (ECDHE)
 : Indicates support of the corresponding named curve.
@@ -1905,17 +1912,22 @@ Finite Field Groups (DHE)
   Values 0x01FC through 0x01FF are reserved for private use.
 {:br }
 
-Items in named_group_list are ordered according to the client's
+New Key Exchange Methods
+: Allows for the inclusion of future key exchange methods that may not
+  be Diffie-Hellman style. Examples are NTRU KEM based key exchange, and
+  NewHope key exchange, which provide quantum-resistant key estabilishment.
+
+Items in kem_list are ordered according to the client's
 preferences (most preferred choice first).
 
-As of TLS 1.3, servers are permitted to send the "supported_groups"
-extension to the client.  If the server has a group it prefers to the
+As of TLS 1.3, servers are permitted to send the "supported_kems"
+extension to the client.  If the server has a key exchange method it prefers to the
 ones in the "key_share" extension but is still willing to accept the
-ClientHello, it SHOULD send "supported_groups" to update the client's
+ClientHello, it SHOULD send "supported_kems" to update the client's
 view of its preferences.  Clients MUST NOT act upon any information
-found in "supported_groups" prior to successful completion of the
+found in "supported_kems" prior to successful completion of the
 handshake, but MAY use the information learned from a successfully
-completed handshake to change what groups they offer to a server in
+completed handshake to change what key exchange methods they offer to a server in
 subsequent connections.
 
 
@@ -1924,25 +1936,25 @@ subsequent connections.
 The "key_share" extension contains the endpoint's cryptographic parameters.
 
 Clients MAY send an empty client_shares vector in order to request
-group selection from the server at the cost of an additional round trip.
+KEM selection from the server at the cost of an additional round trip.
 (see {{hello-retry-request}})
 
 %%% Key Exchange Messages
 
        struct {
-           NamedGroup group;
+           KeyExchangeMethod kem;
            opaque key_exchange<1..2^16-1>;
        } KeyShareEntry;
 
-group
-: The named group for the key being exchanged.
+kem
+: The key exchange method for the key being exchanged.
   Finite Field Diffie-Hellman {{DH}} parameters are described in
   {{ffdhe-param}}; Elliptic Curve Diffie-Hellman parameters are
   described in {{ecdhe-param}}.
 
 key_exchange
 : Key exchange information.  The contents of this field are
-  determined by the specified group and its corresponding
+  determined by the specified key exchange method and its corresponding
   definition.  Endpoints MUST NOT send empty or otherwise
   invalid key_exchange values for any reason.
 {:br }
@@ -1966,10 +1978,10 @@ client_shares
 : A list of offered KeyShareEntry values in descending order of client preference.
   This vector MAY be empty if the client is requesting a HelloRetryRequest.
   The ordering of values here SHOULD match that of the ordering of offered support
-  in the "supported_groups" extension.
+  in the "supported_kems" extension.
 
 server_share
-: A single KeyShareEntry value that is in the same group as one of the
+: A single KeyShareEntry value that uses a same key exchange method as one of the
   client's shares.
 {:br }
 
@@ -1978,17 +1990,17 @@ representing a single set of key exchange parameters. For instance, a
 client might offer shares for several elliptic curves or multiple
 FFDHE groups.  The key_exchange values for each KeyShareEntry MUST by
 generated independently.  Clients MUST NOT offer multiple
-KeyShareEntry values for the same group.  Clients MUST NOT offer any
-KeyShareEntry values for groups not listed in the client's
-"supported_groups" extension.  Servers MAY check for violations of
+KeyShareEntry values for the same key exchange method.  Clients MUST NOT offer
+any KeyShareEntry values for key exchange methods not listed in the client's
+"supported_kems" extension.  Servers MAY check for violations of
 these rules and and MAY abort the connection with a fatal
 "illegal_parameter" alert if one is violated.
 
 If using (EC)DHE key establishment, servers offer exactly one
 KeyShareEntry. This value MUST correspond to the KeyShareEntry value offered
 by the client that the server has selected for the negotiated key exchange.
-Servers MUST NOT send a KeyShareEntry for any group not
-indicated in the "supported_groups" extension.
+Servers MUST NOT send a KeyShareEntry for any method not
+indicated in the "supported_kems" extension.
 
 [[TODO: Recommendation about what the client offers.
 Presumably which integer DH groups and which curves.]]
@@ -3764,7 +3776,7 @@ In the absence of an application profile standard specifying otherwise, a
 TLS-compliant application MUST implement the following TLS extensions:
 
   * Signature Algorithms ("signature_algorithms"; {{signature-algorithms}})
-  * Negotiated Groups ("supported_groups"; {{negotiated-groups}})
+  * Negotiated KEMs ("supported_ekms"; {{negotiated-kems}})
   * Key Share ("key_share"; {{key-share}})
   * Pre-Shared Key ("pre_shared_key"; {{pre-shared-key-extension}})
   * Server Name Indication ("server_name"; Section 3 of {{RFC6066}})
@@ -3774,7 +3786,7 @@ All implementations MUST send and use these extensions when offering
 applicable cipher suites:
 
   * "signature_algorithms" is REQUIRED for certificate authenticated cipher suites.
-  * "supported_groups" and "key_share" are REQUIRED for DHE or ECDHE cipher suites.
+  * "supported_kems" and "key_share" are REQUIRED for DHE or ECDHE cipher suites.
   * "pre_shared_key" is REQUIRED for PSK cipher suites.
   * "cookie" is REQUIRED for all cipher suites.
 
@@ -3866,7 +3878,7 @@ is listed below:
 | client_authz [RFC5878]                   |          No | Encrypted |
 | server_authz [RFC5878]                   |          No | Encrypted |
 | cert_type [RFC6091]                      |         Yes | Encrypted |
-| supported_groups [RFC-ietf-tls-negotiated-ff-dhe] | Yes | Encrypted |
+| supported_kems [RFC-ietf-tls-negotiated-ff-dhe] | Yes  | Encrypted |
 | ec_point_formats [RFC4492]               |         Yes |        No |
 | srp [RFC5054]                            |          No |        No |
 | signature_algorithms [RFC5246]           |         Yes |    Client |
@@ -3915,7 +3927,7 @@ might receive them from older TLS implementations.
 %%### Key Exchange Messages
 %%#### Cookie Extension
 %%#### Signature Algorithm Extension
-%%#### Supported Groups Extension
+%%#### Supported KEMs Extension
 
 Values within "obsolete_RESERVED" ranges were used in previous versions
 of TLS and MUST NOT be offered or negotiated by TLS 1.3 implementations.
@@ -4094,8 +4106,8 @@ TLS protocol issues:
   higher version numbers? (e.g. { 4, 0 }, { 9, 9 }, { 255, 255 })
 
 - Do you properly ignore unrecognized cipher suites ({{client-hello}}),
-  hello extensions ({{hello-extensions}}), named groups ({{negotiated-groups}}),
-  and signature algorithms ({{signature-algorithms}})?
+  hello extensions ({{hello-extensions}}), key exchange methods
+  ({{negotiated-kems}}), and signature algorithms ({{signature-algorithms}})?
 
 Cryptographic details:
 
