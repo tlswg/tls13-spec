@@ -47,7 +47,6 @@ normative:
   RFC7251:
   RFC7748:
   RFC7905:
-  I-D.mattsson-tls-ecdhe-psk-aead:
   I-D.irtf-cfrg-eddsa:
 
   AES:
@@ -121,7 +120,7 @@ informative:
   RFC7568:
   RFC7627:
   RFC7685:
-  I-D.ietf-tls-negotiated-ff-dhe:
+  RFC7919:
 
   DSS:
        title: "Digital Signature Standard, version 4"
@@ -1861,7 +1860,7 @@ from most preferred to least preferred.
 
 Note: In versions of TLS prior to TLS 1.3, this extension was named
 "elliptic_curves" and only contained elliptic curve groups. See {{RFC4492}} and
-{{I-D.ietf-tls-negotiated-ff-dhe}}. This extension was also used to negotiate
+{{RFC7919}}. This extension was also used to negotiate
 ECDSA curves. Signature algorithms are now negotiated independently (see
 {{signature-algorithms}}).
 
@@ -1901,7 +1900,7 @@ Elliptic Curve Groups (ECDHE)
 
 Finite Field Groups (DHE)
 : Indicates support of the corresponding finite field
-  group, defined in {{I-D.ietf-tls-negotiated-ff-dhe}}.
+  group, defined in {{RFC7919}}.
   Values 0x01FC through 0x01FF are reserved for private use.
 {:br }
 
@@ -3866,7 +3865,7 @@ is listed below:
 | client_authz [RFC5878]                   |          No | Encrypted |
 | server_authz [RFC5878]                   |          No | Encrypted |
 | cert_type [RFC6091]                      |         Yes | Encrypted |
-| supported_groups [RFC-ietf-tls-negotiated-ff-dhe] | Yes | Encrypted |
+| supported_groups [RFC7919]               |         Yes | Encrypted |
 | ec_point_formats [RFC4492]               |         Yes |        No |
 | srp [RFC5054]                            |          No |        No |
 | signature_algorithms [RFC5246]           |         Yes |    Client |
