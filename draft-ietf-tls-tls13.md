@@ -1817,8 +1817,8 @@ EdDSA algorithms
 {:br }
 
 rsa_pkcs1_sha1, dsa_sha1, and ecdsa_sha1 SHOULD NOT be offered. Clients
-offering these values for backwards compatibility MUST list them as the lowest
-priority (listed after all other algorithms in the
+offering these values for backwards compatibility SHOULD list them as the
+lowest priority (listed after all other algorithms in the
 supported_signature_algorithms vector). TLS 1.3 servers MUST NOT offer a SHA-1
 signed certificate unless no valid certificate chain can be produced without it
 (see {{server-certificate-selection}}).
