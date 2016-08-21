@@ -2291,6 +2291,11 @@ the existing behavior for SignedCertificateTimestamps {{?RFC6962}},
 and is more easily extensible in the handshake state machine.
 
 
+## Server Parameters Messages
+
+The next two messages from the server, EncryptedExtensions and
+CertificateRequest, contain encrypted information from the server
+that determines the rest of the handshake.
 
 ###  Encrypted Extensions
 
