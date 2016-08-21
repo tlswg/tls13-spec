@@ -437,6 +437,11 @@ server: The endpoint which did not initiate the TLS connection.
 
 draft-17
 
+- Remove the 0-RTT Finished, resumption_context, and replace with a
+  psk_binder field in the PSK itself (*)
+
+- Restructure PSK key exchange negotiation modes (*)
+
 - Add max_early_data_size field to TicketEarlyDataInfo (*)
 
 - Add a 0-RTT exporter and change the transcript for the regular exporter (*).
@@ -771,6 +776,7 @@ TLS supports three basic key exchange modes:
 
 Key  ^ ClientHello
 Exch | + key_share*
+     | + pre_shared_key_modes*
      v + pre_shared_key*         -------->
                                                        ServerHello  ^ Key
                                                       + key_share*  | Exch
@@ -817,8 +823,8 @@ In the Key Exchange phase, the client sends the ClientHello
 ({{client-hello}}) message, which contains a random nonce
 (ClientHello.random); its offered protocol versions; a list of
 symmetric cipher/HKDF hash pairs; some set of Diffie-Hellman key shares (in the
-"key_share" extension {{key-share}}), one or more pre-shared key labels (in the
-"pre_shared_key" extension {{pre-shared-key-extension}}), or both; and
+"key_share" extension {{key-share}}), a set of pre-shared key labels (in the
+"pre_shared_key" extension {{pre-shared-key-extension}}) or both; and
 potentially some other extensions.
 
 The server processes the ClientHello and determines the appropriate
@@ -831,7 +837,7 @@ contains a "key_share" extension with the server's ephemeral
 Diffie-Hellman share which MUST be in the same group as one of the
 client's shares. If PSK key establishment is
 in use, then the ServerHello contains a "pre_shared_key"
-extension indicating which of the client's offered PSKs was selected.
+extension indicating which of the client's offered PSKs was selected. 
 Note that implementations can use (EC)DHE and PSK together, in which
 case both extensions will be supplied.
 
@@ -889,7 +895,7 @@ the client needs to restart the handshake with an appropriate
 If no common cryptographic parameters can be negotiated,
 the server MUST abort the handshake with an appropriate alert.
 
-~~~
+    ~~~
          Client                                               Server
 
          ClientHello
@@ -964,8 +970,10 @@ Initial Handshake:
 
 Subsequent Handshake:
        ClientHello
+         + key_share*
+         + psk_key_exchange_modes
          + pre_shared_key
-         + key_share*            -------->
+                                -------->
                                                        ServerHello
                                                   + pre_shared_key
                                                       + key_share*
@@ -1015,9 +1023,9 @@ as with a 1-RTT handshake with PSK resumption.
 
          ClientHello
            + early_data
-           + pre_shared_key
            + key_share*
-         (Finished)
+           + pre_shared_key_modes
+           + pre_shared_key
          (Application Data*)
          (end_of_early_data)       -------->
                                                          ServerHello
@@ -1383,11 +1391,11 @@ following four sets of options in its ClientHello:
   (EC)DHE shares for some or all of these groups.
 - A "signature_algorithms" ({{signature-algorithms}}) extension which indicates the signature
   algorithms which the client can accept.
-- A "pre_shared_key" ({{pre-shared-key-extension}}) extension which contains the identities
-  of symmetric keys known to the client and the key exchange
-  modes which each PSK supports.
+- A "pre_shared_key" ({{pre-shared-key-extension}}) extension which contains a symmetric
+  keys known to the client and a "psk_key_exchange_modes" ({{pre-shared-key-exchange-modes}}) extension which indicates
+  the key exchange modes that may be used with PSKs.
 
-If the server does not select a PSK, then the first three of these
+If the server does not select PSK, then the first three of these
 options are entirely orthogonal: the server independently selects a
 cipher suite, an (EC)DHE group and key share for key establishment,
 and a signature algorithm/certificate pair to authenticate itself to
@@ -1395,27 +1403,25 @@ the client. If there is overlap in the "supported_group" extension
 but the client did not offer a compatible "key_share" extension,
 then the server will respond with a HelloRetryRequest ({{hello-retry-request}}) message.
 
-If the server selects a PSK, then the PSK will indicate which key
-establishment modes it can be used with (PSK alone or with (EC)DHE) and
-which authentication modes it can be used with (PSK alone or PSK with
-signatures). The server can then select those key establishment and
-authentication parameters to be consistent both with the PSK and the
+If the server selects a PSK, then it MUST only be used with
+the establishment modes indicated by "psk_key_exchange_modes" (PSK alone or with (EC)DHE).
+The server can then select the key establishment and
+parameters to be consistent both with the PSK and the
 other extensions supplied by the client. Note that if the PSK can be
-used without (EC)DHE or without signatures, then non-overlap in either
-of these parameters need not be fatal.
+used without (EC)DHE then non-overlap in the "supported_group"
+parameters need not be fatal.
 
 The server indicates its selected parameters in the ServerHello as
 follows:
 
 - If PSK is being used then the server will send a
-"pre_shared_key" extension indicating the selected key.
+"pre_shared_key" extension.
 - If PSK is not being used, then (EC)DHE and certificate-based
 authentication are always used.
 - When (EC)DHE is in use, the server will also provide a
 "key_share" extension.
-- When authenticating via a certificate, the server will send an empty
-"signature_algorithms" extension in the ServerHello and will
-subsequently send Certificate ({{certificate}}) and
+- When authenticating via a certificate (i.e., when a PSK is not
+in use), the server will send Certificate ({{certificate}}) and
 CertificateVerify ({{certificate-verify}}) messages.
 
 If the server is unable to negotiate a supported set of parameters
@@ -1717,7 +1723,8 @@ The extension format is:
            early_data(42),
            supported_versions(43),
            cookie(44),
-           ticket_early_data_info(46),           
+           psk_key_exchange_modes(45),
+           ticket_early_data_info(46),
            (65535)
        } ExtensionType;
 
@@ -2204,23 +2211,19 @@ The "extension_data" field of this extension contains a
 
 %%% Key Exchange Messages
 
-       enum { psk_ke(0), psk_dhe_ke(1), (255) } PskKeyExchangeMode;
-       enum { psk_auth(0), psk_sign_auth(1), (255) } PskAuthenticationMode;
-
-       struct {
-           PskKeyExchangeMode ke_modes<1..255>;
-           PskAuthenticationMode auth_modes<1..255>;
-           opaque identity<0..2^16-1>;
-       } PskIdentity;
-
+       opaque PskIdentity<0..2^16-1>;
+       opaque PskBinderEntry<0..255>;
+       
        struct {
            select (Handshake.msg_type) {
                case client_hello:
-                   PskIdentity identities<6..2^16-1>;
-
+                  PskIdentity identities<6..2^16-1>;
+                  PskBinderEntry binders<0..2^16-1>;
+                  
                case server_hello:
-                   uint16 selected_identity;
+                  uint16 selected_identity;
            };
+
        } PreSharedKeyExtension;
 
 identities
@@ -2229,21 +2232,105 @@ identities
   extension (see {{early-data-indication}}), the first identity is the
   one used for 0-RTT data.
 
+binders
+: A series of HMAC values, one for
+  each PSK offered in the "pre_shared_keys" extension and in the same
+  order, computed as described below.
+
 selected_identity
 : The server's chosen identity expressed as a (0-based) index into
   the identities in the client's list.
 {: br}
 
+Each PSK is associated with a single Hash algorithm. For PSKs established
+via the ticket mechanism ({{NewSessionTicket}}), this is the Hash used for
+the KDF. For externally established PSKs, the Hash algorithm MUST be set when the
+PSK is established.
 
-Each PSK offered by the client also indicates the authentication and
-key exchange modes with which the server can use it, with each
-list being in the order of the client's preference, with most
-preferred first. Any PSK MUST only be used with a single HKDF
-hash algorithm. This restriction is automatically enforced
-for PSKs established via NewSessionTicket ({{NewSessionTicket}})
-but any externally-established PSKs MUST also follow this rule.
+Prior to accepting PSK key establishment, the server MUST validate the
+corresponding binder value (see {{psk-binder}} below) If this
+value is not present or does not validate the server MUST abort the
+handshake.  Servers SHOULD NOT attempt to validate multiple binders;
+rather they SHOULD select a single PSK and validate solely its binder.
 
-PskKeyExchangeMode values have the following meanings:
+In order to accept PSK key establishment, the server sends a
+"pre_shared_key" extension with the selected identity. 
+
+Clients MUST verify that the server's selected_identity is within the
+range supplied by the client, that the same cipher suite was selected
+and that the, "key_share", and
+"signature_algorithms" extensions are consistent with the indicated
+ke_modes and auth_modes values. If these values are not consistent,
+the client MUST abort the handshake with an "illegal_parameter" alert.
+
+This extension MUST be the last extension in the ClientHello (this
+facilitates implementation as described below). Servers MUST check
+that it is the last extension and otherwise fail the handshake with an
+"illegal_parameter" alert.
+
+If the server supplies an "early_data" extension, the client MUST
+verify that the server selected the first offered identity. If any
+other value is returned, the client MUST abort the handshake
+with an "unknown_psk_identity" alert.
+
+#### PSK Binder
+
+Each entry in the binders list is computed as an HMAC over the portion
+of the ClientHello up to and including the PreSharedKeyExtension.identities
+field. That is, it includes all of the ClientHello but not the binders
+list itself.
+
+~~~~
+   binder_key =
+       HKDF-Expand-Label(BaseKey, [label], "", Hash.length)
+   
+   binder = HMAC(binding_key, Hash(ClientHello[truncated]))
+~~~~
+
+Where label is "external psk binder key" for external PSKs and
+"resumption psk binder key" for resumption PSKs. The different
+labels prevents the substitution of one type of PSK for the other.
+Note that this is similar to the computation of the
+Finished message ({{finished}}), except with a different label
+value.
+
+If the handshake includes a HelloRetryRequest, the initial ClientHello
+and HelloRetryRequest are included in the transcript along with the
+new ClientHello.  For instance, if the client sends ClientHello1, its
+binder will be computed over:
+
+       ClientHello1[truncated]
+
+If the server responds with HelloRetryRequest, and the client then sends
+ClientHello2, its binder will be computed over:
+
+       ClientHello1 + HelloRetryRequest + ClientHello[truncated]
+
+The full ClientHello is included in all other handshake hash computations.
+
+### Pre-Shared Key Exchange Modes
+
+In order to use PSKs, clients MUST also send a "psk_key_exchange_modes"
+extension. The semantics of this extension are that the client only
+supports the use of PSKs with these modes, which restricts both the
+use of PSKs offered in this ClientHello and those which the server
+might supply via NewSessionTicket.
+
+A clients MUST provide a "psk_key_exchange_modes" extension if it offers
+a "pre_shared_key" extension. If clients offer "pre_shared_key" without
+a "psk_key_exchange_modes" extension, servers MUST abort the handshake.
+Servers MUST NOT select a key exchange mode that is not listed by the
+client. This extension also restricts the modes for use with PSK resumption;
+servers SHOULD NOT send NewSessionTicket with tickets that are not
+compatible with the advertised modes.
+
+%%% Key Exchange Messages
+
+       enum { psk_ke(0), psk_dhe_ke(1), (255) } PskKeyExchangeMode;
+       
+       struct {
+           PskKeyExchangeMode ke_modes<1..255>;
+       } PskKeyExchangeModes;
 
 psk_ke
 : PSK-only key establishment. In this mode, the server MUST not
@@ -2255,37 +2342,12 @@ the client and servers MUST supply "key_share" values as described
 in {{key-share}}.
 {:br}
 
-PskAuthenticationMode values have the following meanings:
 
-psk_auth
-: PSK-only authentication. In this mode, the server MUST NOT supply
-either a Certificate or CertificateVerify message. [TODO: Add a signing mode.]
+### PSK Binder
 
-{::comment}
-psk_sign_auth
-: PSK authentication plus a digital signature from the server. In this
-mode, the server MUST send Certificate ({{certificate}}) and CertificateVerify
-({{certificate-verify}}) messages.
-{:/comment}
-{:br}
+%%% Key Exchange Messages
 
-In order to accept PSK key establishment, the server sends a
-"pre_shared_key" extension with the selected identity.
-Clients MUST verify that the server's selected_identity is within the
-range supplied by the client and that the "key_share" and
-"signature_algorithms" extensions are consistent with the
-indicated ke_modes and auth_modes values. If these values
-are not consistent, the client MUST abort the handshake with
-an "illegal_parameter" alert.
 
-If the server supplies an "early_data" extension, the client MUST
-verify that the server selected the first offered identity. If any
-other value is returned, the client MUST abort the handshake
-with an "unknown_psk_identity" alert.
-
-Note that although 0-RTT data is encrypted with the first PSK
-identity, the server MAY fall back to 1-RTT and select a different PSK
-identity if multiple identities are offered.
 
 ### Early Data Indication
 
@@ -2325,8 +2387,8 @@ If it is not, the server SHOULD proceed with the handshake but reject
 
 The parameters for the 0-RTT data (symmetric cipher suite,
 ALPN, etc.) are the same as those which were negotiated in the connection
-which established the PSK.  The PSK used to encrypt the early data
-MUST be the first PSK listed in the client's "pre_shared_key" extension.
+which established the PSK. The PSK used to encrypt the early data
+MUST be the first PSK listed in the client's "pre_shared_key"
 
 0-RTT messages sent in the first flight have the same content types
 as their corresponding messages sent in other flights (handshake,
@@ -2392,7 +2454,7 @@ original application layer data.
 Clients are permitted to "stream" 0-RTT data until they
 receive the server's Finished, only then sending the "end_of_early_data"
 alert. In order to avoid deadlock, when accepting "early_data",
-servers MUST process the client's Finished and then immediately
+servers MUST process the client's ClientHello and then immediately
 send the ServerHello, rather than waiting for the client's
 "end_of_early_data" alert.
 
@@ -2441,7 +2503,7 @@ order of ten seconds are reasonable.  Clock skew distributions are not
 symmetric, so the optimal tradeoff may involve an asymmetric replay window.
 
 
-## Server Parameters Messages
+## Server Parameters
 
 The next two messages from the server, EncryptedExtensions and
 CertificateRequest, contain encrypted information from the server
@@ -2603,12 +2665,11 @@ supporting certificates in the chain. Note that certificate-based
 client authentication is not available in the 0-RTT case.
 
 CertificateVerify
-: A signature over the value Hash(Handshake Context + Certificate) + Hash(resumption_context)
-See {{NewSessionTicket}} for the definition of resumption_context.
+: A signature over the value Hash(Handshake Context + Certificate)
 
 Finished
-: A MAC over the value Hash(Handshake Context + Certificate + CertificateVerify) +
-  Hash(resumption_context) using  a MAC key derived from the base key.
+: A MAC over the value Hash(Handshake Context + Certificate + CertificateVerify)
+using a MAC key derived from the base key.
 {:br}
 
 Because the CertificateVerify signs the Handshake Context +
@@ -2623,15 +2684,11 @@ for each scenario:
 
 | Mode | Handshake Context | Base Key |
 |------|-------------------|----------|
-| 0-RTT | ClientHello | client_early_traffic_secret|
 | 1-RTT (Server) | ClientHello ... later of EncryptedExtensions/CertificateRequest | [sender]_handshake_traffic_secret |
 | 1-RTT (Client) | ClientHello ... ServerFinished     | [sender]_handshake_traffic_secret |
 | Post-Handshake | ClientHello ... ClientFinished + CertificateRequest | [sender]_traffic_secret_N |
 
 The [sender] in this table denotes the sending side.
-
-Note: The Handshake Context for the last three rows does not include any 0-RTT
-  handshake messages, regardless of whether 0-RTT is used.
 
 ###  Certificate
 
@@ -2852,7 +2909,7 @@ The algorithm field specifies the signature algorithm used (see
 signature is a digital signature using that algorithm that covers the
 hash output described in {{authentication-messages}} namely:
 
-       Hash(Handshake Context + Certificate) + Hash(resumption_context)
+       Hash(Handshake Context + Certificate)
 
 In TLS 1.3, the digital signature process takes as input:
 
@@ -2878,10 +2935,9 @@ The context string for a server signature is
 and for a client signature is "TLS 1.3, client
 CertificateVerify".
 
-For example, if Hash(Handshake Context + Certificate) was 32 bytes
-of 01 and Hash(resumption_context) was 32 bytes of 02 (these lengths
-would make sense for SHA-256, the input to the final signing process
-for a server CertificateVerify would be:
+For example, if Hash(Handshake Context + Certificate) was 32 bytes of
+01 (this length would make sense for SHA-256, the input to the final
+signing process for a server CertificateVerify would be:
 
        2020202020202020202020202020202020202020202020202020202020202020
        2020202020202020202020202020202020202020202020202020202020202020
@@ -2889,7 +2945,6 @@ for a server CertificateVerify would be:
        79
        00
        0101010101010101010101010101010101010101010101010101010101010101
-       0202020202020202020202020202020202020202020202020202020202020202
 
 If sent by a server, the signature algorithm MUST be one offered in the
 client's "signature_algorithms" extension unless no valid certificate chain can be
@@ -2960,8 +3015,7 @@ The verify_data value is computed as follows:
                                    Handshake Context +
                                    Certificate* +
                                    CertificateVerify*
-                              ) +
-                              Hash(resumption_context)
+                              )
            )
 
        * Only included if present.
@@ -3000,12 +3054,8 @@ from the resumption master secret:
 
 ~~~~
    resumption_psk = HKDF-Expand-Label(
-                        resumption_secret,
-                        "resumption psk", "", Hash.length)
-
-   resumption_context = HKDF-Expand-Label(
-                            resumption_secret,
-                            "resumption context", "", Hash.length)
+                                      resumption_secret,
+                                      "resumption psk", "", Hash.Length)
 ~~~~
 
 The client MAY use this PSK for future handshakes by including the
@@ -3018,11 +3068,6 @@ authentication in order to encapsulate the additional client
 authentication state. Clients SHOULD attempt to use each
 ticket no more than once, with more recent tickets being used
 first.
-For handshakes that do not use a
-resumption_psk, the resumption_context is a string of Hash.length
-zeroes. [[Note: this will not be safe if/when we add
-additional server signatures with PSK:
-OPEN ISSUE https://github.com/tlswg/tls13-spec/issues/558]]
 
 Any ticket MUST only be resumed with a cipher suite that is identical
 to that negotiated connection where the ticket was established.
@@ -3038,19 +3083,9 @@ waiting for the client Finished.
 
        struct {
            uint32 ticket_lifetime;
-           PskKeyExchangeMode ke_modes<1..255>;
-           PskAuthenticationMode auth_modes<1..255>;
            opaque ticket<1..2^16-1>;
            Extension extensions<0..2^16-2>;
        } NewSessionTicket;
-
-ke_modes
-: The key exchange modes with which this ticket can be used in descending
-order of server preference.
-
-auth_modes
-: The authentication modes with which this ticket can be used in descending
-order of server preference.
 
 ticket_lifetime
 : Indicates the lifetime in seconds as a 32-bit unsigned integer in
@@ -3773,8 +3808,7 @@ defined below:
 
     Derive-Secret(Secret, Label, Messages) =
          HKDF-Expand-Label(Secret, Label,
-                           Hash(Messages) +
-                           Hash(resumption_context), Hash.length)
+                           Hash(Messages), Hash.Length)
 ~~~~
 
 The Hash function and the HKDF hash are the cipher suite hash algorithm.
@@ -3797,9 +3831,6 @@ In this diagram, the following formatting conventions apply:
 - Derive-Secret's Secret argument is indicated by the arrow coming in
   from the left. For instance, the Early Secret is the Secret for
   generating the client_early_traffic_secret.
-
-Note that the 0-RTT Finished message is not included in the Derive-Secret
-operation.
 
 ~~~~
                  0
@@ -4021,23 +4052,27 @@ TLS-compliant application MUST implement the following TLS extensions:
   * Negotiated Groups ("supported_groups"; {{negotiated-groups}})
   * Key Share ("key_share"; {{key-share}})
   * Pre-Shared Key ("pre_shared_key"; {{pre-shared-key-extension}})
+  * Pre-Shared Key Exchange Modes ("psk_key_exchange_modes";
+    {{pre-shared-key-exchange-modes}})
   * Server Name Indication ("server_name"; Section 3 of {{RFC6066}})
   * Cookie ("cookie"; {{cookie}})
 
 All implementations MUST send and use these extensions when offering
-applicable cipher suites:
+the relevant parameters:
 
   * "supported_versions" is REQUIRED for all ClientHello messages.
-  * "signature_algorithms" is REQUIRED for certificate authenticated cipher suites.
-  * "supported_groups" and "key_share" are REQUIRED for DHE or ECDHE cipher suites.
-  * "pre_shared_key" is REQUIRED for PSK cipher suites.
-  * "cookie" is REQUIRED for all cipher suites.
+  * "signature_algorithms" is REQUIRED for certificate authentication.
+  * "supported_groups" and "key_share" are REQUIRED for DHE or ECDHE key
+    establishment.
+  * "pre_shared_key" is REQUIRED for PSK key establishment.
+  * "psk_key_exchange_modes" is required when PSKs are offered.
+  * "cookie" must always be supported if sent by the server.
 
-When negotiating use of applicable cipher suites, endpoints MUST abort the
-handshake with a "missing_extension" alert if the required extension was
-not provided. Any endpoint that receives an invalid combination of cipher
-suites and extensions MAY abort the connection with a "missing_extension"
-alert, regardless of negotiated parameters.
+If a required extension was not provided. endpoints MUST abort the
+handshake with a "missing_extension" alert Any endpoint that receives
+an invalid combination of cipher suites and extensions MAY abort the
+connection with a "missing_extension" alert, regardless of negotiated
+parameters.
 
 Additionally, all implementations MUST support use of the "server_name"
 extension with applications capable of using it.
@@ -4628,6 +4663,20 @@ secret. The resumption-PSK mode has been designed so that the
 resumption master secret computed by connection N and needed to form
 connection N+1 is separate from the traffic keys used by connection N,
 thus providing forward secrecy between the connections.
+
+The PSK binder value extension forms a binding between a PSK
+and the current handshake, as well as between the session where the
+PSK was established and the session where it was used. This binding
+transitively includes the original handshake transcript, because that
+transcript is digested into the values which produce the Resumption
+Master Secret. This requires that both the KDF used to produce the RMS
+and the MAC used to compute the binder be collision
+resistant. These are properties of HKDF and HMAC respectively when
+used with collision resistant hash functions and producing output of
+at least 256 bits.  Any future replacement of these functions MUST
+also provide collision resistance.
+Note: the binder does not cover the binder values from other
+PSKs, though they are included in the Finished MAC.
 
 If an exporter is used, then it produces values which are unique
 and secret (because they are generated from a unique session key).
