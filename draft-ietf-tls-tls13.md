@@ -1367,8 +1367,8 @@ ClientHello (without modification) except:
 - Including a new KeyShareEntry as the lowest priority share
   (i.e., appended to the list of shares in the "key_share" extension).
 
-- Removing the EarlyDataIndication {{early-data-indication}} extension
-  if one was present. Early data is not permitted after HelloRetryRequest.
+- Removing the "early_data" extension ({{early-data-indication}}) if one was
+  present. Early data is not permitted after HelloRetryRequest.
 
 If a server receives a ClientHello at any other time, it MUST send
 a fatal "unexpected_message" alert and close the connection.
@@ -2182,6 +2182,10 @@ can behave in one of two ways:
 - Return an empty extension, indicating that it intends to
   process the early data. It is not possible for the server
   to accept only a subset of the early data messages.
+
+- Request that the client send another ClientHello by responding with a
+  HelloRetryRequest.  A client MUST NOT include the "early_data" extension in
+  its followup ClientHello.
 
 In order to accept early data, the server server MUST have accepted a
 PSK cipher suite and selected the the first key offered in the
