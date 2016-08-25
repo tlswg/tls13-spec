@@ -877,9 +877,9 @@ described in the following sections.
 
 Although TLS PSKs can be established out of band,
 PSKs can also be established in a previous session and
-then reused ("session resumption"). Once a handshake has completed, the server can
-send the client a PSK identity which corresponds to a key derived from
-the initial handshake (See {{NewSessionTicket}}). The client
+then reused (i.e., "session resumption"). Once a handshake has completed, the server can
+send the client a PSK identity that corresponds to a key derived from
+the initial handshake (see {{NewSessionTicket}}). The client
 can then use that PSK identity in future handshakes to negotiate use
 of the PSK. If the server accepts it, then the security context of the
 new connection is tied to the original connection. In TLS 1.2 and
@@ -931,8 +931,8 @@ Subsequent Handshake:
 {: #tls-resumption-psk title="Message flow for resumption and PSK"}
 
 As the server is authenticating via a PSK, it does not send a
-Certificate or a CertificateVerify. When a client offers resumption
-via PSK it SHOULD also supply a "key_share" extension to the server as well
+Certificate or a CertificateVerify message. When a client offers resumption
+via PSK, it SHOULD also supply a "key_share" extension to the server as well
 to allow the server to decline resumption and fall back to a full handshake,
 if needed. The server responds with a "pre_shared_key" extension
 to negotiate use of PSK key establishment and can (as shown here)
