@@ -710,9 +710,9 @@ use the established keys to protect application layer traffic.
 TLS supports three basic key exchange modes:
 
 - Diffie-Hellman (both the finite field and elliptic curve
-  varieties).
+  varieties),
 
-- A pre-shared symmetric key (PSK).
+- A pre-shared symmetric key (PSK), and
 
 - A combination of a symmetric key and Diffie-Hellman.
 
@@ -2335,7 +2335,7 @@ extensions
 : A list of extensions.
 {:br }
 
-###  Certificate Request {#certificate-request}
+###  Certificate Request
 
 When this message will be sent:
 
