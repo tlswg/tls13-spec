@@ -351,7 +351,7 @@ change should be discussed on the TLS mailing list.
 
 The primary goal of TLS is to provide a secure channel
 between two communicating peers. Specifically, the channel should
-provide the following properties.
+provide the following properties:
 
 - Authentication: The server side of the channel is always
   authenticated; the client side is optionally
@@ -370,14 +370,14 @@ properties.
 
 TLS consists of two primary components:
 
-- A handshake protocol ({{handshake-protocol}}) which authenticates the communicating parties,
+- A handshake protocol ({{handshake-protocol}}) that authenticates the communicating parties,
   negotiates cryptographic modes and parameters, and establishes
   shared keying material. The handshake protocol is designed to
   resist tampering; an active attacker should not be able to force
   the peers to negotiate different parameters than they would
   if the connection were not under attack.
 
-- A record protocol ({{record-protocol}}) which uses the parameters established by the
+- A record protocol ({{record-protocol}}) that uses the parameters established by the
   handshake protocol to protect traffic between the communicating
   peers. The record protocol divides traffic up into a series of
   records, each of which is independently protected using the
@@ -385,7 +385,7 @@ TLS consists of two primary components:
 
 TLS is application protocol independent; higher-level protocols can
 layer on top of TLS transparently. The TLS standard, however, does not
-specify how protocols add security with TLS; the decisions on how to
+specify how protocols add security with TLS; how to
 initiate TLS handshaking and how to interpret the authentication
 certificates exchanged are left to the judgment of the designers and
 implementors of protocols that run on top of TLS.
