@@ -4574,8 +4574,8 @@ Archives of the list can be found at:
   erik+ietf@nygren.org
 
 * Magnus Nystrom \\
-  RSA Security \\
-  magnus@rsasecurity.com
+  Microsoft \\
+  mnystrom@microsoft.com
 
 * Alfredo Pironti (co-author of [RFC7627]) \\
   INRIA \\
