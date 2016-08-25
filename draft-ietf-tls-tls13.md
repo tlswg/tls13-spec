@@ -2043,21 +2043,19 @@ The "extension_data" field of this extension contains a
 
 %%% Key Exchange Messages
 
-       enum { psk_ke(0), psk_dhe_ke(1), (255) } PskKeyExchangeModes;
-       enum { psk_auth(0), psk_sign_auth(1), (255) } PskAuthenticationModes;
-
-       opaque psk_identity<0..2^16-1>;
+       enum { psk_ke(0), psk_dhe_ke(1), (255) } PskKeyExchangeMode;
+       enum { psk_auth(0), psk_sign_auth(1), (255) } PskAuthenticationMode;
 
        struct {
-           PskKeMode ke_modes<1..255>;
-           PskAuthMode auth_modes<1..255>;
+           PskKeyExchangeMode ke_modes<1..255>;
+           PskAuthenticationMode auth_modes<1..255>;
            opaque identity<0..2^16-1>;
        } PskIdentity;
 
        struct {
            select (Role) {
                case client:
-                   psk_identity identities<2..2^16-1>;
+                   PskIdentity identities<6..2^16-1>;
 
                case server:
                    uint16 selected_identity;
@@ -2081,7 +2079,7 @@ key exchange modes with which the server can use it, with each
 list being in the order of the client's preference, with most
 preferred first.
 
-PskKeyExchangeModes have the following meanings:
+PskKeyExchangeMode values have the following meanings:
 
 psk_ke
 : PSK-only key establishment. In this mode, the server MUST not
@@ -2093,7 +2091,7 @@ the client and servers MUST supply "key_share" values as described
 in {{key-share}}.
 {:br}
 
-PskAuthenticationModes have the following meanings:
+PskAuthenticationMode values have the following meanings:
 
 psk_auth
 : PSK-only authentication. In this mode, the server MUST NOT supply
@@ -2859,8 +2857,8 @@ to that negotiated connection where the ticket was established.
 
      struct {
          uint32 ticket_lifetime;
-         PskKeMode ke_modes<1..255>;
-         PskAuthMode auth_modes<1..255>;
+         PskKeyExchangeMode ke_modes<1..255>;
+         PskAuthenticationMode auth_modes<1..255>;
          opaque ticket<1..2^16-1>;
          TicketExtension extensions<0..2^16-2>;
      } NewSessionTicket;
