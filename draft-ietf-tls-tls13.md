@@ -752,8 +752,8 @@ Auth | {CertificateVerify*}
 ~~~
 {: #tls-full title="Message flow for full TLS Handshake"}
 
-The handshake can be thought of as having three phases, indicated
-in the diagram above:
+The handshake can be thought of as having three phases (indicated
+in the diagram above):
 
 - Key Exchange: Establish shared keying material and select the
    cryptographic parameters. Everything after this phase is
