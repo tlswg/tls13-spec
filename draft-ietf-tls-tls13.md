@@ -701,8 +701,8 @@ referenced sections for more details.
 # Protocol Overview
 
 The cryptographic parameters of the session state are produced by the
-TLS handshake protocol. When a TLS client and server first start
-communicating, they agree on a protocol version, select cryptographic
+TLS handshake protocol, which a TLS client and server use when first
+communicating to agree on a protocol version, select cryptographic
 algorithms, optionally authenticate each other, and establish shared
 secret keying material. Once the handshake is complete, the peers
 use the established keys to protect application layer traffic.
