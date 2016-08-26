@@ -794,9 +794,9 @@ EncryptedExtensions.
   determine the cryptographic parameters. [{{encrypted-extensions}}]
 
 CertificateRequest.
-: if certificate-based client authentication is requested, the
+: if certificate-based client authentication is desired, the
   desired parameters for that certificate. This message is
-  omitted if client authentication is not requested. [{{certificate-request}}]
+  omitted if client authentication is not desired. [{{certificate-request}}]
 
 Finally, the client and server exchange Authentication messages. TLS
 uses the same set of messages every time that authentication is needed.
