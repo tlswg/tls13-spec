@@ -767,10 +767,10 @@ in the diagram above.
 
 In the Key Exchange phase, the client sends the ClientHello
 ({{client-hello}}) message, which contains a random nonce
-(ClientHello.random), its offered protocol version, a list of
-symmetric cipher/HKDF hash pairs, and its key material as some set of Diffie-Hellman key shares (in the
+(ClientHello.random); its offered protocol version; a list of
+symmetric cipher/HKDF hash pairs; some set of Diffie-Hellman key shares (in the
 "key_share" extension {{key-share}}), one or more pre-shared key labels (in the
-"pre_shared_key" extension {{pre-shared-key-extension}}), or both as well as
+"pre_shared_key" extension {{pre-shared-key-extension}}), or both; and
 potentially some other extensions.
 
 The server processes the ClientHello and determines the appropriate
