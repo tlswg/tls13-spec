@@ -709,12 +709,12 @@ use the established keys to protect application layer traffic.
 
 TLS supports three basic key exchange modes:
 
-- Diffie-Hellman (of both the finite field and elliptic curve
-  varieties).
+- Diffie-Hellman (both the finite field and elliptic curve
+  varieties),
 
-- A pre-shared symmetric key (PSK)
+- A pre-shared symmetric key (PSK), and
 
-- A combination of a symmetric key and Diffie-Hellman
+- A combination of a symmetric key and Diffie-Hellman.
 
 {{tls-full}} below shows the basic full TLS handshake:
 
@@ -752,15 +752,15 @@ Auth | {CertificateVerify*}
 ~~~
 {: #tls-full title="Message flow for full TLS Handshake"}
 
-The handshake can be thought of as having three phases, indicated
-in the diagram above.
+The handshake can be thought of as having three phases (indicated
+in the diagram above):
 
 - Key Exchange: Establish shared keying material and select the
    cryptographic parameters. Everything after this phase is
    encrypted.
 
-- Server Parameters: Establish other handshake parameters.
-   (whether the client is authenticated, application layer protocol support, etc.)
+- Server Parameters: Establish other handshake parameters
+   (whether the client is authenticated, application layer protocol support, etc.).
 
 - Authentication: Authenticate the server (and optionally the client)
    and provide key confirmation and handshake integrity.
@@ -775,14 +775,14 @@ and potentially some other extensions.
 
 The server processes the ClientHello and determines the appropriate
 cryptographic parameters for the connection. It then responds with its
-own ServerHello which indicates the negotiated connection
+own ServerHello, which indicates the negotiated connection
 parameters. [{{server-hello}}]. The combination of the ClientHello
 and the ServerHello determines the shared keys. If (EC)DHE
 key establishment is in use, then the ServerHello
-will contain a "key_share" extension with the server's ephemeral
+contains a "key_share" extension with the server's ephemeral
 Diffie-Hellman share which MUST be in the same group as one of the
 client's shares. If PSK key establishment is
-in use, then the ServerHello will contain a "pre_shared_key"
+in use, then the ServerHello contains a "pre_shared_key"
 extension indicating which of the client's offered PSKs was selected.
 Note that implementations can use (EC)DHE and PSK together, in which
 case both extensions will be supplied.
@@ -790,13 +790,13 @@ case both extensions will be supplied.
 The server then sends two messages to establish the Server Parameters:
 
 EncryptedExtensions.
-: responses to any extensions which are not required in order to
+: responses to any extensions that are not required to
   determine the cryptographic parameters. [{{encrypted-extensions}}]
 
 CertificateRequest.
 : if certificate-based client authentication is desired, the
-  desired parameters for that certificate. This message will
-  be omitted if client authentication is not desired.
+  desired parameters for that certificate. This message is
+  omitted if client authentication is not desired. [{{certificate-request}}]
 
 Finally, the client and server exchange Authentication messages. TLS
 uses the same set of messages every time that authentication is needed.
