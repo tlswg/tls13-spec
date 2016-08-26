@@ -833,13 +833,13 @@ that point is, of course, being sent to an unauthenticated peer.
 
 ## Incorrect DHE Share
 
-If the client has not provided a sufficient "key_share" extension (e.g. it
+If the client has not provided a sufficient "key_share" extension (e.g., it
 includes only DHE or ECDHE groups unacceptable or unsupported by the
 server), the server corrects the mismatch with a HelloRetryRequest and
-the client will need to restart the handshake with an appropriate
+the client needs to restart the handshake with an appropriate
 "key_share" extension, as shown in Figure 2.
 If no common cryptographic parameters can be negotiated,
-the server will send a "handshake_failure" or "insufficient_security"
+the server sends a "handshake_failure" or "insufficient_security"
 fatal alert (see {{alert-protocol}}).
 
 ~~~
