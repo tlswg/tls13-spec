@@ -1179,8 +1179,8 @@ the possible variants the structure defines. There must be a case arm for every
 element of the enumeration declared in the select. Case arms have limited
 fall-through: if two case arms follow in immediate succession with no fields in
 between, then they both contain the same fields. Thus, in the example below,
-"orange" and "banana" both contain V2. Note that this is a new piece of syntax
-in TLS 1.2.
+"orange" and "banana" both contain V2. Note that this piece of syntax was added
+in TLS 1.2 {{RFC5246}}.
 
 The body of the variant structure may be given a label for reference. The
 mechanism by which the variant is selected at runtime is not prescribed by the
