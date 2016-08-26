@@ -877,7 +877,7 @@ described in the following sections.
 
 Although TLS PSKs can be established out of band,
 PSKs can also be established in a previous session and
-then reused (i.e., "session resumption"). Once a handshake has completed, the server can
+then reused ("session resumption"). Once a handshake has completed, the server can
 send the client a PSK identity that corresponds to a key derived from
 the initial handshake (see {{NewSessionTicket}}). The client
 can then use that PSK identity in future handshakes to negotiate use
