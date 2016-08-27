@@ -1307,13 +1307,13 @@ the handshake and data.
 ### Cryptographic Negotiation
 
 TLS cryptographic negotiation proceeds by the client offering the
-following four sets of options in its ClientHello.
+following four sets of options in its ClientHello:
 
 - A list of cipher suites which indicates the AEAD cipher/HKDF hash
-  pairs which the client supports
+  pairs which the client supports.
 - A "supported_group" ({{negotiated-groups}}) extension which indicates the (EC)DHE groups
   which the client supports and a "key_share" ({{key-share}}) extension which contains
-  (EC)DHE shares for some or all of these groups
+  (EC)DHE shares for some or all of these groups.
 - A "signature_algorithms" ({{signature-algorithms}}) extension which indicates the signature
   algorithms which the client can accept.
 - A "pre_shared_key" ({{pre-shared-key-extension}}) extension which contains the identities
@@ -1324,9 +1324,7 @@ If the server does not select a PSK, then the first three of these
 options are entirely orthogonal: the server independently selects a
 cipher suite, an (EC)DHE group and key share for key establishment,
 and a signature algorithm/certificate pair to authenticate itself to
-the client. If any of these parameters has no overlap between the
-client and server parameters, then the handshake
-will fail. If there is overlap in the "supported_group" extension
+the client. If there is overlap in the "supported_group" extension
 but the client did not offer a compatible "key_share" extension,
 then the server will respond with a HelloRetryRequest ({{hello-retry-request}}) message.
 
@@ -1340,16 +1338,20 @@ used without (EC)DHE or without signatures, then non-overlap in either
 of these parameters need not be fatal.
 
 The server indicates its selected parameters in the ServerHello as
-follows: If PSK is being used then the server will send a
-"pre_shared_key" extension indicating the selected key.  If PSK is not
-being used, then (EC)DHE and certificate-based authentication are
-always used. When (EC)DHE is in use, the server will also provide a
-"key_share" extension. When authenticating via a certificate, the
-server will send an empty "signature_algorithnms" extension in
-the ServerHello and will subsequently send Certificate ({{certificate}}) and
+follows:
+
+- If PSK is being used then the server will send a
+"pre_shared_key" extension indicating the selected key.
+- If PSK is not being used, then (EC)DHE and certificate-based
+authentication are always used.
+- When (EC)DHE is in use, the server will also provide a
+"key_share" extension.
+- When authenticating via a certificate, the server will send an empty
+"signature_algorithnms" extension in the ServerHello and will
+subsequently send Certificate ({{certificate}}) and
 CertificateVerify ({{certificate-verify}}) messages.
 
-If the server is unable to negotiate a supported set of parameters, it
+If the server is unable to negotiate a supported set of parameters (i.e., there is no overlap between the client and server parameters), it
 MUST return a "handshake_failure" alert and close the connection.
 
 
