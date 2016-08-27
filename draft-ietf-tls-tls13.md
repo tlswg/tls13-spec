@@ -1312,7 +1312,7 @@ following four sets of options in its ClientHello:
 - A list of cipher suites which indicates the AEAD cipher/HKDF hash
   pairs which the client supports.
 - A "supported_group" ({{negotiated-groups}}) extension which indicates the (EC)DHE groups
-  which the client supports and a "key_share" ({{key-share}}) extension that contains
+  which the client supports and a "key_share" ({{key-share}}) extension which contains
   (EC)DHE shares for some or all of these groups.
 - A "signature_algorithms" ({{signature-algorithms}}) extension which indicates the signature
   algorithms which the client can accept.
