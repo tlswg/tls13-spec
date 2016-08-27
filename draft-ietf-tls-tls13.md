@@ -1367,7 +1367,7 @@ ClientHello (without modification) except:
 - Including a new KeyShareEntry as the lowest priority share
   (i.e., appended to the list of shares in the "key_share" extension).
 
-- Removing the EarlyDataIndication {{early-data-indication}} extension
+- Removing the EarlyDataIndication ({{early-data-indication}}) extension
   if one was present. Early data is not permitted after HelloRetryRequest.
 
 If a server receives a ClientHello at any other time, it MUST send
