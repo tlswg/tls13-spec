@@ -3898,7 +3898,7 @@ is listed below:
 | client_authz [RFC5878]                   |          No | Encrypted | No                |
 | server_authz [RFC5878]                   |          No | Encrypted | No                |
 | cert_type [RFC6091]                      |         Yes | Encrypted | No                |
-| supported_groups [RFC-ietf-tls-negotiated-ff-dhe] | Yes | Encrypted | No                |
+| supported_groups [RFC7919]               | Yes | Encrypted | No                |
 | ec_point_formats [RFC4492]               |         Yes |        No | No                |
 | srp [RFC5054]                            |          No |        No | No                |
 | signature_algorithms [RFC5246]           |         Yes |    Client | No                |
