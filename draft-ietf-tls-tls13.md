@@ -2098,7 +2098,10 @@ selected_identity
 Each PSK offered by the client also indicates the authentication and
 key exchange modes with which the server can use it, with each
 list being in the order of the client's preference, with most
-preferred first.
+preferred first. Any PSK MUST only be used with a single HKDF
+hash algorithm. This restriction is automatically enforced
+for PSKs established via NewSessionTicket ({{NewSessionTicket}})
+but any externally-established PSKs MUST also follow this rule.
 
 PskKeyExchangeMode values have the following meanings:
 
