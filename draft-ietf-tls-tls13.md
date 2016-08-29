@@ -1083,7 +1083,7 @@ consumes two bytes, a uint16, which is sufficient to represent the value 400
 (see {{numbers}}). On the other hand, longer can represent up to 800 bytes of
 data, or 400 uint16 elements, and it may be empty. Its encoding will include a
 two-byte actual length field prepended to the vector. The length of an encoded
-vector must be an even multiple of the length of a single element (e.g.,
+vector must be an exact multiple of the length of a single element (e.g.,
 a 17-byte vector of uint16 would be illegal).
 
        opaque mandatory<300..400>;
