@@ -3778,8 +3778,8 @@ If no context is provided, the value is computed as:
 Note that providing no context computes the same value as providing an empty
 context. As of this document's publication, no allocated exporter label is used
 with both modes. Future specifications MUST NOT provide an empty context and no
-context with the same label and SHOULD provide a context in all exporter
-computations.
+context with the same label and SHOULD provide a context, possibly empty, in
+all exporter computations.
 
 
 #  Compliance Requirements
