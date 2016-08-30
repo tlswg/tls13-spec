@@ -3936,6 +3936,10 @@ by IANA
   {{signature-algorithms}}. The following values SHALL be marked as
   "Recommended": ecdsa_secp256r1_sha256, ecdsa_secp384r1_sha384,
   rsa_pss_sha256, rsa_pss_sha384, rsa_pss_sha512, ed25519.
+
+Finally, this document obsoletes a registry originally created in {{RFC5246}}.
+IANA [shall/has] updated it to list values 7-223 as "Reserved".
+
 --- back
 
 
