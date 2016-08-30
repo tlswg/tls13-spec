@@ -3,7 +3,7 @@ title: The Transport Layer Security (TLS) Protocol Version 1.3
 abbrev: TLS
 docname: draft-ietf-tls-tls13-latest
 category: std
-updates: 4492, 6066, 6961
+updates: 4492, 5705, 6066, 6961
 obsoletes: 5077, 5246, 5746
 
 ipr: pre5378Trust200902
@@ -3766,11 +3766,20 @@ For X25519 and X448, see {{RFC7748}}.
 
 {{!RFC5705}} defines keying material exporters for TLS in terms of
 the TLS PRF. This document replaces the PRF with HKDF, thus requiring
-a new construction. The exporter interface remains the same, however
-the value is computed as:
+a new construction. The exporter interface remains the same. If context is
+provided, the value is computed as:
 
-    HKDF-Expand-Label(exporter_secret,
-                      label, context_value, key_length)
+    HKDF-Expand-Label(exporter_secret, label, context_value, key_length)
+
+If no context is provided, the value is computed as:
+
+    HKDF-Expand-Label(exporter_secret, label, "", key_length)
+
+Note that providing no context computes the same value as providing an empty
+context. As of this document's publication, no allocated exported label is used
+with both modes. Future specifications MUST NOT provide an empty context and no
+context with the same label and SHOULD provide a context in all exporter
+computations.
 
 
 #  Compliance Requirements
