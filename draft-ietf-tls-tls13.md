@@ -3996,7 +3996,7 @@ and renegotiation_info {{RFC5746}}.
 ## Cipher Suites
 
 A symmetric cipher suite defines the pair of the AEAD cipher and hash
-function to be used with HKDF. Cipher suites follow the naming convention:
+function to be used with HKDF.
 Cipher suite names follow the naming convention:
 
 ~~~
