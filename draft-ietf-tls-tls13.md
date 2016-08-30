@@ -1729,8 +1729,8 @@ close the connection with a fatal "missing_extension" alert
 Servers which are authenticating via a certificate MUST indicate so
 by sending the client an empty "signature_algorithms" extension.
 
-The "extension_data" field of this extension contains a "supported_signature_algorithms"
-value:
+The "extension_data" field of this extension in a ClientHello contains a
+"supported_signature_algorithms" value:
 
 %%% Signature Algorithm Extension
 
