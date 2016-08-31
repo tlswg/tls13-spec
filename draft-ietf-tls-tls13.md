@@ -3625,7 +3625,9 @@ operation.
                  |
                  v
               Handshake
-               Secret -----> Derive-Secret(., "client handshake traffic secret",
+               Secret
+                 |
+                 +---------> Derive-Secret(., "client handshake traffic secret",
                  |                         ClientHello...ServerHello)
                  |                         = client_handshake_traffic_secret
                  |
