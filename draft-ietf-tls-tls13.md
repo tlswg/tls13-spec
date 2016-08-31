@@ -2091,7 +2091,7 @@ identities
 
 selected_identity
 : The server's chosen identity expressed as a (0-based) index into
-  the identies in the client's list.
+  the identities in the client's list.
 {: br}
 
 
