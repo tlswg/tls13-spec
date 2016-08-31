@@ -2494,7 +2494,7 @@ for each scenario:
 
 | Mode | Handshake Context | Base Key |
 |------|-------------------|----------|
-| 0-RTT | ClientHello | early_traffic_secret|
+| 0-RTT | ClientHello | client_early_traffic_secret|
 | 1-RTT (Server) | ClientHello ... later of EncryptedExtensions/CertificateRequest | [sender]_handshake_traffic_secret |
 | 1-RTT (Client) | ClientHello ... ServerFinished     | [sender]_handshake_traffic_secret |
 | Post-Handshake | ClientHello ... ClientFinished + CertificateRequest | [sender]_traffic_secret_N |
@@ -3605,7 +3605,7 @@ In this diagram, the following formatting conventions apply:
   from the left.
 - Derive-Secret's Secret argument is indicated by the arrow coming in
   from the left. For instance, the Early Secret is the Secret for
-  generating the early_traffic_secret.
+  generating the client_early_traffic_secret.
 
 Note that the 0-RTT Finished message is not included in the Derive-Secret
 operation.
@@ -3617,9 +3617,9 @@ operation.
    PSK ->  HKDF-Extract
                  |
                  v
-           Early Secret ---> Derive-Secret(., "early traffic secret",
+           Early Secret ---> Derive-Secret(., "client early traffic secret",
                  |                         ClientHello)
-                 |                         = early_traffic_secret
+                 |                         = client_early_traffic_secret
                  v
 (EC)DHE -> HKDF-Extract
                  |
@@ -3716,8 +3716,8 @@ each class of traffic keys:
 
 | Record Type | Secret | Phase |
 |:------------|--------|-------|
-| 0-RTT Handshake   | early_traffic_secret | "early handshake key expansion" |
-| 0-RTT Application | early_traffic_secret | "early application data key expansion" |
+| 0-RTT Handshake   | client_early_traffic_secret | "early handshake key expansion" |
+| 0-RTT Application | client_early_traffic_secret | "early application data key expansion" |
 | Handshake         | [sender]_handshake_traffic_secret | "handshake key expansion" |
 | Application Data  | [sender]_traffic_secret_N | "application data key expansion" |
 
