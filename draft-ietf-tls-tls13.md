@@ -1342,7 +1342,7 @@ authentication are always used.
 - When (EC)DHE is in use, the server will also provide a
 "key_share" extension.
 - When authenticating via a certificate, the server will send an empty
-"signature_algorithnms" extension in the ServerHello and will
+"signature_algorithms" extension in the ServerHello and will
 subsequently send Certificate ({{certificate}}) and
 CertificateVerify ({{certificate-verify}}) messages.
 
@@ -2086,7 +2086,7 @@ identities
 
 selected_identity
 : The server's chosen identity expressed as a (0-based) index into
-  the identies in the client's list.
+  the identities in the client's list.
 {: br}
 
 
