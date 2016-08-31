@@ -1347,7 +1347,7 @@ authentication are always used.
 - When (EC)DHE is in use, the server will also provide a
 "key_share" extension.
 - When authenticating via a certificate, the server will send an empty
-"signature_algorithnms" extension in the ServerHello and will
+"signature_algorithms" extension in the ServerHello and will
 subsequently send Certificate ({{certificate}}) and
 CertificateVerify ({{certificate-verify}}) messages.
 
