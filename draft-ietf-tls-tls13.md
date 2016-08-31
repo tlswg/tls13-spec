@@ -1108,11 +1108,6 @@ All values, here and elsewhere in the specification, are stored in network byte
 (big-endian) order; the uint32 represented by the hex bytes 01 02 03 04 is
 equivalent to the decimal value 16909060.
 
-Note that in some cases (e.g., DH parameters) it is necessary to represent
-integers as opaque vectors. In such cases, they are represented as unsigned
-integers (i.e., additional leading zero octets are not used even if the most
-significant bit is set).
-
 
 ##  Enumerateds
 
