@@ -2970,7 +2970,7 @@ next generation of keys, computed as described in
 {{updating-traffic-keys}}. Upon receiving a KeyUpdate, the receiver
 MUST update its receiving keys.
 
-Each implementation MUST receive a min_send_generation counter that
+Each implementation MUST maintain a min_send_generation counter that
 is initialized to 0 at the time the traffic keys are installed.
 Upon receiving a KeyUpdate, if the receiver has sent any data records since receiving the
 last KeyUpdate it MUST also increment its min_send_generation value
