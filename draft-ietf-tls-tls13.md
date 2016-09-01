@@ -1686,7 +1686,9 @@ taking the client up on its offer.
 
 When multiple extensions of different types are present in the ClientHello or
 ServerHello messages, the extensions MAY appear in any order. There MUST NOT be
-more than one extension of the same type.
+more than one extension of the same type. If peer receives a hello message
+that has multiple extensions of the same type it MUST send a fatal
+"illegal_parameter" alert and close the connection.
 
 Finally, note that extensions can be sent both when starting a new session and
 when in resumption-PSK mode. A client that requests session
