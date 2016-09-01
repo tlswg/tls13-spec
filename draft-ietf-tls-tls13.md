@@ -3065,6 +3065,9 @@ Application data messages are carried by the record layer and are
 fragmented and encrypted as described below. The messages are treated
 as transparent data to the record layer.
 
+Peer that receives application data message prior to receiving a Finished
+message MUST abort the connection with a fatal "unexpected_message" alert.
+
 ## Record Layer
 
 The TLS record layer receives uninterpreted data from higher layers in
