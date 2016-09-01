@@ -4037,7 +4037,7 @@ including:
 - Using a public key contained in a certificate but without
   validation of the certificate chain or any of its contents.
 
-Either technique used alone is are vulnerable to man-in-the-middle attacks
+Either technique used alone is vulnerable to man-in-the-middle attacks
 and therefore unsafe for general use. However, it is also possible to
 bind such connections to an external authentication mechanism via
 out-of-band validation of the server's public key, trust on first
