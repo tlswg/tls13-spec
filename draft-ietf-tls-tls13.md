@@ -2714,7 +2714,8 @@ Clients MUST send this
 message whenever authenticating via a Certificate (i.e., when
 the Certificate message is non-empty). When sent, this message MUST appear immediately
 after the Certificate Message and immediately prior to the Finished
-message.
+message. If a peer receives this message at any other point it MUST abort
+the handshake with an "unexpected_message" alert.
 
 Structure of this message:
 
