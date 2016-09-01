@@ -1355,8 +1355,9 @@ MUST return a "handshake_failure" alert and close the connection.
 When this message will be sent:
 
 > When a client first connects to a server, it is REQUIRED to send the
-ClientHello as its first message. The client will also send a
-ClientHello when the server has responded to its ClientHello with a
+ClientHello as its first message. Server which receives a different first
+message MUST send a fatal "unexpected_message" alert. The client will also send
+a ClientHello when the server has responded to its ClientHello with a
 HelloRetryRequest that selects cryptographic parameters that don't match the
 client's "key_share" extension. In that case, the client MUST send the same
 ClientHello (without modification) except:
