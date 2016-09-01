@@ -1478,7 +1478,13 @@ When this message will be sent:
 > The server will send this message in response to a ClientHello message when
 it was able to find an acceptable set of algorithms and the client's
 "key_share" extension was acceptable. If it is not able to find an acceptable
-set of parameters, the server will respond with a "handshake_failure" fatal alert.
+set of parameters, the server will respond with a "handshake_failure" fatal
+alert. In case the first message received by client is not ServerHello or
+HelloRetryRequest the client MUST send a fatal "unexpected_message" alert.
+
+If a client receives a ServerHello at any time other than the first message
+in connection or as next message after HelloRetryRequest message, it MUST send
+a fatal "unexpected_message" alert and close the connection.
 
 Structure of this message:
 
