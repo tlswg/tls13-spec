@@ -3262,7 +3262,7 @@ limitations -- the full fragment plaintext may not exceed 2^14 octets.
 
 Selecting a padding policy that suggests when and how much to pad is a
 complex topic, and is beyond the scope of this specification. If the
-application layer protocol atop TLS has its own padding padding, it may be
+application layer protocol atop TLS has its own padding, it may be
 preferable to pad application_data TLS records within the application
 layer.  Padding for encrypted handshake and alert TLS records must
 still be handled at the TLS layer, though.  Later documents may define
@@ -4037,7 +4037,7 @@ including:
 - Using a public key contained in a certificate but without
   validation of the certificate chain or any of its contents.
 
-Either technique used alone is are vulnerable to man-in-the-middle attacks
+Either technique used alone is vulnerable to man-in-the-middle attacks
 and therefore unsafe for general use. However, it is also possible to
 bind such connections to an external authentication mechanism via
 out-of-band validation of the server's public key, trust on first
@@ -4068,7 +4068,7 @@ rejected by the server.
 TLS requires a cryptographically secure pseudorandom number generator (PRNG).
 In most cases, the operating system provides an appropriate facility such
 as /dev/urandom, which should be used absent other (performance) concerns.
-It is generally preferrable to use an existing PRNG implementation in
+It is generally preferable to use an existing PRNG implementation in
 preference to crafting a new one, and many adequate cryptographic libraries
 are already available under favorable license terms.  Should those prove
 unsatisfactory, {{RFC4086}} provides guidance on the generation of random values.
