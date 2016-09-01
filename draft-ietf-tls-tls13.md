@@ -1481,6 +1481,8 @@ without extensions. If negotiating TLS 1.2, a server MUST check that
 the amount of data in the message precisely matches one of these
 formats; if not, then it MUST send a fatal "decode_error" alert.
 
+Note that servers MUST accept and ignore any extensions they do not recognise.
+
 After sending the ClientHello message, the client waits for a ServerHello
 or HelloRetryRequest message.
 
