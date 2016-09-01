@@ -2956,7 +2956,7 @@ the responses).
 
 
 ### Key and IV Update {#key-update}
-     enum { update_not_requested(0), update_requested(2), (255)
+     enum { update_not_requested(0), update_requested(1), (255)
      } KeyUpdateRequest;
 
      struct {
