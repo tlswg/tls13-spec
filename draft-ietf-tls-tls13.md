@@ -1615,7 +1615,9 @@ generate a correct ClientHello pair (currently no such extensions
 exist). As with ServerHello, a
 HelloRetryRequest MUST NOT contain any extensions that were not first
 offered by the client in its ClientHello, with the exception of optionally the
-"cookie" (see {{cookie}}) extension.
+"cookie" (see {{cookie}}) extension. If a HelloRetryRequest message is received
+which fails this check, client MUST send a fatal "illegal_parameter" alert
+and close the connection.
 
 Upon receipt of a HelloRetryRequest, the client MUST verify that the extensions
 block is not empty and otherwise abort the handshake with a fatal
