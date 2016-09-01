@@ -3262,7 +3262,7 @@ limitations -- the full fragment plaintext may not exceed 2^14 octets.
 
 Selecting a padding policy that suggests when and how much to pad is a
 complex topic, and is beyond the scope of this specification. If the
-application layer protocol atop TLS has its own padding padding, it may be
+application layer protocol atop TLS has its own padding, it may be
 preferable to pad application_data TLS records within the application
 layer.  Padding for encrypted handshake and alert TLS records must
 still be handled at the TLS layer, though.  Later documents may define
