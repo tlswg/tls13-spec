@@ -1527,7 +1527,8 @@ random
 
 cipher_suite
 : The single cipher suite selected by the server from the list in
-  ClientHello.cipher_suites.
+  ClientHello.cipher_suites. If the value was not advertised in that list
+  client MUST send a fatal "illegal_parameter" alert and close the connection.
 
 extensions
 : A list of extensions.  Note that only extensions offered by the
@@ -1572,6 +1573,10 @@ includes a signature over both random values, it is not possible for
 an active attacker to modify the randoms without detection as long as
 ephemeral ciphers are used. It does not provide downgrade protection
 when static RSA is used.
+
+Client receiving a ServerHello message with a version higher than the one
+in ClientHello.max_supported_version MUST send a fatal "protocol_version"
+alert and abort connection.
 
 If a client receives a ServerHello that does not include "key_share" nor
 "pre_shared_key" extension it MUST send a fatal "missing_extension" alert.
