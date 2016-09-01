@@ -1558,6 +1558,9 @@ an active attacker to modify the randoms without detection as long as
 ephemeral ciphers are used. It does not provide downgrade protection
 when static RSA is used.
 
+If a client receives a ServerHello that does not include "key_share" nor
+"pre_shared_key" extension it MUST send a fatal "missing_extension" alert.
+
 Note: This is an update to TLS 1.2 so in practice many TLS 1.2 clients
 and servers will not behave as specified above.
 
