@@ -4068,7 +4068,7 @@ rejected by the server.
 TLS requires a cryptographically secure pseudorandom number generator (PRNG).
 In most cases, the operating system provides an appropriate facility such
 as /dev/urandom, which should be used absent other (performance) concerns.
-It is generally preferrable to use an existing PRNG implementation in
+It is generally preferable to use an existing PRNG implementation in
 preference to crafting a new one, and many adequate cryptographic libraries
 are already available under favorable license terms.  Should those prove
 unsatisfactory, {{RFC4086}} provides guidance on the generation of random values.
