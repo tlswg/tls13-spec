@@ -1091,6 +1091,10 @@ a 17-byte vector of uint16 would be illegal).
        uint16 longer<0..800>;
              /* zero to 400 16-bit unsigned integers */
 
+Peers that recieve illegal encoding of a vector in a message MUST close
+connection with a "decode_error" alert unles more specific section says
+otherwise.
+
 
 ##  Numbers
 
@@ -1147,6 +1151,11 @@ numerical information may be omitted.
 
        enum { low, medium, high } Amount;
 
+Note: enumerateds may be extended in future, so implementation MUST be able
+to parse messages that include values outside of the ones defined in this
+document without aborting connection unless more specific section specifies
+otherwise.
+
 
 ##  Constructed Types
 
@@ -1165,6 +1174,10 @@ The fields within a structure may be qualified using the type's name, with a
 syntax much like that available for enumerateds. For example, T.f2 refers to
 the second field of the previous declaration. Structure definitions may be
 embedded.
+
+If a peer receives message that doesn't match the expected constructed type
+in expected message MUST abort the connection with a "decode_error" alert
+unless more specific section doesn't specify otherwise.
 
 ###  Variants
 
