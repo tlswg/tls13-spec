@@ -2957,7 +2957,16 @@ the responses).
 
 ### Key and IV Update {#key-update}
 
-     struct {} KeyUpdate;
+     enum { true(1), false(2) (255) } Boolean;
+
+     struct {
+         Boolean requestUpdate;
+     } KeyUpdate;
+
+requestUpdate
+: Indicates that the recipient of the KeyUpdate should respond with its
+own KeyUpdate.
+{:br }
 
 The KeyUpdate handshake message is used to indicate that the sender is
 updating its sending cryptographic keys. This message can be sent by
@@ -2970,31 +2979,25 @@ next generation of keys, computed as described in
 {{updating-traffic-keys}}. Upon receiving a KeyUpdate, the receiver
 MUST update its receiving keys.
 
-Each implementation MUST maintain a min_send_generation counter that
-is initialized to 0 at the time the traffic keys are installed.
-Upon receiving a KeyUpdate, if the receiver has sent any data records since receiving the
-last KeyUpdate it MUST also increment its min_send_generation value
-by 1. Otherwise, the min_send_generation MUST remain unchanged. Prior
-to sending a record, if min_send_generation is greater than the
-current sending generation, the sender MUST first send a KeyUpdate.
-
-This mechanism allows either side to force an update to the
+If the requestUpdate field is set to "true" then the receiver MUST
+send a KeyUpdate of its own with requestUpdate set to "false" prior
+to sending its next application data record. This mechanism allows either side to force an update to the
 entire connection, but causes an implementation which
 receives multiple KeyUpdates while it is silent to respond with
 a single update. Note that implementations may receive an arbitrary
 number of messages between sending a KeyUpdate and receiving the
 peer's KeyUpdate because those messages may already be in flight.
-If implementations independently send their own
-KeyUpdates and they cross in flight, then both sides simply
-notes that it has already updated without sending an additional
-update.
-
-Note that the side which sends its KeyUpdate first needs to retain
+The side which sends its KeyUpdate first needs to retain
 its receive traffic keys (though not the traffic secret) for the previous
 generation of keys until it receives the KeyUpdate from the other
-side. Because the send and receive keys are derived from independent
+side. Because send and receive keys are derived from independent
 traffic secrets, retaining the receive traffic secret does not threaten
 the forward secrecy of data sent before the sender changed keys.
+
+If implementations independently send their own KeyUpdates with
+requestUpdate set to true, and they cross in flight, then each side
+will also send a response, with the result that each side increments
+by two generations.
 
 Both sender and receiver MUST encrypt their KeyUpdate
 messages with the old keys. Additionally, both sides MUST enforce that
