@@ -1852,6 +1852,10 @@ trust anchors are not validated since they begin a certification path (see
 path MAY use a signature algorithm that is not advertised as being supported
 in the "signature_algorithms" extension.
 
+In case no algorithms in the "signature_algorithms" extension sent by client
+are acceptable for the server, it MUST send a fatal "handshake_failure" alert
+and close the connection.
+
 Note that TLS 1.2 defines this extension differently. TLS 1.3 implementations
 willing to negotiate TLS 1.2 MUST behave in accordance with the requirements of
 {{RFC5246}} when negotiating that version. In particular:
@@ -1929,6 +1933,10 @@ Finite Field Groups (DHE)
 
 Items in named_group_list are ordered according to the client's
 preferences (most preferred choice first).
+
+If server receives a list that does not include any group acceptable
+to it, it MUST abort the connection by sending "handshake_failure"
+alert.
 
 As of TLS 1.3, servers are permitted to send the "supported_groups"
 extension to the client.  If the server has a group it prefers to the
