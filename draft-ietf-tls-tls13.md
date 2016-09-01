@@ -1953,7 +1953,9 @@ key_exchange
 : Key exchange information.  The contents of this field are
   determined by the specified group and its corresponding
   definition.  Endpoints MUST NOT send empty or otherwise
-  invalid key_exchange values for any reason.
+  invalid key_exchange values for any reason. Endpoint that
+  receives message with such malformed string MUST send a fatal
+  "decode_error" alert.
 {:br }
 
 The "extension_data" field of this extension contains a
@@ -2000,6 +2002,10 @@ KeyShareEntry values for groups not listed in the client's
 these rules and and MAY abort the connection with a fatal
 "illegal_parameter" alert if one is violated.
 
+If a HelloRetryRequest is not used, client MUST verify that the server_share
+is one of the groups advertised in client_shares and abort the connection
+with a fatal "illegal_parameter" alert if it is not.
+
 Upon receipt of this extension in a HelloRetryRequest, the client MUST first
 verify that the selected_group field corresponds to a group which was provided
 in the "supported_groups" extension in the original ClientHello. It MUST then
@@ -2010,6 +2016,10 @@ these checks fails, then the client MUST abort the handshake with a fatal
 client MUST append a new KeyShareEntry for the group indicated in the
 selected_group field to the groups in its original KeyShare. The remaining
 KeyShareEntry values MUST be preserved.
+
+When server recieves a second ClientHello that has original KeyShareEntry
+values at different positions or missing, it MUST abort the handshake with a
+fatal "illegal_parameter" alert.
 
 Note that a HelloRetryRequest might not include the "key_share" extension if
 other extensions are sent, such as if the server is only sending a cookie.
@@ -2033,14 +2043,16 @@ the opaque key_exchange field of a KeyShareEntry in a KeyShare structure.
 The opaque value contains the
 Diffie-Hellman public value (Y = g^X mod p),
 encoded as a big-endian integer, padded with zeros to the size of p in
-bytes.
+bytes. Peer that receives a value that is encoded in a different number of
+octets MUST abort the handshake with an "illegal_parameter" alert.
 
 Note: For a given Diffie-Hellman group, the padding results in all public keys
 having the same length.
 
 Peers SHOULD validate each other's public key Y by ensuring that 1 < Y
 < p-1. This check ensures that the remote peer is properly behaved and
-isn't forcing the local system into a small subgroup.
+isn't forcing the local system into a small subgroup. If that check fails
+peer should abort the handshake with an "illegal_parameter" alert.
 
 
 #### ECDHE Parameters {#ecdhe-param}
@@ -2061,6 +2073,10 @@ uncompressed).
 For x25519 and x448, the contents are the byte string inputs and outputs of the
 corresponding functions defined in {{RFC7748}}, 32 bytes for x25519 and 56
 bytes for x448.
+
+If the length of the encoding or format of the encoding does not match the
+selected group, peer MUST abort the handshake with an "illegal_parameter"
+alert.
 
 Note: Versions of TLS prior to 1.3 permitted point negotiation;
 TLS 1.3 removes this feature in favor of a single point format
@@ -2116,6 +2132,9 @@ hash algorithm. This restriction is automatically enforced
 for PSKs established via NewSessionTicket ({{NewSessionTicket}})
 but any externally-established PSKs MUST also follow this rule.
 
+If the authentication or key exchange mode does not match the PSD selected by
+server, client MUST abort the connection with "illegal_parameter" alert.
+
 PskKeyExchangeMode values have the following meanings:
 
 psk_ke
@@ -2150,6 +2169,10 @@ range supplied by the client and that the "key_share" and
 indicated ke_modes and auth_modes values. If these values
 are not consistent, the client MUST generate an "illegal_parameter"
 alert and close the connection.
+
+In case the server sends or omits the Certificate and CertificateVerify
+messages that is inconsistent with the auth_modes, the client MUST generate
+an "unexpected_message" alert and close the connection.
 
 If the server supplies an "early_data" extension, the client MUST
 verify that the server selected the first offered identity. If any
