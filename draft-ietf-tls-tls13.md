@@ -2956,14 +2956,14 @@ the responses).
 
 
 ### Key and IV Update {#key-update}
-
-     enum { true(1), false(2) (255) } Boolean;
+     enum { update_not_requested(0), update_requested(2), (255)
+     } KeyUpdateRequest;
 
      struct {
-         Boolean requestUpdate;
+         KeyUpdateRequest request_update;
      } KeyUpdate;
 
-requestUpdate
+request_update
 : Indicates that the recipient of the KeyUpdate should respond with its
 own KeyUpdate.
 {:br }
@@ -2979,23 +2979,20 @@ next generation of keys, computed as described in
 {{updating-traffic-keys}}. Upon receiving a KeyUpdate, the receiver
 MUST update its receiving keys.
 
-If the requestUpdate field is set to "true" then the receiver MUST
-send a KeyUpdate of its own with requestUpdate set to "false" prior
+If the requestUpdate field is set to "update_requested" then the receiver MUST
+send a KeyUpdate of its own with requestUpdate set to "update_not_requested" prior
 to sending its next application data record. This mechanism allows either side to force an update to the
 entire connection, but causes an implementation which
 receives multiple KeyUpdates while it is silent to respond with
 a single update. Note that implementations may receive an arbitrary
 number of messages between sending a KeyUpdate and receiving the
 peer's KeyUpdate because those messages may already be in flight.
-The side which sends its KeyUpdate first needs to retain
-its receive traffic keys (though not the traffic secret) for the previous
-generation of keys until it receives the KeyUpdate from the other
-side. Because send and receive keys are derived from independent
+However, because send and receive keys are derived from independent
 traffic secrets, retaining the receive traffic secret does not threaten
 the forward secrecy of data sent before the sender changed keys.
 
 If implementations independently send their own KeyUpdates with
-requestUpdate set to true, and they cross in flight, then each side
+requestUpdate set to "update_requested", and they cross in flight, then each side
 will also send a response, with the result that each side increments
 by two generations.
 
@@ -3627,8 +3624,7 @@ operation.
 (EC)DHE -> HKDF-Extract
                  |
                  v
-              Handshake
-               Secret
+         Handshake Secret
                  |
                  +---------> Derive-Secret(., "client handshake traffic secret",
                  |                         ClientHello...ServerHello)
@@ -3731,8 +3727,8 @@ following table indicates the purpose values for each type of key:
 
 | Key Type         | Purpose            |
 |:-----------------|:-------------------|
-| write_key | "write key" |
-| write_iv  | "write iv"  |
+| key | "key" |
+| iv  | "iv"  |
 
 All the traffic keying material is recomputed whenever the
 underlying Secret changes (e.g., when changing from the handshake to
