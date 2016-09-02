@@ -4024,13 +4024,18 @@ The "CIPHER" component commonly has sub-components used to designate
 the cipher name, bits, and mode, if applicable. For example, "AES_256_GCM"
 represents 256-bit AES in the GCM mode of operation.
 
-|       Cipher Suite Name         |    Value    | Specification |
-|:--------------------------------|:------------|:--------------|
-| TLS_AES_128_GCM_SHA256        | {0x13,0x01} |   [This RFC]  |
-| TLS_AES_256_GCM_SHA384        | {0x13,0x02} |   [This RFC]  |
-| TLS_CHACHA20_POLY1305_SHA256  | {0x13,0x03} |   [This RFC]  |
-| TLS_AES_128_CCM_SHA256        | {0x13,0x04} |   [This RFC]  |
-| TLS_AES_128_CCM_8_SHA256      | {0x13,0x05} |   [This RFC]  |
+|       Cipher Suite Name          |    Value    | Specification |
+|:---------------------------------|:------------|:--------------|
+| TLS_AES_128_GCM_SHA256         | {0x13,0x01} |   [This RFC]  |
+| TLS_AES_256_GCM_SHA384         | {0x13,0x02} |   [This RFC]  |
+| TLS_CHACHA20_POLY1305_SHA256   | {0x13,0x03} |   [This RFC]  |
+| TLS_AES_128_CCM_SHA256         | {0x13,0x04} |   [This RFC]  |
+| TLS_AES_128_CCM_8_SHA256       | {0x13,0x05} |   [This RFC]  |
+| TLS_AES_128_GCM_SHA3_256       | {0x13,0x06} |   [This RFC]  |
+| TLS_AES_256_GCM_SHA3_384       | {0x13,0x07} |   [This RFC]  |
+| TLS_CHACHA20_POLY1305_SHA3_256 | {0x13,0x08} |   [This RFC]  |
+| TLS_AES_128_CCM_SHA3_256       | {0x13,0x09} |   [This RFC]  |
+| TLS_AES_128_CCM_8_SHA3_256     | {0x13,0x0a} |   [This RFC]  |
 
 Although TLS 1.3 uses the same cipher suite space as previous versions
 of TLS, TLS 1.3 cipher suites are defined differently, only specifying
