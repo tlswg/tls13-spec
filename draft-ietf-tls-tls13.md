@@ -56,6 +56,13 @@ normative:
          org: National Institute of Standards and Technology
        seriesinfo:
          NIST: FIPS 197
+  SHA3:
+       title: "SHA-3 Standard: Permutation-Based Hash and Extendable-Output Functions"
+       date: 2015-08
+       author:
+         org: National Institute of Standards and Technology
+       seriesinfo:
+         NIST: FIPS PUB 202
   SHS:
        title: Secure Hash Standard
        date: 2012-03
@@ -1740,11 +1747,17 @@ The "extension_data" field of this extension in a ClientHello contains a
            ecdsa_secp256r1_sha256 (0x0403),
            ecdsa_secp384r1_sha384 (0x0503),
            ecdsa_secp521r1_sha512 (0x0603),
+           ecdsa_secp256r1_sha3_256 (0x0705),
+           ecdsa_secp384r1_sha3_384 (0x0706),
+           ecdsa_secp521r1_sha3_512 (0x0707),
 
            /* RSASSA-PSS algorithms */
            rsa_pss_sha256 (0x0700),
            rsa_pss_sha384 (0x0701),
            rsa_pss_sha512 (0x0702),
+           rsa_pss_sha3_256 (0x0708),
+           rsa_pss_sha3_384 (0x0709),
+           rsa_pss_sha3_512 (0x070a),
 
            /* EdDSA algorithms */
            ed25519 (0x0703),
@@ -1789,13 +1802,15 @@ RSASSA-PKCS1-v1_5 algorithms
 ECDSA algorithms
 : Indicates a signature algorithm using ECDSA {{ECDSA}}, the corresponding
   curve as defined in ANSI X9.62 {{X962}} and FIPS 186-4 {{DSS}}, and the
-  corresponding hash algorithm as defined in {{SHS}}. The signature is
+  corresponding hash algorithm as defined in {{SHS}} or {{SHA3}}. The
+  signature is
   represented as a DER-encoded {{X690}} ECDSA-Sig-Value structure.
 
 RSASSA-PSS algorithms
 : Indicates a signature algorithm using RSASSA-PSS {{RFC3447}} with MGF1. The
   digest used in the mask generation function and the digest being signed are
-  both the corresponding hash algorithm as defined in {{SHS}}. When used in
+  both the corresponding hash algorithm as defined in {{SHS}} or {{SHA3}}.
+  When used in
   signed TLS handshake messages, the length of the salt MUST be equal to the
   length of the digest output.  This codepoint is defined for use with TLS 1.2
   as well as TLS 1.3.  A server uses RSASSA-PSS signatures with RSA cipher
