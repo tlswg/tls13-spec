@@ -2053,9 +2053,9 @@ selected_group field to the groups in its original KeyShare. The remaining
 KeyShareEntry values MUST be preserved.
 
 When server recieves a second ClientHello that has original KeyShareEntry
-values at different positions or missing, or any other fields or extensions
-are different, it MUST abort the handshake with a fatal "illegal_parameter"
-alert.
+values at different positions or missing, includes "early_data" extension, or
+any other fields or extensions are different, it MUST abort the handshake
+with a fatal "illegal_parameter" alert.
 
 Note that a HelloRetryRequest might not include the "key_share" extension if
 other extensions are sent, such as if the server is only sending a cookie.
