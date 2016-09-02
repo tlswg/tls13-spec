@@ -2429,6 +2429,10 @@ MUST check EncryptedExtensions for the presence of any forbidden
 extensions and if any are found MUST terminate the handshake with an
 "illegal_parameter" alert.
 
+Note that this message is always sent and clients that receive any other
+message after ServerHello MUST send a fatal "unexpected_message" alert
+and close the connection.
+
 Structure of this message:
 
 %%% Server Parameters Messages
