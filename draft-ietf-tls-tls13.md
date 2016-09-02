@@ -3168,7 +3168,8 @@ legacy_record_version
 
 length
 : The length (in bytes) of the following TLSPlaintext.fragment. The
-  length MUST NOT exceed 2^14.
+  length MUST NOT exceed 2^14. Peer receiving TLSPlaintext larger than
+  that MUST send a fatal "record_overflow" alert and close the connection.
 
 fragment
 : The data being transmitted. This value transparent and treated as an
