@@ -1845,7 +1845,7 @@ willing to negotiate TLS 1.2 MUST behave in accordance with the requirements of
 
 * Implementations that advertise support for RSASSA-PSS (which is mandatory in
   TLS 1.3), MUST be prepared to accept a signature using that scheme even when
-  TLS 1.2 is negotiated.
+  TLS 1.2 is negotiated. In TLS 1.2, RSASSA-PSS is used with RSA cipher suites.
 
 
 ### Negotiated Groups
