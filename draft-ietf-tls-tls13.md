@@ -2867,6 +2867,11 @@ correct. Once a side has sent its Finished message and received and
 validated the Finished message from its peer, it may begin to send and
 receive application data over the connection.
 
+If the contents of the message are not correct recipient MUST send a
+fatal "bad_record_mac".
+[[TODO: is it needed to hide the difference between invalid Finished and
+invalid encrypting of Finished?]]
+
 The key used to compute the finished message is computed from the
 Base key defined in {{authentication-messages}} using HKDF (see
 {{key-schedule}}). Specifically:
