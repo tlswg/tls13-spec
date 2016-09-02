@@ -329,6 +329,13 @@ informative:
          ins: H. Hu
        seriesinfo: Proceedings of IEEE Symposium on Security and Privacy (Oakland) 2016
        date: 2016
+  FW15:
+       title: "Factoring RSA Keys With TLS Perfect Forward Secrecy"
+       author:
+       -
+         ins: Florian Weimer
+         org: Red Hat Product Security
+       date: 2015-09
 --- abstract
 
 This document specifies version 1.3 of the Transport Layer Security
@@ -4171,6 +4178,9 @@ Cryptographic details:
 
 - Do you zero-pad Diffie-Hellman public key values to the group size (see
   {{ffdhe-param}})?
+
+- Do you verify signatures after making them to protect against RSA-CRT
+  key leaks? {{FW15}}
 
 
 ## Client Tracking Prevention
