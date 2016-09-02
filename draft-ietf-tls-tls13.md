@@ -4593,6 +4593,10 @@ Archives of the list can be found at:
   ACLU \\
   dkg@fifthhorseman.net
 
+* Hubert Kario \\
+  Red Hat Inc. \\
+  hkario@redhat.com
+
 * Phil Karlton (co-author of SSL 3.0)
 
 * Paul Kocher (co-author of SSL 3.0) \\
@@ -4682,7 +4686,3 @@ Archives of the list can be found at:
 * Tim Wright \\
   Vodafone \\
   timothy.wright@vodafone.com
-
-* Hubert Kario \\
-  Red Hat Inc. \\
-  hkario@redhat.com
