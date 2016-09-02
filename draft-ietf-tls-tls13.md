@@ -2834,7 +2834,9 @@ RSASSA-PSS algorithm, regardless of whether RSASSA-PKCS1-v1_5 algorithms
 appear in "signature_algorithms". SHA-1 MUST NOT be used in any signatures in
 CertificateVerify. All SHA-1 signature algorithms in this specification are
 defined solely for use in legacy certificates, and are not valid for
-CertificateVerify signatures.
+CertificateVerify signatures. Peer which recieves CertificateVerify message
+signed with those forbidden algotihms MUST send a fatal "illegal_parameter"
+alert and close the connection.
 
 Note: When used with non-certificate-based handshakes (e.g., PSK), the
 client's signature does not cover the server's certificate directly,
