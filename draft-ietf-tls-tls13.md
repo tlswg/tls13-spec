@@ -3782,6 +3782,9 @@ with both modes. Future specifications MUST NOT provide an empty context and no
 context with the same label and SHOULD provide a context, possibly empty, in
 all exporter computations.
 
+Note: If exporters are used as channel bindings, the exported value MUST be large
+enough to provide collision resistance.
+
 
 #  Compliance Requirements
 
