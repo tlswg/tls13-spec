@@ -1804,14 +1804,12 @@ RSASSA-PSS algorithms
   both the corresponding hash algorithm as defined in {{SHS}}. When used in
   signed TLS handshake messages, the length of the salt MUST be equal to the
   length of the digest output.  This codepoint is defined for use with TLS 1.2
-  as well as TLS 1.3.  A server uses RSASSA-PSS signatures with RSA cipher
-  suites.
+  as well as TLS 1.3.
 
 EdDSA algorithms
 : Indicates a signature algorithm using EdDSA as defined in
   {{I-D.irtf-cfrg-eddsa}} or its successors. Note that these correspond to the
-  "PureEdDSA" algorithms and not the "prehash" variants.  A server uses EdDSA
-  signatures with ECDSA cipher suites.
+  "PureEdDSA" algorithms and not the "prehash" variants.
 {:br }
 
 rsa_pkcs1_sha1, dsa_sha1, and ecdsa_sha1 SHOULD NOT be offered. Clients
@@ -1847,7 +1845,7 @@ willing to negotiate TLS 1.2 MUST behave in accordance with the requirements of
 
 * Implementations that advertise support for RSASSA-PSS (which is mandatory in
   TLS 1.3), MUST be prepared to accept a signature using that scheme even when
-  TLS 1.2 is negotiated.
+  TLS 1.2 is negotiated. In TLS 1.2, RSASSA-PSS is used with RSA cipher suites.
 
 
 ### Negotiated Groups
