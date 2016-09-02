@@ -2877,7 +2877,7 @@ to that negotiated connection where the ticket was established.
 
 %%% Ticket Establishment
 
-     enum { (65535) } TicketExtensionType;
+     enum { ticket_early_data_info(1), (65535) } TicketExtensionType;
 
      struct {
          TicketExtensionType extension_type;
