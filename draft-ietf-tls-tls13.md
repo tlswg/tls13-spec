@@ -1227,7 +1227,7 @@ symbol of the desired type and assigning values to it.
 
 Under-specified types (opaque, variable-length vectors, and structures that
 contain opaque) cannot be assigned values. No fields of a multi-element
-structure or vector may be elided.
+structure or vector may be omitted.
 
 For example:
 
