@@ -4411,6 +4411,8 @@ CLIENT-HELLO. Implementations are NOT RECOMMENDED to accept an SSL version 2.0 c
 CLIENT-HELLO in order to negotiate older versions of TLS.
 
 Implementations MUST NOT send or accept any records with a version less than { 3, 0 }.
+Peer that recieves such record MUST send a fatal "protocol_version" alert
+and close the connection.
 
 The security of SSL 3.0 {{SSL3}} is considered insufficient for the reasons enumerated
 in {{RFC7568}}, and MUST NOT be negotiated for any reason.
