@@ -2604,7 +2604,9 @@ requested client authentication via a CertificateRequest message
 ({{certificate-request}}). If the server requests client authentication
 but no suitable certificate is available, the client
 MUST send a Certificate message containing no certificates (i.e., with
-the "certificate_list" field having length 0).
+the "certificate_list" field having length 0). Server that receives a
+Certificate message when it haven't sent a CertificateRequest MUST
+send a fatal "unexpected_message" alert and close the connection.
 
 Meaning of this message:
 
