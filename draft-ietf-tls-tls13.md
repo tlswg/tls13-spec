@@ -1370,11 +1370,11 @@ ClientHello (without modification) except:
 If a server receives a ClientHello at any other time, it MUST send
 a fatal "unexpected_message" alert and close the connection.
 
-If a server established a TLS session at a previous version of the protocol
+If a server established a TLS connection with a previous version of TLS
 and receives a TLS 1.3 ClientHello in a renegotiation, it MUST retain the
 previous protocol version. In particular, it MUST NOT negotiate TLS 1.3.
-A client that receives a TLS 1.3 ServerHello in an established session MUST
-send a fatal "protocol_version" alert and close the connection.
+A client that receives a TLS 1.3 ServerHello during renegotiation
+MUST send a fatal "protocol_version" alert and close the connection.
 
 Structure of this message:
 
