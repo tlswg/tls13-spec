@@ -2930,6 +2930,8 @@ traffic key.
 Handshake messages sent after the handshake MUST NOT be interleaved with other
 record types. That is, if a message is split over two or more handshake
 records, there MUST NOT be any other records between them.
+Peer that recieves such malformed records MUST send a fatal
+"unexpected_message" alert and close the connection.
 
 ### New Session Ticket Message {#NewSessionTicket}
 
