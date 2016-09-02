@@ -4682,3 +4682,7 @@ Archives of the list can be found at:
 * Tim Wright \\
   Vodafone \\
   timothy.wright@vodafone.com
+
+* Hubert Kario \\
+  Red Hat Inc. \\
+  hkario@redhat.com
