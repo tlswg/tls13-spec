@@ -2535,8 +2535,8 @@ certificate_extensions
   extensions.
 {:br }
 
-Note: It is a fatal "unexpected_message" alert for an anonymous server to
-request client authentication.
+Clients that receive CertificateRequest message from an anonymous server
+MUST send a fatal "unexpected_message" alert and close connection.
 
 ## Authentication Messages
 
