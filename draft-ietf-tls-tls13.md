@@ -3185,7 +3185,9 @@ Endpoints supporting other versions negotiate the version to use
 by following the procedure and requirements in {{backward-compatibility}}.
 
 Implementations MUST NOT send zero-length fragments of Handshake or
-Alert types, even if those fragments contain padding. Zero-length
+Alert types, even if those fragments contain padding. Endpoint that recieves
+such fragments MUST generate a fatal "decode_error" and close the connection.
+Zero-length
 fragments of Application data MAY be sent as they are potentially
 useful as a traffic analysis countermeasure.
 
