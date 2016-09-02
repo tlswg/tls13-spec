@@ -2338,10 +2338,8 @@ which should be protected, i.e., any which are not needed to
 establish the cryptographic context.
 
 The same extension types MUST NOT appear in both the ServerHello and
-EncryptedExtensions.  If the same extension appears in both locations,
-the client MUST rely only on the value in the EncryptedExtensions
-block.  All server-sent extensions other than those explicitly listed
-in {{server-hello}} or designated in the IANA registry MUST only
+EncryptedExtensions. All server-sent extensions other than those explicitly
+listed in {{server-hello}} or designated in the IANA registry MUST only
 appear in EncryptedExtensions. Extensions which are designated to
 appear in ServerHello MUST NOT appear in EncryptedExtensions. Clients
 MUST check EncryptedExtensions for the presence of any forbidden
