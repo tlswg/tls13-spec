@@ -2226,6 +2226,10 @@ in its first flight of messages. If the client opts to do so, it MUST
 supply an "early_data" extension as well as the "pre_shared_key"
 extension.
 
+If a server receives a ClientHello that does not include a "pre_shared_key"
+but includes "early_data" extension MUST send a fatal "illegal_parameter"
+alert and close connection.
+
 The "extension_data" field of this extension contains an
 "EarlyDataIndication" value:
 
@@ -2265,6 +2269,10 @@ different keys. After all the 0-RTT application data messages (if
 any) have been sent, an "end_of_early_data" alert of type
 "warning" is sent to indicate the end of the flight.
 0-RTT MUST always be followed by an "end_of_early_data" alert.
+Server which receives Finished message while processing early data without
+receiving an "end_of_early_data" alert or receives any message other than
+Finished immediately following the "end_of_early_data" alert MUST send a fatal
+"unexpected_message" alert and close connection.
 
 A server which receives an "early_data" extension
 can behave in one of two ways:
