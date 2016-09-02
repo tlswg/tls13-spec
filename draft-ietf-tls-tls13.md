@@ -3240,12 +3240,14 @@ opaque_type
   value 23 (application_data) for outward compatibility with
   middleboxes accustomed to parsing previous versions of TLS.  The
   actual content type of the record is found in fragment.type after
-  decryption.
+  decryption. Peers that receive fragments of different opaque_type MUST
+  send a fatal "illegal_parameter" and close the connection.
 
 legacy_record_version
 : The legacy_record_version field is identical to TLSPlaintext.legacy_record_version and is always { 3, 1 }.
   Note that the handshake protocol including the ClientHello and ServerHello messages authenticates
-  the protocol version, so this value is redundant.
+  the protocol version, so this value is redundant. Implementations MUST
+  ignore this value for all purposes.
 
 length
 : The length (in bytes) of the following TLSCiphertext.fragment, which
