@@ -1839,7 +1839,10 @@ RSASSA-PSS algorithms
   digest used in the mask generation function and the digest being signed are
   both the corresponding hash algorithm as defined in {{SHS}}. When used in
   signed TLS handshake messages, the length of the salt MUST be equal to the
-  length of the digest output.  This codepoint is defined for use with TLS 1.2
+  length of the digest output. If a signed TLS handshake message is received
+  that has salt of different length, the peer MUST send a fatal
+  "decrypt_error" alert and close the connection. This codepoint is defined
+  for use with TLS 1.2
   as well as TLS 1.3.  A server uses RSASSA-PSS signatures with RSA cipher
   suites.
 
