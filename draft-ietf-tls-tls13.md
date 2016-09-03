@@ -3787,8 +3787,6 @@ with both modes. Future specifications MUST NOT provide an empty context and no
 context with the same label and SHOULD provide a context, possibly empty, in
 all exporter computations.
 
-Note: If exporters are used as channel bindings, the exported value MUST be large
-enough to provide collision resistance.
 
 
 #  Compliance Requirements
@@ -4408,6 +4406,15 @@ secret. The resumption-PSK mode has been designed so that the
 resumption master secret computed by connection N and needed to form
 connection N+1 is separate from the traffic keys used by connection N,
 thus providing forward secrecy between the connections.
+
+If an exporter is used, then it produces values which are unique
+and secret (because they are generated from a unique session key).
+Exporters computed with different labels and contexts are computationally
+independent, so it is not feasible to compute one from another or
+the session secret from the exported value. Note: exporters can
+produce arbitrary-length values. If exporters are to be
+used as channel bindings, the exported value MUST be large
+enough to provide collision resistance.
 
 For all handshake modes, the Finished MAC (and where present, the
 signature), prevents downgrade attacks. In addition, the use of
