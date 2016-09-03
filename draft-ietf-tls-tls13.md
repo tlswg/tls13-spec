@@ -1367,6 +1367,9 @@ ClientHello (without modification) except:
 - Removing the "early_data" extension ({{early-data-indication}}) if one was
   present. Early data is not permitted after HelloRetryRequest.
 
+- Including a "cookie" extension if one was provided in the
+  HelloRetryRequest.
+  
 If a server receives a ClientHello at any other time, it MUST send
 a fatal "unexpected_message" alert and close the connection.
 
@@ -1512,7 +1515,7 @@ extensions
   the ServerHello and the EncryptedExtensions {{encrypted-extensions}}
   message. The ServerHello MUST only include extensions which are
   required to establish the cryptographic context. Currently the only
-  such extensions are "key_share", "pre_shared_key", and "early_data".
+  such extensions are "key_share", "pre_shared_key", and "signature_algorithms".
   Clients MUST check the ServerHello for the presence of any forbidden
   extensions and if any are found MUST terminate the handshake with a
   "illegal_parameter" alert. In prior versions of TLS, the extensions
@@ -1904,10 +1907,12 @@ Items in named_group_list are ordered according to the client's
 preferences (most preferred choice first).
 
 As of TLS 1.3, servers are permitted to send the "supported_groups"
-extension to the client.  If the server has a group it prefers to the
+extension to the client. If the server has a group it prefers to the
 ones in the "key_share" extension but is still willing to accept the
 ClientHello, it SHOULD send "supported_groups" to update the client's
-view of its preferences.  Clients MUST NOT act upon any information
+view of its preferences; this extension SHOULD contain all groups
+the server supports, regardless of whether they are currently
+supported by the client. Clients MUST NOT act upon any information
 found in "supported_groups" prior to successful completion of the
 handshake, but MAY use the information learned from a successfully
 completed handshake to change what groups they offer to a server in
@@ -2179,6 +2184,8 @@ obfuscated_ticket_age
 
 A server MUST validate that the ticket_age is within a small
 tolerance of the time since the ticket was issued (see {{replay-time}}).
+If it is not, the server SHOULD proceed with the handshake but reject
+0-RTT.
 
 The parameters for the 0-RTT data (symmetric cipher suite,
 ALPN, etc.) are the same as those which were negotiated in the connection
@@ -2191,7 +2198,8 @@ application_data, and alert respectively) but are protected under
 different keys. After all the 0-RTT application data messages (if
 any) have been sent, an "end_of_early_data" alert of type
 "warning" is sent to indicate the end of the flight.
-0-RTT MUST always be followed by an "end_of_early_data" alert.
+0-RTT MUST always be followed by an "end_of_early_data" alert,
+which will be encrypted with the 0-RTT traffic keys.
 
 A server which receives an "early_data" extension
 can behave in one of two ways:
@@ -3279,10 +3287,11 @@ an analysis of these limits under the assumption that the underlying
 primitive (AES or ChaCha20) has no weaknesses. Implementations SHOULD
 do a key update {{key-update}} prior to reaching these limits.
 
-For AES-GCM, up to 2^24.5 full-size records may be encrypted on a
+For AES-GCM, up to 2^24.5 full-size records (about 24 million)
+may be encrypted on a
 given connection while keeping a safety margin of approximately
 2^-57 for Authenticated Encryption (AE) security. For
-ChaCha20/Poly1305, the record sequence number will wrap before the
+ChaCha20/Poly1305, the record sequence number would wrap before the
 safety limit is reached.
 
 #  Alert Protocol
@@ -4126,7 +4135,7 @@ TLS protocol issues:
   (see {{backward-compatibility}})
 
 -  Do you handle TLS extensions in ClientHello correctly, including
-  unknown extensions or omitting the extensions field completely?
+  unknown extensions.
 
 -  When the server has requested a client certificate, but no
   suitable certificate is available, do you correctly send an empty
@@ -4149,8 +4158,7 @@ TLS protocol issues:
 
 Cryptographic details:
 
--  What countermeasures do you use to prevent timing attacks against
-  RSA signing operations {{TIMING}}?
+-  What countermeasures do you use to prevent timing attacks {{TIMING}}?
 
 - When verifying RSA signatures, do you accept both NULL and missing parameters?
   Do you verify that the RSA padding
