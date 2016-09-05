@@ -2456,8 +2456,8 @@ certificate_extensions
   extensions.
 {:br }
 
-Note: It is a fatal "unexpected_message" alert for an anonymous server to
-request client authentication.
+Servers which are authenticating with a PSK MUST not send the CertificateRequest
+message.
 
 ## Authentication Messages
 
@@ -2764,8 +2764,7 @@ from the signature. It is unsafe to use certificate-based client
 authentication when the client might potentially share the same
 PSK/key-id pair with two different endpoints. In order to ensure
 this, implementations MUST NOT mix certificate-based client
-authentication with pure PSK modes (i.e., those where the
-PSK was not derived from a previous non-PSK handshake).
+authentication with PSK.
 
 
 ###  Finished
