@@ -837,10 +837,9 @@ If the client has not provided a sufficient "key_share" extension (e.g., it
 includes only DHE or ECDHE groups unacceptable or unsupported by the
 server), the server corrects the mismatch with a HelloRetryRequest and
 the client needs to restart the handshake with an appropriate
-"key_share" extension, as shown in Figure 2.
+"key_share" extension, as shown in Figure 2. 
 If no common cryptographic parameters can be negotiated,
-the server sends a "handshake_failure" or "insufficient_security"
-fatal alert (see {{alert-protocol}}).
+the server MUST abort the handshake with an appropriate alert.
 
 ~~~
          Client                                               Server
@@ -1346,8 +1345,11 @@ authentication are always used.
 subsequently send Certificate ({{certificate}}) and
 CertificateVerify ({{certificate-verify}}) messages.
 
-If the server is unable to negotiate a supported set of parameters (i.e., there is no overlap between the client and server parameters), it
-MUST return a "handshake_failure" alert and close the connection.
+If the server is unable to negotiate a supported set of parameters
+(i.e., there is no overlap between the client and server parameters),
+it MUST abort the handshake and and SHOULD send either
+a "handshake_failure" or "insufficient_security" fatal alert
+(see {{alert-protocol}}).
 
 
 ###  Client Hello
@@ -1370,14 +1372,14 @@ ClientHello (without modification) except:
 - Including a "cookie" extension if one was provided in the
   HelloRetryRequest.
   
-If a server receives a ClientHello at any other time, it MUST send
-a fatal "unexpected_message" alert and close the connection.
+If a server receives a ClientHello at any other time, it MUST terminate
+the connection.
 
 If a server established a TLS connection with a previous version of TLS
 and receives a TLS 1.3 ClientHello in a renegotiation, it MUST retain the
 previous protocol version. In particular, it MUST NOT negotiate TLS 1.3.
 A client that receives a TLS 1.3 ServerHello during renegotiation
-MUST send a fatal "protocol_version" alert and close the connection.
+MUST abort the handshake with a "protocol_version" alert.
 
 Structure of this message:
 
@@ -1447,7 +1449,7 @@ legacy_compression_methods
   zero, which corresponds to the "null" compression method in
   prior versions of TLS. If a TLS 1.3 ClientHello is
   received with any other value in this field, the server MUST
-  generate a fatal "illegal_parameter" alert. Note that TLS 1.3
+  abort the handshake with an "illegal_parameter" alert. Note that TLS 1.3
   servers might receive TLS 1.2 or prior ClientHellos which contain
   other compression methods and MUST follow the procedures for
   the appropriate prior version of TLS.
@@ -1462,11 +1464,13 @@ In the event that a client requests additional functionality using
 extensions, and this functionality is not supplied by the server, the
 client MAY abort the handshake. Note that TLS 1.3 ClientHello messages
 MUST always contain extensions, and a TLS 1.3 server MUST respond to
-any TLS 1.3 ClientHello without extensions with a fatal "decode_error"
+any TLS 1.3 ClientHello without extensions or with data following
+the extensions block with a "decode_error"
 alert. TLS 1.3 servers may receive TLS 1.2 ClientHello messages
 without extensions. If negotiating TLS 1.2, a server MUST check that
-the amount of data in the message precisely matches one of these
-formats; if not, then it MUST send a fatal "decode_error" alert.
+the message either contains no data after legacy_compression_methods
+or that it contains a valid extensions block with no data following.
+If not, then it MUST abort the handshake with a "decode_error" alert.
 
 After sending the ClientHello message, the client waits for a ServerHello
 or HelloRetryRequest message.
@@ -1544,7 +1548,7 @@ TLS 1.3 clients receiving a TLS 1.2 or below ServerHello MUST check
 that the last eight octets are not equal to either of these values. TLS
 1.2 clients SHOULD also perform this check if the ServerHello
 indicates TLS 1.1 or below. If a match is found, the client MUST abort
-the handshake with a fatal "illegal_parameter" alert. This mechanism
+the handshake with a "illegal_parameter" alert. This mechanism
 provides limited protection against downgrade attacks over and above
 that provided by the Finished exchange: because the ServerKeyExchange
 includes a signature over both random values, it is not possible for
@@ -1564,9 +1568,9 @@ When this message will be sent:
 message if they were able to find an acceptable set of algorithms and
 groups that are mutually supported, but
 the client's ClientHello did not contain sufficient information to
-proceed with the handshake.
-If a server cannot successfully select algorithms, it will respond with a
-fatal "handshake_failure" alert instead.
+proceed with the handshake. 
+If a server cannot successfully select algorithms, MUST abort
+the handshake with a "handshake_failure" alert.
 
 Structure of this message:
 
@@ -1589,8 +1593,9 @@ offered by the client in its ClientHello, with the exception of optionally the
 "cookie" (see {{cookie}}) extension.
 
 Upon receipt of a HelloRetryRequest, the client MUST verify that the extensions
-block is not empty and otherwise abort the handshake with a fatal
-"decode_error" alert.  Clients SHOULD also abort with "unexpected_message" in
+block is not empty and MUST abort the handshake with a
+"decode_error" alert.  Clients SHOULD also abort the handshake with an
+"unexpected_message" alert in
 response to any second HelloRetryRequest which was sent in the same connection
 (i.e., where the ClientHello was itself in response to a HelloRetryRequest).
 
@@ -1727,7 +1732,7 @@ desire the server to authenticate via a certificate MUST send this extension.
 If a server
 is authenticating via a certificate and the client has not sent a
 "signature_algorithms" extension then the server MUST
-close the connection with a fatal "missing_extension" alert
+abort the handshake with a "missing_extension" alert
 (see {{mti-extensions}}).
 
 Servers which are authenticating via a certificate MUST indicate so
@@ -1988,7 +1993,7 @@ generated independently.  Clients MUST NOT offer multiple
 KeyShareEntry values for the same group.  Clients MUST NOT offer any
 KeyShareEntry values for groups not listed in the client's
 "supported_groups" extension.  Servers MAY check for violations of
-these rules and and MAY abort the connection with a fatal
+these rules and and MAY abort the handshake with a
 "illegal_parameter" alert if one is violated.
 
 Upon receipt of this extension in a HelloRetryRequest, the client MUST first
@@ -1996,7 +2001,7 @@ verify that the selected_group field corresponds to a group which was provided
 in the "supported_groups" extension in the original ClientHello. It MUST then
 verify that the selected_group field does not correspond to a group which was
 provided in the "key_share" extension in the original ClientHello. If either of
-these checks fails, then the client MUST abort the handshake with a fatal
+these checks fails, then the client MUST abort the handshake with a
 "illegal_parameter" alert.  Otherwise, when sending the new ClientHello, the
 client MUST append a new KeyShareEntry for the group indicated in the
 selected_group field to the groups in its original KeyShare. The remaining
@@ -2012,7 +2017,7 @@ Servers MUST NOT send a KeyShareEntry for any group not
 indicated in the "supported_groups" extension.
 If a HelloRetryRequest was received, the client MUST verify that the
 selected NamedGroup matches that supplied in the selected_group field and MUST
-abort the connection with a fatal "illegal_parameter" alert if it does not.
+abort the connection with a "illegal_parameter" alert if it does not.
 
 [[TODO: Recommendation about what the client offers.
 Presumably which integer DH groups and which curves.]]
@@ -2139,13 +2144,13 @@ Clients MUST verify that the server's selected_identity is within the
 range supplied by the client and that the "key_share" and
 "signature_algorithms" extensions are consistent with the
 indicated ke_modes and auth_modes values. If these values
-are not consistent, the client MUST generate an "illegal_parameter"
-alert and close the connection.
+are not consistent, the client MUST abort the handshake with
+a "illegal_parameter" alert.
 
 If the server supplies an "early_data" extension, the client MUST
 verify that the server selected the first offered identity. If any
-other value is returned, the client MUST generate a fatal
-"unknown_psk_identity" alert and close the connection.
+other value is returned, the client MUST abort the handshake
+with an "unknown_psk_identity" alert.
 
 Note that although 0-RTT data is encrypted with the first PSK
 identity, the server MAY fall back to 1-RTT and select a different PSK
@@ -2241,9 +2246,9 @@ the handshake from that point.
 If the server chooses to accept the "early_data" extension,
 then it MUST comply with the same error handling requirements
 specified for all records when processing early data records.
-Specifically, decryption failure of any 0-RTT record following
-an accepted "early_data" extension MUST produce a fatal
-"bad_record_mac" alert as per {{record-payload-protection}}.
+Specifically, if the server fails to decrypt any 0-RTT record following
+an accepted "early_data" extension it MUST terminate the connection
+with a "bad_record_mac" alert as per {{record-payload-protection}}.
 
 If the server rejects the "early_data" extension, the client
 application MAY opt to retransmit the data once the handshake has
@@ -2351,7 +2356,7 @@ listed in {{server-hello}} or designated in the IANA registry MUST only
 appear in EncryptedExtensions. Extensions which are designated to
 appear in ServerHello MUST NOT appear in EncryptedExtensions. Clients
 MUST check EncryptedExtensions for the presence of any forbidden
-extensions and if any are found MUST terminate the handshake with an
+extensions and if any are found MUST abort the handshake with an
 "illegal_parameter" alert.
 
 Structure of this message:
@@ -2431,7 +2436,7 @@ certificate_extensions
   required certificate extension OIDs, and supplied a certificate
   that does not satisfy the request, the server MAY at its discretion
   either continue the session without client authentication, or
-  terminate the session with a fatal unsupported_certificate alert.
+  abort the handshake with an "unsupported_certificate" alert.
 
   PKIX RFCs define a variety of certificate extension OIDs and their
   corresponding value types. Depending on the type, matching
@@ -2605,8 +2610,8 @@ that are not known to be supported by the client. This fallback chain MAY
 use the deprecated SHA-1 hash algorithm only if the "signature_algorithms"
 extension provided by the client permits it.
 If the client cannot construct an acceptable chain using the provided
-certificates and decides to abort the handshake, then it MUST send an
-"unsupported_certificate" alert message and close the connection.
+certificates and decides to abort the handshake, then it MUST abort the
+handshake with an "unsupported_certificate" alert.
 
 If the server has multiple certificates, it chooses one of them based on the
 above-mentioned criteria (in addition to other criteria, such as transport
@@ -2644,19 +2649,21 @@ algorithm combinations that cannot be currently used with TLS.
 In general, detailed certificate validation procedures are out of scope for
 TLS (see {{RFC5280}}). This section provides TLS-specific requirements.
 
-If the server supplies an empty Certificate message, the client MUST terminate
-the handshake with a fatal "decode_error" alert.
+If the server supplies an empty Certificate message, the client MUST abort
+the handshake with a "decode_error" alert.
 
 If the client does not send any certificates,
 the server MAY at its discretion either continue the handshake without client
-authentication, or respond with a fatal "handshake_failure" alert. Also, if some
+authentication, or abort the handshake with a "handshake_failure" alert. Also, if some
 aspect of the certificate chain was unacceptable (e.g., it was not signed by a
 known, trusted CA), the server MAY at its discretion either continue the
-handshake (considering the client unauthenticated) or send a fatal alert.
+handshake (considering the client unauthenticated) or abort the handshake.
 
 Any endpoint receiving any certificate signed using any signature algorithm
-using an MD5 hash MUST send a "bad_certificate" alert message and close
-the connection. SHA-1 is deprecated and therefore NOT RECOMMENDED.
+using an MD5 hash MUST abort the handshake with a "bad_certificate" alert.
+SHA-1 is deprecated and it is RECOMMENDED that
+any endpoint receiving any certificate signed using any signature algorithm
+using a SHA-1 hash abort the handshake with a "bad_certificate" alert.
 All endpoints are RECOMMENDED to transition to SHA-256 or better as soon
 as possible to maintain interoperability with implementations
 currently in the process of phasing out SHA-1 support.
@@ -2664,10 +2671,6 @@ currently in the process of phasing out SHA-1 support.
 Note that a certificate containing a key for one signature algorithm
 MAY be signed using a different signature algorithm (for instance,
 an RSA key signed with an ECDSA key).
-
-Endpoints that reject certification paths due to use of a deprecated
-hash MUST send a fatal "bad_certificate" alert message before closing
-the connection.
 
 
 ###  Certificate Verify
@@ -2974,8 +2977,8 @@ updating its sending cryptographic keys. This message can be sent by
 the server after sending its first flight and the client after sending
 its second flight. Implementations that receive a KeyUpdate message
 prior to receiving a Finished message as part of the 1-RTT handshake
-MUST generate a fatal "unexpected_message" alert.  After sending a
-KeyUpdate message, the sender SHALL send all its traffic using the
+MUST terminate the connection with an "unexpected_message" alert.
+After sending a KeyUpdate message, the sender SHALL send all its traffic using the
 next generation of keys, computed as described in
 {{updating-traffic-keys}}. Upon receiving a KeyUpdate, the receiver
 MUST update their receiving keys and if they have not already updated
@@ -3009,7 +3012,7 @@ Handshake messages MUST NOT span key changes. Because
 the ServerHello, Finished, and KeyUpdate messages signal a key change,
 upon receiving these messages a receiver MUST verify that the end
 of these messages aligns with a record boundary; if not, then it MUST
-send a fatal "unexpected_message" alert.
+terminate the connection with a "unexpected_message" alert.
 
 #  Record Protocol
 
@@ -3023,8 +3026,8 @@ be multiplexed over the same record layer. This document specifies
 three content types: handshake, application data, and alert.
 Implementations MUST NOT send record types not defined in this
 document unless negotiated by some extension. If a TLS implementation
-receives an unexpected record type, it MUST send an
-"unexpected_message" alert.  New record content type values are
+receives an unexpected record type, it MUST terminate the connection
+with a "unexpected_message" alert.  New record content type values are
 assigned by IANA in the TLS Content Type Registry as described in
 {{iana-considerations}}.
 
@@ -3152,7 +3155,7 @@ length
   is the sum of the lengths of the content and the padding, plus one
   for the inner content type. The length MUST NOT exceed 2^14 + 256.
   An endpoint that receives a record that exceeds this length MUST
-  generate a fatal "record_overflow" alert.
+  terminate the connection with a "record_overflow" alert.
 
 encrypted_record
 : The AEAD encrypted form of the serialized TLSInnerPlaintext structure.
@@ -3189,12 +3192,13 @@ separate integrity check. That is:
        plaintext of fragment =
            AEAD-Decrypt(write_key, nonce, AEADEncrypted)
 
-If the decryption fails, a fatal "bad_record_mac" alert MUST be generated.
+If the decryption fails, the receiver MUST terminate the connection
+with a "bad_record_mac" alert.
 
 An AEAD cipher MUST NOT produce an expansion of greater than 255
 bytes.  An endpoint that receives a record from its peer with
-TLSCipherText.length larger than 2^14 + 256 octets MUST generate a
-fatal "record_overflow" alert.  This limit is derived from the maximum
+TLSCipherText.length larger than 2^14 + 256 octets MUST terminate
+the connection with a "record_overflow" alert.  This limit is derived from the maximum
 TLSPlaintext length of 2^14 octets + 1 octet for ContentType + the
 maximum AEAD expansion of 255 octets.
 
@@ -3262,9 +3266,8 @@ padding errors.
 
 Implementations MUST limit their scanning to the cleartext returned
 from the AEAD decryption.  If a receiving implementation does not find
-a non-zero octet in the cleartext, it should treat the record as
-having an unexpected ContentType, sending an "unexpected_message"
-alert.
+a non-zero octet in the cleartext, it MUST terminate the
+connection with a "unexpected_message" alert.
 
 The presence of padding does not change the overall record size
 limitations -- the full fragment plaintext may not exceed 2^14 octets.
@@ -3422,16 +3425,25 @@ before destroying the transport.
 Error handling in the TLS Handshake Protocol is very simple. When an
 error is detected, the detecting party sends a message to its
 peer. Upon transmission or receipt of a fatal alert message, both
-parties immediately close the connection.  Whenever an implementation
-encounters a condition which is defined as a fatal alert, it MUST send
-the appropriate alert prior to closing the connection. All alerts defined
-in this section below, as well as all unknown alerts are universally
-considered fatal as of TLS 1.3 (see {{alert-protocol}}).
+parties immediately close the connection.
+
+Whenever an implementation encounters a fatal error condition, it
+SHOULD send an appropriate fatal alert and MUST close the connection
+without sending or receiving any additional data. In the rest of this
+specification, the phrase "{terminate the connection, abort the
+handshake}" is used without a specific alert means that the
+implementation SHOULD send the alert indicated by the descriptions
+below. The phrase "{terminate the connection, abort the handshake}
+with a X alert" MUST send alert X if it sends any alert. All
+alerts defined in this section below, as well as all unknown alerts
+are universally considered fatal as of TLS 1.3 (see
+{{alert-protocol}}).
 
 The following error alerts are defined:
 
 unexpected_message
-: An inappropriate message was received. This alert should never be
+: An inappropriate message (e.g., the wrong handshake message, premature
+  application data, etc.) was received. This alert should never be
   observed in communication between proper implementations.
 
 bad_record_mac
@@ -3473,9 +3485,12 @@ certificate_unknown
   certificate, rendering it unacceptable.
 
 illegal_parameter
-: A field in the handshake was out of range or inconsistent with
-  other fields.
-
+: A field in the handshake was incorrect or inconsistent with
+  other fields. This alert is used for errors which conform to
+  the formal protocol syntax but are otherwise incorrect, such
+  as a DHE share that is equal to p - 1 or is of different
+  length than required for the group.
+  
 unknown_ca
 : A valid certificate chain or partial chain was received, but the
   certificate was not accepted because the CA certificate could not
@@ -3488,6 +3503,9 @@ access_denied
 decode_error
 : A message could not be decoded because some field was out of the
   specified range or the length of the message was incorrect.
+  This alert is used for errors where the message does not conform
+  to the formal protocol syntax (e.g., a vector is specified as
+  having the range <2..255> but is encoded as having 0 length.)
   This alert should never be observed in communication between
   proper implementations, except when messages were corrupted
   in the network.
@@ -3824,7 +3842,7 @@ applicable cipher suites:
   * "cookie" is REQUIRED for all cipher suites.
 
 When negotiating use of applicable cipher suites, endpoints MUST abort the
-connection with a "missing_extension" alert if the required extension was
+handshake with a "missing_extension" alert if the required extension was
 not provided. Any endpoint that receives any invalid combination of cipher
 suites and extensions MAY abort the connection with a "missing_extension"
 alert, regardless of negotiated parameters.
@@ -3833,11 +3851,7 @@ Additionally, all implementations MUST support use of the "server_name"
 extension with applications capable of using it.
 Servers MAY require clients to send a valid "server_name" extension.
 Servers requiring this extension SHOULD respond to a ClientHello
-lacking a "server_name" extension with a fatal "missing_extension" alert.
-
-Servers MUST NOT send the "signature_algorithms" extension; if a client
-receives this extension it MUST respond with a fatal "unsupported_extension" alert
-and close the connection.
+lacking a "server_name" extension by terminating the connection with a "missing_extension" alert.
 
 #  Security Considerations
 
@@ -4234,8 +4248,7 @@ Note that 0-RTT data is not compatible with older servers.
 See {{zero-rtt-backwards-compatibility}}.
 
 If the version chosen by the server is not supported by the client (or not
-acceptable), the client MUST send a "protocol_version" alert message and close
-the connection.
+acceptable), the client MUST abort the handshake with a "protocol_version" alert.
 
 If a TLS server receives a ClientHello containing a version number greater than
 the highest version supported by the server, it MUST reply according to the
@@ -4258,8 +4271,8 @@ clients, it will proceed as appropriate for the highest version supported by
 the server that is not greater than ClientHello.max_supported_version. For example, if
 the server supports TLS 1.0, 1.1, and 1.2, and max_supported_version is TLS 1.0, the
 server will proceed with a TLS 1.0 ServerHello. If the server only supports
-versions greater than max_supported_version, it MUST send a "protocol_version"
-alert message and close the connection.
+versions greater than max_supported_version, it MUST abort the handshake
+with a "protocol_version" alert.
 
 Note that earlier versions of TLS did not clearly specify the record layer
 version number value in all cases (TLSPlaintext.legacy_record_version). Servers
@@ -4313,8 +4326,8 @@ in {{RFC7568}}, and MUST NOT be negotiated for any reason.
 
 Implementations MUST NOT send a ClientHello.max_supported_version or ServerHello.version
 set to { 3, 0 } or less. Any endpoint receiving a Hello message with
-ClientHello.max_supported_version or ServerHello.version set to { 3, 0 } MUST respond
-with a "protocol_version" alert message and close the connection.
+ClientHello.max_supported_version or ServerHello.version set to { 3, 0 } MUST
+abort the handshake with a "protocol_version" alert.
 
 Implementations MUST NOT use the Truncated HMAC extension, defined in
 Section 7 of [RFC6066], as it is not applicable to AEAD ciphers and has
