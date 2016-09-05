@@ -3921,7 +3921,7 @@ is listed below:
 | supported_groups [RFC7919]               | Yes | Encrypted | No                |
 | ec_point_formats [RFC4492]               |         Yes |        No | No                |
 | srp [RFC5054]                            |          No |        No | No                |
-| signature_algorithms [RFC5246]           |         Yes |    Client | No                |
+| signature_algorithms [RFC5246]           |         Yes |     Clear | No                |
 | use_srtp [RFC5764]                       |         Yes | Encrypted | No                |
 | heartbeat [RFC6520]                      |         Yes | Encrypted | No                |
 | application_layer_protocol_negotiation [RFC7301] | Yes | Encrypted | No                |
