@@ -3051,7 +3051,7 @@ Alert messages ({{alert-protocol}}) MUST NOT be fragmented across records.
            change_cipher_spec_RESERVED(20),
            alert(21),
            handshake(22),
-           application_data(23)
+           application_data(23),
            (255)
        } ContentType;
 
