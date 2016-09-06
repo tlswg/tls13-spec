@@ -1186,13 +1186,13 @@ presentation language.
            T2 f2;
            ....
            Tn fn;
-            select (E) {
-                case e1: Te1;
-                case e2: Te2;
-                case e3: case e4: Te3;
-                ....
-                case en: Ten;
-            } [[fv]];
+           select (E) {
+               case e1: Te1;
+               case e2: Te2;
+               case e3: case e4: Te3;
+               ....
+               case en: Ten;
+           } [[fv]];
        } [[Tv]];
 
 For example:
