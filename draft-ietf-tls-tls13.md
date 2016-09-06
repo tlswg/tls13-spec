@@ -3575,12 +3575,11 @@ defined below:
 
     Where HkdfLabel is specified as:
 
-    struct HkdfLabel
-    {
-      uint16 length = Length;
-      opaque label<9..255> = "TLS 1.3, " + Label;
-      opaque hash_value<0..255> = HashValue;
-    };
+    struct {
+        uint16 length = Length;
+        opaque label<9..255> = "TLS 1.3, " + Label;
+        opaque hash_value<0..255> = HashValue;
+    } HkdfLabel;
 
     Derive-Secret(Secret, Label, Messages) =
          HKDF-Expand-Label(Secret, Label,
