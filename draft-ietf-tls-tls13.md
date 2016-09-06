@@ -1186,13 +1186,13 @@ presentation language.
            T2 f2;
            ....
            Tn fn;
-            select (E) {
-                case e1: Te1;
-                case e2: Te2;
-                case e3: case e4: Te3;
-                ....
-                case en: Ten;
-            } [[fv]];
+           select (E) {
+               case e1: Te1;
+               case e2: Te2;
+               case e3: case e4: Te3;
+               ....
+               case en: Ten;
+           } [[fv]];
        } [[Tv]];
 
 For example:
@@ -3575,12 +3575,11 @@ defined below:
 
     Where HkdfLabel is specified as:
 
-    struct HkdfLabel
-    {
-      uint16 length = Length;
-      opaque label<9..255> = "TLS 1.3, " + Label;
-      opaque hash_value<0..255> = HashValue;
-    };
+    struct {
+        uint16 length = Length;
+        opaque label<9..255> = "TLS 1.3, " + Label;
+        opaque hash_value<0..255> = HashValue;
+    } HkdfLabel;
 
     Derive-Secret(Secret, Label, Messages) =
          HKDF-Expand-Label(Secret, Label,
