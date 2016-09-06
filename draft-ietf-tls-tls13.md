@@ -3913,9 +3913,9 @@ is listed below:
 | trusted_ca_keys [RFC6066]                |         Yes | Encrypted | No                |
 | truncated_hmac [RFC6066]                 |         Yes |        No | No                |
 | status_request [RFC6066]                 |         Yes | Encrypted | No                |
-| user_mapping [RFC4681]                   |         Yes | Encrypted | No                |
-| client_authz [RFC5878]                   |          No | Encrypted | No                |
-| server_authz [RFC5878]                   |          No | Encrypted | No                |
+| user_mapping [RFC4681]                   |         Yes |        No | No                |
+| client_authz [RFC5878]                   |          No |        No | No                |
+| server_authz [RFC5878]                   |          No |        No | No                |
 | cert_type [RFC6091]                      |         Yes | Encrypted | No                |
 | supported_groups [RFC7919]               | Yes | Encrypted | No                |
 | ec_point_formats [RFC4492]               |         Yes |        No | No                |
