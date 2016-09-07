@@ -2799,7 +2799,7 @@ Structure of this message:
 %%% Authentication Messages
 
        struct {
-           opaque verify_data[Hash.length];
+           opaque verify_data[Hash.Length];
        } Finished;
 
 
