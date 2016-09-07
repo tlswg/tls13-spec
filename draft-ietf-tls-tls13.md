@@ -2169,7 +2169,7 @@ The "extension_data" field of this extension contains an
                    uint32 obfuscated_ticket_age;
 
                case server_hello:
-                  struct {};
+                   struct {};
            };
        } EarlyDataIndication;
 
