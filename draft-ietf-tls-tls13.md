@@ -1962,7 +1962,7 @@ The "extension_data" field of this extension contains a
 
                case server_hello:
                    KeyShareEntry server_share;
-           }
+           };
        } KeyShare;
 
 client_shares
@@ -2084,7 +2084,7 @@ The "extension_data" field of this extension contains a
 
                case server_hello:
                    uint16 selected_identity;
-           }
+           };
        } PreSharedKeyExtension;
 
 identities
@@ -2170,7 +2170,7 @@ The "extension_data" field of this extension contains an
 
                case server_hello:
                   struct {};
-           }
+           };
        } EarlyDataIndication;
 
 obfuscated_ticket_age
