@@ -3059,7 +3059,7 @@ Alert messages ({{alert-protocol}}) MUST NOT be fragmented across records.
            ContentType type;
            ProtocolVersion legacy_record_version = { 3, 1 };    /* TLS v1.x */
            uint16 length;
-           opaque fragment[TLSPlaintext.length];
+           opaque fragment[length];
        } TLSPlaintext;
 
 type
