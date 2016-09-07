@@ -2880,20 +2880,20 @@ to that negotiated connection where the ticket was established.
 
 %%% Ticket Establishment
 
-     enum { ticket_early_data_info(1), (65535) } TicketExtensionType;
+       enum { ticket_early_data_info(1), (65535) } TicketExtensionType;
 
-     struct {
-         TicketExtensionType extension_type;
-         opaque extension_data<1..2^16-1>;
-     } TicketExtension;
+       struct {
+           TicketExtensionType extension_type;
+           opaque extension_data<1..2^16-1>;
+       } TicketExtension;
 
-     struct {
-         uint32 ticket_lifetime;
-         PskKeyExchangeMode ke_modes<1..255>;
-         PskAuthenticationMode auth_modes<1..255>;
-         opaque ticket<1..2^16-1>;
-         TicketExtension extensions<0..2^16-2>;
-     } NewSessionTicket;
+       struct {
+           uint32 ticket_lifetime;
+           PskKeyExchangeMode ke_modes<1..255>;
+           PskAuthenticationMode auth_modes<1..255>;
+           opaque ticket<1..2^16-1>;
+           TicketExtension extensions<0..2^16-2>;
+       } NewSessionTicket;
 
 ke_modes
 : The key exchange modes with which this ticket can be used in descending
