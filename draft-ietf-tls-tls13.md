@@ -3116,7 +3116,7 @@ by an encrypted body, which itself contains a type and optional padding.
        } TLSInnerPlaintext;
 
        struct {
-           ContentType opaque_type = application_data(23); /* see fragment.type */
+           ContentType opaque_type = application_data(23); /* see TLSInnerPlaintext.type */
            ProtocolVersion legacy_record_version = { 3, 1 };    /* TLS v1.x */
            uint16 length;
            opaque encrypted_record[length];
@@ -3139,7 +3139,7 @@ opaque_type
 : The outer opaque_type field of a TLSCiphertext record is always set to the
   value 23 (application_data) for outward compatibility with
   middleboxes accustomed to parsing previous versions of TLS.  The
-  actual content type of the record is found in fragment.type after
+  actual content type of the record is found in TLSInnerPlaintext.type after
   decryption.
 
 legacy_record_version
@@ -3243,11 +3243,11 @@ zero.  Padding is a string of zero-valued bytes appended
 to the ContentType field before encryption.  Implementations MUST set
 the padding octets to all zeros before encrypting.
 
-Application Data records may contain a zero-length fragment.content if
+Application Data records may contain a zero-length TLSInnerPlaintext.content if
 the sender desires.  This permits generation of plausibly-sized cover
 traffic in contexts where the presence or absence of activity may be
 sensitive.  Implementations MUST NOT send Handshake or Alert records
-that have a zero-length fragment.content.
+that have a zero-length TLSInnerPlaintext.content.
 
 The padding sent is automatically verified by the record protection
 mechanism: Upon successful decryption of a TLSCiphertext.fragment,
