@@ -2224,8 +2224,6 @@ connection during which the ticket was established.
 
 - The TLS version number, AEAD algorithm, and the hash for HKDF.
 - The selected ALPN {{!RFC7443}} value, if any.
-- The server_name {{RFC6066}} value provided by the client,
-  if any.
 
 Future extensions MUST define their interaction with 0-RTT.
 
