@@ -1719,7 +1719,8 @@ Servers which are compliant with this specification MUST use
 only the "supported_versions" extension to determine client preferences
 and MUST only select a version of TLS present in that extension.
 They MUST ignore any unknown versions. If the extension is not present,
-they MUST negotiate TLS 1.2 or prior as specified in {{RFC5246}}.
+they MUST negotiate TLS 1.2 or prior as specified in {{RFC5246}},
+even if ClientHello.version is {3, 4} or later.
 
 The server MUST NOT send the "supported_versions" extension. The
 server's selected version is contained in the ServerHello.version field as
@@ -4261,8 +4262,9 @@ whenever TLS 1.3 is used.
 ## Negotiating with an older server
 
 A TLS 1.3 client who wishes to negotiate with such older servers will send a
-normal TLS 1.3 ClientHello containing { 3, 4 } (TLS 1.3) in
-ClientHello.max_supported_version. If the server does not support this version it
+normal TLS 1.3 ClientHello containing { 3, 3 } (TLS 1.2) in
+ClientHello.max_supported_version but with the correct version in the
+"supported_versions" extension. If the server does not support TLS 1.3 it
 will respond with a ServerHello containing an older version number. If the
 client agrees to use this version, the negotiation will proceed as appropriate
 for the negotiated protocol. A client resuming a session SHOULD initiate the
