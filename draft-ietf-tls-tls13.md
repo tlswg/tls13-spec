@@ -2966,12 +2966,15 @@ the responses).
 
 ### Key and IV Update {#key-update}
 
+%%% Updating Keys
+
      enum { update_not_requested(0), update_requested(1), (255)
      } KeyUpdateRequest;
 
      struct {
          KeyUpdateRequest request_update;
      } KeyUpdate;
+
 
 request_update
 : Indicates that the recipient of the KeyUpdate should respond with its
@@ -4016,6 +4019,7 @@ and renegotiation_info {{RFC5746}}.
 %%### Server Parameters Messages
 %%### Authentication Messages
 %%### Ticket Establishment
+%%### Updating Keys
 
 ## Cipher Suites
 
