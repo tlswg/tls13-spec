@@ -2504,10 +2504,12 @@ for each scenario:
 
 | Mode | Handshake Context | Base Key |
 |------|-------------------|----------|
-| 0-RTT | ClientHello | early_traffic_secret|
-| 1-RTT (Server) | ClientHello ... later of EncryptedExtensions/CertificateRequest | handshake_traffic_secret |
-| 1-RTT (Client) | ClientHello ... ServerFinished     | handshake_traffic_secret |
-| Post-Handshake | ClientHello ... ClientFinished + CertificateRequest | traffic_secret_N |
+| 0-RTT | ClientHello | client_early_traffic_secret|
+| 1-RTT (Server) | ClientHello ... later of EncryptedExtensions/CertificateRequest | [sender]_handshake_traffic_secret |
+| 1-RTT (Client) | ClientHello ... ServerFinished     | [sender]_handshake_traffic_secret |
+| Post-Handshake | ClientHello ... ClientFinished + CertificateRequest | [sender]_traffic_secret_N |
+
+The [sender] in this table denotes the sending side.
 
 Note: The Handshake Context for the last three rows does not include any 0-RTT
   handshake messages, regardless of whether 0-RTT is used.
@@ -2787,11 +2789,8 @@ Base key defined in {{authentication-messages}} using HKDF (see
 {{key-schedule}}). Specifically:
 
 ~~~
-client_finished_key =
-    HKDF-Expand-Label(BaseKey, "client finished", "", Hash.Length)
-
-server_finished_key =
-    HKDF-Expand-Label(BaseKey, "server finished", "", Hash.Length)
+finished_key =
+    HKDF-Expand-Label(BaseKey, "finished", "", Hash.Length)
 ~~~
 
 Structure of this message:
@@ -2966,8 +2965,17 @@ the responses).
 
 
 ### Key and IV Update {#key-update}
+     enum { update_not_requested(0), update_requested(1), (255)
+     } KeyUpdateRequest;
 
-     struct {} KeyUpdate;
+     struct {
+         KeyUpdateRequest request_update;
+     } KeyUpdate;
+
+request_update
+: Indicates that the recipient of the KeyUpdate should respond with its
+own KeyUpdate.
+{:br }
 
 The KeyUpdate handshake message is used to indicate that the sender is
 updating its sending cryptographic keys. This message can be sent by
@@ -2978,24 +2986,24 @@ MUST generate a fatal "unexpected_message" alert.  After sending a
 KeyUpdate message, the sender SHALL send all its traffic using the
 next generation of keys, computed as described in
 {{updating-traffic-keys}}. Upon receiving a KeyUpdate, the receiver
-MUST update their receiving keys and if they have not already updated
-their sending state up to or past the then current receiving
-generation MUST send their own KeyUpdate prior to sending any other
-messages.  This mechanism allows either side to force an update to the
-entire connection. Note that implementations may receive an arbitrary
+MUST update its receiving keys.
+
+If the requestUpdate field is set to "update_requested" then the receiver MUST
+send a KeyUpdate of its own with requestUpdate set to "update_not_requested" prior
+to sending its next application data record. This mechanism allows either side to force an update to the
+entire connection, but causes an implementation which
+receives multiple KeyUpdates while it is silent to respond with
+a single update. Note that implementations may receive an arbitrary
 number of messages between sending a KeyUpdate and receiving the
 peer's KeyUpdate because those messages may already be in flight.
+However, because send and receive keys are derived from independent
+traffic secrets, retaining the receive traffic secret does not threaten
+the forward secrecy of data sent before the sender changed keys.
 
-Note that if implementations independently send their own
-KeyUpdates and they cross in flight, this only results in an
-update of one generation; when each side receives the other
-side's update it just updates its receive keys and notes that
-the generations match and thus no send update is needed.
-
-Note that the side which sends its KeyUpdate first needs to retain
-its receive traffic keys (though not the traffic secret) for the previous
-generation of keys until it receives the KeyUpdate from the other
-side.
+If implementations independently send their own KeyUpdates with
+requestUpdate set to "update_requested", and they cross in flight, then each side
+will also send a response, with the result that each side increments
+by two generations.
 
 Both sender and receiver MUST encrypt their KeyUpdate
 messages with the old keys. Additionally, both sides MUST enforce that
@@ -3606,7 +3614,7 @@ In this diagram, the following formatting conventions apply:
   from the left.
 - Derive-Secret's Secret argument is indicated by the arrow coming in
   from the left. For instance, the Early Secret is the Secret for
-  generating the early_traffic_secret.
+  generating the client_early_traffic_secret.
 
 Note that the 0-RTT Finished message is not included in the Derive-Secret
 operation.
@@ -3618,26 +3626,36 @@ operation.
    PSK ->  HKDF-Extract
                  |
                  v
-           Early Secret ---> Derive-Secret(., "early traffic secret",
+           Early Secret ---> Derive-Secret(., "client early traffic secret",
                  |                         ClientHello)
-                 |                         = early_traffic_secret
+                 |                         = client_early_traffic_secret
                  v
 (EC)DHE -> HKDF-Extract
                  |
                  v
-              Handshake
-               Secret -----> Derive-Secret(., "handshake traffic secret",
+         Handshake Secret
+                 |
+                 +---------> Derive-Secret(., "client handshake traffic secret",
                  |                         ClientHello...ServerHello)
-                 |                         = handshake_traffic_secret
+                 |                         = client_handshake_traffic_secret
+                 |
+                 +---------> Derive-Secret(., "server handshake traffic secret",
+                 |                         ClientHello...ServerHello)
+                 |                         = server_handshake_traffic_secret
+                 |
                  v
       0 -> HKDF-Extract
                  |
                  v
             Master Secret
                  |
-                 +---------> Derive-Secret(., "application traffic secret",
+                 +---------> Derive-Secret(., "client application traffic secret",
                  |                         ClientHello...Server Finished)
-                 |                         = traffic_secret_0
+                 |                         = client_traffic_secret_0
+                 |
+                 +---------> Derive-Secret(., "server application traffic secret",
+                 |                         ClientHello...Server Finished)
+                 |                         = server_traffic_secret_0
                  |
                  +---------> Derive-Secret(., "exporter master secret",
                  |                         ClientHello...Client Finished)
@@ -3669,7 +3687,8 @@ HKDF-Extract(0, 0).
 Once the handshake is complete, it is possible for either side to
 update its sending traffic keys using the KeyUpdate handshake message
 defined in {{key-update}}.  The next generation of traffic keys is computed by
-generating traffic_secret_N+1 from traffic_secret_N as described in
+generating client_/server_traffic_secret_N+1 from
+client_/server_traffic_secret_N as described in
 this section then re-deriving the traffic keys as described in
 {{traffic-key-calculation}}.
 
@@ -3681,10 +3700,9 @@ The next-generation traffic_secret is computed as:
                              "application traffic secret", "", Hash.Length)
 ~~~~
 
-Once traffic_secret_N+1 and its associated traffic keys have been computed,
-implementations SHOULD delete traffic_secret_N. Once the directional
-keys are no longer needed, they SHOULD be deleted as well.
-
+Once client/server_traffic_secret_N+1 and its associated traffic keys have been computed,
+implementations SHOULD delete client_/server_traffic_secret_N and its associated traffic
+keys.
 
 ## Traffic Key Calculation
 
@@ -3708,19 +3726,18 @@ each class of traffic keys:
 
 | Record Type | Secret | Phase |
 |:------------|--------|-------|
-| 0-RTT Handshake   | early_traffic_secret | "early handshake key expansion" |
-| 0-RTT Application | early_traffic_secret | "early application data key expansion" |
-| Handshake         | handshake_traffic_secret | "handshake key expansion" |
-| Application Data  | traffic_secret_N | "application data key expansion" |
+| 0-RTT Handshake   | client_early_traffic_secret | "early handshake key expansion" |
+| 0-RTT Application | client_early_traffic_secret | "early application data key expansion" |
+| Handshake         | [sender]_handshake_traffic_secret | "handshake key expansion" |
+| Application Data  | [sender]_traffic_secret_N | "application data key expansion" |
 
-The following table indicates the purpose values for each type of key:
+The [sender] in this table denotes the sending side. The
+following table indicates the purpose values for each type of key:
 
 | Key Type         | Purpose            |
 |:-----------------|:-------------------|
-| client_write_key | "client write key" |
-| server_write_key | "server write key" |
-| client_write_iv  | "client write iv"  |
-| server_write_iv  | "server write iv"  |
+| key | "key" |
+| iv  | "iv"  |
 
 All the traffic keying material is recomputed whenever the
 underlying Secret changes (e.g., when changing from the handshake to
