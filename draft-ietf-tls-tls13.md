@@ -4321,11 +4321,10 @@ been shown to be insecure in some scenarios.
 
 ## Unauthenticated Operation
 
-Previous versions of TLS offered explicitly unauthenticated cipher suites
-based on anonymous Diffie-Hellman. These cipher suites have been deprecated
-in TLS 1.3. However, it is still possible to negotiate cipher suites
-that do not provide verifiable server authentication by several methods,
-including:
+Previous versions of TLS offered explicitly unauthenticated cipher suites based
+on anonymous Diffie-Hellman. These modes have been deprecated in TLS 1.3.
+However, it is still possible to negotiate parameters that do not provide
+verifiable server authentication by several methods, including:
 
 - Raw public keys {{RFC7250}}.
 - Using a public key contained in a certificate but without
