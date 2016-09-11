@@ -2053,7 +2053,7 @@ For x25519 and x448, the contents are the byte string inputs and outputs of the
 corresponding functions defined in {{RFC7748}}, 32 bytes for x25519 and 56
 bytes for x448.
 
-Note: Versions of TLS prior to 1.3 permitted point negotiation;
+Note: Versions of TLS prior to 1.3 permitted point format negotiation;
 TLS 1.3 removes this feature in favor of a single point format
 for each curve.
 
