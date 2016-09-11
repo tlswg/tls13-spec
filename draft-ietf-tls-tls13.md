@@ -1269,7 +1269,7 @@ processed and transmitted as specified by the current active session state.
        struct {
            HandshakeType msg_type;    /* handshake type */
            uint24 length;             /* bytes in message */
-           select (HandshakeType) {
+           select (Handshake.msg_type) {
                case client_hello:          ClientHello;
                case server_hello:          ServerHello;
                case hello_retry_request:   HelloRetryRequest;
