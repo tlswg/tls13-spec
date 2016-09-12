@@ -3880,18 +3880,9 @@ and their allocation policies are below:
 
   IANA [SHALL add/has added] the cipher suites listed in {{cipher-suites}} to
   the registry. The "Value" and "Description" columns are taken from the table.
-  The "DTLS-OK" column is marked as "Yes".
-
-  IANA [SHALL add/has added] a "Recommended" column
-  to the cipher suite registry. All cipher suites listed in
-  {{cipher-suites}} are marked as "Yes". All other cipher suites are
-  marked as "No". IANA [SHALL add/has added] add a note to this column
-  reading:
-
-  > Cipher suites marked as "Yes" are those allocated via
-    Standards Track RFCs. Cipher suites marked as "No" are not;
-    cipher suites marked "No" range from "good" to "bad" from a
-    cryptographic standpoint.
+  The "DTLS-OK" and "Recommended" columns are both marked as "Yes" for each new
+  cipher suite. [[This assumes draft-sandj-tls-iana-registry-updates-00 has been
+  applied.]]
 
 -  TLS ContentType Registry: Future values are allocated via
   Standards Action {{RFC2434}}.
