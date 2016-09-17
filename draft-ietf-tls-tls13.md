@@ -2651,7 +2651,7 @@ the handshake with a fatal "decode_error" alert.
 
 If the client does not send any certificates,
 the server MAY at its discretion either continue the handshake without client
-authentication, or respond with a fatal "handshake_failure" alert. Also, if some
+authentication, or respond with a fatal "certificate_required" alert. Also, if some
 aspect of the certificate chain was unacceptable (e.g., it was not signed by a
 known, trusted CA), the server MAY at its discretion either continue the
 handshake (considering the client unauthenticated) or send a fatal alert.
@@ -3370,6 +3370,7 @@ message. Unknown alert types MUST be treated as fatal.
            bad_certificate_status_response(113),
            bad_certificate_hash_value(114),
            unknown_psk_identity(115),
+           certificate_required(116),
            (255)
        } AlertDescription;
 
@@ -3551,7 +3552,7 @@ unrecognized_name
 bad_certificate_status_response
 : Sent by clients when an invalid or unacceptable OCSP response is
   provided by the server via the "status_request" extension
-  [RFC6066]. This alert is always fatal.
+  [RFC6066].
 
 bad_certificate_hash_value
 : Sent by servers when a retrieved object does not have the correct hash
@@ -3563,6 +3564,10 @@ unknown_psk_identity
  acceptable PSK identity is provided by the client. Sending this alert
  is OPTIONAL; servers MAY instead choose to send a "decrypt_error"
  alert to merely indicate an invalid PSK identity.
+
+certificate_required
+: Sent by servers when a client certificate is desired but none was provided by
+  the client.
 {:br }
 
 New Alert values are assigned by IANA as described in {{iana-considerations}}.
