@@ -1372,8 +1372,8 @@ ClientHello (without modification) except:
 - Including a "cookie" extension if one was provided in the
   HelloRetryRequest.
   
-If a server receives a ClientHello at any other time, it MUST terminate
-the connection.
+Because TLS 1.3 forbids renegotiation, if a server receives a
+ClientHello at any other time, it MUST terminate the connection.
 
 If a server established a TLS connection with a previous version of TLS
 and receives a TLS 1.3 ClientHello in a renegotiation, it MUST retain the
@@ -1548,7 +1548,7 @@ TLS 1.3 clients receiving a TLS 1.2 or below ServerHello MUST check
 that the last eight octets are not equal to either of these values. TLS
 1.2 clients SHOULD also perform this check if the ServerHello
 indicates TLS 1.1 or below. If a match is found, the client MUST abort
-the handshake with a "illegal_parameter" alert. This mechanism
+the handshake with an "illegal_parameter" alert. This mechanism
 provides limited protection against downgrade attacks over and above
 that provided by the Finished exchange: because the ServerKeyExchange
 includes a signature over both random values, it is not possible for
@@ -1569,7 +1569,7 @@ message if they were able to find an acceptable set of algorithms and
 groups that are mutually supported, but
 the client's ClientHello did not contain sufficient information to
 proceed with the handshake. 
-If a server cannot successfully select algorithms, MUST abort
+If a server cannot successfully select algorithms, it MUST abort
 the handshake with a "handshake_failure" alert.
 
 Structure of this message:
@@ -1593,7 +1593,7 @@ offered by the client in its ClientHello, with the exception of optionally the
 "cookie" (see {{cookie}}) extension.
 
 Upon receipt of a HelloRetryRequest, the client MUST verify that the extensions
-block is not empty and MUST abort the handshake with a
+block is not empty and otherwise MUST abort the handshake with a
 "decode_error" alert.  Clients SHOULD also abort the handshake with an
 "unexpected_message" alert in
 response to any second HelloRetryRequest which was sent in the same connection
@@ -1993,7 +1993,7 @@ generated independently.  Clients MUST NOT offer multiple
 KeyShareEntry values for the same group.  Clients MUST NOT offer any
 KeyShareEntry values for groups not listed in the client's
 "supported_groups" extension.  Servers MAY check for violations of
-these rules and and MAY abort the handshake with a
+these rules and and MAY abort the handshake with an
 "illegal_parameter" alert if one is violated.
 
 Upon receipt of this extension in a HelloRetryRequest, the client MUST first
@@ -2001,7 +2001,7 @@ verify that the selected_group field corresponds to a group which was provided
 in the "supported_groups" extension in the original ClientHello. It MUST then
 verify that the selected_group field does not correspond to a group which was
 provided in the "key_share" extension in the original ClientHello. If either of
-these checks fails, then the client MUST abort the handshake with a
+these checks fails, then the client MUST abort the handshake with an
 "illegal_parameter" alert.  Otherwise, when sending the new ClientHello, the
 client MUST append a new KeyShareEntry for the group indicated in the
 selected_group field to the groups in its original KeyShare. The remaining
@@ -2017,7 +2017,7 @@ Servers MUST NOT send a KeyShareEntry for any group not
 indicated in the "supported_groups" extension.
 If a HelloRetryRequest was received, the client MUST verify that the
 selected NamedGroup matches that supplied in the selected_group field and MUST
-abort the connection with a "illegal_parameter" alert if it does not.
+abort the connection with an "illegal_parameter" alert if it does not.
 
 [[TODO: Recommendation about what the client offers.
 Presumably which integer DH groups and which curves.]]
@@ -2145,7 +2145,7 @@ range supplied by the client and that the "key_share" and
 "signature_algorithms" extensions are consistent with the
 indicated ke_modes and auth_modes values. If these values
 are not consistent, the client MUST abort the handshake with
-a "illegal_parameter" alert.
+an "illegal_parameter" alert.
 
 If the server supplies an "early_data" extension, the client MUST
 verify that the server selected the first offered identity. If any
@@ -3012,7 +3012,7 @@ Handshake messages MUST NOT span key changes. Because
 the ServerHello, Finished, and KeyUpdate messages signal a key change,
 upon receiving these messages a receiver MUST verify that the end
 of these messages aligns with a record boundary; if not, then it MUST
-terminate the connection with a "unexpected_message" alert.
+terminate the connection with an "unexpected_message" alert.
 
 #  Record Protocol
 
@@ -3027,7 +3027,7 @@ three content types: handshake, application data, and alert.
 Implementations MUST NOT send record types not defined in this
 document unless negotiated by some extension. If a TLS implementation
 receives an unexpected record type, it MUST terminate the connection
-with a "unexpected_message" alert.  New record content type values are
+with an "unexpected_message" alert.  New record content type values are
 assigned by IANA in the TLS Content Type Registry as described in
 {{iana-considerations}}.
 
@@ -3267,7 +3267,7 @@ padding errors.
 Implementations MUST limit their scanning to the cleartext returned
 from the AEAD decryption.  If a receiving implementation does not find
 a non-zero octet in the cleartext, it MUST terminate the
-connection with a "unexpected_message" alert.
+connection with an "unexpected_message" alert.
 
 The presence of padding does not change the overall record size
 limitations -- the full fragment plaintext may not exceed 2^14 octets.
@@ -3505,7 +3505,8 @@ decode_error
   specified range or the length of the message was incorrect.
   This alert is used for errors where the message does not conform
   to the formal protocol syntax (e.g., a vector is specified as
-  having the range <2..255> but is encoded as having 0 length.)
+  having the range <2..255> but is encoded as having 0 length,
+  or a message which would extend past the length of data received).
   This alert should never be observed in communication between
   proper implementations, except when messages were corrupted
   in the network.
