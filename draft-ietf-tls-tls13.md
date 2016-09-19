@@ -3570,6 +3570,8 @@ certificate_required
   the client.
 {:br }
 
+[[TODO: IANA Considerations for new alert values.]]
+
 New Alert values are assigned by IANA as described in {{iana-considerations}}.
 
 #  Cryptographic Computations
