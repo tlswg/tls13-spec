@@ -1771,13 +1771,13 @@ The "extension_data" field of this extension in a ClientHello contains a
            ecdsa_secp521r1_sha512 (0x0603),
 
            /* RSASSA-PSS algorithms */
-           rsa_pss_sha256 (0x0700),
-           rsa_pss_sha384 (0x0701),
-           rsa_pss_sha512 (0x0702),
+           rsa_pss_sha256 (0x0804),
+           rsa_pss_sha384 (0x0805),
+           rsa_pss_sha512 (0x0806),
 
            /* EdDSA algorithms */
-           ed25519 (0x0703),
-           ed448 (0x0704),
+           ed25519 (0x0807),
+           ed448 (0x0808),
 
            /* Reserved Code Points */
            dsa_sha1_RESERVED (0x0202),
@@ -4000,8 +4000,13 @@ by IANA
   "Recommended": ecdsa_secp256r1_sha256, ecdsa_secp384r1_sha384,
   rsa_pss_sha256, rsa_pss_sha384, rsa_pss_sha512, ed25519.
 
-Finally, this document obsoletes a registry originally created in {{RFC5246}}.
-IANA [shall/has] updated it to list values 7-223 as "Reserved".
+  [[TODO: How to denote that values ending in 0x00 through 0x03 are also reserved?]]
+
+Finally, this document obsoletes the TLS HashAlgorithm Registry and the TLS
+SignatureAlgorithm Registry, both originally created in {{RFC5246}}.  IANA
+[shall/has] update the TLS HashAlgorithm Registry to list values 7-223 as
+"Reserved" and the TLS SignatureAlgorithm Registry to list values 4-233 as
+"Reserved".
 
 --- back
 
