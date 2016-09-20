@@ -707,6 +707,10 @@ algorithms, optionally authenticate each other, and establish shared
 secret keying material. Once the handshake is complete, the peers
 use the established keys to protect application layer traffic.
 
+A failure of the handshake or other protocol error triggers the
+termination of the connection, optionally preceded by an alert message
+({{alert-protocol}}).
+
 TLS supports three basic key exchange modes:
 
 - Diffie-Hellman (both the finite field and elliptic curve
