@@ -3994,13 +3994,14 @@ by IANA
 -  TLS SignatureScheme Registry: Values with the first byte in the range
   0-254 (decimal) are assigned via Specification Required {{RFC2434}}.
   Values with the first byte 255 (decimal) are reserved for Private
-  Use {{RFC2434}}. This registry SHALL have a "Recommended" column.
+  Use {{RFC2434}}. Values with the first byte in the range 0-6 or with the
+  second byte in the range 0-3 that are not currently allocated are reserved for
+  backwards compatibility.
+  This registry SHALL have a "Recommended" column.
   The registry [shall be/ has been] initially populated with the values described in
   {{signature-algorithms}}. The following values SHALL be marked as
   "Recommended": ecdsa_secp256r1_sha256, ecdsa_secp384r1_sha384,
   rsa_pss_sha256, rsa_pss_sha384, rsa_pss_sha512, ed25519.
-
-  [[TODO: How to denote that values ending in 0x00 through 0x03 are also reserved?]]
 
 Finally, this document obsoletes the TLS HashAlgorithm Registry and the TLS
 SignatureAlgorithm Registry, both originally created in {{RFC5246}}.  IANA
