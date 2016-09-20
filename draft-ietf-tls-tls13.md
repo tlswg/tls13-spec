@@ -1237,6 +1237,15 @@ For example:
 
        Example1 ex1 = {1, 4};  /* assigns f1 = 1, f2 = 4 */
 
+## Decoding Errors
+
+TLS defines two generic alerts (see {{alert-protocol}}) to use upon failure to parse
+a message. Peers which receive a message which cannot be parsed according to the syntax
+(e.g., have a length extending beyond the message boundary or contain an out-of-range
+length) MUST terminate the connection with a "decoding_error" alert. Peers which receive
+a message which is syntactically correct but semantically invalid (e.g., a DHE share of p - 1)
+MUST terminate the connection with an "illegal_parameter" alert.
+
 
 #  Handshake Protocol
 
@@ -1284,7 +1293,8 @@ processed and transmitted as specified by the current active session state.
 
 Protocol messages MUST be sent in the order defined below (and
 shown in the diagrams in {{protocol-overview}}).
-Sending handshake messages in an unexpected order
+A peer which receives a handshake message in an unexpected order
+MUST abort the handshake with an "unexpected_message" alert.
 results in an "unexpected_message" fatal error. Unneeded handshake
 messages are omitted, however.
 
@@ -1510,7 +1520,8 @@ random
 
 cipher_suite
 : The single cipher suite selected by the server from the list in
-  ClientHello.cipher_suites.
+  ClientHello.cipher_suites. A client which receives a cipher suite
+  that was not offered MUST abort the handshake.
 
 extensions
 : A list of extensions.  Note that only extensions offered by the
@@ -1521,7 +1532,7 @@ extensions
   required to establish the cryptographic context. Currently the only
   such extensions are "key_share", "pre_shared_key", and "signature_algorithms".
   Clients MUST check the ServerHello for the presence of any forbidden
-  extensions and if any are found MUST terminate the handshake with a
+  extensions and if any are found MUST abort the handshake with a
   "illegal_parameter" alert. In prior versions of TLS, the extensions
   field could be omitted entirely if not needed, similar to
   ClientHello. As of TLS 1.3, all clients and servers will send at
@@ -3487,9 +3498,7 @@ certificate_unknown
 illegal_parameter
 : A field in the handshake was incorrect or inconsistent with
   other fields. This alert is used for errors which conform to
-  the formal protocol syntax but are otherwise incorrect, such
-  as a DHE share that is equal to p - 1 or is of different
-  length than required for the group.
+  the formal protocol syntax but are otherwise incorrect.
   
 unknown_ca
 : A valid certificate chain or partial chain was received, but the
@@ -3504,9 +3513,7 @@ decode_error
 : A message could not be decoded because some field was out of the
   specified range or the length of the message was incorrect.
   This alert is used for errors where the message does not conform
-  to the formal protocol syntax (e.g., a vector is specified as
-  having the range <2..255> but is encoded as having 0 length,
-  or a message which would extend past the length of data received).
+  to the formal protocol syntax.
   This alert should never be observed in communication between
   proper implementations, except when messages were corrupted
   in the network.
@@ -3535,7 +3542,8 @@ inappropriate_fallback
 
 missing_extension
 : Sent by endpoints that receive a hello message not containing an
-  extension that is mandatory to send for the offered TLS version.
+  extension that is mandatory to send for the offered TLS version
+  or other negotiated parameters.
 [[TODO: IANA Considerations.]]
 
 unsupported_extension
