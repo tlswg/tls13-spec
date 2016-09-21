@@ -2020,7 +2020,7 @@ The "extension_data" field of this extension contains a
 
                case server_hello:
                    KeyShareEntry server_share;
-           }
+           };
        } KeyShare;
 
 client_shares
@@ -2144,7 +2144,7 @@ The "extension_data" field of this extension contains a
 
                case server_hello:
                    uint16 selected_identity;
-           }
+           };
        } PreSharedKeyExtension;
 
 identities
@@ -2229,8 +2229,8 @@ The "extension_data" field of this extension contains an
                    uint32 obfuscated_ticket_age;
 
                case server_hello:
-                  struct {};
-           }
+                   struct {};
+           };
        } EarlyDataIndication;
 
 obfuscated_ticket_age
@@ -2854,7 +2854,7 @@ Structure of this message:
 %%% Authentication Messages
 
        struct {
-           opaque verify_data[Hash.length];
+           opaque verify_data[Hash.Length];
        } Finished;
 
 
@@ -2935,20 +2935,20 @@ to that negotiated connection where the ticket was established.
 
 %%% Ticket Establishment
 
-     enum { ticket_early_data_info(1), (65535) } TicketExtensionType;
+       enum { ticket_early_data_info(1), (65535) } TicketExtensionType;
 
-     struct {
-         TicketExtensionType extension_type;
-         opaque extension_data<1..2^16-1>;
-     } TicketExtension;
+       struct {
+           TicketExtensionType extension_type;
+           opaque extension_data<1..2^16-1>;
+       } TicketExtension;
 
-     struct {
-         uint32 ticket_lifetime;
-         PskKeyExchangeMode ke_modes<1..255>;
-         PskAuthenticationMode auth_modes<1..255>;
-         opaque ticket<1..2^16-1>;
-         TicketExtension extensions<0..2^16-2>;
-     } NewSessionTicket;
+       struct {
+           uint32 ticket_lifetime;
+           PskKeyExchangeMode ke_modes<1..255>;
+           PskAuthenticationMode auth_modes<1..255>;
+           opaque ticket<1..2^16-1>;
+           TicketExtension extensions<0..2^16-2>;
+       } NewSessionTicket;
 
 ke_modes
 : The key exchange modes with which this ticket can be used in descending
@@ -3128,7 +3128,7 @@ Alert messages ({{alert-protocol}}) MUST NOT be fragmented across records.
            ContentType type;
            ProtocolVersion legacy_record_version = { 3, 1 };    /* TLS v1.x */
            uint16 length;
-           opaque fragment[TLSPlaintext.length];
+           opaque fragment[length];
        } TLSPlaintext;
 
 type
@@ -3185,7 +3185,7 @@ by an encrypted body, which itself contains a type and optional padding.
        } TLSInnerPlaintext;
 
        struct {
-           ContentType opaque_type = application_data(23); /* see fragment.type */
+           ContentType opaque_type = application_data(23); /* see TLSInnerPlaintext.type */
            ProtocolVersion legacy_record_version = { 3, 1 };    /* TLS v1.x */
            uint16 length;
            opaque encrypted_record[length];
@@ -3208,7 +3208,7 @@ opaque_type
 : The outer opaque_type field of a TLSCiphertext record is always set to the
   value 23 (application_data) for outward compatibility with
   middleboxes accustomed to parsing previous versions of TLS.  The
-  actual content type of the record is found in fragment.type after
+  actual content type of the record is found in TLSInnerPlaintext.type after
   decryption.
 
 legacy_record_version
@@ -3313,11 +3313,11 @@ zero.  Padding is a string of zero-valued bytes appended
 to the ContentType field before encryption.  Implementations MUST set
 the padding octets to all zeros before encrypting.
 
-Application Data records may contain a zero-length fragment.content if
+Application Data records may contain a zero-length TLSInnerPlaintext.content if
 the sender desires.  This permits generation of plausibly-sized cover
 traffic in contexts where the presence or absence of activity may be
 sensitive.  Implementations MUST NOT send Handshake or Alert records
-that have a zero-length fragment.content.
+that have a zero-length TLSInnerPlaintext.content.
 
 The padding sent is automatically verified by the record protection
 mechanism: Upon successful decryption of a TLSCiphertext.fragment,
