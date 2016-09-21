@@ -45,6 +45,7 @@ normative:
   RFC6367:
   RFC6655:
   RFC7251:
+  RFC7539:
   RFC7748:
   RFC7905:
   I-D.irtf-cfrg-eddsa:
@@ -1317,7 +1318,7 @@ the handshake and data.
 TLS cryptographic negotiation proceeds by the client offering the
 following four sets of options in its ClientHello:
 
-- A list of cipher suites which indicates the AEAD cipher/HKDF hash
+- A list of cipher suites which indicates the AEAD algorithm/HKDF hash
   pairs which the client supports.
 - A "supported_group" ({{negotiated-groups}}) extension which indicates the (EC)DHE groups
   which the client supports and a "key_share" ({{key-share}}) extension which contains
@@ -1842,7 +1843,7 @@ client is willing to verify. The values are indicated in descending order
 of preference. Note that a signature algorithm takes as input an
 arbitrary-length message, rather than a digest. Algorithms which
 traditionally act on a digest should be defined in TLS to first
-hash the input with a specified hash function and then proceed as usual.
+hash the input with a specified hash algorithm and then proceed as usual.
 The code point groups listed above have the following meanings:
 
 RSASSA-PKCS1-v1_5 algorithms
@@ -3227,7 +3228,7 @@ encrypted_record
 {:br }
 
 
-AEAD ciphers take as input a single key, a nonce, a plaintext, and "additional
+AEAD algorithms take as input a single key, a nonce, a plaintext, and "additional
 data" to be included in the authentication check, as described in Section 2.1
 of {{RFC5116}}. The key is either the client_write_key or the server_write_key,
 the nonce is derived from the sequence number (see {{nonce}}) and the
@@ -3242,7 +3243,7 @@ encryption operation. The length of the plaintext is greater than
 TLSPlaintext.length due to the inclusion of TLSPlaintext.type and
 however much padding is supplied by the sender.  The length of the
 AEAD output will generally be larger than the plaintext, but by an
-amount that varies with the AEAD cipher. Since the ciphers might
+amount that varies with the AEAD algorithm. Since the ciphers might
 incorporate padding, the amount of overhead could vary with different
 lengths of plaintext. Symbolically,
 
@@ -3260,7 +3261,7 @@ separate integrity check. That is:
 If the decryption fails, the receiver MUST terminate the connection
 with a "bad_record_mac" alert.
 
-An AEAD cipher MUST NOT produce an expansion of greater than 255
+An AEAD algorithm used in TLS 1.3 MUST NOT produce an expansion of greater than 255
 bytes.  An endpoint that receives a record from its peer with
 TLSCipherText.length larger than 2^14 + 256 octets MUST terminate
 the connection with a "record_overflow" alert.  This limit is derived from the maximum
@@ -3668,7 +3669,7 @@ defined below:
                            Hash(resumption_context), Hash.Length)
 ~~~~
 
-The Hash function and the HKDF hash are the cipher suite hash function.
+The Hash function and the HKDF hash are the cipher suite hash algorithm.
 Hash.Length is its output length.
 
 Given a set of n InputSecrets, the final "master secret" is computed
@@ -3941,16 +3942,13 @@ and their allocation policies are below:
 - TLS Cipher Suite Registry: Values with the first byte in the range
   0-254 (decimal) are assigned via Specification Required {{RFC2434}}.
   Values with the first byte 255 (decimal) are reserved for Private
-  Use {{RFC2434}}. IANA [SHALL add/has added] a "Recommended" column
-  to the cipher suite registry. All cipher suites listed in
-  {{cipher-suites}} are marked as "Yes". All other cipher suites are
-  marked as "No". IANA [SHALL add/has added] add a note to this column
-  reading:
+  Use {{RFC2434}}.
 
-  > Cipher suites marked as "Yes" are those allocated via
-    Standards Track RFCs. Cipher suites marked as "No" are not;
-    cipher suites marked "No" range from "good" to "bad" from a
-    cryptographic standpoint.
+  IANA [SHALL add/has added] the cipher suites listed in {{cipher-suites}} to
+  the registry. The "Value" and "Description" columns are taken from the table.
+  The "DTLS-OK" and "Recommended" columns are both marked as "Yes" for each new
+  cipher suite. [[This assumes draft-sandj-tls-iana-registry-updates-00 has been
+  applied.]]
 
 -  TLS ContentType Registry: Future values are allocated via
   Standards Action {{RFC2434}}.
@@ -4091,32 +4089,35 @@ and renegotiation_info {{RFC5746}}.
 
 ## Cipher Suites
 
-A symmetric cipher suite defines the pair of the AEAD cipher and hash
-function to be used with HKDF.
+A symmetric cipher suite defines the pair of the AEAD algorithm and hash
+algorithm to be used with HKDF.
 Cipher suite names follow the naming convention:
 
 ~~~
-   CipherSuite TLS_CIPHER_HASH = VALUE;
+   CipherSuite TLS_AEAD_HASH = VALUE;
 ~~~
 
 | Component | Contents |
 |:----------|:---------|
-| TLS     | The string "TLS" |
-| CIPHER    | The symmetric cipher used for record protection |
+| TLS       | The string "TLS" |
+| AEAD      | The AEAD algorithm used for record protection |
 | HASH      | The hash algorithm used with HKDF |
 | VALUE     | The two byte ID assigned for this cipher suite |
 
-The "CIPHER" component commonly has sub-components used to designate
-the cipher name, bits, and mode, if applicable. For example, "AES_256_GCM"
-represents 256-bit AES in the GCM mode of operation.
+This specification defines the following cipher suites for use with TLS 1.3.
 
-|       Cipher Suite Name         |    Value    | Specification |
-|:--------------------------------|:------------|:--------------|
-| TLS_AES_128_GCM_SHA256        | {0x13,0x01} |   [This RFC]  |
-| TLS_AES_256_GCM_SHA384        | {0x13,0x02} |   [This RFC]  |
-| TLS_CHACHA20_POLY1305_SHA256  | {0x13,0x03} |   [This RFC]  |
-| TLS_AES_128_CCM_SHA256        | {0x13,0x04} |   [This RFC]  |
-| TLS_AES_128_CCM_8_SHA256      | {0x13,0x05} |   [This RFC]  |
+|          Description            |    Value    |
+|:--------------------------------|:------------|
+| TLS_AES_128_GCM_SHA256          | {0x13,0x01} |
+| TLS_AES_256_GCM_SHA384          | {0x13,0x02} |
+| TLS_CHACHA20_POLY1305_SHA256    | {0x13,0x03} |
+| TLS_AES_128_CCM_SHA256          | {0x13,0x04} |
+| TLS_AES_128_CCM_8_SHA256        | {0x13,0x05} |
+
+The corresponding AEAD algorithms AEAD_AES_128_GCM, AEAD_AES_256_GCM, and
+AEAD_AES_128_CCM are defined in {{RFC5116}}. AEAD_CHACHA20_POLY1305 is defined
+in {{RFC7539}}. AEAD_AES_128_CCM_8 is defined in {{RFC6655}}. The corresponding
+hash algorithms are defined in {{SHS}}.
 
 Although TLS 1.3 uses the same cipher suite space as previous versions
 of TLS, TLS 1.3 cipher suites are defined differently, only specifying
@@ -4410,7 +4411,7 @@ ClientHello.legacy_version or ServerHello.version set to { 3, 0 } MUST
 abort the handshake with a "protocol_version" alert.
 
 Implementations MUST NOT use the Truncated HMAC extension, defined in
-Section 7 of [RFC6066], as it is not applicable to AEAD ciphers and has
+Section 7 of [RFC6066], as it is not applicable to AEAD algorithms and has
 been shown to be insecure in some scenarios.
 
 
