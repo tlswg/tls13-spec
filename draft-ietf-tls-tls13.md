@@ -4138,29 +4138,6 @@ TLS 1.2 and lower cipher suites cannot be used with TLS 1.3.
 New cipher suite values are assigned by IANA as described in
 {{iana-considerations}}.
 
-### Unauthenticated Operation
-
-Previous versions of TLS offered explicitly unauthenticated cipher suites
-based on anonymous Diffie-Hellman. These cipher suites have been deprecated
-in TLS 1.3. However, it is still possible to negotiate cipher suites
-that do not provide verifiable server authentication by several methods,
-including:
-
-- Raw public keys {{RFC7250}}.
-- Using a public key contained in a certificate but without
-  validation of the certificate chain or any of its contents.
-
-Either technique used alone is vulnerable to man-in-the-middle attacks
-and therefore unsafe for general use. However, it is also possible to
-bind such connections to an external authentication mechanism via
-out-of-band validation of the server's public key, trust on first
-use, or channel bindings {{RFC5929}}. [[NOTE: TLS 1.3 needs a new
-channel binding definition that has not yet been defined.]]
-If no such mechanism is used, then the connection has no protection
-against active man-in-the-middle attack; applications MUST NOT use TLS
-in such a way absent explicit configuration or a specific application
-profile.
-
 
 # Implementation Notes
 
@@ -4288,6 +4265,29 @@ as the number of connections that a client might use; for example, a web browser
 using HTTP/1.1 {{RFC7230}} might open six connections to a server. Servers SHOULD
 issue new session tickets with every connection. This ensures that clients are
 always able to use a new session ticket when creating a new connection.
+
+
+## Unauthenticated Operation
+
+Previous versions of TLS offered explicitly unauthenticated cipher suites based
+on anonymous Diffie-Hellman. These modes have been deprecated in TLS 1.3.
+However, it is still possible to negotiate parameters that do not provide
+verifiable server authentication by several methods, including:
+
+- Raw public keys {{RFC7250}}.
+- Using a public key contained in a certificate but without
+  validation of the certificate chain or any of its contents.
+
+Either technique used alone is vulnerable to man-in-the-middle attacks
+and therefore unsafe for general use. However, it is also possible to
+bind such connections to an external authentication mechanism via
+out-of-band validation of the server's public key, trust on first
+use, or channel bindings {{RFC5929}}. [[NOTE: TLS 1.3 needs a new
+channel binding definition that has not yet been defined.]]
+If no such mechanism is used, then the connection has no protection
+against active man-in-the-middle attack; applications MUST NOT use TLS
+in such a way absent explicit configuration or a specific application
+profile.
 
 
 # Backward Compatibility
