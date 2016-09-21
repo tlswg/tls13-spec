@@ -1809,13 +1809,13 @@ The "extension_data" field of this extension in a ClientHello contains a
            ecdsa_secp521r1_sha512 (0x0603),
 
            /* RSASSA-PSS algorithms */
-           rsa_pss_sha256 (0x0700),
-           rsa_pss_sha384 (0x0701),
-           rsa_pss_sha512 (0x0702),
+           rsa_pss_sha256 (0x0804),
+           rsa_pss_sha384 (0x0805),
+           rsa_pss_sha512 (0x0806),
 
            /* EdDSA algorithms */
-           ed25519 (0x0703),
-           ed448 (0x0704),
+           ed25519 (0x0807),
+           ed448 (0x0808),
 
            /* Reserved Code Points */
            dsa_sha1_RESERVED (0x0202),
@@ -4037,14 +4037,20 @@ by IANA
 -  TLS SignatureScheme Registry: Values with the first byte in the range
   0-254 (decimal) are assigned via Specification Required {{RFC2434}}.
   Values with the first byte 255 (decimal) are reserved for Private
-  Use {{RFC2434}}. This registry SHALL have a "Recommended" column.
+  Use {{RFC2434}}. Values with the first byte in the range 0-6 or with the
+  second byte in the range 0-3 that are not currently allocated are reserved for
+  backwards compatibility.
+  This registry SHALL have a "Recommended" column.
   The registry [shall be/ has been] initially populated with the values described in
   {{signature-algorithms}}. The following values SHALL be marked as
   "Recommended": ecdsa_secp256r1_sha256, ecdsa_secp384r1_sha384,
   rsa_pss_sha256, rsa_pss_sha384, rsa_pss_sha512, ed25519.
 
-Finally, this document obsoletes a registry originally created in {{RFC5246}}.
-IANA [shall/has] updated it to list values 7-223 as "Reserved".
+Finally, this document obsoletes the TLS HashAlgorithm Registry and the TLS
+SignatureAlgorithm Registry, both originally created in {{RFC5246}}.  IANA
+[shall/has] update the TLS HashAlgorithm Registry to list values 7-223 as
+"Reserved" and the TLS SignatureAlgorithm Registry to list values 4-233 as
+"Reserved".
 
 --- back
 
