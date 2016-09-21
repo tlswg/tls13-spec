@@ -1743,7 +1743,7 @@ Servers which are compliant with this specification MUST use only the
 preferences and MUST only select a version of TLS present in that
 extension. They MUST ignore any unknown versions. If the extension is
 not present, they MUST negotiate TLS 1.2 or prior as specified in
-{{RFC5246}}, even if ClientHello.version is {3, 4} or later.
+{{RFC5246}}, even if ClientHello.legacy_version is {3, 4} or later.
 
 The server MUST NOT send the "supported_versions" extension. The
 server's selected version is contained in the ServerHello.version field as
