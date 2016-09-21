@@ -4048,7 +4048,7 @@ by IANA
 
 Finally, this document obsoletes the TLS HashAlgorithm Registry and the TLS
 SignatureAlgorithm Registry, both originally created in {{RFC5246}}.  IANA
-[shall/has] update the TLS HashAlgorithm Registry to list values 7-223 as
+[SHALL update/has updated] the TLS HashAlgorithm Registry to list values 7-223 as
 "Reserved" and the TLS SignatureAlgorithm Registry to list values 4-233 as
 "Reserved".
 
