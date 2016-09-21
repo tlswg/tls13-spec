@@ -2846,7 +2846,7 @@ Base key defined in {{authentication-messages}} using HKDF (see
 
 ~~~
 finished_key =
-    HKDF-Expand-Label(BaseKey, "finished", "", Hash.Length)
+    HKDF-Expand-Label(BaseKey, "finished", "", Hash.length)
 ~~~
 
 Structure of this message:
@@ -2854,7 +2854,7 @@ Structure of this message:
 %%% Authentication Messages
 
        struct {
-           opaque verify_data[Hash.Length];
+           opaque verify_data[Hash.length];
        } Finished;
 
 
@@ -2906,11 +2906,11 @@ from the resumption master secret:
 ~~~~
    resumption_psk = HKDF-Expand-Label(
                         resumption_secret,
-                        "resumption psk", "", Hash.Length)
+                        "resumption psk", "", Hash.length)
 
    resumption_context = HKDF-Expand-Label(
                             resumption_secret,
-                            "resumption context", "", Hash.Length)
+                            "resumption context", "", Hash.length)
 ~~~~
 
 The client MAY use this PSK for future handshakes by including the
@@ -2924,7 +2924,7 @@ authentication state. Clients SHOULD attempt to use each
 ticket no more than once, with more recent tickets being used
 first.
 For handshakes that do not use a
-resumption_psk, the resumption_context is a string of Hash.Length
+resumption_psk, the resumption_context is a string of Hash.length
 zeroes. [[Note: this will not be safe if/when we add
 additional server signatures with PSK:
 OPEN ISSUE https://github.com/tlswg/tls13-spec/issues/558]]
@@ -3128,7 +3128,7 @@ Alert messages ({{alert-protocol}}) MUST NOT be fragmented across records.
            ContentType type;
            ProtocolVersion legacy_record_version = { 3, 1 };    /* TLS v1.x */
            uint16 length;
-           opaque fragment[length];
+           opaque fragment[TLSPlaintext.length];
        } TLSPlaintext;
 
 type
@@ -3673,11 +3673,11 @@ defined below:
     Derive-Secret(Secret, Label, Messages) =
          HKDF-Expand-Label(Secret, Label,
                            Hash(Messages) +
-                           Hash(resumption_context), Hash.Length)
+                           Hash(resumption_context), Hash.length)
 ~~~~
 
 The Hash function and the HKDF hash are the cipher suite hash algorithm.
-Hash.Length is its output length.
+Hash.length is its output length.
 
 Given a set of n InputSecrets, the final "master secret" is computed
 by iteratively invoking HKDF-Extract with InputSecret_1, InputSecret_2,
@@ -3778,7 +3778,7 @@ The next-generation traffic_secret is computed as:
 ~~~~
     traffic_secret_N+1 = HKDF-Expand-Label(
                              traffic_secret_N,
-                             "application traffic secret", "", Hash.Length)
+                             "application traffic secret", "", Hash.length)
 ~~~~
 
 Once client/server_traffic_secret_N+1 and its associated traffic keys have been computed,
