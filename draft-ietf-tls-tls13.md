@@ -1749,6 +1749,16 @@ The server MUST NOT send the "supported_versions" extension. The
 server's selected version is contained in the ServerHello.version field as
 in previous versions of TLS.
 
+#### Draft Version Indicator
+
+RFC EDITOR: PLEASE REMOVE THIS SECTION
+
+While the eventual version indicator for the RFC version of TLS 1.3 will
+be {3, 4}, implementations of draft versions of this specification SHOULD
+instead advertise {0x7f, <draft-version>} in their "supported_versions" extension.
+This allows pre-RFC implementations to safely negotiate with each other,
+even if they would otherwise be incompatible.
+
 
 ###  Cookie
 
