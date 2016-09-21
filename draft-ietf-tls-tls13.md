@@ -2026,10 +2026,8 @@ The "extension_data" field of this extension contains a
 client_shares
 : A list of offered KeyShareEntry values in descending order of client preference.
   This vector MAY be empty if the client is requesting a HelloRetryRequest.
-  Each KeyShareEntry value MUST correspond to a group offered in the
-  "supported_groups" extension and MUST appear in the same order.  However, the
-  values MAY be a non-contiguous subset of the "supported_groups" extension and
-  MAY omit the most preferred groups.
+  The ordering of values here SHOULD match that of the ordering of offered support
+  in the "supported_groups" extension.
 
 selected_group
 : The mutually supported group the server intends to negotiate and
