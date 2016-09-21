@@ -947,7 +947,7 @@ establishment, thus providing forward secrecy.
 ## Zero-RTT Data
 
 When resuming via a PSK with an appropriate ticket (i.e., one with
-the "allow_early_data" flag), clients can also send data on their first
+the "early_data_info" extension), clients can also send data on their first
 flight ("early data"). This data is encrypted solely under keys
 derived using the first offered PSK as the static secret.  As shown in
 {{tls-0-rtt}}, the Zero-RTT data is just added to the 1-RTT handshake
