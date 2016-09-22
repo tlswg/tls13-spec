@@ -2052,7 +2052,7 @@ server_share
 Clients offer an arbitrary number of KeyShareEntry values, each
 representing a single set of key exchange parameters. For instance, a
 client might offer shares for several elliptic curves or multiple
-FFDHE groups.  The key_exchange values for each KeyShareEntry MUST by
+FFDHE groups.  The key_exchange values for each KeyShareEntry MUST be
 generated independently.  Clients MUST NOT offer multiple
 KeyShareEntry values for the same group.  Clients MUST NOT offer any
 KeyShareEntry values for groups not listed in the client's
