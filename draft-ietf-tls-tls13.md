@@ -1374,8 +1374,7 @@ When this message will be sent:
 > When a client first connects to a server, it is REQUIRED to send the
 ClientHello as its first message. The client will also send a
 ClientHello when the server has responded to its ClientHello with a
-HelloRetryRequest that selects cryptographic parameters that don't match the
-client's "key_share" extension. In that case, the client MUST send the same
+HelloRetryRequest. In that case, the client MUST send the same
 ClientHello (without modification) except:
 
 - Including a new KeyShareEntry as the lowest priority share
