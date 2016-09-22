@@ -442,9 +442,6 @@ draft-16
 
 - New certificate_required alert (*)
 
-- Renumbered SignatureSchemes because we had a conflict with a
-  a reservation in RFC 5246 (*)
-  
 - Forbid CertificateRequest with 0-RTT and PSK.
 
 - Relax requirement to check SNI for 0-RTT.
