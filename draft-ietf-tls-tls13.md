@@ -432,6 +432,23 @@ draft-16
 
 - Change RSASSA-PSS and EdDSA SignatureScheme codepoints for better backwards compatibility (*)
 
+- Move HelloRetryRequest.selected_group to an extension (*)
+
+- Clarify the behavior of no exporter context and make it the same
+  as an empty context.(*)
+
+- New KeyUpdate format that allows for requesting/not-requesting an
+  answer (*)
+
+- New certificate_required alert (*)
+
+- Renumbered SignatureSchemes because we had a conflict with a
+  a reservation in RFC 5246 (*)
+  
+- Forbid CertificateRequest with 0-RTT and PSK.
+
+- Relax requirement to check SNI for 0-RTT.
+
 
 draft-15
 
