@@ -1584,8 +1584,8 @@ and servers will not behave as specified above.
 
 RFC EDITOR: PLEASE REMOVE THE FOLLOWING PARAGRAPH
 Implementations of draft versions (see {{draft-version-indicator}}) of this
-specification SHOULD disable this mechanism on both client and server.  A
-pre-RFC client connecting to RFC servers, or vice versa, will appear to
+specification SHOULD NOT implement this mechanism on either client and server.
+A pre-RFC client connecting to RFC servers, or vice versa, will appear to
 downgrade to TLS 1.2. With the mechanism enabled, this will cause an
 interoperability failure.
 
