@@ -428,6 +428,11 @@ server: The endpoint which did not initiate the TLS connection.
 (*) indicates changes to the wire protocol which may require implementations
     to update.
 
+draft-16
+
+- Change RSASSA-PSS and EdDSA SignatureScheme codepoints for better backwards compatibility (*)
+
+
 draft-15
 
 - New negotiation syntax as discussed in Berlin (*)
