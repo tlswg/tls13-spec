@@ -2973,7 +2973,7 @@ to that negotiated connection where the ticket was established.
 
        struct {
            TicketExtensionType extension_type;
-           opaque extension_data<1..2^16-1>;
+           opaque extension_data<0..2^16-1>;
        } TicketExtension;
 
        struct {
