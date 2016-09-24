@@ -3061,12 +3061,12 @@ the responses).
 
 %%% Updating Keys
 
-     enum { update_not_requested(0), update_requested(1), (255)
-     } KeyUpdateRequest;
+       enum { update_not_requested(0), update_requested(1), (255)
+       } KeyUpdateRequest;
 
-     struct {
-         KeyUpdateRequest request_update;
-     } KeyUpdate;
+       struct {
+           KeyUpdateRequest request_update;
+       } KeyUpdate;
 
 
 request_update
