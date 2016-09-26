@@ -1426,9 +1426,7 @@ Structure of this message:
            uint8 minor;
        } ProtocolVersion;
 
-       struct {
-           opaque random_bytes[32];
-       } Random;
+       opaque Random[32];
 
        uint8 CipherSuite[2];    /* Cryptographic suite selector */
 
@@ -1831,7 +1829,7 @@ Servers which are authenticating via a certificate MUST indicate so
 by sending the client an empty "signature_algorithms" extension.
 
 The "extension_data" field of this extension in a ClientHello contains a
-"supported_signature_algorithms" value:
+SignatureSchemeList value:
 
 %%% Signature Algorithm Extension
 
@@ -1871,7 +1869,9 @@ The "extension_data" field of this extension in a ClientHello contains a
            (0xFFFF)
        } SignatureScheme;
 
-       SignatureScheme supported_signature_algorithms<2..2^16-2>;
+       struct {
+           SignatureScheme supported_signature_algorithms<2..2^16-2>;
+       } SignatureSchemeList;
 
 Note: This enum is named "SignatureScheme" because there is already
 a "SignatureAlgorithm" type in TLS 1.2, which this replaces.
@@ -1914,8 +1914,8 @@ EdDSA algorithms
 
 rsa_pkcs1_sha1, dsa_sha1, and ecdsa_sha1 SHOULD NOT be offered. Clients
 offering these values for backwards compatibility MUST list them as the lowest
-priority (listed after all other algorithms in the
-supported_signature_algorithms vector). TLS 1.3 servers MUST NOT offer a SHA-1
+priority (listed after all other algorithms in SignatureSchemeList).
+TLS 1.3 servers MUST NOT offer a SHA-1
 signed certificate unless no valid certificate chain can be produced without it
 (see {{server-certificate-selection}}).
 
