@@ -1426,9 +1426,7 @@ Structure of this message:
            uint8 minor;
        } ProtocolVersion;
 
-       struct {
-           opaque random_bytes[32];
-       } Random;
+       opaque Random[32];
 
        uint8 CipherSuite[2];    /* Cryptographic suite selector */
 
