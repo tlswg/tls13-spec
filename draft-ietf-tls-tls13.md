@@ -2119,7 +2119,8 @@ Presumably which integer DH groups and which curves.]]
 Diffie-Hellman {{DH}} parameters for both clients and servers are encoded in
 the opaque key_exchange field of a KeyShareEntry in a KeyShare structure.
 The opaque value contains the
-Diffie-Hellman public value (Y = g^X mod p),
+Diffie-Hellman public value (Y = g^X mod p) for the specified group
+(see {{RFC7919}} for group definitions)
 encoded as a big-endian integer, padded with zeros to the size of p in
 bytes.
 
