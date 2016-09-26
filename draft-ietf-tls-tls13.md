@@ -3222,7 +3222,7 @@ by an encrypted body, which itself contains a type and optional padding.
        } TLSInnerPlaintext;
 
        struct {
-           ContentType opaque_type = application_data(23); /* see TLSInnerPlaintext.type */
+           ContentType opaque_type = { 23 }; /* application_data, see TLSInnerPlaintext.type */
            ProtocolVersion legacy_record_version = { 3, 1 };    /* TLS v1.x */
            uint16 length;
            opaque encrypted_record[length];
