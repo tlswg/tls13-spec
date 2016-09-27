@@ -1173,6 +1173,7 @@ numerical information may be omitted.
 
        enum { low, medium, high } Amount;
 
+For numerical values, the notation \<floor..ceiling\> is also allowed.
 
 ##  Constructed Types
 
