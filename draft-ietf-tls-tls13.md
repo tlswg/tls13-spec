@@ -430,8 +430,7 @@ server: The endpoint which did not initiate the TLS connection.
 
 draft-16
 
-- Change parameter negotiation to be orthogonal rather than
-  all-in-one cipher suites (*)
+- Revise version negotiation (*)
 
 - Change RSASSA-PSS and EdDSA SignatureScheme codepoints for better backwards compatibility (*)
 
