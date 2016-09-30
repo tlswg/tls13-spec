@@ -1456,7 +1456,7 @@ legacy_version
   the server rejects an otherwise acceptable ClientHello with a version
   number higher than it supports.  
   In TLS 1.3, the client indicates its version preferences in the
-  "suported_versions" extension ({{supported-versions}}) and this field MUST
+  "supported_versions" extension ({{supported-versions}}) and this field MUST
   be set to {3, 3}, which was the version number for TLS 1.2.
   (See {{backward-compatibility}} for details about backward compatibility.)  
 
