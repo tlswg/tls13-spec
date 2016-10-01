@@ -488,7 +488,7 @@ draft-14
   NewSessionTicket (*).
 
 - Move the downgrade sentinel to the end of ServerHello.Random
-  to accomodate tlsdate (*).
+  to accommodate tlsdate (*).
 
 - Define ecdsa_sha1 (*).
 
@@ -3962,7 +3962,7 @@ applicable cipher suites:
 
 When negotiating use of applicable cipher suites, endpoints MUST abort the
 handshake with a "missing_extension" alert if the required extension was
-not provided. Any endpoint that receives any invalid combination of cipher
+not provided. Any endpoint that receives an invalid combination of cipher
 suites and extensions MAY abort the connection with a "missing_extension"
 alert, regardless of negotiated parameters.
 
@@ -4641,7 +4641,7 @@ derivation function {{updating-traffic-keys}}. As long as this function is truly
 is not possible to compute the previous keys after a key change
 (forward secrecy). However, TLS does not provide security for
 data which is sent after the traffic secret is compromised,
-even afer a key update (backward secrecy); systems which want backward secrecy must do
+even after a key update (backward secrecy); systems which want backward secrecy must do
 a fresh handshake and establish a new session key with an (EC)DHE
 exchange.
 
