@@ -4721,7 +4721,8 @@ Archives of the list can be found at:
 * Anil Gangolli \\
   anil@busybuddha.org
 
-* David M. Garrett
+* David M. Garrett \\
+  dave@nulldereference.com
 
 * Vipul Gupta (co-author of [RFC4492]) \\
   Sun Microsystems Laboratories \\
