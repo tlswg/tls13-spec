@@ -1792,7 +1792,7 @@ even if they would otherwise be incompatible.
 %%% Cookie Extension
 
        struct {
-           opaque cookie<0..2^16-1>;
+           opaque cookie<1..2^16-1>;
        } Cookie;
 
 Cookies serve two primary purposes:
