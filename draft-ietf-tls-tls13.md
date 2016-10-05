@@ -1407,6 +1407,10 @@ ClientHello (without modification) except:
 
 - Including a "cookie" extension if one was provided in the
   HelloRetryRequest.
+
+- Replacing the "pre_shared_key" and "psk_binder" extensions with
+  the one indicated in the HelloRetryRequest if indicated by
+  a "pre_shared_key" entry in the HelloRetryRequest.
   
 Because TLS 1.3 forbids renegotiation, if a server receives a
 ClientHello at any other time, it MUST terminate the connection.
@@ -1656,11 +1660,13 @@ this specification are:
 
 - key_share (see {{key-share}})
 
+- pre_shared_key (see {{pre-shared-key}})
+
 Note that HelloRetryRequest extensions are defined such that the original
 ClientHello may be computed from the new one, given minimal state about which
 HelloRetryRequest extensions were sent. For example, the key_share extension
 causes the new KeyShareEntry to be appended to the client_shares field, rather
-than replacing it.
+than replacing it. 
 
 ##  Hello Extensions
 
@@ -2174,9 +2180,12 @@ The "extension_data" field of this extension contains a
            select (Handshake.msg_type) {
                case client_hello:
                   opaque identity<0..2^16-1>;
-                   PskKeyExchangeMode ke_modes<1..255>;
-                   PskAuthenticationMode auth_modes<1..255>;
+                  PskKeyExchangeMode ke_modes<1..255>;
+                  PskAuthenticationMode auth_modes<1..255>;
 
+               case hello_retry_request:
+                   opaque identity<0..2^16-1>;
+                   
                case server_hello:
                    // empty.
            };
@@ -2184,7 +2193,8 @@ The "extension_data" field of this extension contains a
 
 identity
 : An identity (labels for a key) that the client is willing
-  to negotiate with the server.
+  to negotiate with the server; in the case of HelloRetryRequest
+  this value includes the server's suggested identity.
 
 ke_modes
 : The key exchange modes that this key can be used with, in order
@@ -2455,20 +2465,13 @@ extension and otherwise fail the handshake with an "illegal_parameter"
 alert.
 
 PskBinder.binding_data is computed using the same way as the
-Finished.verify data value, using the PSK as the base key and
-the portion of the handshake message up to but not including
-PskBinder.binding_data as the Handshake Context.
-
-1. Marshall the entire ClientHello without the PskBinder.binding_data,
-   but including the extension type and length fields.
-2. Compute the PskBinder.binding_data value.
-3. Append the computed value (consisting of Hash.length bytes) to the
-   ClientHello.
-
-This means that the "psk_binder" is computed over a prefix of the
-handshake transcript. The actual ClientHello, complete with the
-full "psk_binder" extension is included in all other handshake
-hash computations.
+Finished.verify data value, using the PSK as the base key and the
+portion of the handshake transcript up to but not including
+PskBinder.binding_data as the Handshake Context. If the handshake
+includes a HelloRetryRequest, the initial ClientHello and
+HelloRetryRequest are included in the transcript.  The actual
+ClientHello, complete with the full "psk_binder" extension is included
+in all other handshake hash computations.
 
 ## Server Parameters
 
