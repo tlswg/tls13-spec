@@ -967,7 +967,7 @@ establishment, thus providing forward secrecy.
 
 ## Zero-RTT Data
 
-With the Zero-RTT mode clients can send data on their first flight ("early data") whereby the client uses a PSK either obtained out-of-band or as a ticket (i.e., one with the “early_data_info” extension) from an earlier exchange to authenticate to the server. This early data is encrypted solely under keys derived using the offered PSK as the static secret. 
+With the Zero-RTT mode clients can send data on their first flight ("early data") whereby the client uses a PSK either obtained out-of-band or as a ticket (i.e., one with the "early_data_info" extension) from an earlier exchange to authenticate to the server. This early data is encrypted solely under keys derived using the offered PSK as the static secret. 
 
 As shown in {{tls-0-rtt}}, the Zero-RTT data is just added to the 1-RTT 
 handshake in the first flight. The rest of the handshake uses the same messages
