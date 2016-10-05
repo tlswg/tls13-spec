@@ -440,7 +440,8 @@ draft-16
   as an empty context.(*)
 
 - New KeyUpdate format that allows for requesting/not-requesting an
-  answer (*)
+  answer. This also means changes to the key schedule to support
+  independent updates (*)
 
 - New certificate_required alert (*)
 
@@ -3744,9 +3745,15 @@ operation.
    PSK ->  HKDF-Extract
                  |
                  v
-           Early Secret ---> Derive-Secret(., "client early traffic secret",
-                 |                         ClientHello)
-                 |                         = client_early_traffic_secret
+           Early Secret
+                 |
+                 +--------> Derive-Secret(., "client early traffic secret",
+                 |                        ClientHello)
+                 |                        = client_early_traffic_secret
+                 |
+                 +--------> Derive-Secret(., "early exporter master secret",
+                 |                        ClientHello)
+                 |                        = early_exporter_secret
                  v
 (EC)DHE -> HKDF-Extract
                  |
