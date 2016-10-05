@@ -2652,15 +2652,11 @@ for each scenario:
 
 | Mode | Handshake Context | Base Key |
 |------|-------------------|----------|
-| 0-RTT | ClientHello without extension body | pre_shared_key |
 | 1-RTT (Server) | ClientHello ... later of EncryptedExtensions/CertificateRequest | [sender]_handshake_traffic_secret |
 | 1-RTT (Client) | ClientHello ... ServerFinished     | [sender]_handshake_traffic_secret |
 | Post-Handshake | ClientHello ... ClientFinished + CertificateRequest | [sender]_traffic_secret_N |
 
 The [sender] in this table denotes the sending side.
-
-Note: The Handshake Context for the last three rows does not include any 0-RTT
-  handshake messages, regardless of whether 0-RTT is used.
 
 ###  Certificate
 
