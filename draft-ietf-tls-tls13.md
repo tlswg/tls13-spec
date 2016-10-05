@@ -4171,7 +4171,7 @@ hash algorithms are defined in {{SHS}}.
 
 Although TLS 1.3 uses the same cipher suite space as previous versions
 of TLS, TLS 1.3 cipher suites are defined differently, only specifying
-the symmetric ciphers, and cannot it be used for TLS 1.2. Similarly,
+the symmetric ciphers, and cannot be used for TLS 1.2. Similarly,
 TLS 1.2 and lower cipher suites cannot be used with TLS 1.3.
 
 New cipher suite values are assigned by IANA as described in
