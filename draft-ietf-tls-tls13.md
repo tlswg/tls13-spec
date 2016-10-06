@@ -433,7 +433,7 @@ draft-17
 - Remove the 0-RTT Finished, resumption_context, and replace with a
   psk_binder field (*)
 
-- Restruct PSK key exchange negotiation modes (*)
+- Restructure PSK key exchange negotiation modes (*)
 
 
 draft-16
@@ -1667,8 +1667,6 @@ this specification are:
 - cookie (see {{cookie}})
 
 - key_share (see {{key-share}})
-
-- pre_shared_key (see {{pre-shared-key}})
 
 Note that HelloRetryRequest extensions are defined such that the original
 ClientHello may be computed from the new one, given minimal state about which
