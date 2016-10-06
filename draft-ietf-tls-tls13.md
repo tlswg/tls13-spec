@@ -803,8 +803,9 @@ In the Key Exchange phase, the client sends the ClientHello
 ({{client-hello}}) message, which contains a random nonce
 (ClientHello.random); its offered protocol versions; a list of
 symmetric cipher/HKDF hash pairs; some set of Diffie-Hellman key shares (in the
-"key_share" extension {{key-share}}), one or more pre-shared key labels (in the
-"pre_shared_key" extension {{pre-shared-key-extension}}), or both; and
+"key_share" extension {{key-share}}), a set of pre-shared key labels (in the
+"pre_shared_key" extension {{pre-shared-key-extension}}) and a proof that
+it knows the PSK (in the "psk_binding" extension {{psk-binder}}) or both; and
 potentially some other extensions.
 
 The server processes the ClientHello and determines the appropriate
@@ -1672,7 +1673,7 @@ Note that HelloRetryRequest extensions are defined such that the original
 ClientHello may be computed from the new one, given minimal state about which
 HelloRetryRequest extensions were sent. For example, the key_share extension
 causes the new KeyShareEntry to be appended to the client_shares field, rather
-than replacing it. 
+than replacing it.
 
 ##  Hello Extensions
 
@@ -2208,9 +2209,9 @@ restriction is automatically enforced for PSKs established via
 NewSessionTicket ({{NewSessionTicket}}) but any externally-established
 PSKs MUST also follow this rule.
 
-Each PSK MUST be associated with a single Hash algorithm. For PSKs established
+Each PSK is associated with a single Hash algorithm. For PSKs established
 via the ticket mechanism ({{NewSessionTicket}}), this is the Hash used for
-the KDF. For externally established PSKs, the Hash algorithm is set when the
+the KDF. For externally established PSKs, the Hash algorithm MUST be set when the
 PSK is established.
 
 Prior to accepting PSK key establishment, the server MUST validate the
@@ -2441,39 +2442,49 @@ and is more easily extensible in the handshake state machine.
 ### PSK Binder
 
 %%% Authentication Messages
+       opaque PskBinderEntry<0..255>;
+       
        struct {
-           opaque binding_data[Hash.length];
+           PskBinderEntry binding_data<0..2^16-1>;
        } PskBinder;
 
-The "psk_binder" extension is used to carry a binding between the PSK
-and the current handshake. as well as between the session where the
-PSK was established and the session where it was used. This binding
-transitively includes the original handshake transcript, because that
-transcript is digested into the values which produce the Resumption
-Master Secret. This requires that both the KDF used to produce the RMS
-and the MAC used to compute the psk_binder be collision
-resistant. These are properties of HKDF and HMAC respectively when
-used with collision resistant hash functions and producing output of
-at least 256 bits.  Any future replacement of these functions MUST
-also provide collision resistance.
+The "psk_binder" extension contains a series of HMAC values, one for
+PSK offered in the "pre_shared_keys" extension and in the same
+order. The "psk_binder" extension MUST be sent if the client offers a
+"pre_shared_key" extension and MUST NOT be sent otherwise.
 
-The "psk_binder" extension MUST be sent if the client offers a
-"pre_shared_key" extension and MUST NOT be sent otherwise. The Hash
-used in the computation is that associated with the indicated PSK.
+Each binding_data is computed the same way as the Finished.verify data
+value, using the PSK as the base key and the portion of the handshake
+transcript up to but not including the PskBinder extension as the
+Handshake Context. The Hash used in the computation is that associated
+with the indicated PSK. I.e.,
+
+        HMAC(HKDF-Expand-Label(PSK, "finished", "", Hash.length),
+             ClientHello[truncated])
+
+If the handshake includes a HelloRetryRequest, the initial ClientHello
+and HelloRetryRequest are included in the transcript along with the
+new ClientHello.  For instance, if the client sends ClientHello1, its
+binder will be computed over:
+
+  ClientHello1[truncated]
+
+If the server responds with HelloRetryRequest, and the client then sends
+ClientHello2, it's binder will be computed over:
+
+  ClientHello1 + HelloRetryRequest + ClientHello[truncated]
+
+The actual ClientHello, complete with the full "psk_binder" extension
+is included in all other handshake hash computations.
+
 Servers MUST NOT send this extension. This extension MUST be the
 last extension in the ClientHello (this facilitates implementation
 as described below). Servers MUST check that it is the last
 extension and otherwise fail the handshake with an "illegal_parameter"
-alert.
-
-PskBinder.binding_data is computed using the same way as the
-Finished.verify data value, using the PSK as the base key and the
-portion of the handshake transcript up to but not including
-PskBinder.binding_data as the Handshake Context. If the handshake
-includes a HelloRetryRequest, the initial ClientHello and
-HelloRetryRequest are included in the transcript.  The actual
-ClientHello, complete with the full "psk_binder" extension is included
-in all other handshake hash computations.
+alert. Prior to accepting a PSK, servers MUST validate its
+"psk_binder" value. Servers SHOULD NOT attempt to validate multiple
+binders; rather they SHOULD select a single PSK and validate solely
+its binder.
 
 ## Server Parameters
 
@@ -4578,6 +4589,20 @@ secret. The resumption-PSK mode has been designed so that the
 resumption master secret computed by connection N and needed to form
 connection N+1 is separate from the traffic keys used by connection N,
 thus providing forward secrecy between the connections.
+
+The "psk_binder" extension forms a binding between a PSK
+and the current handshake, as well as between the session where the
+PSK was established and the session where it was used. This binding
+transitively includes the original handshake transcript, because that
+transcript is digested into the values which produce the Resumption
+Master Secret. This requires that both the KDF used to produce the RMS
+and the MAC used to compute the psk_binder be collision
+resistant. These are properties of HKDF and HMAC respectively when
+used with collision resistant hash functions and producing output of
+at least 256 bits.  Any future replacement of these functions MUST
+also provide collision resistance.
+Note: the "psk_binder" does not cover the binder values from other
+PSKs, though they are included in the Finished MAC.
 
 If an exporter is used, then it produces values which are unique
 and secret (because they are generated from a unique session key).
