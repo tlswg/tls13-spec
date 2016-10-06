@@ -428,6 +428,14 @@ server: The endpoint which did not initiate the TLS connection.
 (*) indicates changes to the wire protocol which may require implementations
     to update.
 
+draft-17
+
+- Remove the 0-RTT Finished, resumption_context, and replace with a
+  psk_binder field (*)
+
+- Restruct PSK key exchange negotiation modes (*)
+
+
 draft-16
 
 - Revise version negotiation (*)
@@ -1349,7 +1357,8 @@ following four sets of options in its ClientHello:
 - A "signature_algorithms" ({{signature-algorithms}}) extension which indicates the signature
   algorithms which the client can accept.
 - A "pre_shared_key" ({{pre-shared-key-extension}}) extension which contains a symmetric
-  key known to the client and the key exchange  modes which it supports.
+  keys known to the client and a "psk_key_exchange_modes" ({{pre-shared-key-exchange-modes}}) extension which indicates
+  the key exchange modes that may be used with PSKs.
 
 If the server does not select PSK, then the first three of these
 options are entirely orthogonal: the server independently selects a
@@ -1359,8 +1368,8 @@ the client. If there is overlap in the "supported_group" extension
 but the client did not offer a compatible "key_share" extension,
 then the server will respond with a HelloRetryRequest ({{hello-retry-request}}) message.
 
-If the server selects a PSK, then the PSK will indicate which key
-establishment modes it can be used with (PSK alone or with (EC)DHE) and
+If the server selects a PSK, then it MUST only be used with
+the establishment modes indicated by it can be used with (PSK alone or with (EC)DHE) and
 which authentication modes it can be used with (PSK alone or PSK with
 signatures). The server can then select those key establishment and
 authentication parameters to be consistent both with the PSK and the
@@ -1377,9 +1386,8 @@ follows:
 authentication are always used.
 - When (EC)DHE is in use, the server will also provide a
 "key_share" extension.
-- When authenticating via a certificate, the server will send an empty
-"signature_algorithms" extension in the ServerHello and will
-subsequently send Certificate ({{certificate}}) and
+- When authenticating via a certificate (i.e., when a PSK is not
+in use), the server will send Certificate ({{certificate}}) and
 CertificateVerify ({{certificate-verify}}) messages.
 
 If the server is unable to negotiate a supported set of parameters
@@ -1688,6 +1696,7 @@ The extension format is:
            supported_versions(43),
            cookie(44),
            psk_binder(45),
+           psk_key_exchange_modes(46),
            (65535)
        } ExtensionType;
 
@@ -2173,75 +2182,33 @@ The "extension_data" field of this extension contains a
 
 %%% Key Exchange Messages
 
-       enum { psk_ke(0), psk_dhe_ke(1), (255) } PskKeyExchangeMode;
-       enum { psk_auth(0), psk_sign_auth(1), (255) } PskAuthenticationMode;
-
+       opaque PskIdentity<0..2^16-1>;
+       
        struct {
            select (Handshake.msg_type) {
                case client_hello:
-                  opaque identity<0..2^16-1>;
-                  PskKeyExchangeMode ke_modes<1..255>;
-                  PskAuthenticationMode auth_modes<1..255>;
+                  PskIdentity identities<6..2^16-1>;
 
-               case hello_retry_request:
-                   opaque identity<0..2^16-1>;
-                   
                case server_hello:
-                   // empty.
+                  uint16 selected_identity;
            };
        } PreSharedKeyExtension;
 
-identity
-: An identity (labels for a key) that the client is willing
-  to negotiate with the server; in the case of HelloRetryRequest
-  this value includes the server's suggested identity.
-
-ke_modes
-: The key exchange modes that this key can be used with, in order
-of client preference, with most preferred first.
-
-auth_modes
-: The authentication modes that this key can be used with, in order
-of client preference, with most preferred first.
+identities
+: A list of the identities (labels for keys) that the client is willing
+  to negotiate with the server. If sent alongside the "early_data"
+  extension (see {{early-data-indication}}), the first identity is the
+  one used for 0-RTT data.
 
 selected_identity
 : The server's chosen identity expressed as a (0-based) index into
   the identities in the client's list.
 {: br}
 
-The PSK offered by the client also indicates the authentication and
-key exchange modes with which the server can use it, with each
-list being in the order of the client's preference, with most
-preferred first. Any PSK MUST only be used with a single HKDF
-hash algorithm. This restriction is automatically enforced
-for PSKs established via NewSessionTicket ({{NewSessionTicket}})
-but any externally-established PSKs MUST also follow this rule.
-
-PskKeyExchangeMode values have the following meanings:
-
-psk_ke
-: PSK-only key establishment. In this mode, the server MUST not
-supply a "key_share" value.
-
-psk_dhe_ke
-: PSK key establishment with (EC)DHE key establishment. In this mode,
-the client and servers MUST supply "key_share" values as described
-in {{key-share}}.
-{:br}
-
-PskAuthenticationMode values have the following meanings:
-
-psk_auth
-: PSK-only authentication. In this mode, the server MUST NOT supply
-either a Certificate or CertificateVerify message. [TODO: Add a signing mode.]
-
-{::comment}
-psk_sign_auth
-: PSK authentication plus a digital signature from the server. In this
-mode, the server MUST send Certificate ({{certificate}}) and CertificateVerify
-({{certificate-verify}}) messages.
-{:/comment}
-{:br}
+Any PSK MUST only be used with a single HKDF hash algorithm. This
+restriction is automatically enforced for PSKs established via
+NewSessionTicket ({{NewSessionTicket}}) but any externally-established
+PSKs MUST also follow this rule.
 
 Each PSK MUST be associated with a single Hash algorithm. For PSKs established
 via the ticket mechanism ({{NewSessionTicket}}), this is the Hash used for
@@ -2266,6 +2233,41 @@ If the server supplies an "early_data" extension, the client MUST
 verify that the server selected the first offered identity. If any
 other value is returned, the client MUST abort the handshake
 with an "unknown_psk_identity" alert.
+
+
+### Pre-Shared Key Exchange Modes
+
+In order to use PSKs, clients MUST also send a "psk_key_exchange_modes"
+extension. The semantics of this extension are that the client only
+supports the use of PSKs with these modes, which restricts both the
+use of PSKs offered in this ClientHello and those which the server
+might supply via NewSessionTicket.
+
+Clients MUST provide a "psk_key_exchange_modes" extension if it offers
+a "pre_shared_key" extension. If clients offer "pre_shared_key" without
+a "psk_key_exchange_modes" extension, servers MUST abort the handshake.
+Servers MUST NOT select a key exchange mode that is not listed by the
+client. This extension also restricts the modes for use with PSK resumption;
+servers SHOULD NOT send NewSessionTicket with tickets that are not
+compatible with the advertised modes.
+
+%%% Key Exchange Messages
+
+       enum { psk_ke(0), psk_dhe_ke(1), (255) } PskKeyExchangeMode;
+       
+       struct {
+           PskKeyExchangeMode ke_modes<1..255>;
+       } PskKeyExchangeModes;
+
+psk_ke
+: PSK-only key establishment. In this mode, the server MUST not
+supply a "key_share" value.
+
+psk_dhe_ke
+: PSK key establishment with (EC)DHE key establishment. In this mode,
+the client and servers MUST supply "key_share" values as described
+in {{key-share}}.
+{:br}
 
 ### Early Data Indication
 
@@ -3018,19 +3020,9 @@ to that negotiated connection where the ticket was established.
 
        struct {
            uint32 ticket_lifetime;
-           PskKeyExchangeMode ke_modes<1..255>;
-           PskAuthenticationMode auth_modes<1..255>;
            opaque ticket<1..2^16-1>;
            TicketExtension extensions<0..2^16-2>;
        } NewSessionTicket;
-
-ke_modes
-: The key exchange modes with which this ticket can be used in descending
-order of server preference.
-
-auth_modes
-: The authentication modes with which this ticket can be used in descending
-order of server preference.
 
 ticket_lifetime
 : Indicates the lifetime in seconds as a 32-bit unsigned integer in
@@ -3980,6 +3972,8 @@ TLS-compliant application MUST implement the following TLS extensions:
   * Negotiated Groups ("supported_groups"; {{negotiated-groups}})
   * Key Share ("key_share"; {{key-share}})
   * Pre-Shared Key ("pre_shared_key"; {{pre-shared-key-extension}})
+  * Pre-Shared Key Exchange Modes ("psk_key_exchange_modes";
+    {{pre-shared-key-exchange-modes}})
   * Server Name Indication ("server_name"; Section 3 of {{RFC6066}})
   * Cookie ("cookie"; {{cookie}})
 
@@ -3987,9 +3981,11 @@ All implementations MUST send and use these extensions when offering
 applicable cipher suites:
 
   * "supported_versions" is REQUIRED for all ClientHello messages.
-  * "signature_algorithms" is REQUIRED for certificate authenticated cipher suites.
-  * "supported_groups" and "key_share" are REQUIRED for DHE or ECDHE cipher suites.
-  * "pre_shared_key" is REQUIRED for PSK cipher suites.
+  * "signature_algorithms" is REQUIRED for certificate authentication.
+  * "supported_groups" and "key_share" are REQUIRED for DHE or ECDHE key
+    establishment.
+  * "pre_shared_key" is REQUIRED for PSK key establishment.
+  * "psk_key_exchange_modes" is required when PSKs are offered.
   * "cookie" is REQUIRED for all cipher suites.
 
 When negotiating use of applicable cipher suites, endpoints MUST abort the
