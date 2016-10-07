@@ -2475,17 +2475,23 @@ Structure of this message:
 
        opaque DistinguishedName<1..2^16-1>;
 
+       enum {
+           key_usage(0),
+           extended_key_usage(1),
+           (65535)
+       } CertificateRequestExtensionType;
+
        struct {
-           opaque certificate_extension_oid<1..2^8-1>;
-           opaque certificate_extension_values<0..2^16-1>;
-       } CertificateExtension;
+           CertificateRequestExtensionType extension_type;
+           opaque extension_data<0..2^16-1>;
+       } CertificateRequestExtension;
 
        struct {
            opaque certificate_request_context<0..2^8-1>;
            SignatureScheme
              supported_signature_algorithms<2..2^16-2>;
            DistinguishedName certificate_authorities<0..2^16-1>;
-           CertificateExtension certificate_extensions<0..2^16-1>;
+           CertificateRequestExtension extensions<0..2^16-1>;
        } CertificateRequest;
 
 certificate_request_context
@@ -2514,44 +2520,32 @@ certificate_authorities
   in the CertificateRequest, unless there is some external arrangement
   to the contrary.
 
-certificate_extensions
-: A list of certificate extension OIDs {{RFC5280}} with their allowed
-  values, represented in DER-encoded {{X690}} format. Some certificate
-  extension OIDs allow multiple values (e.g. Extended Key Usage).
-  If the server has included a non-empty certificate_extensions list,
-  the client certificate MUST contain all of the specified extension
-  OIDs that the client recognizes. For each extension OID recognized
-  by the client, all of the specified values MUST be present in the
-  client certificate (but the certificate MAY have other values as
-  well). However, the client MUST ignore and skip any unrecognized
-  certificate extension OIDs. If the client has ignored some of the
-  required certificate extension OIDs, and supplied a certificate
-  that does not satisfy the request, the server MAY at its discretion
-  either continue the session without client authentication, or
-  abort the handshake with an "unsupported_certificate" alert.
+extensions
+: A set of extension values for the certificate request to further describe
+  acceptable certificates. Servers MUST NOT send more than one extension of the
+  same type. Clients MUST ignore unrecognized extensions. If a client has
+  ignored some of the extensions and supplied a certificate that does not satisfy
+  the request, the server MAY at its discretion either continue the session
+  without client authentication, or abort the handshake with an
+  "unsupported_certificate" alert.
 
-  PKIX RFCs define a variety of certificate extension OIDs and their
-  corresponding value types. Depending on the type, matching
-  certificate extension values are not necessarily bitwise-equal. It
-  is expected that TLS implementations will rely on their PKI
-  libraries to perform certificate selection using certificate
-  extension OIDs.
+This document defines the following certificate request extensions:
 
-  This document defines matching rules for two standard certificate
-  extensions defined in {{RFC5280}}:
+key_usage
+: The "extension_data" field of this extension contains a DER-encoded {{X690}}
+  KeyUsage structure as defined in {{RFC5280}}. If this extension is present,
+  the server will only accept a client certificate if its Key Usage extension
+  asserts each key usage bit in the request extension.
 
-  - The Key Usage extension in a certificate matches the request when
-  all key usage bits asserted in the request are also asserted in the
-  Key Usage certificate extension.
-
-  - The Extended Key Usage extension in a certificate matches the
-  request when all key purpose OIDs present in the request are also
-  found in the Extended Key Usage certificate extension. The special
-  anyExtendedKeyUsage OID MUST NOT be used in the request.
-
-  Separate specifications may define matching rules for other certificate
-  extensions.
+extended_key_usage
+: The "extension_data" field of this extension contains a DER-encoded {{X690}}
+  ExtKeyUsageSyntax structure as defined in {{RFC5280}}. If this extension is
+  present, the server will only accept a client certificate if its Extended Key
+  Usage extension includes every OID in the request extension. The special
+  anyExtendedKeyUsage OID MUST NOT be used in this request extension.
 {:br }
+
+[[TODO: IANA Considerations.]]
 
 Servers which are authenticating with a PSK MUST not send the CertificateRequest
 message.
