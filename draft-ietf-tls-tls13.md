@@ -2281,16 +2281,22 @@ each PSK offered in the "pre_shared_keys" extension and in the same
 order. The "psk_binder" extension MUST be sent if the client offers a
 "pre_shared_key" extension and MUST NOT be sent otherwise.
 
-Each binding_data is computed the same way as the Finished.verify data
-value, using the PSK as the base key and the portion of the handshake
-transcript up to but not including the PskBinder extension as the
-Handshake Context. I.e.,
+Each binding_data value is computed as follows:
 
-       HMAC(HKDF-Expand-Label(PSK, "finished", "", Hash.length),
-            ClientHello[truncated])
+~~~~
+binder_key =
+    HKDF-Expand-Label(BaseKey, <label>, "", Hash.length)
+
+binding_data = HMAC(binding_key, Hash(ClientHello[truncated]))
+~~~~
+
+Where label is "external psk binder key" for external PSKs and
+"resumption psk binder key" for resumption PSKs. The different
+labels prevents the substitution of one type of PSK for the other.
 
 The Hash used in the computation is that associated
-with the indicated PSK.
+with the indicated PSK. Note that this is nearly exactly the
+same as the computation of the Finished message ({{finished}}).
 
 If the handshake includes a HelloRetryRequest, the initial ClientHello
 and HelloRetryRequest are included in the transcript along with the
