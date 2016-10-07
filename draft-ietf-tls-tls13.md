@@ -2401,23 +2401,6 @@ In common network topologies for browser clients, small allowances on the
 order of ten seconds are reasonable.  Clock skew distributions are not
 symmetric, so the optimal tradeoff may involve an asymmetric replay window.
 
-### OCSP Status Extensions
-
-{{!RFC6066}} and {{!RFC6961}} provide extensions to negotiate the server
-sending OCSP responses to the client. In TLS 1.2 and below, the
-server sends an empty extension to indicate negotiation of this
-extension and the OCSP information is carried in a CertificateStatus
-message. In TLS 1.3, the server's OCSP information is
-carried in an extension in EncryptedExtensions. Specifically:
-The body of the "status_request" or "status_request_v2" extension
-from the server MUST be a CertificateStatus structure as defined
-in {{RFC6066}} and {{RFC6961}} respectively.
-
-Note: This means that the certificate status appears prior to the
-certificates it applies to. This is slightly anomalous but matches
-the existing behavior for SignedCertificateTimestamps {{?RFC6962}},
-and is more easily extensible in the handshake state machine.
-
 
 ## Server Parameters Messages
 
@@ -2637,8 +2620,13 @@ Structure of this message:
        opaque ASN1Cert<1..2^24-1>;
 
        struct {
+           ASN1CertData cert_data;
+           Extension extensions<0..2^16-1>;
+       } CertificateEntry;
+
+       struct {
            opaque certificate_request_context<0..2^8-1>;
-           ASN1Cert certificate_list<0..2^24-1>;
+           CertificateEntry certificate_list<0..2^24-1>;
        } Certificate;
 
 certificate_request_context
@@ -2647,13 +2635,24 @@ certificate_request_context
   in the case of server authentication this field SHALL be zero length.
 
 certificate_list
-: This is a sequence (chain) of certificates. The sender's
-  certificate MUST come first in the list. Each following
-  certificate SHOULD directly certify one preceding it. Because
-  certificate validation requires that trust anchors be distributed
+: This is a sequence (chain) of CertificateEntry structures, each
+  containing a single certificate and set of extensions. The sender's
+  certificate MUST come in the first CertificateEntry in the list.
+  Each following certificate SHOULD directly certify one preceding it.
+  Because certificate validation requires that trust anchors be distributed
   independently, a certificate that specifies a
   trust anchor MAY be omitted from the chain, provided that
   supported peers are known to possess any omitted certificates.
+
+extensions:
+: A set of extension values for the CertificateEntry. The "Extension"
+  format is defined in {{hello-extensions}}. Valid extensions include
+  OCSP Status extensions ({{!RFC6066}} and {{!RFC6961}}) and
+  SignedCertificateTimestamps ({{!RFC6962}}).  Any extension presented
+  in a Certificate message must only be presented if the corresponding
+  ClientHello extension was presented in the initial handshake.
+  If an extension applies the the entire chain, it SHOULD be included
+  in the first CertificateEntry.
 {:br }
 
 Note: Prior to TLS 1.3, "certificate_list" ordering required each certificate
@@ -2669,6 +2668,24 @@ The server's certificate list MUST always be non-empty. A client will
 send an empty certificate list if it does not have an appropriate
 certificate to send in response to the server's authentication
 request.
+
+#### OCSP Status and SCT Extensions
+
+{{!RFC6066}} and {{!RFC6961}} provide extensions to negotiate the server
+sending OCSP responses to the client. In TLS 1.2 and below, the
+server sends an empty extension to indicate negotiation of this
+extension and the OCSP information is carried in a CertificateStatus
+message. In TLS 1.3, the server's OCSP information is carried in
+an extension in the CertificateEntry containing the assoiciated
+certificate. Specifically:
+The body of the "status_request" or "status_request_v2" extension
+from the server MUST be a CertificateStatus structure as defined
+in {{RFC6066}} and {{RFC6961}} respectively.
+
+Similarly, {{!RFC6962}} provides a mechanism for a server to send a
+Signed Certificate Timestamp (SCT) as an extension in the ServerHello.
+In TLS 1.3, the server's SCT information is carried in an extension in
+CertificateEntry.
 
 #### Server Certificate Selection
 
@@ -3644,8 +3661,8 @@ missing_extension
 unsupported_extension
 : Sent by endpoints receiving any hello message containing an extension
   known to be prohibited for inclusion in the given hello message, including
-  any extensions in a ServerHello not first offered in the corresponding
-  ClientHello.
+  any extensions in a ServerHello or Certificate not first offered in the
+  corresponding ClientHello.
 
 certificate_unobtainable
 : Sent by servers when unable to obtain a certificate from a URL
@@ -4027,7 +4044,8 @@ is listed below:
    1.3" column with the following four values: "Client", indicating
    that the server shall not send them. "Clear", indicating
    that they shall be in the ServerHello. "Encrypted", indicating that
-   they shall be in the EncryptedExtensions block, and "No" indicating
+   they shall be in the EncryptedExtensions block, "Certificate" indicating that
+   they shall be in the Certificate block, and "No" indicating
    that they are not used in TLS 1.3. This column [shall be/has been]
    initially populated with the values in this document.
 
@@ -4037,39 +4055,39 @@ is listed below:
    in HelloRetryRequest. This column [shall be/has been] initially populated
    with the values in this document.
 
-| Extension                                | Recommended |  TLS 1.3  | HelloRetryRequest |
-|:-----------------------------------------|------------:|----------:|------------------:|
-| server_name [RFC6066]                    |         Yes | Encrypted | No                |
-| max_fragment_length [RFC6066]            |         Yes | Encrypted | No                |
-| client_certificate_url [RFC6066]         |         Yes | Encrypted | No                |
-| trusted_ca_keys [RFC6066]                |         Yes | Encrypted | No                |
-| truncated_hmac [RFC6066]                 |         Yes |        No | No                |
-| status_request [RFC6066]                 |         Yes | Encrypted | No                |
-| user_mapping [RFC4681]                   |         Yes | Encrypted | No                |
-| client_authz [RFC5878]                   |          No |        No | No                |
-| server_authz [RFC5878]                   |          No |        No | No                |
-| cert_type [RFC6091]                      |         Yes | Encrypted | No                |
-| supported_groups [RFC7919]               |         Yes | Encrypted | No                |
-| ec_point_formats [RFC4492]               |         Yes |        No | No                |
-| srp [RFC5054]                            |          No |        No | No                |
-| signature_algorithms [RFC5246]           |         Yes |     Clear | No                |
-| use_srtp [RFC5764]                       |         Yes | Encrypted | No                |
-| heartbeat [RFC6520]                      |         Yes | Encrypted | No                |
-| application_layer_protocol_negotiation [RFC7301] | Yes | Encrypted | No                |
-| status_request_v2 [RFC6961]              |         Yes | Encrypted | No                |
-| signed_certificate_timestamp [RFC6962]   |          No | Encrypted | No                |
-| client_certificate_type [RFC7250]        |         Yes | Encrypted | No                |
-| server_certificate_type [RFC7250]        |         Yes | Encrypted | No                |
-| padding [RFC7685]                        |         Yes |    Client | No                |
-| encrypt_then_mac [RFC7366]               |         Yes |        No | No                |
-| extended_master_secret [RFC7627]         |         Yes |        No | No                |
-| SessionTicket TLS [RFC4507]              |         Yes |        No | No                |
-| renegotiation_info [RFC5746]             |         Yes |        No | No                |
-| key_share [[this document]]              |         Yes |     Clear | Yes               |
-| pre_shared_key [[this document]]         |         Yes |     Clear | No                |
-| early_data [[this document]]             |         Yes | Encrypted | No                |
-| cookie [[this document]]                 |         Yes |    Client | Yes               |
-| supported_versions [[this document]]     |         Yes |    Client | No                |
+| Extension                                | Recommended |   TLS 1.3   | HelloRetryRequest |
+|:-----------------------------------------|------------:|------------:|------------------:|
+| server_name [RFC6066]                    |         Yes |   Encrypted | No                |
+| max_fragment_length [RFC6066]            |         Yes |   Encrypted | No                |
+| client_certificate_url [RFC6066]         |         Yes |   Encrypted | No                |
+| trusted_ca_keys [RFC6066]                |         Yes |   Encrypted | No                |
+| truncated_hmac [RFC6066]                 |         Yes |          No | No                |
+| status_request [RFC6066]                 |         Yes | Certificate | No                |
+| user_mapping [RFC4681]                   |         Yes |   Encrypted | No                |
+| client_authz [RFC5878]                   |          No |          No | No                |
+| server_authz [RFC5878]                   |          No |          No | No                |
+| cert_type [RFC6091]                      |         Yes |   Encrypted | No                |
+| supported_groups [RFC7919]               |         Yes |   Encrypted | No                |
+| ec_point_formats [RFC4492]               |         Yes |          No | No                |
+| srp [RFC5054]                            |          No |          No | No                |
+| signature_algorithms [RFC5246]           |         Yes |       Clear | No                |
+| use_srtp [RFC5764]                       |         Yes |   Encrypted | No                |
+| heartbeat [RFC6520]                      |         Yes |   Encrypted | No                |
+| application_layer_protocol_negotiation [RFC7301] | Yes |   Encrypted | No                |
+| status_request_v2 [RFC6961]              |         Yes | Certificate | No                |
+| signed_certificate_timestamp [RFC6962]   |          No | Certificate | No                |
+| client_certificate_type [RFC7250]        |         Yes |   Encrypted | No                |
+| server_certificate_type [RFC7250]        |         Yes | Certificate | No                |
+| padding [RFC7685]                        |         Yes |      Client | No                |
+| encrypt_then_mac [RFC7366]               |         Yes |          No | No                |
+| extended_master_secret [RFC7627]         |         Yes |          No | No                |
+| SessionTicket TLS [RFC4507]              |         Yes |          No | No                |
+| renegotiation_info [RFC5746]             |         Yes |          No | No                |
+| key_share [[this document]]              |         Yes |       Clear | Yes               |
+| pre_shared_key [[this document]]         |         Yes |       Clear | No                |
+| early_data [[this document]]             |         Yes |   Encrypted | No                |
+| cookie [[this document]]                 |         Yes |      Client | Yes               |
+| supported_versions [[this document]]     |         Yes |      Client | No                |
 
 
 In addition, this document defines two new registries to be maintained
