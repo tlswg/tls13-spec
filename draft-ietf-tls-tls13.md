@@ -1416,10 +1416,6 @@ ClientHello (without modification) except:
 
 - Including a "cookie" extension if one was provided in the
   HelloRetryRequest.
-
-- Replacing the "pre_shared_key" and "psk_binder" extensions with
-  the one indicated in the HelloRetryRequest if indicated by
-  a "pre_shared_key" entry in the HelloRetryRequest.
   
 Because TLS 1.3 forbids renegotiation, if a server receives a
 ClientHello at any other time, it MUST terminate the connection.
@@ -2215,9 +2211,10 @@ the KDF. For externally established PSKs, the Hash algorithm MUST be set when th
 PSK is established.
 
 Prior to accepting PSK key establishment, the server MUST validate the
-"psk_binder" extension. If this extension is not present, the server
-MUST send a fatal "missing_extension" alert. If it does not validate, the
-server MUST send a fatal "decrypt_error" alert.
+corresponding value in the "psk_binder" extension. If this extension
+is not present, the server MUST send a fatal "missing_extension"
+alert. If it does not validate, the server MUST send a fatal
+"decrypt_error" alert.
 
 In order to accept PSK key establishment, the server sends a
 "pre_shared_key" extension with the selected identity. 
@@ -2267,6 +2264,57 @@ psk_dhe_ke
 the client and servers MUST supply "key_share" values as described
 in {{key-share}}.
 {:br}
+
+
+### PSK Binder
+
+%%% Key Exchange Messages
+
+       opaque PskBinderEntry<0..255>;
+       
+       struct {
+           PskBinderEntry binding_data<0..2^16-1>;
+       } PskBinder;
+
+The "psk_binder" extension contains a series of HMAC values, one for
+each PSK offered in the "pre_shared_keys" extension and in the same
+order. The "psk_binder" extension MUST be sent if the client offers a
+"pre_shared_key" extension and MUST NOT be sent otherwise.
+
+Each binding_data is computed the same way as the Finished.verify data
+value, using the PSK as the base key and the portion of the handshake
+transcript up to but not including the PskBinder extension as the
+Handshake Context. I.e.,
+
+       HMAC(HKDF-Expand-Label(PSK, "finished", "", Hash.length),
+            ClientHello[truncated])
+
+The Hash used in the computation is that associated
+with the indicated PSK.
+
+If the handshake includes a HelloRetryRequest, the initial ClientHello
+and HelloRetryRequest are included in the transcript along with the
+new ClientHello.  For instance, if the client sends ClientHello1, its
+binder will be computed over:
+
+       ClientHello1[truncated]
+
+If the server responds with HelloRetryRequest, and the client then sends
+ClientHello2, it's binder will be computed over:
+
+       ClientHello1 + HelloRetryRequest + ClientHello[truncated]
+
+The actual ClientHello, complete with the full "psk_binder" extension
+is included in all other handshake hash computations.
+
+Servers MUST NOT send this extension. This extension MUST be the
+last extension in the ClientHello (this facilitates implementation
+as described below). Servers MUST check that it is the last
+extension and otherwise fail the handshake with an "illegal_parameter"
+alert. Prior to accepting a PSK, servers MUST validate its
+"psk_binder" value. Servers SHOULD NOT attempt to validate multiple
+binders; rather they SHOULD select a single PSK and validate solely
+its binder.
 
 ### Early Data Indication
 
@@ -2437,54 +2485,6 @@ Note: This means that the certificate status appears prior to the
 certificates it applies to. This is slightly anomalous but matches
 the existing behavior for SignedCertificateTimestamps {{?RFC6962}},
 and is more easily extensible in the handshake state machine.
-
-
-### PSK Binder
-
-%%% Authentication Messages
-       opaque PskBinderEntry<0..255>;
-       
-       struct {
-           PskBinderEntry binding_data<0..2^16-1>;
-       } PskBinder;
-
-The "psk_binder" extension contains a series of HMAC values, one for
-PSK offered in the "pre_shared_keys" extension and in the same
-order. The "psk_binder" extension MUST be sent if the client offers a
-"pre_shared_key" extension and MUST NOT be sent otherwise.
-
-Each binding_data is computed the same way as the Finished.verify data
-value, using the PSK as the base key and the portion of the handshake
-transcript up to but not including the PskBinder extension as the
-Handshake Context. The Hash used in the computation is that associated
-with the indicated PSK. I.e.,
-
-        HMAC(HKDF-Expand-Label(PSK, "finished", "", Hash.length),
-             ClientHello[truncated])
-
-If the handshake includes a HelloRetryRequest, the initial ClientHello
-and HelloRetryRequest are included in the transcript along with the
-new ClientHello.  For instance, if the client sends ClientHello1, its
-binder will be computed over:
-
-  ClientHello1[truncated]
-
-If the server responds with HelloRetryRequest, and the client then sends
-ClientHello2, it's binder will be computed over:
-
-  ClientHello1 + HelloRetryRequest + ClientHello[truncated]
-
-The actual ClientHello, complete with the full "psk_binder" extension
-is included in all other handshake hash computations.
-
-Servers MUST NOT send this extension. This extension MUST be the
-last extension in the ClientHello (this facilitates implementation
-as described below). Servers MUST check that it is the last
-extension and otherwise fail the handshake with an "illegal_parameter"
-alert. Prior to accepting a PSK, servers MUST validate its
-"psk_binder" value. Servers SHOULD NOT attempt to validate multiple
-binders; rather they SHOULD select a single PSK and validate solely
-its binder.
 
 ## Server Parameters
 
