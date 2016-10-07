@@ -3966,29 +3966,37 @@ TLS-compliant application MUST implement the following TLS extensions:
   * Negotiated Groups ("supported_groups"; {{negotiated-groups}})
   * Key Share ("key_share"; {{key-share}})
   * Pre-Shared Key ("pre_shared_key"; {{pre-shared-key-extension}})
-  * Server Name Indication ("server_name"; Section 3 of {{RFC6066}})
   * Cookie ("cookie"; {{cookie}})
+  * Server Name Indication ("server_name"; Section 3 of {{RFC6066}})
 
 All implementations MUST send and use these extensions when offering
-applicable cipher suites:
+applicable features:
 
   * "supported_versions" is REQUIRED for all ClientHello messages.
-  * "signature_algorithms" is REQUIRED for certificate authenticated cipher suites.
-  * "supported_groups" and "key_share" are REQUIRED for DHE or ECDHE cipher suites.
-  * "pre_shared_key" is REQUIRED for PSK cipher suites.
-  * "cookie" is REQUIRED for all cipher suites.
+  * "signature_algorithms" is REQUIRED for certificate authentication.
+  * "supported_groups" and "key_share" are REQUIRED for DHE or ECDHE key exchange.
+  * "pre_shared_key" is REQUIRED for PSK key agreement.
 
-When negotiating use of applicable cipher suites, endpoints MUST abort the
-handshake with a "missing_extension" alert if the required extension was
-not provided. Any endpoint that receives an invalid combination of cipher
-suites and extensions MAY abort the connection with a "missing_extension"
-alert, regardless of negotiated parameters.
+A client is considered to be attempting to negotiate using this specification
+if the ClientHello contains a "supported_versions" extension, at minimum.
+Such ClientHello messages MUST meet following requirements:
+
+ * If not containing a "pre_shared_key" extension, it MUST contain both
+   a "signature_algorithms" extension and a "supported_groups" extension.
+ * If containing a "supported_groups" extension, it MUST also contain a
+   "key_share" extension, and vice versa. (an empty KeyShare.client_shares
+   vector is permitted)
+
+Servers receiving a ClientHello which is attempting to negotiate using
+this specification, yet failing any of the above requirements, MUST abort
+the handshake with a "missing_extension" alert.
 
 Additionally, all implementations MUST support use of the "server_name"
 extension with applications capable of using it.
 Servers MAY require clients to send a valid "server_name" extension.
 Servers requiring this extension SHOULD respond to a ClientHello
-lacking a "server_name" extension by terminating the connection with a "missing_extension" alert.
+lacking a "server_name" extension by terminating the connection with a
+"missing_extension" alert.
 
 #  Security Considerations
 
