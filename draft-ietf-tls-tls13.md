@@ -428,6 +428,12 @@ server: The endpoint which did not initiate the TLS connection.
 (*) indicates changes to the wire protocol which may require implementations
     to update.
 
+draft-17
+
+- Add a 0-RTT exporter and change the transcript for the regular exporter (*).
+
+- Explicitly allow predicting ClientFinished for NST.
+
 draft-16
 
 - Revise version negotiation (*)
@@ -440,7 +446,8 @@ draft-16
   as an empty context.(*)
 
 - New KeyUpdate format that allows for requesting/not-requesting an
-  answer (*)
+  answer. This also means changes to the key schedule to support
+  independent updates (*)
 
 - New certificate_required alert (*)
 
@@ -1032,6 +1039,8 @@ protocol. However, 0-RTT data cannot be duplicated within a connection (i.e., th
 will not process the same data twice for the same connection) and
 an attacker will not be able to make 0-RTT data appear to be
 1-RTT data (because it is protected with different keys.)
+
+The same warnings apply to any use of the early exporter secret.
 
 The remainder of this document provides a detailed description of TLS.
 
@@ -2969,6 +2978,12 @@ OPEN ISSUE https://github.com/tlswg/tls13-spec/issues/558]]
 Any ticket MUST only be resumed with a cipher suite that is identical
 to that negotiated connection where the ticket was established.
 
+Note: Although the resumption_psk depends on the client's second
+flight, servers which do not request client authentication MAY compute
+the remainder of the transcript independently and then send a
+NewSessionTicket immediately upon sending its Finished rather than
+waiting for the client Finished.
+
 
 %%% Ticket Establishment
 
@@ -3744,9 +3759,15 @@ operation.
    PSK ->  HKDF-Extract
                  |
                  v
-           Early Secret ---> Derive-Secret(., "client early traffic secret",
-                 |                         ClientHello)
-                 |                         = client_early_traffic_secret
+           Early Secret
+                 |
+                 +--------> Derive-Secret(., "client early traffic secret",
+                 |                        ClientHello)
+                 |                        = client_early_traffic_secret
+                 |
+                 +--------> Derive-Secret(., "early exporter master secret",
+                 |                        ClientHello)
+                 |                        = early_exporter_secret
                  v
 (EC)DHE -> HKDF-Extract
                  |
@@ -3776,7 +3797,7 @@ operation.
                  |                         = server_traffic_secret_0
                  |
                  +---------> Derive-Secret(., "exporter master secret",
-                 |                         ClientHello...Client Finished)
+                 |                         ClientHello...Server Finished)
                  |                         = exporter_secret
                  |
                  +---------> Derive-Secret(., "resumption master secret",
@@ -3908,18 +3929,19 @@ the TLS PRF. This document replaces the PRF with HKDF, thus requiring
 a new construction. The exporter interface remains the same. If context is
 provided, the value is computed as:
 
-    HKDF-Expand-Label(exporter_secret, label, context_value, key_length)
+    HKDF-Expand-Label(Secret, label, context_value, key_length)
+
+Where Secret is either the early_exporter_secret or the exporter_secret.
 
 If no context is provided, the value is computed as:
 
-    HKDF-Expand-Label(exporter_secret, label, "", key_length)
+    HKDF-Expand-Label(Secret, label, "", key_length)
 
 Note that providing no context computes the same value as providing an empty
 context. As of this document's publication, no allocated exporter label is used
 with both modes. Future specifications MUST NOT provide an empty context and no
 context with the same label and SHOULD provide a context, possibly empty, in
 all exporter computations.
-
 
 
 #  Compliance Requirements
@@ -4557,7 +4579,14 @@ independent, so it is not feasible to compute one from another or
 the session secret from the exported value. Note: exporters can
 produce arbitrary-length values. If exporters are to be
 used as channel bindings, the exported value MUST be large
-enough to provide collision resistance.
+enough to provide collision resistance. The exporters provided
+TLS 1.3 are derived from the same handshake contexts as the
+early traffic keys and the application traffic keys respectively,
+and thus have similar security properties. Note that they do
+not include the client's certificate; future applications
+which wish to bind to the client's certificate may need
+to define a new exporter that includes the full handshake
+transcript.
 
 For all handshake modes, the Finished MAC (and where present, the
 signature), prevents downgrade attacks. In addition, the use of
