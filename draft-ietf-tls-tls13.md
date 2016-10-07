@@ -1713,13 +1713,18 @@ more than one extension of the same type.
 
 Finally, note that extensions can be sent both when starting a new session and
 when in resumption-PSK mode. A client that requests session
-resumption does not in general know whether the server will accept this
+resumption does not generally know whether the server will accept this
 request, and therefore it SHOULD send the same extensions as it would send
-normally.
+normally. As noted in {{resumption-and-psk}}, a client requesting session 
+resumption SHOULD supply both "key_share" and original "pre_shared_key" 
+extensions in the ClientHello. If resumption is accepted by the server, 
+it will respond with new "pre_shared_key" and "key_share" extensions to
+initate a new key exchange to enable forward secrecy for the duration 
+of the session.
 
 In general, the specification of each extension type needs to describe the
 effect of the extension both during full handshake and session resumption. Most
-current TLS extensions are relevant only when a session is initiated: when an
+current TLS extensions are relevant only when a session is initiated. When an
 older session is resumed, the server does not process these extensions in
 ClientHello, and does not include them in ServerHello. However, some
 extensions may specify different behavior during session resumption.
