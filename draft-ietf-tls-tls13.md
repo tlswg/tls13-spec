@@ -1172,6 +1172,7 @@ numerical information may be omitted.
 
        enum { low, medium, high } Amount;
 
+For numerical values, the notation \<floor..ceiling\> is also allowed.
 
 ##  Constructed Types
 
@@ -2260,13 +2261,15 @@ The "extension_data" field of this extension contains an
 
 %%% Key Exchange Messages
 
+       struct {} None;
+
        struct {
            select (Handshake.msg_type) {
                case client_hello:
                    uint32 obfuscated_ticket_age;
 
                case server_hello:
-                   struct {};
+                   None;
            };
        } EarlyDataIndication;
 
