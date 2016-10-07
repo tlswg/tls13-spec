@@ -3042,11 +3042,12 @@ This document defines one ticket extension, "ticket_early_data_info"
 ~~~~
    struct {
        uint32 ticket_age_add;
+       uint32 max_early_data_size;
    } TicketEarlyDataInfo;
 ~~~~
 
 This extension indicates that the ticket may be used to send 0-RTT data
-({{early-data-indication}})). It contains one value:
+({{early-data-indication}})). It contains two values:
 
 
 ticket_age_add
@@ -3054,6 +3055,10 @@ ticket_age_add
   client includes in the "early_data" extension.  The client-side ticket age is
   added to this value modulo 2^32 to obtain the value that is transmitted by
   the client.
+
+max_early_data_size
+: The maximum amount of 0-RTT data that the client is allowed to send when using
+  this ticket, in bytes. Only Application Data payload is counted.
 {:br }
 
 
