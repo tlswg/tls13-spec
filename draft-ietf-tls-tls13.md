@@ -3039,11 +3039,12 @@ ticket_extensions
 
 This document defines one ticket extension, "ticket_early_data_info"
 
-~~~~
-   struct {
-       uint32 ticket_age_add;
-   } TicketEarlyDataInfo;
-~~~~
+%%% Ticket Establishment
+
+       struct {
+           uint32 ticket_age_add;
+       } TicketEarlyDataInfo;
+
 
 This extension indicates that the ticket may be used to send 0-RTT data
 ({{early-data-indication}})). It contains one value:
