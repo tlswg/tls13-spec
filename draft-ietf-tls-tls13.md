@@ -428,6 +428,11 @@ server: The endpoint which did not initiate the TLS connection.
 (*) indicates changes to the wire protocol which may require implementations
     to update.
 
+draft-17
+
+- Add max_early_data_size field to TicketEarlyDataInfo (*)
+
+
 draft-16
 
 - Revise version negotiation (*)
