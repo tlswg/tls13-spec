@@ -1685,6 +1685,7 @@ The extension format is:
            early_data(42),
            supported_versions(43),
            cookie(44),
+           post_handshake(45),
            (65535)
        } ExtensionType;
 
@@ -2947,11 +2948,35 @@ Any records following a 1-RTT Finished message MUST be encrypted under the
 application traffic key. In particular, this includes any alerts sent by the
 server in response to client Certificate and CertificateVerify messages.
 
-## Post-Handshake Messages
+## Post-Handshake Messages {#post-handshake}
 
 TLS also allows other messages to be sent after the main handshake.
 These messages use a handshake content type and are encrypted under the application
 traffic key.
+
+The post_handshake TLS extension advertises support for post-handshake message types.
+
+~~~~
+    enum {
+        new_session_ticket(0),
+        key_update(1),
+        client_auth_request(2),
+        (255)
+    } MessageType;
+
+    struct {
+        MessageType message_types<0..2^8-1>;
+    } PostHandshake;
+~~~~
+
+The extension data for the post_handshake extension is a PostHandshake structure,
+which includes at least one MessageType. The client includes a
+post_handshake extension containing every type of post-handshake message
+it supports in its ClientHello. If the server supports any post-handshake
+message types in common with the client, it replies with an
+EncryptedExtensions containing a post_handshake extension containing a list of
+message types that it supports. The set of MessageTypes in the server’s
+post_handshake extension MUST be a subset of those sent by the client.
 
 Handshake messages sent after the handshake MUST NOT be interleaved with other
 record types. That is, if a message is split over two or more handshake
@@ -2959,10 +2984,11 @@ records, there MUST NOT be any other records between them.
 
 ### New Session Ticket Message {#NewSessionTicket}
 
-At any time after the server has received the client Finished message, it MAY send
-a NewSessionTicket message. This message creates a pre-shared key
-(PSK) binding between the ticket value and the following two values derived
-from the resumption master secret:
+If the server and client both advertised support for new_session_ticket in the
+post_handshake extension, the server MAY send a NewSessionTicket message at
+any time after the server has received the client Finished message. This message
+creates a pre-shared key (PSK) binding between the ticket value and the following
+two values derived from the resumption master secret:
 
 ~~~~
    resumption_psk = HKDF-Expand-Label(
@@ -2992,6 +3018,10 @@ OPEN ISSUE https://github.com/tlswg/tls13-spec/issues/558]]
 
 Any ticket MUST only be resumed with a cipher suite that is identical
 to that negotiated connection where the ticket was established.
+
+Implementations that receive a KeyUpdate without having advertised
+key_update in the post_handshake extension MUST terminate the
+connection with an "unexpected_message" alert.
 
 
 %%% Ticket Establishment
@@ -3068,11 +3098,16 @@ max_early_data_size
   SHOULD terminate the connection with an "unexpected_message" alert.
 {:br }
 
+Implementations that receive a NewSessionTicket without having advertised
+new_session_ticket in the post_handshake extension MUST terminate the
+connection with an "unexpected_message" alert.
+
 
 ### Post-Handshake Authentication
 
-The server is permitted to request client authentication at any time
-after the handshake has completed by sending a CertificateRequest
+If the server and client both advertised support for client_auth_request in the
+post_handshake extension, the server is permitted to request client authentication
+at any time after the handshake has completed by sending a CertificateRequest
 message. The client SHOULD respond with the appropriate Authentication
 messages. If the client chooses to authenticate, it MUST send
 Certificate, CertificateVerify, and Finished. If it declines, it
@@ -3086,6 +3121,10 @@ CertificateRequests in close succession MAY respond to them in a
 different order than they were received (the
 certificate_request_context value allows the server to disambiguate
 the responses).
+
+Client implementations that receive a CertificateRequest without having advertised
+client_auth_request in the post_handshake extension MUST terminate the
+connection with an "unexpected_message" alert.
 
 
 ### Key and IV Update {#key-update}
@@ -3107,8 +3146,9 @@ terminate the connection with an "illegal_parameter" alert.
 {:br }
 
 The KeyUpdate handshake message is used to indicate that the sender is
-updating its sending cryptographic keys. This message can be sent by
-the server after sending its first flight and the client after sending
+updating its sending cryptographic keys. If the server and client both advertised
+support for key_update in the post_handshake extension, the server can send
+a KeyUpdate message after sending its first flight and the client after sending
 its second flight. Implementations that receive a KeyUpdate message
 prior to receiving a Finished message as part of the 1-RTT handshake
 MUST terminate the connection with an "unexpected_message" alert.
@@ -3139,6 +3179,10 @@ messages with the old keys. Additionally, both sides MUST enforce that
 a KeyUpdate with the old key is received before accepting any messages
 encrypted with the new key. Failure to do so may allow message truncation
 attacks.
+
+Implementations that receive a KeyUpdate without having advertised
+key_update in the post_handshake extension MUST terminate the
+connection with an "unexpected_message" alert.
 
 ## Handshake Layer and Key Changes
 
@@ -3979,6 +4023,7 @@ TLS-compliant application MUST implement the following TLS extensions:
   * Key Share ("key_share"; {{key-share}})
   * Pre-Shared Key ("pre_shared_key"; {{pre-shared-key-extension}})
   * Server Name Indication ("server_name"; Section 3 of {{RFC6066}})
+  * Post-Handshake ("post_handshake"; {{post-handshake}})
   * Cookie ("cookie"; {{cookie}})
 
 All implementations MUST send and use these extensions when offering
@@ -4098,6 +4143,7 @@ is listed below:
 | key_share [[this document]]              |         Yes |       Clear | Yes               |
 | pre_shared_key [[this document]]         |         Yes |       Clear | No                |
 | early_data [[this document]]             |         Yes |   Encrypted | No                |
+| post_handshake [[this document]]         |         Yes |   Encrypted | No                |
 | cookie [[this document]]                 |         Yes |      Client | Yes               |
 | supported_versions [[this document]]     |         Yes |      Client | No                |
 
