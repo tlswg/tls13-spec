@@ -1405,7 +1405,8 @@ HelloRetryRequest. In that case, the client MUST send the same
 ClientHello (without modification) except:
 
 - If a "key_share" extension was supplied in the HelloRetryRequest,
-  replacing the list of shares with one from the indicated group.
+  replacing the list of shares with a list containing a single
+  KeyShareEntry from the indicated group.
 
 - Removing the "early_data" extension ({{early-data-indication}}) if one was
   present. Early data is not permitted after HelloRetryRequest.
@@ -1648,12 +1649,11 @@ offered by the client in its ClientHello, with the exception of optionally the
 
 Upon receipt of a HelloRetryRequest, the client MUST verify that the
 extensions block is not empty and otherwise MUST abort the handshake
-with a "decode_error" alert. Clients SHOULD abort the handshake if the
-HelloRetryRequest would not result in any change in the
-ClientHello. Clients SHOULD also abort the handshake with an
-"unexpected_message" alert in response to any second HelloRetryRequest
-which was sent in the same connection (i.e., where the ClientHello was
-itself in response to a HelloRetryRequest).
+with a "decode_error" alert. Clients SHOULD abort the handshake with
+an "unexpected message" if the HelloRetryRequest would not result in
+any change in the ClientHello or in response to any second
+HelloRetryRequest which was sent in the same connection (i.e., where
+the ClientHello was itself in response to a HelloRetryRequest).
 
 Otherwise, the client MUST process all extensions in the HelloRetryRequest and
 send a second updated ClientHello. The HelloRetryRequest extensions defined in
