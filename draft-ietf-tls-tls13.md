@@ -1391,9 +1391,11 @@ following four sets of options in its ClientHello:
   (EC)DHE shares for some or all of these groups.
 - A "signature_algorithms" ({{signature-algorithms}}) extension which indicates the signature
   algorithms which the client can accept.
-- A "pre_shared_key" ({{pre-shared-key-extension}}) extension which contains a symmetric
-  keys known to the client and a "psk_key_exchange_modes" ({{pre-shared-key-exchange-modes}}) extension which indicates
-  the key exchange modes that may be used with PSKs.
+- A "pre_shared_key" ({{pre-shared-key-extension}}) extension which
+  contains a a list of symmetric keys known to the client and a
+  "psk_key_exchange_modes" ({{pre-shared-key-exchange-modes}})
+  extension which indicates the key exchange modes that may be used
+  with PSKs.
 
 If the server does not select a PSK, then the first three of these
 options are entirely orthogonal: the server independently selects a
@@ -2295,7 +2297,7 @@ binder will be computed over:
 If the server responds with HelloRetryRequest, and the client then sends
 ClientHello2, its binder will be computed over:
 
-       ClientHello1 + HelloRetryRequest + ClientHello[truncated]
+       ClientHello1 + HelloRetryRequest + ClientHello2[truncated]
 
 The full ClientHello is included in all other handshake hash computations.
 
