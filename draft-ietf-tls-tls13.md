@@ -837,7 +837,7 @@ contains a "key_share" extension with the server's ephemeral
 Diffie-Hellman share which MUST be in the same group as one of the
 client's shares. If PSK key establishment is
 in use, then the ServerHello contains a "pre_shared_key"
-extension indicating which of the client's offered PSKs was selected. 
+extension indicating which of the client's offered PSKs was selected.
 Note that implementations can use (EC)DHE and PSK together, in which
 case both extensions will be supplied.
 
@@ -1395,7 +1395,7 @@ following four sets of options in its ClientHello:
   keys known to the client and a "psk_key_exchange_modes" ({{pre-shared-key-exchange-modes}}) extension which indicates
   the key exchange modes that may be used with PSKs.
 
-If the server does not select PSK, then the first three of these
+If the server does not select a PSK, then the first three of these
 options are entirely orthogonal: the server independently selects a
 cipher suite, an (EC)DHE group and key share for key establishment,
 and a signature algorithm/certificate pair to authenticate itself to
@@ -1403,8 +1403,9 @@ the client. If there is overlap in the "supported_group" extension
 but the client did not offer a compatible "key_share" extension,
 then the server will respond with a HelloRetryRequest ({{hello-retry-request}}) message.
 
-If the server selects a PSK, then it MUST only be used with
-the establishment modes indicated by "psk_key_exchange_modes" (PSK alone or with (EC)DHE).
+If the server selects a PSK, then it MUST only be used with the
+establishment modes indicated by "psk_key_exchange_modes" (PSK alone
+or with (EC)DHE).
 The server can then select the key establishment and
 parameters to be consistent both with the PSK and the
 other extensions supplied by the client. Note that if the PSK can be
@@ -2254,7 +2255,7 @@ handshake.  Servers SHOULD NOT attempt to validate multiple binders;
 rather they SHOULD select a single PSK and validate solely its binder.
 
 In order to accept PSK key establishment, the server sends a
-"pre_shared_key" extension with the selected identity. 
+"pre_shared_key" extension indicating the selected identity. 
 
 Clients MUST verify that the server's selected_identity is within the
 range supplied by the client, that the same cipher suite was selected
@@ -2269,7 +2270,7 @@ that it is the last extension and otherwise fail the handshake with an
 "illegal_parameter" alert.
 
 If the server supplies an "early_data" extension, the client MUST
-verify that the server selected the first offered identity. If any
+verify that the server's selected_identity is 0. If any
 other value is returned, the client MUST abort the handshake
 with an "unknown_psk_identity" alert.
 
@@ -2378,7 +2379,7 @@ If it is not, the server SHOULD proceed with the handshake but reject
 The parameters for the 0-RTT data (symmetric cipher suite,
 ALPN, etc.) are the same as those which were negotiated in the connection
 which established the PSK. The PSK used to encrypt the early data
-MUST be the first PSK listed in the client's "pre_shared_key"
+MUST be the first PSK listed in the client's "pre_shared_key" extension.
 
 0-RTT messages sent in the first flight have the same content types
 as their corresponding messages sent in other flights (handshake,
@@ -4073,7 +4074,7 @@ the relevant parameters:
   * "cookie" must always be supported if sent by the server.
 
 If a required extension was not provided. endpoints MUST abort the
-handshake with a "missing_extension" alert Any endpoint that receives
+handshake with a "missing_extension" alert. Any endpoint that receives
 an invalid combination of cipher suites and extensions MAY abort the
 connection with a "missing_extension" alert, regardless of negotiated
 parameters.
