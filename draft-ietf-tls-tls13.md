@@ -3073,10 +3073,15 @@ max_early_data_size
 
 The server is permitted to request client authentication at any time
 after the handshake has completed by sending a CertificateRequest
-message. The client SHOULD respond with the appropriate Authentication
-messages. If the client chooses to authenticate, it MUST send
-Certificate, CertificateVerify, and Finished. If it declines, it
-MUST send a Certificate message containing no certificates followed by Finished.
+message. Servers MUST NOT send this message unless explicitly allowed
+by an application profile. Clients who receive a disallowed CertificateRequest
+SHOULD terminate the connection.
+
+When allowed by application profile, the client SHOULD respond with
+the appropriate Authentication messages. If the client chooses to
+authenticate, it MUST send Certificate, CertificateVerify, and
+Finished. If it declines, it MUST send a Certificate message
+containing no certificates followed by Finished.
 
 Note: Because client authentication may require prompting the user,
 servers MUST be prepared for some delay, including receiving an
