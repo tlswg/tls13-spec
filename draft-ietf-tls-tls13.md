@@ -432,7 +432,9 @@ draft-17
 
 - Add max_early_data_size field to TicketEarlyDataInfo (*)
 
-
+- Merge TicketExtensions and Extensions registry. Changes
+  ticket_early_data_info code point (*).
+  
 draft-16
 
 - Revise version negotiation (*)
@@ -1685,6 +1687,7 @@ The extension format is:
            early_data(42),
            supported_versions(43),
            cookie(44),
+           ticket_early_data_info(46),           
            (65535)
        } ExtensionType;
 
@@ -2996,19 +2999,12 @@ to that negotiated connection where the ticket was established.
 
 %%% Ticket Establishment
 
-       enum { ticket_early_data_info(1), (65535) } TicketExtensionType;
-
-       struct {
-           TicketExtensionType extension_type;
-           opaque extension_data<0..2^16-1>;
-       } TicketExtension;
-
        struct {
            uint32 ticket_lifetime;
            PskKeyExchangeMode ke_modes<1..255>;
            PskAuthenticationMode auth_modes<1..255>;
            opaque ticket<1..2^16-1>;
-           TicketExtension extensions<0..2^16-2>;
+           Extension extensions<0..2^16-2>;
        } NewSessionTicket;
 
 ke_modes
@@ -4053,11 +4049,12 @@ is listed below:
    "No".
 
    IANA [shall update/has updated] this registry to include a "TLS
-   1.3" column with the following four values: "Client", indicating
+   1.3" column with the following six values: "Client", indicating
    that the server shall not send them. "Clear", indicating
    that they shall be in the ServerHello. "Encrypted", indicating that
    they shall be in the EncryptedExtensions block, "Certificate" indicating that
-   they shall be in the Certificate block, and "No" indicating
+   they shall be in the Certificate block, "Ticket" indicating that they
+   can appear in the NewSessionTicket message (only) and "No" indicating
    that they are not used in TLS 1.3. This column [shall be/has been]
    initially populated with the values in this document.
 
@@ -4100,7 +4097,7 @@ is listed below:
 | early_data [[this document]]             |         Yes |   Encrypted | No                |
 | cookie [[this document]]                 |         Yes |      Client | Yes               |
 | supported_versions [[this document]]     |         Yes |      Client | No                |
-
+| ticket_early_data_info [[this document]] |         Yes |      Ticket | No                |
 
 In addition, this document defines two new registries to be maintained
 by IANA
