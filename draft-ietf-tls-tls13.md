@@ -1392,7 +1392,7 @@ following four sets of options in its ClientHello:
 - A "signature_algorithms" ({{signature-algorithms}}) extension which indicates the signature
   algorithms which the client can accept.
 - A "pre_shared_key" ({{pre-shared-key-extension}}) extension which
-  contains a a list of symmetric keys known to the client and a
+  contains a list of symmetric keys known to the client and a
   "psk_key_exchange_modes" ({{pre-shared-key-exchange-modes}})
   extension which indicates the key exchange modes that may be used
   with PSKs.
