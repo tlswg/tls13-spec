@@ -2277,22 +2277,12 @@ with an "unknown_psk_identity" alert.
 
 Each entry in the binders list is computed as an HMAC over the portion
 of the ClientHello up to and including the PreSharedKeyExtension.identities
-field. That is, it includes all of the ClientHello but not the binders
+field. That is, it includes all of the ClientHello but not the binder
 list itself.
 
-~~~~
-   binder_key =
-       HKDF-Expand-Label(BaseKey, [label], "", Hash.length)
-   
-   binder = HMAC(binding_key, Hash(ClientHello[truncated]))
-~~~~
-
-Where label is "external psk binder key" for external PSKs and
-"resumption psk binder key" for resumption PSKs. The different
-labels prevents the substitution of one type of PSK for the other.
-Note that this is similar to the computation of the
-Finished message ({{finished}}), except with a different label
-value.
+The binding_value is computed in the same way as the Finished
+message ({{finished}}) but with the BaseKey being the binder_key
+(see {{key-schedule}}).
 
 If the handshake includes a HelloRetryRequest, the initial ClientHello
 and HelloRetryRequest are included in the transcript along with the
@@ -3845,6 +3835,12 @@ In this diagram, the following formatting conventions apply:
                  |                        ClientHello)
                  |                        = client_early_traffic_secret
                  |
+                 +--------> Derive-Secret(.,
+                 |                        "external psk binder key" |
+                 |                        "resumption psk binder key",
+                 |                         "")
+                 |                        = binder_key
+                 |
                  +--------> Derive-Secret(., "early exporter master secret",
                  |                        ClientHello)
                  |                        = early_exporter_secret
@@ -3899,6 +3895,14 @@ If a given secret is not available, then the 0-value consisting of
 a string of Hash.length zeroes is used.  Note that this does not mean skipping
 rounds, so if PSK is not in use Early Secret will still be
 HKDF-Extract(0, 0).
+
+Note: There are multiple potential Early Secret values depending on
+which PSK the server ultimately selects.
+
+Note: For the computation of the binder_secret, the label is "external
+psk binder key" for external PSKs and "resumption psk binder key" for
+resumption PSKs. The different labels prevents the substitution of one
+type of PSK for the other.
 
 
 ## Updating Traffic Keys and IVs {#updating-traffic-keys}
