@@ -3932,6 +3932,9 @@ provided, the value is computed as:
     HKDF-Expand-Label(Secret, label, context_value, key_length)
 
 Where Secret is either the early_exporter_secret or the exporter_secret.
+Implementations MUST use the exporter_secret unless explicitly specified
+by the application. When adding TLS 1.3 to TLS 1.2 stacks, the exporter_secret
+MUST be for the existing exporter interface.
 
 If no context is provided, the value is computed as:
 
@@ -4579,7 +4582,7 @@ independent, so it is not feasible to compute one from another or
 the session secret from the exported value. Note: exporters can
 produce arbitrary-length values. If exporters are to be
 used as channel bindings, the exported value MUST be large
-enough to provide collision resistance. The exporters provided
+enough to provide collision resistance. The exporters provided in
 TLS 1.3 are derived from the same handshake contexts as the
 early traffic keys and the application traffic keys respectively,
 and thus have similar security properties. Note that they do
