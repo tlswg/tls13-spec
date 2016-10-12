@@ -2211,7 +2211,11 @@ The "extension_data" field of this extension contains a
 
 %%% Key Exchange Messages
 
-       opaque PskIdentity<0..2^16-1>;
+       struct {
+           opaque identity<0..2^16-1>;
+           uint32 obfuscated_ticket_age;
+       } PskIdentity;
+
        opaque PskBinderEntry<32..255>;
        
        struct {
@@ -2231,6 +2235,17 @@ identities
   to negotiate with the server. If sent alongside the "early_data"
   extension (see {{early-data-indication}}), the first identity is the
   one used for 0-RTT data.
+
+obfuscated_ticket_age
+: For each ticket, the time since the client learned about the server
+  configuration that it is using, in milliseconds.  This value is
+  added modulo 2^32 to with the "ticket_age_add" value that was
+  included with the ticket, see {{NewSessionTicket}}.  This addition
+  prevents passive observers from correlating sessions unless tickets
+  are reused.  Note: because ticket lifetimes are restricted to a
+  week, 32 bits is enough to represent any plausible age, even in
+  milliseconds. External tickets should use an obfuscated_ticket_age of
+  0.
 
 binders
 : A series of HMAC values, one for
@@ -2356,28 +2371,13 @@ The "extension_data" field of this extension contains an
 %%% Key Exchange Messages
 
        struct {
-           select (Handshake.msg_type) {
-               case client_hello:
-                   uint32 obfuscated_ticket_age;
-
-               case server_hello:
-                   struct {};
-           };
        } EarlyDataIndication;
 
-obfuscated_ticket_age
-: The time since the client learned about the server configuration that it is
-  using, in milliseconds.  This value is added modulo 2^32 to with the
-  "ticket_age_add" value that was included with the ticket, see
-  {{NewSessionTicket}}.  This addition prevents passive observers from
-  correlating sessions unless tickets are reused.  Note: because ticket
-  lifetimes are restricted to a week, 32 bits is enough to represent any
-  plausible age, even in milliseconds.
-
-A server MUST validate that the ticket_age is within a small
-tolerance of the time since the ticket was issued (see {{replay-time}}).
-If it is not, the server SHOULD proceed with the handshake but reject
-0-RTT.
+A server MUST validate that the ticket_age for the selected PSK
+identity is within a small tolerance of the time since the ticket was
+issued (see {{replay-time}}).  If it is not, the server SHOULD proceed
+with the handshake but reject 0-RTT, and SHOULD NOT take any other action
+that assumes that this ClientHello is fresh.
 
 The parameters for the 0-RTT data (symmetric cipher suite,
 ALPN, etc.) are the same as those which were negotiated in the connection
@@ -2457,11 +2457,12 @@ send the ServerHello, rather than waiting for the client's
 As noted in {{zero-rtt-data}}, TLS provides a limited mechanism for
 replay protection for data sent by the client in the first flight.
 
-The "obfuscated_ticket_age" parameter in the client's "early_data" extension SHOULD be used by
+The "obfuscated_ticket_age" parameter in the client's
+"pre_shared_key" extension SHOULD be used by
 servers to limit the time over which the first flight might be
 replayed.  A server can store the time at which it sends a session
 ticket to the client, or encode the time in the ticket.  Then, each
-time it receives an "early_data" extension, it can subtract the base value and
+time it receives an "pre_shared_key" extension, it can subtract the base value and
 check to see if the value used by the client matches its expectations.
 
 The ticket age (the value with "ticket_age_add" subtracted) provided by the
@@ -3077,6 +3078,7 @@ waiting for the client Finished.
 
        struct {
            uint32 ticket_lifetime;
+           uint32 ticket_age_add;
            opaque ticket<1..2^16-1>;
            Extension extensions<0..2^16-2>;
        } NewSessionTicket;
@@ -3091,6 +3093,13 @@ ticket_lifetime
   earlier based on local policy. A server MAY treat a ticket as valid
   for a shorter period of time than what is stated in the
   ticket_lifetime.
+
+
+ticket_age_add
+: A randomly generated 32-bit value that is used to obscure the age of
+  the ticket that the client includes in the "early_data" extension.
+  The client-side ticket age is added to this value modulo 2^32 to
+  obtain the value that is transmitted by the client.
 
 ticket
 : The value of the ticket to be used as the PSK identifier.
@@ -3114,14 +3123,7 @@ This document defines one ticket extension, "ticket_early_data_info"
        } TicketEarlyDataInfo;
 
 This extension indicates that the ticket may be used to send 0-RTT data
-({{early-data-indication}})). It contains the following values:
-
-
-ticket_age_add
-: A randomly generated 32-bit value that is used to obscure the age of the ticket that the
-  client includes in the "early_data" extension.  The client-side ticket age is
-  added to this value modulo 2^32 to obtain the value that is transmitted by
-  the client.
+({{early-data-indication}})). It contains the following value:
 
 max_early_data_size
 : The maximum amount of 0-RTT data that the client is allowed to send when using
