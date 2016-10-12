@@ -1010,7 +1010,7 @@ As shown in {{tls-0-rtt}}, the Zero-RTT data is just added to the 1-RTT
 handshake in the first flight. The rest of the handshake uses the same messages
 as with a 1-RTT handshake with PSK resumption.
 
-If the ALPN extension {{!RFC7301}} is used, the Zero-RTT data MUST be sent using
+If the ALPN extension {{RFC7301}} is used, the Zero-RTT data MUST be sent using
 the first application protocol the client offers. The client SHOULD use the same
 application protocol as used in the connection in which the PSK was established,
 or an application protocol which the client has established out-of-band that the
@@ -2359,7 +2359,7 @@ can behave in one of two ways:
 
 In order to accept early data, the server MUST have accepted a PSK cipher suite
 and selected the the first key offered in the client's "pre_shared_key"
-extension. If the client has sent the ALPN extension {{!RFC7301}}, the server
+extension. If the client has sent the ALPN extension {{RFC7301}}, the server
 MUST select the first protocol offered. In addition, it MUST verify that the
 following values are consistent with those negotiated in the connection during
 which the ticket was established.
