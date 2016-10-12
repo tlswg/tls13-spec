@@ -1820,6 +1820,7 @@ While the eventual version indicator for the RFC version of TLS 1.3 will
 be {3, 4}, implementations of draft versions of this specification SHOULD
 instead advertise {0x7f, [draft-version]} in their "supported_versions" extension,
 in ServerHello.version, and HelloRetryRequest.server_version.
+For instance, draft-17 would be encoded as the bytes 7f 11.
 This allows pre-RFC implementations to safely negotiate with each other,
 even if they would otherwise be incompatible.
 
