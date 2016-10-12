@@ -977,12 +977,21 @@ establishment, thus providing forward secrecy.
 
 ## Zero-RTT Data
 
-When resuming via a PSK with an appropriate ticket (i.e., one with
-the "early_data_info" extension), clients can also send data on their first
-flight ("early data"). This data is encrypted solely under keys
-derived using the first offered PSK as the static secret.  As shown in
-{{tls-0-rtt}}, the Zero-RTT data is just added to the 1-RTT handshake
-in the first flight. The rest of the handshake uses the same messages
+With the Zero-RTT mode clients can send data on their first flight
+("early data") whereby the client uses a PSK either obtained 
+out-of-band or as a ticket (i.e., one with the "early_data_info" 
+extension) from an earlier exchange to authenticate to the server. 
+
+When clients use a PSK obtained out-of-band then the following 
+information MUST be provisioned to both parties: 
+  * PSK identity, 
+  * ciphersuite for use with this PSK, 
+  * key exchange and authentication modes this PSK is allowed to be used with,  
+  * the Application-Layer Protocol Negotiation (ALPN) label(s), and 
+  * optionally the Server Name Indication (SNI). 
+  
+As shown in {{tls-0-rtt}}, the Zero-RTT data is just added to the 1-RTT 
+handshake in the first flight. The rest of the handshake uses the same messages
 as with a 1-RTT handshake with PSK resumption.
 
 ~~~
@@ -1028,8 +1037,9 @@ https://github.com/tlswg/tls13-spec/issues/443]]
 IMPORTANT NOTE: The security properties for 0-RTT data are weaker than
 those for other kinds of TLS data.  Specifically:
 
-1. This data is not forward secret, because it is encrypted solely
-with the PSK.
+1. The early data is encrypted solely under keys derived using the 
+offered PSK as the static secret. Hence, this data is not forward 
+secret, because it is encrypted solely with the PSK.
 
 2. There are no guarantees of non-replay between connections.
 Unless the server takes special measures outside those provided by TLS,
