@@ -88,12 +88,8 @@ normative:
 
 
 informative:
-  RFC0793:
-  RFC1948:
   RFC4086:
   RFC4279:
-  RFC4302:
-  RFC4303:
   RFC4346:
   RFC4366:
   RFC4492:
@@ -106,7 +102,6 @@ informative:
   RFC5116:
   RFC5246:
   RFC5746:
-  RFC5763:
   RFC5764:
   RFC5878:
   RFC5929:
