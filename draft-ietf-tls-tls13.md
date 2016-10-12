@@ -2254,7 +2254,8 @@ Prior to accepting PSK key establishment, the server MUST validate the
 corresponding binder value (see {{psk-binder}} below) If this
 value is not present or does not validate the server MUST abort the
 handshake.  Servers SHOULD NOT attempt to validate multiple binders;
-rather they SHOULD select a single PSK and validate solely its binder.
+rather they SHOULD select a single PSK and validate solely the
+binder that corresponds to that PSK.
 
 In order to accept PSK key establishment, the server sends a
 "pre_shared_key" extension indicating the selected identity. 
@@ -2281,7 +2282,9 @@ with an "unknown_psk_identity" alert.
 Each entry in the binders list is computed as an HMAC over the portion
 of the ClientHello up to and including the PreSharedKeyExtension.identities
 field. That is, it includes all of the ClientHello but not the binder
-list itself.
+list itself. The length fields for the message (including the overall
+length, the length of the extensions block, and the length of the "pre_shared_key"
+extensio)  are all set as if the binder were present.
 
 The binding_value is computed in the same way as the Finished
 message ({{finished}}) but with the BaseKey being the binder_key
@@ -3834,13 +3837,13 @@ In this diagram, the following formatting conventions apply:
                  v
            Early Secret
                  |
-                 +--------> Derive-Secret(., "client early traffic secret",
-                 |                        ClientHello)
+                 +---------> Derive-Secret(., "client early traffic secret",
+                 |                         ClientHello)
                  |                        = client_early_traffic_secret
                  |
-                 +--------> Derive-Secret(.,
-                 |                        "external psk binder key" |
-                 |                        "resumption psk binder key",
+                 +---------> Derive-Secret(.,
+                 |                         "external psk binder key" |
+                 |                         "resumption psk binder key",
                  |                         "")
                  |                        = binder_key
                  |
@@ -3897,15 +3900,16 @@ with three distinct transcripts.
 If a given secret is not available, then the 0-value consisting of
 a string of Hash.length zeroes is used.  Note that this does not mean skipping
 rounds, so if PSK is not in use Early Secret will still be
-HKDF-Extract(0, 0).
-
-Note: There are multiple potential Early Secret values depending on
-which PSK the server ultimately selects.
-
-Note: For the computation of the binder_secret, the label is "external
+HKDF-Extract(0, 0). For the computation of the binder_secret, the label is "external
 psk binder key" for external PSKs and "resumption psk binder key" for
 resumption PSKs. The different labels prevents the substitution of one
 type of PSK for the other.
+
+There are multiple potential Early Secret values depending on
+which PSK the server ultimately selects. The client will need to compute
+one for each potential PSK; if no PSK is selected, it will then need to
+compute the early secret corresponding to the zero PSK.
+
 
 
 ## Updating Traffic Keys and IVs {#updating-traffic-keys}
@@ -4073,9 +4077,9 @@ the relevant parameters:
     establishment.
   * "pre_shared_key" is REQUIRED for PSK key establishment.
   * "psk_key_exchange_modes" is required when PSKs are offered.
-  * "cookie" must always be supported if sent by the server.
+  * "cookie" MUST always be supported if sent by the server.
 
-If a required extension was not provided. endpoints MUST abort the
+If a required extension was not provided, endpoints MUST abort the
 handshake with a "missing_extension" alert. Any endpoint that receives
 an invalid combination of cipher suites and extensions MAY abort the
 connection with a "missing_extension" alert, regardless of negotiated
@@ -4183,6 +4187,7 @@ is listed below:
 | renegotiation_info [RFC5746]             |         Yes |          No | No                |
 | key_share [[this document]]              |         Yes |       Clear | Yes               |
 | pre_shared_key [[this document]]         |         Yes |       Clear | No                |
+| psk_key_exchange_modes [[this document]] |         Yes |      Client | No                |
 | early_data [[this document]]             |         Yes |   Encrypted | No                |
 | cookie [[this document]]                 |         Yes |      Client | Yes               |
 | supported_versions [[this document]]     |         Yes |      Client | No                |
@@ -4671,7 +4676,7 @@ resumption master secret computed by connection N and needed to form
 connection N+1 is separate from the traffic keys used by connection N,
 thus providing forward secrecy between the connections.
 
-The PSK binder value extension forms a binding between a PSK
+The PSK binder value forms a binding between a PSK
 and the current handshake, as well as between the session where the
 PSK was established and the session where it was used. This binding
 transitively includes the original handshake transcript, because that
@@ -4682,7 +4687,7 @@ resistant. These are properties of HKDF and HMAC respectively when
 used with collision resistant hash functions and producing output of
 at least 256 bits.  Any future replacement of these functions MUST
 also provide collision resistance.
-Note: the binder does not cover the binder values from other
+Note: The binder does not cover the binder values from other
 PSKs, though they are included in the Finished MAC.
 
 If an exporter is used, then it produces values which are unique
