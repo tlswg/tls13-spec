@@ -36,18 +36,11 @@ normative:
   RFC2434:
   RFC3447:
   RFC5280:
-  RFC5288:
-  RFC5289:
-  RFC5487:
   RFC5869:
   RFC6066:
-  RFC6209:
-  RFC6367:
   RFC6655:
-  RFC7251:
   RFC7539:
   RFC7748:
-  RFC7905:
   I-D.irtf-cfrg-eddsa:
 
   AES:
