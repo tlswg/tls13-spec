@@ -41,6 +41,7 @@ normative:
   RFC6655:
   RFC7539:
   RFC7748:
+  RFC7919:
   I-D.irtf-cfrg-eddsa:
 
   AES:
@@ -109,7 +110,6 @@ informative:
   RFC7568:
   RFC7627:
   RFC7685:
-  RFC7919:
 
   DSS:
        title: "Digital Signature Standard, version 4"
