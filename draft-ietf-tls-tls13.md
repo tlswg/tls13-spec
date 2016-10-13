@@ -2647,7 +2647,7 @@ Structure of this message:
        opaque ASN1Cert<1..2^24-1>;
 
        struct {
-           ASN1CertData cert_data;
+           ASN1Cert cert_data;
            Extension extensions<0..2^16-1>;
        } CertificateEntry;
 
