@@ -3468,29 +3468,25 @@ One of the content types supported by the TLS record layer is the
 alert type.  Like other messages, alert messages are encrypted as
 specified by the current connection state.
 
-Alert messages convey the severity of the message (warning or fatal)
-and a description of the alert. Warning-level messages are used to
-indicate orderly closure of the connection (see {{closure-alerts}}).
-Upon receiving a warning-level alert, the TLS implementation SHOULD
-indicate end-of-data to the application and, if appropriate for
-the alert type, send a closure alert in response.
+Alert messages convey a description of the alert. Alerts listed in
+{{closure-alerts}} are used to indicate an orderly close of the current
+connection state and must be handled as specified.
 
-Fatal-level messages are used to indicate abortive closure of the
-connection (See {{error-alerts}}). Upon receiving a fatal-level alert,
+Alerts listed in {{error-alerts}} are used to indicate abortive
+closure of the connection. Upon receiving an error alert,
 the TLS implementation SHOULD indicate an error to the application and
 MUST NOT allow any further data to be sent or received on the
 connection.  Servers and clients MUST forget keys and secrets
 associated with a failed connection. Stateful implementations of
 session tickets (as in many clients) SHOULD discard tickets associated
-with failed connections.
+with failed connections. All unknown alert types MUST be treated as
+error alerts.
 
-All the alerts listed in {{error-alerts}} MUST be sent as fatal and
-MUST be treated as fatal regardless of the AlertLevel in the
-message. Unknown alert types MUST be treated as fatal.
+Prior versions of TLS used the "legacy_alert_level" field to indicate the
+severity of the alert. This field should be set to {2} for all alerts,
+and MUST be ignored by implementations when receiving alerts.
 
 %%% Alert Messages
-
-       enum { warning(1), fatal(2), (255) } AlertLevel;
 
        enum {
            close_notify(0),
@@ -3531,7 +3527,7 @@ message. Unknown alert types MUST be treated as fatal.
        } AlertDescription;
 
        struct {
-           AlertLevel level;
+           uint8 legacy_alert_level = { 2 };
            AlertDescription description;
        } Alert;
 
@@ -3549,23 +3545,23 @@ close_notify
 end_of_early_data
 : This alert is sent by the client to indicate that all 0-RTT
   application_data messages have been transmitted (or none will
-  be sent at all) and that this is the end of the flight. This
-  alert MUST be at the warning level. Servers MUST NOT send this
-  alert and clients receiving it MUST terminate the connection
-  with an "unexpected_message" alert.
+  be sent at all) and that this is the end of the flight. Servers
+  MUST NOT send this alert and clients receiving it MUST terminate
+  the connection with an "unexpected_message" alert.
 
 user_canceled
 : This alert notifies the recipient that the sender is canceling the
   handshake for some reason unrelated to a protocol failure. If a user
   cancels an operation after the handshake is complete, just closing the
   connection by sending a "close_notify" is more appropriate. This alert
-  SHOULD be followed by a "close_notify". This alert is generally a warning.
+  SHOULD be followed by a "close_notify".
 {:br }
 
 Either party MAY initiate a close by sending a "close_notify" alert. Any data
 received after a closure alert is ignored. If a transport-level close is
 received prior to a "close_notify", the receiver cannot know that all the
-data that was sent has been received.
+data that was sent has been received. Upon receiving a "close_notify" alert
+the TLS implementation SHOULD indicate end-of-data to the application.
 
 Each party MUST send a "close_notify" alert before closing the write side
 of the connection, unless some other fatal alert has been transmitted. The
@@ -3595,7 +3591,7 @@ peer. Upon transmission or receipt of a fatal alert message, both
 parties immediately close the connection.
 
 Whenever an implementation encounters a fatal error condition, it
-SHOULD send an appropriate fatal alert and MUST close the connection
+SHOULD send an appropriate alert and MUST close the connection
 without sending or receiving any additional data. In the rest of this
 specification, the phrase "{terminate the connection, abort the
 handshake}" is used without a specific alert means that the
