@@ -1218,6 +1218,12 @@ syntax much like that available for enumerateds. For example, T.f2 refers to
 the second field of the previous declaration. Structure definitions may be
 embedded.
 
+Basically the "struct" notation is used in the top level to define a
+new type. However, there is one exception that an anonymous structure
+"struct {}", which means empty, can be used inside of another
+structure.
+
+
 ###  Variants
 
 Defined structures may have variants based on some knowledge that is available
