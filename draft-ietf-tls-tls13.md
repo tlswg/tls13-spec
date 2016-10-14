@@ -271,7 +271,7 @@ informative:
        seriesinfo: Designs, Codes and Cryptography
        data: 1992
   SIGMA:
-       title: "SIGMA: the 'SIGn-and-MAc' approach to authenticated Di e-Hellman and its use in the IKE protocols"
+       title: "SIGMA: the 'SIGn-and-MAc' approach to authenticated Diffie-Hellman and its use in the IKE protocols"
        author:
        -
          ins: H. Krawczyk
