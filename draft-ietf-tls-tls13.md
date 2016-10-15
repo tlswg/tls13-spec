@@ -1161,14 +1161,17 @@ equivalent to the decimal value 16909060.
 
 ##  Enumerateds
 
-An additional sparse data type is available called enum. A field of type enum
-can only assume the values declared in the definition. Each definition is a
+An additional sparse data type is available called enum. Each definition is a
 different type. Only enumerateds of the same type may be assigned or compared.
 Every element of an enumerated must be assigned a value, as demonstrated in the
 following example. Since the elements of the enumerated are not ordered, they
 can be assigned any unique value, in any order.
 
        enum { e1(v1), e2(v2), ... , en(vn) [[, (n)]] } Te;
+
+Future extension or additions to the protocol may define new values.
+Implementations need to be able to parse and ignore them unless their
+definition states otherwise.
 
 An enumerated occupies as much space in the byte stream as would its maximal
 defined ordinal value. The following definition would cause one byte to be used
@@ -1180,7 +1183,7 @@ One may optionally specify a value without its associated tag to force the
 width definition without defining a superfluous element.
 
 In the following example, Taste will consume two bytes in the data stream but
-can only assume the values 1, 2, or 4.
+can only assume the values 1, 2, or 4 in current version of protocol.
 
        enum { sweet(1), sour(2), bitter(4), (32000) } Taste;
 
