@@ -1056,6 +1056,12 @@ will not process the same data twice for the same connection) and
 an attacker will not be able to make 0-RTT data appear to be
 1-RTT data (because it is protected with different keys.)
 
+These properties mean that 0-RTT data must be specially treated by applications. They SHOULD be required
+to opt-in to 0-RTT data transmission or recieving it: implementations SHOULD NOT preappend recieved 0-RTT data
+to 1-RTT data automatically,but provide special functions to examine 0-RTT data.
+
+Protocols on top of TLS 1.3 should carefully consider when 0-RTT can be used.
+
 The same warnings apply to any use of the early exporter secret.
 
 The remainder of this document provides a detailed description of TLS.
