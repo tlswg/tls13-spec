@@ -3230,7 +3230,7 @@ length
 : The length (in bytes) of the following TLSPlaintext.fragment. The
   length MUST NOT exceed 2^14. An endpoint that receives a record
   that exceeds this length MUST terminate the connection with a
-  “record_overflow” alert.
+  "record_overflow" alert.
 
 fragment
 : The data being transmitted. This value transparent and treated as an
