@@ -862,7 +862,7 @@ Upon receiving the server's messages, the client responds with its Authenticatio
 messages, namely Certificate and CertificateVerify (if requested), and Finished.
 
 At this point, the handshake is complete, and the client and server may exchange
-application layer data. Application data MUST NOT be sent prior to sending the
+application layer data. Application Data MUST NOT be sent prior to sending the
 Finished message. Note that while the server may send application data
 prior to receiving the client's Authentication messages, any data sent at
 that point is, of course, being sent to an unauthenticated peer.
@@ -3185,7 +3185,7 @@ with an "unexpected_message" alert.  New record content type values are
 assigned by IANA in the TLS Content Type Registry as described in
 {{iana-considerations}}.
 
-Application data messages are carried by the record layer and are
+Application Data messages are carried by the record layer and are
 fragmented and encrypted as described below. The messages are treated
 as transparent data to the record layer.
 
@@ -3245,7 +3245,7 @@ by following the procedure and requirements in {{backward-compatibility}}.
 
 Implementations MUST NOT send zero-length fragments of Handshake or
 Alert types, even if those fragments contain padding. Zero-length
-fragments of Application data MAY be sent as they are potentially
+fragments of Application Data MAY be sent as they are potentially
 useful as a traffic analysis countermeasure.
 
 When record protection has not yet been engaged, TLSPlaintext
