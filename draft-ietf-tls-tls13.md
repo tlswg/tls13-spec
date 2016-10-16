@@ -432,10 +432,11 @@ draft-17
 - Merge TicketExtensions and Extensions registry. Changes
   ticket_early_data_info code point (*).
 
+- Replace Client.key_shares in response to HRR (*)
+
 - Explicitly allow predicting ClientFinished for NST.
 
 - Clarify conditions for allowing 0-RTT with PSK.
-
 
 draft-16
 
@@ -1422,8 +1423,9 @@ ClientHello when the server has responded to its ClientHello with a
 HelloRetryRequest. In that case, the client MUST send the same
 ClientHello (without modification) except:
 
-- Including a new KeyShareEntry as the lowest priority share
-  (i.e., appended to the list of shares in the "key_share" extension).
+- If a "key_share" extension was supplied in the HelloRetryRequest,
+  replacing the list of shares with a list containing a single
+  KeyShareEntry from the indicated group.
 
 - Removing the "early_data" extension ({{early-data-indication}}) if one was
   present. Early data is not permitted after HelloRetryRequest.
@@ -1664,12 +1666,14 @@ HelloRetryRequest MUST NOT contain any extensions that were not first
 offered by the client in its ClientHello, with the exception of optionally the
 "cookie" (see {{cookie}}) extension.
 
-Upon receipt of a HelloRetryRequest, the client MUST verify that the extensions
-block is not empty and otherwise MUST abort the handshake with a
-"decode_error" alert.  Clients SHOULD also abort the handshake with an
-"unexpected_message" alert in
-response to any second HelloRetryRequest which was sent in the same connection
-(i.e., where the ClientHello was itself in response to a HelloRetryRequest).
+Upon receipt of a HelloRetryRequest, the client MUST verify that the
+extensions block is not empty and otherwise MUST abort the handshake
+with a "decode_error" alert. Clients MUST abort the handshake with
+an "illegal_parameter" alert if the HelloRetryRequest would not result in
+any change in the ClientHello. If a client receives a second
+HelloRetryRequest in the same connection (i.e., where
+the ClientHello was itself in response to a HelloRetryRequest), it
+MUST abort the handshake with an "unexpected_message" alert.
 
 Otherwise, the client MUST process all extensions in the HelloRetryRequest and
 send a second updated ClientHello. The HelloRetryRequest extensions defined in
@@ -1679,11 +1683,6 @@ this specification are:
 
 - key_share (see {{key-share}})
 
-Note that HelloRetryRequest extensions are defined such that the original
-ClientHello may be computed from the new one, given minimal state about which
-HelloRetryRequest extensions were sent. For example, the key_share extension
-causes the new KeyShareEntry to be appended to the client_shares field, rather
-than replacing it.
 
 ##  Hello Extensions
 
