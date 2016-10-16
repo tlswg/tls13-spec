@@ -3283,7 +3283,7 @@ fragment
 {:br }
 
 This document describes TLS Version 1.3, which uses the version 0x0304.
-This version value is historical, deriving from the use of 0x0301,
+This version value is historical, deriving from the use of 0x0301
 for TLS 1.0 and 0x0300 for SSL 3.0. In order to maximize backwards
 compatibility, the record layer version identifies as simply TLS 1.0.
 Endpoints supporting other versions negotiate the version to use
@@ -3319,7 +3319,7 @@ by an encrypted body, which itself contains a type and optional padding.
        } TLSInnerPlaintext;
 
        struct {
-           ContentType opaque_type = { 23 }; /* application_data, see TLSInnerPlaintext.type */
+           ContentType opaque_type = 23; /* application_data, see TLSInnerPlaintext.type */
            ProtocolVersion legacy_record_version = 0x0301;    /* TLS v1.x */
            uint16 length;
            opaque encrypted_record[length];
