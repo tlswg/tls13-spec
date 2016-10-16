@@ -2686,6 +2686,10 @@ for each scenario:
 
 The [sender] in this table denotes the sending side.
 
+In all cases, the handshake context is formed by concatenating the
+indicated handshake messages, including the handshake message type
+and length fields.
+
 ###  Certificate
 
 When this message will be sent:
