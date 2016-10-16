@@ -4077,9 +4077,10 @@ applicable features:
   * "supported_groups" and "key_share" are REQUIRED for DHE or ECDHE key exchange.
   * "pre_shared_key" is REQUIRED for PSK key agreement.
 
-A client is considered to be attempting to negotiate using this specification
-if the ClientHello contains a "supported_versions" extension, at minimum.
-Such ClientHello messages MUST meet following requirements:
+A client is considered to be attempting to negotiate using this
+specification if the ClientHello contains a "supported_versions"
+extension with a version indicating TLS 1.3. Such a ClientHello message
+MUST meet the following requirements:
 
  * If not containing a "pre_shared_key" extension, it MUST contain both
    a "signature_algorithms" extension and a "supported_groups" extension.
@@ -4087,9 +4088,9 @@ Such ClientHello messages MUST meet following requirements:
    "key_share" extension, and vice versa. (an empty KeyShare.client_shares
    vector is permitted)
 
-Servers receiving a ClientHello which is attempting to negotiate using
-this specification, yet failing any of the above requirements, MUST abort
-the handshake with a "missing_extension" alert.
+Servers receiving a ClientHello which does not conform to these
+requirements MUST abort the handshake with a "missing_extension"
+alert.
 
 Additionally, all implementations MUST support use of the "server_name"
 extension with applications capable of using it.
