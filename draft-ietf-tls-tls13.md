@@ -3119,7 +3119,6 @@ This document defines one ticket extension, "ticket_early_data_info"
 %%% Ticket Establishment
 
        struct {
-           uint32 ticket_age_add;
            uint32 max_early_data_size;           
        } TicketEarlyDataInfo;
 
