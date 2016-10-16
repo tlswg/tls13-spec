@@ -1057,6 +1057,14 @@ will not process the same data twice for the same connection) and
 an attacker will not be able to make 0-RTT data appear to be
 1-RTT data (because it is protected with different keys.)
 
+Protocols MUST NOT use 0-RTT data without a profile that defines its
+use. That profile needs to identify which messages or interactions are
+safe to use with 0-RTT. In addition, to avoid accidental misuse,
+implementations SHOULD NOT enable 0-RTT unless specifically
+requested. Special functions for 0-RTT data are RECOMMENDED to ensure
+that an application is always aware that it is sending or receiving
+data that might be replayed.
+
 The same warnings apply to any use of the early exporter secret.
 
 The remainder of this document provides a detailed description of TLS.
@@ -1170,7 +1178,7 @@ can be assigned any unique value, in any order.
 
        enum { e1(v1), e2(v2), ... , en(vn) [[, (n)]] } Te;
 
-Future extension or additions to the protocol may define new values.
+Future extension or additions to the protocol may define new values. Upon
 Implementations need to be able to parse and ignore them unless their
 definition states otherwise.
 
