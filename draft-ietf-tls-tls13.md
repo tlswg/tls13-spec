@@ -2244,8 +2244,8 @@ obfuscated_ticket_age
   prevents passive observers from correlating sessions unless tickets
   are reused.  Note: because ticket lifetimes are restricted to a
   week, 32 bits is enough to represent any plausible age, even in
-  milliseconds. External tickets should use an obfuscated_ticket_age of
-  0.
+  milliseconds. External tickets SHOULD use an obfuscated_ticket_age of
+  0; servers MUST ignore this value for external tickets.
 
 binders
 : A series of HMAC values, one for
@@ -2373,8 +2373,9 @@ The "extension_data" field of this extension contains an
        struct {
        } EarlyDataIndication;
 
-A server MUST validate that the ticket_age for the selected PSK
-identity is within a small tolerance of the time since the ticket was
+A server MUST validate that the ticket age for the selected PSK
+identity (computed by un-masking PskIdentity.obfuscated_ticket_age)
+is within a small tolerance of the time since the ticket was
 issued (see {{replay-time}}).  If it is not, the server SHOULD proceed
 with the handshake but reject 0-RTT, and SHOULD NOT take any other action
 that assumes that this ClientHello is fresh.
