@@ -1514,7 +1514,7 @@ legacy_session_id
   feature which has been merged with Pre-Shared Keys in this version
   (see {{resumption-and-psk}}).
   This field MUST be ignored by a server negotiating TLS 1.3 and
-  SHOULD be set as a zero length vector (i.e., a single zero byte
+  MUST be set as a zero length vector (i.e., a single zero byte
   length field) by clients which do not have a cached session ID
   set by a pre-TLS 1.3 server.
 
