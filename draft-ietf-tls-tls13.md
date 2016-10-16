@@ -1217,12 +1217,7 @@ like that of C.
 The fields within a structure may be qualified using the type's name, with a
 syntax much like that available for enumerateds. For example, T.f2 refers to
 the second field of the previous declaration. Structure definitions may be
-embedded.
-
-Basically the "struct" notation is used in the top level to define a
-new type. However, there is one exception that an anonymous structure
-"struct {}", which means empty, can be used inside of another
-structure.
+embedded. Anonymous structs may also be defined inside other structures.
 
 
 ###  Variants
