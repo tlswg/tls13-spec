@@ -1394,7 +1394,7 @@ following four sets of options in its ClientHello:
 - A "signature_algorithms" ({{signature-algorithms}}) extension which indicates the signature
   algorithms which the client can accept.
 - A "pre_shared_key" ({{pre-shared-key-extension}}) extension which
-  contains a list of symmetric keys known to the client and a
+  contains a list of symmetric key identities known to the client and a
   "psk_key_exchange_modes" ({{pre-shared-key-exchange-modes}})
   extension which indicates the key exchange modes that may be used
   with PSKs.
@@ -1407,20 +1407,17 @@ the client. If there is overlap in the "supported_group" extension
 but the client did not offer a compatible "key_share" extension,
 then the server will respond with a HelloRetryRequest ({{hello-retry-request}}) message.
 
-If the server selects a PSK, then it MUST only be used with the
-establishment modes indicated by "psk_key_exchange_modes" (PSK alone
-or with (EC)DHE).
-The server can then select the key establishment and
-parameters to be consistent both with the PSK and the
-other extensions supplied by the client. Note that if the PSK can be
-used without (EC)DHE then non-overlap in the "supported_group"
-parameters need not be fatal.
+If the server selects a PSK, then it MUST also select a key
+establishment mode from the set indicated by client's
+"psk_key_exchange_modes extension (PSK alone or with (EC)DHE). Note
+that if the PSK can be used without (EC)DHE then non-overlap in the
+"supported_group" parameters need not be fatal.
 
 The server indicates its selected parameters in the ServerHello as
 follows:
 
 - If PSK is being used then the server will send a
-"pre_shared_key" extension.
+"pre_shared_key" extension indicating the selected key.
 - If PSK is not being used, then (EC)DHE and certificate-based
 authentication are always used.
 - When (EC)DHE is in use, the server will also provide a
@@ -2215,13 +2212,13 @@ The "extension_data" field of this extension contains a
 %%% Key Exchange Messages
 
        opaque PskIdentity<0..2^16-1>;
-       opaque PskBinderEntry<0..255>;
+       opaque PskBinderEntry<32..255>;
        
        struct {
            select (Handshake.msg_type) {
                case client_hello:
                   PskIdentity identities<6..2^16-1>;
-                  PskBinderEntry binders<0..2^16-1>;
+                  PskBinderEntry binders<33..2^16-1>;
                   
                case server_hello:
                   uint16 selected_identity;
@@ -2261,8 +2258,9 @@ In order to accept PSK key establishment, the server sends a
 "pre_shared_key" extension indicating the selected identity. 
 
 Clients MUST verify that the server's selected_identity is within the
-range supplied by the client, that the same cipher suite was selected
-and that the, "key_share", and
+range supplied by the client, that the server selected the cipher
+suite associated with the PSK,
+and that the "key_share", and
 "signature_algorithms" extensions are consistent with the indicated
 ke_modes and auth_modes values. If these values are not consistent,
 the client MUST abort the handshake with an "illegal_parameter" alert.
@@ -2284,7 +2282,7 @@ of the ClientHello up to and including the PreSharedKeyExtension.identities
 field. That is, it includes all of the ClientHello but not the binder
 list itself. The length fields for the message (including the overall
 length, the length of the extensions block, and the length of the "pre_shared_key"
-extensio)  are all set as if the binder were present.
+extension) are all set as if the binder were present.
 
 The binding_value is computed in the same way as the Finished
 message ({{finished}}) but with the BaseKey being the binder_key
@@ -3710,7 +3708,8 @@ decode_error
 
 decrypt_error
 : A handshake cryptographic operation failed, including being unable
-  to correctly verify a signature or validate a Finished message.
+  to correctly verify a signature or validate a Finished message
+  or a PSK binder.
 
 protocol_version
 : The protocol version the peer has attempted to negotiate is
@@ -4078,7 +4077,8 @@ the relevant parameters:
   * "supported_groups" and "key_share" are REQUIRED for DHE or ECDHE key
     establishment.
   * "pre_shared_key" is REQUIRED for PSK key establishment.
-  * "psk_key_exchange_modes" is required when PSKs are offered.
+  * "psk_key_exchange_modes" MUST be sent by the client
+    required when PSKs are offered or accepted.
   * "cookie" MUST always be supported if sent by the server.
 
 If a required extension was not provided, endpoints MUST abort the
