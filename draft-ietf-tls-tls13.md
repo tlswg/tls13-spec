@@ -1466,17 +1466,13 @@ Structure of this message:
 
 %%% Key Exchange Messages
 
-       struct {
-           uint8 major;
-           uint8 minor;
-       } ProtocolVersion;
-
+       uint16 ProtocolVersion;
        opaque Random[32];
 
        uint8 CipherSuite[2];    /* Cryptographic suite selector */
 
        struct {
-           ProtocolVersion legacy_version = { 3, 3 };    /* TLS v1.2 */
+           ProtocolVersion legacy_version = 0x0303;    /* TLS v1.2 */
            Random random;
            opaque legacy_session_id<0..32>;
            CipherSuite cipher_suites<2..2^16-2>;
@@ -1502,7 +1498,7 @@ legacy_version
   number higher than it supports.  
   In TLS 1.3, the client indicates its version preferences in the
   "supported_versions" extension ({{supported-versions}}) and this field MUST
-  be set to {3, 3}, which was the version number for TLS 1.2.
+  be set to 0x0303, which was the version number for TLS 1.2.
   (See {{backward-compatibility}} for details about backward compatibility.)  
 
 random
@@ -1586,7 +1582,7 @@ version
   offered by the client in the ClientHello.  In particular, servers MUST accept
   ClientHello messages with versions higher than those supported and negotiate
   the highest mutually supported version.  For this version of the
-  specification, the version is { 3, 4 }.  (See {{backward-compatibility}} for
+  specification, the version is 0x0304.  (See {{backward-compatibility}} for
   details about backward compatibility.)
 
 random
@@ -1805,7 +1801,7 @@ supported versions in preference order, with the most preferred
 version first. Implementations of this specification MUST send this
 extension containing all versions of TLS which they are
 prepared to negotiate (for this specification, that means minimally
-{3, 4}, but if previous versions of TLS are supported, they MUST
+0x0304, but if previous versions of TLS are supported, they MUST
 be present as well).
 
 Servers which are compliant with this specification MUST use only the
@@ -1813,7 +1809,7 @@ Servers which are compliant with this specification MUST use only the
 preferences and MUST only select a version of TLS present in that
 extension. They MUST ignore any unknown versions. If the extension is
 not present, they MUST negotiate TLS 1.2 or prior as specified in
-{{RFC5246}}, even if ClientHello.legacy_version is {3, 4} or later.
+{{RFC5246}}, even if ClientHello.legacy_version is 0x0304 or later.
 
 The server MUST NOT send the "supported_versions" extension. The
 server's selected version is contained in the ServerHello.version field as
@@ -1824,10 +1820,10 @@ in previous versions of TLS.
 RFC EDITOR: PLEASE REMOVE THIS SECTION
 
 While the eventual version indicator for the RFC version of TLS 1.3 will
-be {3, 4}, implementations of draft versions of this specification SHOULD
-instead advertise {0x7f, [draft-version]} in their "supported_versions" extension,
+be 0x0304, implementations of draft versions of this specification SHOULD
+instead advertise 0x7f00 | draft_version
 in ServerHello.version, and HelloRetryRequest.server_version.
-For instance, draft-17 would be encoded as the bytes 7f 11.
+For instance, draft-17 would be encoded as the 0x7f11.
 This allows pre-RFC implementations to safely negotiate with each other,
 even if they would otherwise be incompatible.
 
@@ -3262,7 +3258,7 @@ Alert messages ({{alert-protocol}}) MUST NOT be fragmented across records.
 
        struct {
            ContentType type;
-           ProtocolVersion legacy_record_version = { 3, 1 };    /* TLS v1.x */
+           ProtocolVersion legacy_record_version = 0x0301;    /* TLS v1.x */
            uint16 length;
            opaque fragment[TLSPlaintext.length];
        } TLSPlaintext;
@@ -3271,7 +3267,7 @@ type
 : The higher-level protocol used to process the enclosed fragment.
 
 legacy_record_version
-: This value MUST be set to { 3, 1 } for all records.
+: This value MUST be set to 0x0301 for all records.
   This field is deprecated and MUST be ignored for all purposes.
 
 length
@@ -3286,9 +3282,9 @@ fragment
   specified by the type field.
 {:br }
 
-This document describes TLS Version 1.3, which uses the version { 3, 4 }.
-The version value 3.4 is historical, deriving from the use of { 3, 1 }
-for TLS 1.0 and { 3, 0 } for SSL 3.0. In order to maximize backwards
+This document describes TLS Version 1.3, which uses the version 0x0304.
+This version value is historical, deriving from the use of 0x0301,
+for TLS 1.0 and 0x0300 for SSL 3.0. In order to maximize backwards
 compatibility, the record layer version identifies as simply TLS 1.0.
 Endpoints supporting other versions negotiate the version to use
 by following the procedure and requirements in {{backward-compatibility}}.
@@ -3324,7 +3320,7 @@ by an encrypted body, which itself contains a type and optional padding.
 
        struct {
            ContentType opaque_type = { 23 }; /* application_data, see TLSInnerPlaintext.type */
-           ProtocolVersion legacy_record_version = { 3, 1 };    /* TLS v1.x */
+           ProtocolVersion legacy_record_version = 0x0301;    /* TLS v1.x */
            uint16 length;
            opaque encrypted_record[length];
        } TLSCiphertext;
@@ -3350,7 +3346,7 @@ opaque_type
   decryption.
 
 legacy_record_version
-: The legacy_record_version field is identical to TLSPlaintext.legacy_record_version and is always { 3, 1 }.
+: The legacy_record_version field is identical to TLSPlaintext.legacy_record_version and is always 0x0301.
   Note that the handshake protocol including the ClientHello and ServerHello messages authenticates
   the protocol version, so this value is redundant.
 
@@ -4397,11 +4393,6 @@ TLS protocol issues:
   past the start of the cleartext in the event that the peer has sent
   a malformed plaintext of all-zeros?
 
-- When processing a ClientHello containing a version of { 3, 5 } or higher, do
-  you respond with the highest common version of TLS rather than requiring an
-  exact match? Have you ensured this continues to be true with arbitrarily
-  higher version numbers? (e.g. { 4, 0 }, { 9, 9 }, { 255, 255 })
-
 - Do you properly ignore unrecognized cipher suites ({{client-hello}}),
   hello extensions ({{hello-extensions}}), named groups ({{negotiated-groups}}),
   and signature algorithms ({{signature-algorithms}})?
@@ -4503,7 +4494,7 @@ whenever TLS 1.3 is used.
 ## Negotiating with an older server
 
 A TLS 1.3 client who wishes to negotiate with such older servers will send a
-normal TLS 1.3 ClientHello containing { 3, 3 } (TLS 1.2) in
+normal TLS 1.3 ClientHello containing 0x0303 (TLS 1.2) in
 ClientHello.legacy_version but with the correct version in the
 "supported_versions" extension. If the server does not support TLS 1.3 it
 will respond with a ServerHello containing an older version number. If the
@@ -4588,14 +4579,14 @@ Implementations MUST NOT negotiate TLS 1.3 or later using an SSL version 2.0 com
 CLIENT-HELLO. Implementations are NOT RECOMMENDED to accept an SSL version 2.0 compatible
 CLIENT-HELLO in order to negotiate older versions of TLS.
 
-Implementations MUST NOT send or accept any records with a version less than { 3, 0 }.
+Implementations MUST NOT send or accept any records with a version less than 0x0300.
 
 The security of SSL 3.0 {{SSL3}} is considered insufficient for the reasons enumerated
 in {{RFC7568}}, and MUST NOT be negotiated for any reason.
 
 Implementations MUST NOT send a ClientHello.legacy_version or ServerHello.version
-set to { 3, 0 } or less. Any endpoint receiving a Hello message with
-ClientHello.legacy_version or ServerHello.version set to { 3, 0 } MUST
+set to 0x0300 or less. Any endpoint receiving a Hello message with
+ClientHello.legacy_version or ServerHello.version set to 0x0300 MUST
 abort the handshake with a "protocol_version" alert.
 
 Implementations MUST NOT use the Truncated HMAC extension, defined in
