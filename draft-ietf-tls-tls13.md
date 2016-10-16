@@ -1649,11 +1649,12 @@ offered by the client in its ClientHello, with the exception of optionally the
 
 Upon receipt of a HelloRetryRequest, the client MUST verify that the
 extensions block is not empty and otherwise MUST abort the handshake
-with a "decode_error" alert. Clients SHOULD abort the handshake with
-an "unexpected message" if the HelloRetryRequest would not result in
-any change in the ClientHello or in response to any second
-HelloRetryRequest which was sent in the same connection (i.e., where
-the ClientHello was itself in response to a HelloRetryRequest).
+with a "decode_error" alert. Clients MUST abort the handshake with
+an "illegal_parameter" alert if the HelloRetryRequest would not result in
+any change in the ClientHello. If a client receives a second
+HelloRetryRequest in the same connection (i.e., where
+the ClientHello was itself in response to a HelloRetryRequest), it
+MUST abort the handshake with an "unexpected_message" alert.
 
 Otherwise, the client MUST process all extensions in the HelloRetryRequest and
 send a second updated ClientHello. The HelloRetryRequest extensions defined in
