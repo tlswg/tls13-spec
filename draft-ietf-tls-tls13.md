@@ -33,7 +33,7 @@ author:
 normative:
   RFC2104:
   RFC2119:
-  RFC2434:
+  RFC5226:
   RFC3447:
   RFC5280:
   RFC5869:
@@ -4112,9 +4112,9 @@ This document uses several registries that were originally created in
 and their allocation policies are below:
 
 - TLS Cipher Suite Registry: Values with the first byte in the range
-  0-254 (decimal) are assigned via Specification Required {{RFC2434}}.
+  0-254 (decimal) are assigned via Specification Required {{RFC5226}}.
   Values with the first byte 255 (decimal) are reserved for Private
-  Use {{RFC2434}}.
+  Use {{RFC5226}}.
 
   IANA [SHALL add/has added] the cipher suites listed in {{cipher-suites}} to
   the registry. The "Value" and "Description" columns are taken from the table.
@@ -4123,13 +4123,13 @@ and their allocation policies are below:
   applied.]]
 
 -  TLS ContentType Registry: Future values are allocated via
-  Standards Action {{RFC2434}}.
+  Standards Action {{RFC5226}}.
 
 -  TLS Alert Registry: Future values are allocated via Standards
-  Action {{RFC2434}}.
+  Action {{RFC5226}}.
 
 -  TLS HandshakeType Registry: Future values are allocated via
-  Standards Action {{RFC2434}}. IANA [SHALL update/has updated] this registry
+  Standards Action {{RFC5226}}. IANA [SHALL update/has updated] this registry
   to rename item 4 from "NewSessionTicket" to "new_session_ticket".
 
 This document also uses a registry originally created in {{RFC4366}}. IANA has
@@ -4137,9 +4137,9 @@ updated it to reference this document. The registry and its allocation policy
 is listed below:
 
 - TLS ExtensionType Registry: Values with the first byte in the range
-   0-254 (decimal) are assigned via Specification Required {{RFC2434}}.
+   0-254 (decimal) are assigned via Specification Required {{RFC5226}}.
    Values with the first byte 255 (decimal) are reserved for Private
-   Use {{RFC2434}}. IANA [SHALL update/has updated]
+   Use {{RFC5226}}. IANA [SHALL update/has updated]
    this registry to include the "key_share", "pre_shared_key", and
    "early_data" extensions as defined in this document.
 
@@ -4205,9 +4205,9 @@ In addition, this document defines two new registries to be maintained
 by IANA
 
 -  TLS SignatureScheme Registry: Values with the first byte in the range
-  0-254 (decimal) are assigned via Specification Required {{RFC2434}}.
+  0-254 (decimal) are assigned via Specification Required {{RFC5226}}.
   Values with the first byte 255 (decimal) are reserved for Private
-  Use {{RFC2434}}. Values with the first byte in the range 0-6 or with the
+  Use {{RFC5226}}. Values with the first byte in the range 0-6 or with the
   second byte in the range 0-3 that are not currently allocated are reserved for
   backwards compatibility.
   This registry SHALL have a "Recommended" column.
