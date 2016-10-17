@@ -3942,18 +3942,12 @@ keys.
 The traffic keying material is generated from the following input values:
 
 * A secret value
-* A phase value indicating the phase of the protocol the keys are
-  being generated for
 * A purpose value indicating the specific value being generated
 * The length of the key
 
 The keying material is computed using:
 
-       key = HKDF-Expand-Label(Secret,
-                               phase + ", " + purpose,
-                               "",
-                               key_length)
-
+       key = HKDF-Expand-Label(Secret, purpose, "", key_length_
 The following table describes the inputs to the key calculation for
 each class of traffic keys:
 
