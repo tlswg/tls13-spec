@@ -1428,7 +1428,7 @@ CertificateVerify ({{certificate-verify}}) messages.
 
 If the server is unable to negotiate a supported set of parameters
 (i.e., there is no overlap between the client and server parameters),
-it MUST abort the handshake and and SHOULD send either
+it MUST abort the handshake with either
 a "handshake_failure" or "insufficient_security" fatal alert
 (see {{alert-protocol}}).
 
@@ -1601,7 +1601,7 @@ extensions
   required to establish the cryptographic context. Currently the only
   such extensions are "key_share", "pre_shared_key", and "signature_algorithms".
   Clients MUST check the ServerHello for the presence of any forbidden
-  extensions and if any are found MUST abort the handshake with a
+  extensions and if any are found MUST abort the handshake with an
   "illegal_parameter" alert. In prior versions of TLS, the extensions
   field could be omitted entirely if not needed, similar to
   ClientHello. As of TLS 1.3, all clients and servers will send at
@@ -2148,7 +2148,7 @@ Servers MUST NOT send a KeyShareEntry for any group not
 indicated in the "supported_groups" extension.
 If a HelloRetryRequest was received, the client MUST verify that the
 selected NamedGroup matches that supplied in the selected_group field and MUST
-abort the connection with an "illegal_parameter" alert if it does not.
+abort the handshake with an "illegal_parameter" alert if it does not.
 
 [[TODO: Recommendation about what the client offers.
 Presumably which integer DH groups and which curves.]]
@@ -3502,7 +3502,8 @@ specified by the current connection state.
 
 Alert messages convey the severity of the message (warning or fatal)
 and a description of the alert. Warning-level messages are used to
-indicate orderly closure of the connection (see {{closure-alerts}}).
+indicate orderly closure of the connection or the end of 
+early data (see {{closure-alerts}}).
 Upon receiving a warning-level alert, the TLS implementation SHOULD
 indicate end-of-data to the application and, if appropriate for
 the alert type, send a closure alert in response.
