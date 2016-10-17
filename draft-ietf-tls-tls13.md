@@ -884,7 +884,7 @@ the client needs to restart the handshake with an appropriate
 If no common cryptographic parameters can be negotiated,
 the server MUST abort the handshake with an appropriate alert.
 
-    ~~~
+~~~
          Client                                               Server
 
          ClientHello
