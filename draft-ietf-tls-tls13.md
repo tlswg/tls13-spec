@@ -325,6 +325,14 @@ informative:
          ins: Florian Weimer
          org: Red Hat Product Security
        date: 2015-09
+  LUCKY13:
+       title: "Lucky Thirteen: Breaking the TLS and DTLS Record Protocols"
+       author:
+       - ins: Nadhem J. AlFardan
+         org: University of London
+       - ins: Kenneth G. Paterson
+         org: University of London
+       date: 2013-02
 --- abstract
 
 This document specifies version 1.3 of the Transport Layer Security
@@ -746,7 +754,7 @@ secret keying material. Once the handshake is complete, the peers
 use the established keys to protect application layer traffic.
 
 A failure of the handshake or other protocol error triggers the
-termination of the connection, optionally preceded by an alert message
+termination of the connection, preceded by an alert message
 ({{alert-protocol}}).
 
 TLS supports three basic key exchange modes:
@@ -1428,7 +1436,7 @@ CertificateVerify ({{certificate-verify}}) messages.
 
 If the server is unable to negotiate a supported set of parameters
 (i.e., there is no overlap between the client and server parameters),
-it MUST abort the handshake and and SHOULD send either
+it MUST abort the handshake with
 a "handshake_failure" or "insufficient_security" fatal alert
 (see {{alert-protocol}}).
 
@@ -3639,6 +3647,13 @@ with a X alert" MUST send alert X if it sends any alert. All
 alerts defined in this section below, as well as all unknown alerts
 are universally considered fatal as of TLS 1.3 (see
 {{alert-protocol}}).
+
+Omitting the alerts before closing the connections is NOT RECOMMENDED as it
+negatively impacts debugging of connectivity issues by implementation users
+and may hide incorrect error handling in the implemenation from testing.
+Implementers should note that in cases where differences in alerts being sent
+are useful for attackers, the timing side channel will provide the same
+information {{TIMING}}, {{LUCKY13}}.
 
 The following error alerts are defined:
 
