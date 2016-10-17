@@ -82,6 +82,7 @@ normative:
 
 
 informative:
+  RFC2246:
   RFC4086:
   RFC4279:
   RFC4346:
@@ -1466,7 +1467,13 @@ Structure of this message:
 
 %%% Key Exchange Messages
 
-       uint16 ProtocolVersion;
+       enum {
+           ssl2(0x0200), ssl3(0x0300),
+           tls1(0x0301), tls1_1(0x0302), tls1_2(0x0303), tls1_3(0x0304),
+           experimental_use (0xfeff..0xffff),
+           (0xffff)
+       } ProtocolVersion;
+
        opaque Random[32];
 
        uint8 CipherSuite[2];    /* Cryptographic suite selector */
@@ -1491,14 +1498,14 @@ one extension (at least "key_share" or "pre_shared_key").
 
 legacy_version
 : In previous versions of TLS, this field was used for version negotiation
-  and represented the highest version number supported by the client.
+  and represented the highest version ID supported by the client.
   Experience has shown that many servers do not properly implement
   version negotiation, leading to "version intolerance" in which
   the server rejects an otherwise acceptable ClientHello with a version
   number higher than it supports.  
   In TLS 1.3, the client indicates its version preferences in the
   "supported_versions" extension ({{supported-versions}}) and this field MUST
-  be set to 0x0303, which was the version number for TLS 1.2.
+  be set to 0x0303, which is the version ID for TLS 1.2.
   (See {{backward-compatibility}} for details about backward compatibility.)  
 
 random
@@ -1541,6 +1548,10 @@ extensions
   defined in {{hello-extensions}}.
 {:br }
 
+This document describes TLS Version 1.3, which uses the version ID 0x0304.
+This value is historical, deriving from the use of the values 0x0301
+for TLS 1.0 and 0x0300 for SSL 3.0.
+
 In the event that a client requests additional functionality using
 extensions, and this functionality is not supplied by the server, the
 client MAY abort the handshake. Note that TLS 1.3 ClientHello messages
@@ -1578,9 +1589,9 @@ Structure of this message:
 
 version
 : This field contains the version of TLS negotiated for this session.  Servers
-  MUST select a version from the list in ClientHello.supported_versions extension.
-  A client which receives a version that was not offered MUST abort the handshake.
-  For this version of the specification, the version is 0x0304.  (See
+  MUST select a version ID from the list in ClientHello.supported_versions extension.
+  A client which receives a version ID that was not offered MUST abort the handshake.
+  For this version of the specification, this value is 0x0304.  (See
   {{backward-compatibility}} for details about backward compatibility.)
 
 random
@@ -1795,7 +1806,7 @@ be taken into account when designing new extensions:
 
 The "supported_versions" extension is used by the client to indicate
 which versions of TLS it supports. The extension contains a list of
-supported versions in preference order, with the most preferred
+supported version IDs in preference order, with the most preferred
 version first. Implementations of this specification MUST send this
 extension containing all versions of TLS which they are
 prepared to negotiate (for this specification, that means minimally
@@ -1805,7 +1816,7 @@ be present as well).
 Servers which are compliant with this specification MUST use only the
 "supported_versions" extension, if present, to determine client
 preferences and MUST only select a version of TLS present in that
-extension. They MUST ignore any unknown versions. If the extension is
+extension. They MUST ignore any unknown version IDs. If the extension is
 not present, they MUST negotiate TLS 1.2 or prior as specified in
 {{RFC5246}}, even if ClientHello.legacy_version is 0x0304 or later.
 
@@ -3280,10 +3291,8 @@ fragment
   specified by the type field.
 {:br }
 
-This document describes TLS Version 1.3, which uses the version 0x0304.
-This version value is historical, deriving from the use of 0x0301
-for TLS 1.0 and 0x0300 for SSL 3.0. In order to maximize backwards
-compatibility, the record layer version identifies as simply TLS 1.0.
+In order to maximize backwards compatibility, the record layer version
+identifies as simply TLS 1.0.
 Endpoints supporting other versions negotiate the version to use
 by following the procedure and requirements in {{backward-compatibility}}.
 
@@ -4215,6 +4224,24 @@ by IANA
   "Recommended": ecdsa_secp256r1_sha256, ecdsa_secp384r1_sha384,
   rsa_pss_sha256, rsa_pss_sha384, rsa_pss_sha512, ed25519.
 
+-  TLS ProtocolVersion Registry: This registry formalizes the definition
+  of ProtocolVersion values used to identify TLS versions in TLS messages.
+  Values in the range 0-0x02ff are reserved for SSL 2.0 and not available
+  for use. Values in the range 0x0300-0xfeff are assigned via Standards
+  Action {{RFC5226}}. Values in the range 0xff00-0xffff are reserved for
+  Private Use {{RFC5226}}. The registry [shall be/ has been] initially
+  populated with the values defined as each ProtocolVersion value
+  applicable to past SSL and TLS specifications.
+
+| Description | Value  | Reference             |
+|-------------|--------|-----------------------|
+|   SSL 2.0   | 0x0200 | {{SSL2}}, {{RFC6176}} |
+|   SSL 3.0   | 0x0300 | {{SSL3}}, {{RFC7568}} |
+|   TLS 1.0   | 0x0301 | {{RFC2246}}           |
+|   TLS 1.1   | 0x0302 | {{RFC4346}}           |
+|   TLS 1.2   | 0x0303 | {{RFC5246}}           |
+|   TLS 1.3   | 0x0304 | [[this document]]     |
+
 Finally, this document obsoletes the TLS HashAlgorithm Registry and the TLS
 SignatureAlgorithm Registry, both originally created in {{RFC5246}}.  IANA
 [SHALL update/has updated] the TLS HashAlgorithm Registry to list values 7-223 as
@@ -4496,7 +4523,7 @@ A TLS 1.3 client who wishes to negotiate with such older servers will send a
 normal TLS 1.3 ClientHello containing 0x0303 (TLS 1.2) in
 ClientHello.legacy_version but with the correct version in the
 "supported_versions" extension. If the server does not support TLS 1.3 it
-will respond with a ServerHello containing an older version number. If the
+will respond with a ServerHello containing an older version ID. If the
 client agrees to use this version, the negotiation will proceed as appropriate
 for the negotiated protocol. A client resuming a session SHOULD initiate the
 connection using the version that was previously negotiated.
@@ -4507,7 +4534,7 @@ See {{zero-rtt-backwards-compatibility}}.
 If the version chosen by the server is not supported by the client (or not
 acceptable), the client MUST abort the handshake with a "protocol_version" alert.
 
-If a TLS server receives a ClientHello containing a version number greater than
+If a TLS server receives a ClientHello containing a version ID greater than
 the highest version supported by the server, it MUST reply according to the
 highest version supported by the server.
 
@@ -4522,7 +4549,7 @@ to downgrade attacks and is NOT RECOMMENDED.
 
 ## Negotiating with an older client
 
-A TLS server can also receive a ClientHello indicating a version number smaller
+A TLS server can also receive a ClientHello with a version ID smaller
 than its highest supported version. If the "supported_versions" extension
 is present, the server MUST negotiate the highest server-supported version
 found in that extension. If the "supported_versions" extension is not
