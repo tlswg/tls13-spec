@@ -4528,7 +4528,7 @@ than its highest supported version. If the "supported_versions" extension
 is present, the server MUST negotiate the highest server-supported version
 found in that extension. If the "supported_versions" extension is not
 present, the server MUST negotiate the minimum of ClientHello.legacy_version
-and TLS 1.2.For example, if
+and TLS 1.2. For example, if
 the server supports TLS 1.0, 1.1, and 1.2, and legacy_version is TLS 1.0, the
 server will proceed with a TLS 1.0 ServerHello. If the server only supports
 versions greater than ClientHello.legacy_version, it MUST abort the handshake
