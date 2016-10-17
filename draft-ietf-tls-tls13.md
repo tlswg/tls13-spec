@@ -3512,7 +3512,8 @@ specified by the current connection state.
 
 Alert messages convey the severity of the message (warning or fatal)
 and a description of the alert. Warning-level messages are used to
-indicate orderly closure of the connection (see {{closure-alerts}}).
+indicate orderly closure of the connection or transition to
+messages ecrypted with traffic_secret (see {{closure-alerts}}).
 Upon receiving a warning-level alert, the TLS implementation SHOULD
 indicate end-of-data to the application and, if appropriate for
 the alert type, send a closure alert in response.
