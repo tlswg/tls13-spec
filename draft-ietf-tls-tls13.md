@@ -3483,7 +3483,7 @@ with failed connections. All unknown alert types MUST be treated as
 error alerts.
 
 Prior versions of TLS used the "legacy_alert_level" field to indicate the
-severity of the alert. This field should be set to {2} for all alerts,
+severity of the alert. This field MUST be set to a value of 2 for all alerts,
 and MUST be ignored by implementations when receiving alerts.
 
 %%% Alert Messages
