@@ -1603,7 +1603,7 @@ extensions
   required to establish the cryptographic context. Currently the only
   such extensions are "key_share", "pre_shared_key", and "signature_algorithms".
   Clients MUST check the ServerHello for the presence of any forbidden
-  extensions and if any are found MUST abort the handshake with a
+  extensions and if any are found MUST abort the handshake with an
   "illegal_parameter" alert. In prior versions of TLS, the extensions
   field could be omitted entirely if not needed, similar to
   ClientHello. As of TLS 1.3, all clients and servers will send at
