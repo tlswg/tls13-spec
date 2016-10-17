@@ -997,7 +997,7 @@ information MUST be provisioned to both parties:
   * The PSK identity
   * The cipher suite for use with this PSK
   * The key exchange and authentication modes this PSK is allowed to be used with
-  * The Application-Layer Protocol Negotiation (ALPN) label(s)
+  * The Application-Layer Protocol Negotiation (ALPN) protocol, if any is to be used
   * The Server Name Indication (SNI), if any is to be used
 
 Note: only the first two of these need to be provisioned to use
@@ -2376,8 +2376,8 @@ issued (see {{replay-time}}).  If it is not, the server SHOULD proceed
 with the handshake but reject 0-RTT, and SHOULD NOT take any other action
 that assumes that this ClientHello is fresh.
 
-The parameters for the 0-RTT data (symmetric cipher suite,
-ALPN, etc.) are the same as those which were negotiated in the connection
+The parameters for the 0-RTT data (symmetric cipher suite, ALPN
+protocol, etc.) are the same as those which were negotiated in the connection
 which established the PSK. The PSK used to encrypt the early data
 MUST be the first PSK listed in the client's "pre_shared_key" extension.
 
@@ -2405,14 +2405,14 @@ can behave in one of two ways:
   HelloRetryRequest.  A client MUST NOT include the "early_data" extension in
   its followup ClientHello.
 
-In order to accept early data, the server server MUST have accepted a
-PSK cipher suite and selected the the first key offered in the
+In order to accept early data, the server MUST have accepted a
+PSK cipher suite and selected the first key offered in the
 client's "pre_shared_key" extension. In addition, it MUST verify that
 the following values are consistent with those negotiated in the
 connection during which the ticket was established.
 
 - The TLS version number, AEAD algorithm, and the hash for HKDF.
-- The selected ALPN {{!RFC7443}} value, if any.
+- The selected ALPN {{RFC7301}} protocol, if any.
 
 Future extensions MUST define their interaction with 0-RTT.
 
@@ -2436,8 +2436,8 @@ If the server rejects the "early_data" extension, the client
 application MAY opt to retransmit the data once the handshake has
 been completed. TLS stacks SHOULD not do this automatically and
 client applications MUST take care that the negotiated parameters
-are consistent with those it expected. For example, if the
-ALPN value has changed, it is likely unsafe to retransmit the
+are consistent with those it expected. For example, if the selected
+ALPN protocol has changed, it is likely unsafe to retransmit the
 original application layer data.
 
 #### Processing Order
