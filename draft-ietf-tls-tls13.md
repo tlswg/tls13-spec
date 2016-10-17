@@ -325,6 +325,14 @@ informative:
          ins: Florian Weimer
          org: Red Hat Product Security
        date: 2015-09
+  LUCKY13:
+       title: "Lucky Thirteen: Breaking the TLS and DTLS Record Protocols"
+       author:
+       - ins: Nadhem J. AlFardan
+         org: University of London
+       - ins: Kenneth G. Paterson
+         org: University of London
+       date: 2013-02
 --- abstract
 
 This document specifies version 1.3 of the Transport Layer Security
@@ -746,7 +754,7 @@ secret keying material. Once the handshake is complete, the peers
 use the established keys to protect application layer traffic.
 
 A failure of the handshake or other protocol error triggers the
-termination of the connection, optionally preceded by an alert message
+termination of the connection, preceded by an alert message
 ({{alert-protocol}}).
 
 TLS supports three basic key exchange modes:
@@ -1428,7 +1436,7 @@ CertificateVerify ({{certificate-verify}}) messages.
 
 If the server is unable to negotiate a supported set of parameters
 (i.e., there is no overlap between the client and server parameters),
-it MUST abort the handshake and and SHOULD send either
+it MUST abort the handshake with
 a "handshake_failure" or "insufficient_security" fatal alert
 (see {{alert-protocol}}).
 
@@ -1601,7 +1609,7 @@ extensions
   required to establish the cryptographic context. Currently the only
   such extensions are "key_share", "pre_shared_key", and "signature_algorithms".
   Clients MUST check the ServerHello for the presence of any forbidden
-  extensions and if any are found MUST abort the handshake with a
+  extensions and if any are found MUST abort the handshake with an
   "illegal_parameter" alert. In prior versions of TLS, the extensions
   field could be omitted entirely if not needed, similar to
   ClientHello. As of TLS 1.3, all clients and servers will send at
@@ -2148,7 +2156,7 @@ Servers MUST NOT send a KeyShareEntry for any group not
 indicated in the "supported_groups" extension.
 If a HelloRetryRequest was received, the client MUST verify that the
 selected NamedGroup matches that supplied in the selected_group field and MUST
-abort the connection with an "illegal_parameter" alert if it does not.
+abort the handshake with an "illegal_parameter" alert if it does not.
 
 [[TODO: Recommendation about what the client offers.
 Presumably which integer DH groups and which curves.]]
@@ -3242,6 +3250,8 @@ not preserved in the record layer (i.e., multiple messages of the same
 ContentType MAY be coalesced into a single TLSPlaintext record, or a single
 message MAY be fragmented across several records).
 Alert messages ({{alert-protocol}}) MUST NOT be fragmented across records.
+Implementation which receive fragmented Alert messages, MUST terminate the
+connection with a "decode_error" alert.
 
 %%% Record Layer
 
@@ -3288,7 +3298,9 @@ Endpoints supporting other versions negotiate the version to use
 by following the procedure and requirements in {{backward-compatibility}}.
 
 Implementations MUST NOT send zero-length fragments of Handshake or
-Alert types, even if those fragments contain padding. Zero-length
+Alert types, even if those fragments contain padding. Implementations
+that receive such messages MUST terminate the connection with a "decode_error"
+alert. Zero-length
 fragments of Application Data MAY be sent as they are potentially
 useful as a traffic analysis countermeasure.
 
@@ -3502,7 +3514,8 @@ specified by the current connection state.
 
 Alert messages convey the severity of the message (warning or fatal)
 and a description of the alert. Warning-level messages are used to
-indicate orderly closure of the connection (see {{closure-alerts}}).
+indicate orderly closure of the connection or transition to
+messages ecrypted with traffic_secret (see {{closure-alerts}}).
 Upon receiving a warning-level alert, the TLS implementation SHOULD
 indicate end-of-data to the application and, if appropriate for
 the alert type, send a closure alert in response.
@@ -3637,6 +3650,13 @@ with a X alert" MUST send alert X if it sends any alert. All
 alerts defined in this section below, as well as all unknown alerts
 are universally considered fatal as of TLS 1.3 (see
 {{alert-protocol}}).
+
+Omitting the alerts before closing the connections is NOT RECOMMENDED as it
+negatively impacts debugging of connectivity issues by implementation users
+and may hide incorrect error handling in the implemenation from testing.
+Implementers should note that in cases where differences in alerts being sent
+are useful for attackers, the timing side channel will provide the same
+information {{TIMING}}, {{LUCKY13}}.
 
 The following error alerts are defined:
 
