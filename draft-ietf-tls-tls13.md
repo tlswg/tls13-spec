@@ -2150,7 +2150,7 @@ Servers MUST NOT send a KeyShareEntry for any group not
 indicated in the "supported_groups" extension.
 If a HelloRetryRequest was received, the client MUST verify that the
 selected NamedGroup matches that supplied in the selected_group field and MUST
-abort the connection with an "illegal_parameter" alert if it does not.
+abort the handshake with an "illegal_parameter" alert if it does not.
 
 [[TODO: Recommendation about what the client offers.
 Presumably which integer DH groups and which curves.]]
