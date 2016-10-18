@@ -1813,7 +1813,17 @@ A number of TLS messages contain tag-length-value encoded extensions structures.
 
        struct {
            ExtensionType extension_type;
-           opaque extension_data<0..2^16-1>;
+           select (Extension.extension_type) {
+               case supported_groups:      NamedGroupList;
+               case signature_algorithms:  SignatureSchemeList;
+               case key_share:             KeyShare;
+               case pre_shared_key:        PreSharedKeyExtension;
+               case early_data:            EarlyDataIndication;
+               case supported_versions:    SupportedVersions;
+               case cookie:                Cookie;
+               case psk_key_exchange_modes: PskKeyExchangeModes;
+               case ticket_early_data_info: TicketEarlyDataInfo;
+           };
        } Extension;
 
        enum {
@@ -3490,7 +3500,11 @@ useful as a traffic analysis countermeasure.
            ContentType type;
            ProtocolVersion legacy_record_version;
            uint16 length;
-           opaque fragment[TLSPlaintext.length];
+           select (TLSInnerPlaintext.type) {
+               case alert: Alert;
+               case handshake: Handshake;
+               case application_data: opaque fragment[TLSPlaintext.length];
+           };
        } TLSPlaintext;
 
 type
