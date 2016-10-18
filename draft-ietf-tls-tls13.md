@@ -2215,11 +2215,11 @@ The "extension_data" field of this extension contains a
        struct {
            select (Handshake.msg_type) {
                case client_hello:
-                  PskIdentity identities<6..2^16-1>;
-                  PskBinderEntry binders<33..2^16-1>;
-                  
+                   PskIdentity identities<6..2^16-1>;
+                   PskBinderEntry binders<33..2^16-1>;
+
                case server_hello:
-                  uint16 selected_identity;
+                   uint16 selected_identity;
            };
 
        } PreSharedKeyExtension;
@@ -2894,8 +2894,8 @@ Structure of this message:
 %%% Authentication Messages
 
        struct {
-            SignatureScheme algorithm;
-            opaque signature<0..2^16-1>;
+           SignatureScheme algorithm;
+           opaque signature<0..2^16-1>;
        } CertificateVerify;
 
 The algorithm field specifies the signature algorithm used (see
@@ -3311,9 +3311,9 @@ by an encrypted body, which itself contains a type and optional padding.
 %%% Record Layer
 
        struct {
-          opaque content[TLSPlaintext.length];
-          ContentType type;
-          uint8 zeros[length_of_padding];
+           opaque content[TLSPlaintext.length];
+           ContentType type;
+           uint8 zeros[length_of_padding];
        } TLSInnerPlaintext;
 
        struct {
