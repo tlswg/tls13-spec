@@ -3527,7 +3527,7 @@ and MUST be ignored by implementations when receiving alerts.
        } AlertDescription;
 
        struct {
-           uint8 legacy_alert_level = { 2 };
+           uint8 legacy_alert_level = 2;
            AlertDescription description;
        } Alert;
 
