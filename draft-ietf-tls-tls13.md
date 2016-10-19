@@ -2350,12 +2350,6 @@ in {{key-share}}.
 {:br}
 
 
-### PSK Binder
-
-%%% Key Exchange Messages
-
-
-
 ### Early Data Indication
 
 When a PSK is used, the client can send application data
