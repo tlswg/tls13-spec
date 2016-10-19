@@ -1318,7 +1318,7 @@ a message which is syntactically correct but semantically invalid (e.g., a DHE s
 or an invalid enum) MUST terminate the connection with an "illegal_parameter" alert.
 
 
-#  Handshake Protocol
+# Handshake Protocol
 
 The handshake protocol is used to negotiate the secure attributes
 of a session. Handshake messages are supplied to the TLS record layer, where
