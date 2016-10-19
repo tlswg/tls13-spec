@@ -1186,9 +1186,9 @@ can be assigned any unique value, in any order.
 
        enum { e1(v1), e2(v2), ... , en(vn) [[, (n)]] } Te;
 
-Future extension or additions to the protocol may define new values. Upon
-Implementations need to be able to parse and ignore them unless their
-definition states otherwise.
+Future extension or additions to the protocol may define new values.
+Implementations need to be able to parse and ignore unknown values unless the
+definition of the field states otherwise.
 
 An enumerated occupies as much space in the byte stream as would its maximal
 defined ordinal value. The following definition would cause one byte to be used
