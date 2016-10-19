@@ -1711,15 +1711,15 @@ The extension format is:
        } Extension;
 
        enum {
-           supported_groups(10),
-           signature_algorithms(13),
-           key_share(40),
-           pre_shared_key(41),
-           early_data(42),
-           supported_versions(43),
-           cookie(44),
-           psk_key_exchange_modes(45),
-           ticket_early_data_info(46),
+           supported_groups(10),       /* Negotiated Groups */
+           signature_algorithms(13),   /* Signature Algorithms */
+           key_share(40),              /* Key Share */
+           pre_shared_key(41),         /* Pre-Shared Key Extension */
+           early_data(42),             /* Early Data Indication */
+           supported_versions(43),     /* Supported Versions */
+           cookie(44),                 /* Cookie */
+           psk_key_exchange_modes(45), /* Pre-Shared Key Exchange Modes */
+           ticket_early_data_info(46), /* TicketEarlyDataInfo in NewSessionTicket */
            (65535)
        } ExtensionType;
 
@@ -3108,8 +3108,9 @@ lookup key or a self-encrypted and self-authenticated value. Section
 4 of {{RFC5077}} describes a recommended ticket construction mechanism.
 
 
-ticket_extensions
-: A set of extension values for the ticket. Clients MUST ignore
+extensions
+: A set of extension values for the ticket. The "Extension"
+  format is defined in {{hello-extensions}}. Clients MUST ignore
   unrecognized extensions.
 {:br }
 
