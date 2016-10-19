@@ -3250,7 +3250,7 @@ Alert messages ({{alert-protocol}}) MUST NOT be fragmented across records.
 
        struct {
            ContentType type;
-           ProtocolVersion legacy_record_version = 0x0301;    /* TLS v1.x */
+           ProtocolVersion legacy_record_version = 0x0301;    /* TLS v1.0 */
            uint16 length;
            opaque fragment[TLSPlaintext.length];
        } TLSPlaintext;
@@ -3312,7 +3312,7 @@ by an encrypted body, which itself contains a type and optional padding.
 
        struct {
            ContentType opaque_type = 23; /* application_data, see TLSInnerPlaintext.type */
-           ProtocolVersion legacy_record_version = 0x0301;    /* TLS v1.x */
+           ProtocolVersion legacy_record_version = 0x0301;    /* TLS v1.0 */
            uint16 length;
            opaque encrypted_record[length];
        } TLSCiphertext;
