@@ -834,7 +834,8 @@ The server then sends two messages to establish the Server Parameters:
 
 EncryptedExtensions.
 : responses to any extensions that are not required to
-  determine the cryptographic parameters. [{{encrypted-extensions}}]
+  determine the cryptographic parameters, other than those
+  that are specific to individual certificates. [{{encrypted-extensions}}]
 
 CertificateRequest.
 : if certificate-based client authentication is desired, the
@@ -846,8 +847,11 @@ uses the same set of messages every time that authentication is needed.
 Specifically:
 
 Certificate.
-: the certificate of the endpoint. This message is omitted if the
-  server is not authenticating with a certificate. Note that if raw
+: the certificate of the endpoint and any per-certificate extensions.
+  This message is omitted by the server if not authenticating with a
+  certificate and by the client if the server did not send
+  CertificateRequest (thus indicating that the client should not
+  authenticate with a certificate). Note that if raw
   public keys {{RFC7250}} or the cached information extension
   {{?RFC7924}} are in use, then this message will not
   contain a certificate but rather some other value corresponding to
@@ -856,7 +860,7 @@ Certificate.
 CertificateVerify.
 : a signature over the entire handshake using the public key
   in the Certificate message. This message is omitted if the
-  server is not authenticating via a certificate. [{{certificate-verify}}]
+  endpoint is not authenticating via a certificate. [{{certificate-verify}}]
 
 Finished.
 : a MAC (Message Authentication Code) over the entire handshake.
@@ -1317,9 +1321,9 @@ For example:
 TLS defines two generic alerts (see {{alert-protocol}}) to use upon failure to parse
 a message. Peers which receive a message which cannot be parsed according to the syntax
 (e.g., have a length extending beyond the message boundary or contain an out-of-range
-length) MUST terminate the connection with a "decoding_error" alert. Peers which receive
-a message which is syntactically correct but semantically invalid (e.g., a DHE share of p - 1)
-MUST terminate the connection with an "illegal_parameter" alert.
+length) MUST terminate the connection with a "decode_error" alert. Peers which receive
+a message which is syntactically correct but semantically invalid (e.g., a DHE share of p - 1,
+or an invalid enum) MUST terminate the connection with an "illegal_parameter" alert.
 
 
 #  Handshake Protocol
@@ -1545,10 +1549,9 @@ extensions
 In the event that a client requests additional functionality using
 extensions, and this functionality is not supplied by the server, the
 client MAY abort the handshake. Note that TLS 1.3 ClientHello messages
-MUST always contain extensions, and a TLS 1.3 server MUST respond to
-any TLS 1.3 ClientHello without extensions or with data following
-the extensions block with a "decode_error"
-alert. TLS 1.3 servers may receive TLS 1.2 ClientHello messages
+always contain extensions (minimally they must contain
+"supported_versions" or they will be interpreted as TLS 1.2 ClientHello
+messages). TLS 1.3 servers may receive TLS 1.2 ClientHello messages
 without extensions. If negotiating TLS 1.2, a server MUST check that
 the message either contains no data after legacy_compression_methods
 or that it contains a valid extensions block with no data following.
@@ -1597,7 +1600,7 @@ extensions
 : A list of extensions.  Note that only extensions offered by the
   client can appear in the server's list. In TLS 1.3, as opposed to
   previous versions of TLS, the server's extensions are split between
-  the ServerHello and the EncryptedExtensions {{encrypted-extensions}}
+  the ServerHello, EncryptedExtensions {{encrypted-extensions}}
   message. The ServerHello MUST only include extensions which are
   required to establish the cryptographic context. Currently the only
   such extensions are "key_share", "pre_shared_key", and "signature_algorithms".
@@ -1735,7 +1738,8 @@ The list of extension types is maintained by IANA as described in
 {{iana-considerations}}.
 
 An extension type MUST NOT appear in the ServerHello or HelloRetryRequest
-unless the same extension type appeared in the corresponding ClientHello.
+unless the same extension type appeared in the corresponding ClientHello
+(with the exception of "cookie", as noted in {{cookie}}).
 If a client receives an extension type in ServerHello or HelloRetryRequest
 that it did not request in the associated ClientHello, it MUST abort the
 handshake with an "unsupported_extension" fatal alert.
@@ -1748,7 +1752,9 @@ offering the capability to understand the extension type, and the server is
 taking the client up on its offer.
 
 When multiple extensions of different types are present in the ClientHello or
-ServerHello messages, the extensions MAY appear in any order. There MUST NOT be
+ServerHello messages, the extensions MAY appear in any order, with the
+exception of "pre_shared_key" {{pre-shared-key-extension}} which MUST
+be last. There MUST NOT be
 more than one extension of the same type.
 
 Finally, note that extensions can be sent both when starting a new session and
@@ -1864,9 +1870,6 @@ is authenticating via a certificate and the client has not sent a
 "signature_algorithms" extension then the server MUST
 abort the handshake with a "missing_extension" alert
 (see {{mti-extensions}}).
-
-Servers which are authenticating via a certificate MUST indicate so
-by sending the client an empty "signature_algorithms" extension.
 
 The "extension_data" field of this extension in a ClientHello contains a
 SignatureSchemeList value:
@@ -2052,8 +2055,8 @@ the server supports, regardless of whether they are currently
 supported by the client. Clients MUST NOT act upon any information
 found in "supported_groups" prior to successful completion of the
 handshake, but MAY use the information learned from a successfully
-completed handshake to change what groups they offer to a server in
-subsequent connections.
+completed handshake to change what groups they use in their
+"key_share" extension in subsequent connections.
 
 
 ### Key Share
@@ -2135,9 +2138,9 @@ verify that the selected_group field does not correspond to a group which was
 provided in the "key_share" extension in the original ClientHello. If either of
 these checks fails, then the client MUST abort the handshake with an
 "illegal_parameter" alert.  Otherwise, when sending the new ClientHello, the
-client MUST append a new KeyShareEntry for the group indicated in the
-selected_group field to the groups in its original KeyShare. The remaining
-KeyShareEntry values MUST be preserved.
+client MUST replace the original "key_share" extension with one
+containing only a new KeyShareEntry for the group indicated in the
+selected_group field.
 
 Note that a HelloRetryRequest might not include the "key_share" extension if
 other extensions are sent, such as if the server is only sending a cookie.
@@ -2355,7 +2358,7 @@ in {{key-share}}.
 
 ### Early Data Indication
 
-When PSK resumption is used, the client can send application data
+When a PSK is used, the client can send application data
 in its first flight of messages. If the client opts to do so, it MUST
 supply an "early_data" extension as well as the "pre_shared_key"
 extension.
@@ -2368,12 +2371,13 @@ The "extension_data" field of this extension contains an
        struct {
        } EarlyDataIndication;
 
-A server MUST validate that the ticket age for the selected PSK
-identity (computed by un-masking PskIdentity.obfuscated_ticket_age)
-is within a small tolerance of the time since the ticket was
-issued (see {{replay-time}}).  If it is not, the server SHOULD proceed
-with the handshake but reject 0-RTT, and SHOULD NOT take any other action
-that assumes that this ClientHello is fresh.
+For PSKs provisioned via NewSessionTicket, a server MUST validate that
+the ticket age for the selected PSK identity (computed by un-masking
+PskIdentity.obfuscated_ticket_age) is within a small tolerance of the
+time since the ticket was issued (see {{replay-time}}).  If it is not,
+the server SHOULD proceed with the handshake but reject 0-RTT, and
+SHOULD NOT take any other action that assumes that this ClientHello is
+fresh.
 
 The parameters for the 0-RTT data (symmetric cipher suite, ALPN
 protocol, etc.) are the same as those which were negotiated in the connection
@@ -2410,7 +2414,7 @@ client's "pre_shared_key" extension. In addition, it MUST verify that
 the following values are consistent with those negotiated in the
 connection during which the ticket was established.
 
-- The TLS version number, AEAD algorithm, and the hash for HKDF.
+- The TLS version number and cipher suite.
 - The selected ALPN {{RFC7301}} protocol, if any.
 
 Future extensions MUST define their interaction with 0-RTT.
@@ -2513,13 +2517,8 @@ Meaning of this message:
 
 > The EncryptedExtensions message contains any extensions
 which should be protected, i.e., any which are not needed to
-establish the cryptographic context.
-
-The same extension types MUST NOT appear in both the ServerHello and
-EncryptedExtensions. All server-sent extensions other than those explicitly
-listed in {{server-hello}} or designated in the IANA registry MUST only
-appear in EncryptedExtensions. Extensions which are designated to
-appear in ServerHello MUST NOT appear in EncryptedExtensions. Clients
+establish the cryptographic context, but which are not
+associated with individual certificates. The client
 MUST check EncryptedExtensions for the presence of any forbidden
 extensions and if any are found MUST abort the handshake with an
 "illegal_parameter" alert.
