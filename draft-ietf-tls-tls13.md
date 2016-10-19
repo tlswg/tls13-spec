@@ -3101,8 +3101,9 @@ lookup key or a self-encrypted and self-authenticated value. Section
 4 of {{RFC5077}} describes a recommended ticket construction mechanism.
 
 
-ticket_extensions
-: A set of extension values for the ticket. Clients MUST ignore
+extensions
+: A set of extension values for the ticket. The "Extension"
+  format is defined in {{hello-extensions}}. Clients MUST ignore
   unrecognized extensions.
 {:br }
 
