@@ -2347,12 +2347,6 @@ in {{key-share}}.
 {:br}
 
 
-### PSK Binder
-
-%%% Key Exchange Messages
-
-
-
 ### Early Data Indication
 
 When PSK resumption is used, the client can send application data
