@@ -1393,7 +1393,7 @@ following four sets of options in its ClientHello:
 
 - A list of cipher suites which indicates the AEAD algorithm/HKDF hash
   pairs which the client supports.
-- A "supported_group" ({{negotiated-groups}}) extension which indicates the (EC)DHE groups
+- A "supported_groups" ({{negotiated-groups}}) extension which indicates the (EC)DHE groups
   which the client supports and a "key_share" ({{key-share}}) extension which contains
   (EC)DHE shares for some or all of these groups.
 - A "signature_algorithms" ({{signature-algorithms}}) extension which indicates the signature
@@ -1408,7 +1408,7 @@ If the server does not select a PSK, then the first three of these
 options are entirely orthogonal: the server independently selects a
 cipher suite, an (EC)DHE group and key share for key establishment,
 and a signature algorithm/certificate pair to authenticate itself to
-the client. If there is overlap in the "supported_group" extension
+the client. If there is overlap in the "supported_groups" extension
 but the client did not offer a compatible "key_share" extension,
 then the server will respond with a HelloRetryRequest ({{hello-retry-request}}) message.
 
@@ -1416,7 +1416,7 @@ If the server selects a PSK, then it MUST also select a key
 establishment mode from the set indicated by client's
 "psk_key_exchange_modes extension (PSK alone or with (EC)DHE). Note
 that if the PSK can be used without (EC)DHE then non-overlap in the
-"supported_group" parameters need not be fatal.
+"supported_groups" parameters need not be fatal.
 
 The server indicates its selected parameters in the ServerHello as
 follows:
@@ -4374,7 +4374,7 @@ TLS protocol issues:
   records? (see {{backward-compatibility}})
 
 -  Have you ensured that all support for SSL, RC4, EXPORT ciphers, and
-  MD5 (via the "signature_algorithm" extension) is completely removed from
+  MD5 (via the "signature_algorithms" extension) is completely removed from
   all possible configurations that support TLS 1.3 or later, and that
   attempts to use these obsolete capabilities fail correctly?
   (see {{backward-compatibility}})
