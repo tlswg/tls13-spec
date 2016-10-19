@@ -1217,7 +1217,12 @@ numerical information may be omitted.
 
        enum { low, medium, high } Amount;
 
-For numerical values, the notation (floor..ceiling) is also allowed.
+The names assigned to enumerateds do not need to be unique.  The numerical value
+can describe a range over which the same name applies.  The value includes the
+minimum and maximum inclusive values in that range, separated by two period
+characters.
+
+       enum { sad(0), meh(1..254), happy (255) } Mood;
 
 
 ##  Constructed Types
