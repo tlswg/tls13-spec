@@ -3936,27 +3936,20 @@ keys.
 The traffic keying material is generated from the following input values:
 
 * A secret value
-* A phase value indicating the phase of the protocol the keys are
-  being generated for
 * A purpose value indicating the specific value being generated
 * The length of the key
 
 The keying material is computed using:
 
-       key = HKDF-Expand-Label(Secret,
-                               phase + ", " + purpose,
-                               "",
-                               key_length)
-
+       key = HKDF-Expand-Label(Secret, purpose, "", key_length_
 The following table describes the inputs to the key calculation for
 each class of traffic keys:
 
-| Record Type | Secret | Phase |
-|:------------|--------|-------|
-| 0-RTT Handshake   | client_early_traffic_secret | "early handshake key expansion" |
-| 0-RTT Application | client_early_traffic_secret | "early application data key expansion" |
-| Handshake         | [sender]_handshake_traffic_secret | "handshake key expansion" |
-| Application Data  | [sender]_traffic_secret_N | "application data key expansion" |
+| Record Type | Secret | 
+|:------------|--------|
+| 0-RTT Application | client_early_traffic_secret |
+| Handshake         | [sender]_handshake_traffic_secret |
+| Application Data  | [sender]_traffic_secret_N |
 
 The [sender] in this table denotes the sending side. The
 following table indicates the purpose values for each type of key:
