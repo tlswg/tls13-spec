@@ -1088,12 +1088,7 @@ The remainder of this document provides a detailed description of TLS.
 
 This document deals with the formatting of data in an external representation.
 The following very basic and somewhat casually defined presentation syntax will
-be used. The syntax draws from several sources in its structure. Although it
-resembles the programming language "C" in its syntax and XDR {{RFC4506}} in
-both its syntax and intent, it would be risky to draw too many parallels. The
-purpose of this presentation language is to document TLS only; it has no
-general application beyond that particular goal.
-
+be used.
 
 ##  Basic Block Size
 
@@ -1245,6 +1240,15 @@ the second field of the previous declaration. Structure definitions may be
 embedded. Anonymous structs may also be defined inside other structures.
 
 
+## Constants
+
+Fields and variables may be assigned a fixed value using "=", as in:
+
+       struct {
+           T1 f1 = 8;  /* T.f1 must always be 8 */
+           T2 f2;
+       } T;
+
 ###  Variants
 
 Defined structures may have variants based on some knowledge that is available
@@ -1299,24 +1303,6 @@ For example:
            } variant_body;       /* optional label on variant */
        } VariantRecord;
 
-
-##  Constants
-
-Typed constants can be defined for purposes of specification by declaring a
-symbol of the desired type and assigning values to it.
-
-Under-specified types (opaque, variable-length vectors, and structures that
-contain opaque) cannot be assigned values. No fields of a multi-element
-structure or vector may be omitted.
-
-For example:
-
-       struct {
-           uint8 f1;
-           uint8 f2;
-       } Example1;
-
-       Example1 ex1 = {1, 4};  /* assigns f1 = 1, f2 = 4 */
 
 ## Decoding Errors
 
