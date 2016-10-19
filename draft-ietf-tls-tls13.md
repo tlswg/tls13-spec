@@ -2201,7 +2201,9 @@ The "extension_data" field of this extension contains a
            uint32 obfuscated_ticket_age;
        } PskIdentity;
 
-       opaque PskBinderEntry<32..255>;
+       struct {
+           opaque binder<32..255>;
+       } PskBinderEntry;
        
        struct {
            select (Handshake.msg_type) {
