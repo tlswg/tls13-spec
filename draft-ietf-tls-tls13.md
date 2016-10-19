@@ -2752,7 +2752,7 @@ sending OCSP responses to the client. In TLS 1.2 and below, the
 server sends an empty extension to indicate negotiation of this
 extension and the OCSP information is carried in a CertificateStatus
 message. In TLS 1.3, the server's OCSP information is carried in
-an extension in the CertificateEntry containing the assoiciated
+an extension in the CertificateEntry containing the associated
 certificate. Specifically:
 The body of the "status_request" or "status_request_v2" extension
 from the server MUST be a CertificateStatus structure as defined
