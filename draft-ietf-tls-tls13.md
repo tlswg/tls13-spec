@@ -440,6 +440,12 @@ draft-17
 
 - Remove redundant labels for traffic key derivation (*)
 
+- Harmonize requirements about cipher suite matching: for resumption you
+  need to match KDF but for 0-RTT you need whole cipher suite. This
+  allows PSKs to actually negotiate cipher suites. (*).
+  
+- Explicitly allow non-offered extensions in NewSessionTicket.
+
 - Explicitly allow predicting ClientFinished for NST.
 
 - Clarify conditions for allowing 0-RTT with PSK.
@@ -757,7 +763,7 @@ TLS supports three basic key exchange modes:
 
 - A pre-shared symmetric key (PSK), and
 
-- A combination of a symmetric key and Diffie-Hellman.
+- A combination of a pre-shared symmetric and Diffie-Hellman.
 
 {{tls-full}} below shows the basic full TLS handshake:
 
@@ -786,7 +792,7 @@ Auth | {CertificateVerify*}
                  previously noted message.
 
               *  Indicates optional or situation-dependent
-                 messages that are not always sent.
+                 messages/extensions that are not always sent.
 
               {} Indicates messages protected using keys
                  derived from handshake_traffic_secret.
@@ -833,12 +839,12 @@ case both extensions will be supplied.
 
 The server then sends two messages to establish the Server Parameters:
 
-EncryptedExtensions.
+EncryptedExtensions:
 : responses to any extensions that are not required to
   determine the cryptographic parameters, other than those
   that are specific to individual certificates. [{{encrypted-extensions}}]
 
-CertificateRequest.
+CertificateRequest:
 : if certificate-based client authentication is desired, the
   desired parameters for that certificate. This message is
   omitted if client authentication is not desired. [{{certificate-request}}]
@@ -847,7 +853,7 @@ Finally, the client and server exchange Authentication messages. TLS
 uses the same set of messages every time that authentication is needed.
 Specifically:
 
-Certificate.
+Certificate:
 : the certificate of the endpoint and any per-certificate extensions.
   This message is omitted by the server if not authenticating with a
   certificate and by the client if the server did not send
@@ -858,12 +864,12 @@ Certificate.
   contain a certificate but rather some other value corresponding to
   the server's long-term key.  [{{certificate}}]
 
-CertificateVerify.
+CertificateVerify:
 : a signature over the entire handshake using the public key
   in the Certificate message. This message is omitted if the
   endpoint is not authenticating via a certificate. [{{certificate-verify}}]
 
-Finished.
+Finished:
 : a MAC (Message Authentication Code) over the entire handshake.
   This message provides key confirmation, binds the endpoint's identity
   to the exchanged keys, and in PSK mode
@@ -874,7 +880,7 @@ Upon receiving the server's messages, the client responds with its Authenticatio
 messages, namely Certificate and CertificateVerify (if requested), and Finished.
 
 At this point, the handshake is complete, and the client and server may exchange
-application layer data. Application Data MUST NOT be sent prior to sending the
+application layer data. Application data MUST NOT be sent prior to sending the
 Finished message. Note that while the server may send application data
 prior to receiving the client's Authentication messages, any data sent at
 that point is, of course, being sent to an unauthenticated peer.
@@ -885,7 +891,7 @@ If the client has not provided a sufficient "key_share" extension (e.g., it
 includes only DHE or ECDHE groups unacceptable or unsupported by the
 server), the server corrects the mismatch with a HelloRetryRequest and
 the client needs to restart the handshake with an appropriate
-"key_share" extension, as shown in Figure 2. 
+"key_share" extension, as shown in Figure 2.
 If no common cryptographic parameters can be negotiated,
 the server MUST abort the handshake with an appropriate alert.
 
@@ -893,11 +899,12 @@ the server MUST abort the handshake with an appropriate alert.
          Client                                               Server
 
          ClientHello
-           + key_share             -------->
+         + key_share               -------->
                                    <--------       HelloRetryRequest
+                                                         + key_share
 
          ClientHello
-           + key_share             -------->
+         + key_share               -------->
                                                          ServerHello
                                                          + key_share
                                                {EncryptedExtensions}
@@ -916,6 +923,7 @@ the server MUST abort the handshake with an appropriate alert.
 Note: The handshake transcript includes the initial
 ClientHello/HelloRetryRequest exchange; it is not reset with the new
 ClientHello.
+
 
 TLS also allows several optimized variants of the basic handshake, as
 described in the following sections.
@@ -946,7 +954,7 @@ a PSK and the second uses it:
 
 Initial Handshake:
        ClientHello
-        + key_share              -------->
+       + key_share               -------->
                                                        ServerHello
                                                        + key_share
                                              {EncryptedExtensions}
@@ -964,10 +972,9 @@ Initial Handshake:
 
 Subsequent Handshake:
        ClientHello
-         + key_share*
-         + psk_key_exchange_modes
-         + pre_shared_key
-                                -------->
+       + key_share*
+       + psk_key_exchange_modes
+       + pre_shared_key         -------->
                                                        ServerHello
                                                   + pre_shared_key
                                                       + key_share*
@@ -988,18 +995,19 @@ to negotiate use of PSK key establishment and can (as shown here)
 respond with a "key_share" extension to do (EC)DHE key
 establishment, thus providing forward secrecy.
 
+When PSKs are provisioned out of band, the PSK identity and the KDF
+to be used with the PSK MUST also be provisioned.
 
 ## Zero-RTT Data
 
-With the Zero-RTT mode, clients can send data on their first flight
-("early data") whereby the client uses a PSK either obtained 
-out-of-band or as a ticket (i.e., one with the "early_data_info" 
-extension) from an earlier exchange to authenticate to the server. 
+When clients and servers share a PSK (either obtained out-of-band or
+via a previous handshake), TLS 1.3 allows clients to end data on its
+first flight ("early data"). The client uses the PSK to authenticate
+the server and to encrypt the early data.
 
 When clients use a PSK obtained out-of-band then the following 
-information MUST be provisioned to both parties:
+additional information MUST be provisioned to both parties:
 
-  * The PSK identity
   * The cipher suite for use with this PSK
   * The key exchange and authentication modes this PSK is allowed to be used with
   * The Application-Layer Protocol Negotiation (ALPN) protocol, if any is to be used
@@ -1016,10 +1024,10 @@ as with a 1-RTT handshake with PSK resumption.
          Client                                               Server
 
          ClientHello
-           + early_data
-           + key_share*
-           + pre_shared_key_modes
-           + pre_shared_key
+         + early_data
+         + key_share*
+         + pre_shared_key_modes
+         + pre_shared_key
          (Application Data*)
          (end_of_early_data)       -------->
                                                          ServerHello
@@ -1034,7 +1042,7 @@ as with a 1-RTT handshake with PSK resumption.
          [Application Data]        <------->      [Application Data]
 
                *  Indicates optional or situation-dependent
-                  messages that are not always sent.
+                  messages/extensions that are not always sent.
 
                () Indicates messages protected using keys
                   derived from client_early_traffic_secret.
@@ -1046,10 +1054,6 @@ as with a 1-RTT handshake with PSK resumption.
                   derived from traffic_secret_N
 ~~~
 {: #tls-0-rtt title="Message flow for a zero round trip handshake"}
-
-[[OPEN ISSUE: Should it be possible to combine 0-RTT with the
-server authenticating via a signature
-https://github.com/tlswg/tls13-spec/issues/443]]
 
 
 IMPORTANT NOTE: The security properties for 0-RTT data are weaker than
@@ -1398,6 +1402,8 @@ and a signature algorithm/certificate pair to authenticate itself to
 the client. If there is overlap in the "supported_groups" extension
 but the client did not offer a compatible "key_share" extension,
 then the server will respond with a HelloRetryRequest ({{hello-retry-request}}) message.
+If there is no overlap in "supported_groups" then the server MUST
+abort the handshake.
 
 If the server selects a PSK, then it MUST also select a key
 establishment mode from the set indicated by client's
@@ -1415,7 +1421,7 @@ authentication are always used.
 - When (EC)DHE is in use, the server will also provide a
 "key_share" extension.
 - When authenticating via a certificate (i.e., when a PSK is not
-in use), the server will send Certificate ({{certificate}}) and
+in use), the server will send the Certificate ({{certificate}}) and
 CertificateVerify ({{certificate-verify}}) messages.
 
 If the server is unable to negotiate a supported set of parameters
@@ -1427,9 +1433,7 @@ a "handshake_failure" or "insufficient_security" fatal alert
 
 ###  Client Hello
 
-When this message will be sent:
-
-> When a client first connects to a server, it is REQUIRED to send the
+When a client first connects to a server, it is REQUIRED to send the
 ClientHello as its first message. The client will also send a
 ClientHello when the server has responded to its ClientHello with a
 HelloRetryRequest. In that case, the client MUST send the same
@@ -1530,7 +1534,7 @@ legacy_compression_methods
 extensions
 : Clients request extended functionality from servers by sending
   data in the extensions field.  The actual "Extension" format is
-  defined in {{hello-extensions}}.
+  defined in {{extensions}}.
 {:br }
 
 In the event that a client requests additional functionality using
@@ -1549,9 +1553,7 @@ or HelloRetryRequest message.
 
 ###  Server Hello
 
-When this message will be sent:
-
-> The server will send this message in response to a ClientHello message when
+The server will send this message in response to a ClientHello message when
 it was able to find an acceptable set of algorithms and the client's
 "key_share" extension was acceptable. If it is not able to find an acceptable
 set of parameters, the server will respond with a "handshake_failure" fatal alert.
@@ -1584,20 +1586,9 @@ cipher_suite
   that was not offered MUST abort the handshake.
 
 extensions
-: A list of extensions.  Note that only extensions offered by the
-  client can appear in the server's list. In TLS 1.3, as opposed to
-  previous versions of TLS, the server's extensions are split between
-  the ServerHello, EncryptedExtensions {{encrypted-extensions}}
-  message. The ServerHello MUST only include extensions which are
-  required to establish the cryptographic context. Currently the only
-  such extensions are "key_share", "pre_shared_key", and "signature_algorithms".
-  Clients MUST check the ServerHello for the presence of any forbidden
-  extensions and if any are found MUST abort the handshake with an
-  "illegal_parameter" alert. In prior versions of TLS, the extensions
-  field could be omitted entirely if not needed, similar to
-  ClientHello. As of TLS 1.3, all clients and servers will send at
-  least one extension (at least "key_share" or "pre_shared_key").
-
+: A list of extensions.  The ServerHello MUST only include extensions
+  which are required to establish the cryptographic context. Currently
+  the only such extensions are "key_share" and "pre_shared_key".
 {:br }
 
 TLS 1.3 has a downgrade protection mechanism embedded in the server's
@@ -1641,9 +1632,7 @@ interoperability failure.
 
 ###  Hello Retry Request
 
-When this message will be sent:
-
-> Servers send this message in response to a ClientHello
+Servers send this message in response to a ClientHello
 message if they were able to find an acceptable set of algorithms and
 groups that are mutually supported, but
 the client's ClientHello did not contain sufficient information to
@@ -1689,9 +1678,9 @@ this specification are:
 - key_share (see {{key-share}})
 
 
-##  Hello Extensions
+##  Extensions
 
-The extension format is:
+A number of TLS messages contain tag-length-value encoded extensions structures.
 
 %%% Key Exchange Messages
 
@@ -1720,43 +1709,34 @@ Here:
 -  "extension_data" contains information specific to the particular
   extension type.
 
-The initial set of extensions is defined in {{RFC6066}}.
 The list of extension types is maintained by IANA as described in
 {{iana-considerations}}.
 
-An extension type MUST NOT appear in the ServerHello or HelloRetryRequest
-unless the same extension type appeared in the corresponding ClientHello
-(with the exception of "cookie", as noted in {{cookie}}).
-If a client receives an extension type in ServerHello or HelloRetryRequest
-that it did not request in the associated ClientHello, it MUST abort the
-handshake with an "unsupported_extension" fatal alert.
+The client sends its extensions in the ClientHello. The server MAY
+send extensions in the ServerHello, EncryptedExtensions, Certificate,
+and HelloRetryRequest messages. The table in {{iana-considerations}}
+indicates where a given extension may appear. If the client receives
+an extension which is not specified for a given message it MUST
+abort the handshake with an "illegal_parameter" alert.
 
-Nonetheless, "server-oriented" extensions may be provided within
-this framework. Such an extension (say, of type x) would require the client to
-first send an extension of type x in a ClientHello with empty extension_data to
-indicate that it supports the extension type. In this case, the client is
-offering the capability to understand the extension type, and the server is
-taking the client up on its offer.
+The server MUST NOT send any extensions which did not appear in the
+corresponding ClientHello, with the exception of the NewSessionTicket
+message and the "cookie" extension in the HelloRetryRequest message.
+Upon receiving an unexpected extension, it MUST abort the handshake with an
+"unsupported_extension" alert. Server-oriented extensions are supported by
+having the client send an extension with zero-length extension_data
+indicating support for that extension type.
 
-When multiple extensions of different types are present in the ClientHello or
-ServerHello messages, the extensions MAY appear in any order, with the
-exception of "pre_shared_key" {{pre-shared-key-extension}} which MUST
-be last. There MUST NOT be
-more than one extension of the same type.
+When multiple extensions of different types are present, the
+extensions MAY appear in any order, with the exception of
+"pre_shared_key" {{pre-shared-key-extension}} which MUST be
+the last extension in the ClientHello.
+There MUST NOT be more than one extension of the same type.
 
-Finally, note that extensions can be sent both when starting a new session and
-when in resumption-PSK mode. A client that requests session
-resumption does not in general know whether the server will accept this
-request, and therefore it SHOULD send the same extensions as it would send
-normally.
-
-In general, the specification of each extension type needs to describe the
-effect of the extension both during full handshake and session resumption. Most
-current TLS extensions are relevant only when a session is initiated: when an
-older session is resumed, the server does not process these extensions in
-ClientHello, and does not include them in ServerHello. However, some
-extensions may specify different behavior during session resumption.
-[[TODO: update this and the previous paragraph to cover PSK-based resumption.]]
+In TLS 1.3, unlike TLS 1.2, extensions are renegotiated with each
+handshake even when in resumption-PSK mode. However, 0-RTT parameters are
+those negotiated in the previous handshake; mismatches may require
+rejecting 0-RTT (see {{early-data-indication}}).
 
 There are subtle (and not so subtle) interactions that may occur in this
 protocol between new features and existing features which may result in a
@@ -2018,10 +1998,8 @@ The "extension_data" field of this extension contains a
        } NamedGroupList;
 
 Elliptic Curve Groups (ECDHE)
-: Indicates support of the corresponding named curve.
-  Note that some curves are also recommended in ANSI
-  X9.62 {{X962}} and FIPS 186-4 {{DSS}}. Others are recommended
-  in {{RFC7748}}.
+: Indicates support of the corresponding named curve, defined
+  either in FIPS 186-4 {{DSS}} or in {{RFC7748}}.
   Values 0xFE00 through 0xFEFF are reserved for private use.
 
 Finite Field Groups (DHE)
@@ -2115,22 +2093,19 @@ generated independently.  Clients MUST NOT offer multiple
 KeyShareEntry values for the same group.  Clients MUST NOT offer any
 KeyShareEntry values for groups not listed in the client's
 "supported_groups" extension.  Servers MAY check for violations of
-these rules and and MAY abort the handshake with an
+these rules and abort the handshake with an
 "illegal_parameter" alert if one is violated.
 
-Upon receipt of this extension in a HelloRetryRequest, the client MUST first
-verify that the selected_group field corresponds to a group which was provided
-in the "supported_groups" extension in the original ClientHello. It MUST then
-verify that the selected_group field does not correspond to a group which was
+Upon receipt of this extension in a HelloRetryRequest, the client MUST
+verify that (1) the selected_group field corresponds to a group which was provided
+in the "supported_groups" extension in the original ClientHello and (2)
+the selected_group field does not correspond to a group which was
 provided in the "key_share" extension in the original ClientHello. If either of
 these checks fails, then the client MUST abort the handshake with an
 "illegal_parameter" alert.  Otherwise, when sending the new ClientHello, the
 client MUST replace the original "key_share" extension with one
 containing only a new KeyShareEntry for the group indicated in the
 selected_group field.
-
-Note that a HelloRetryRequest might not include the "key_share" extension if
-other extensions are sent, such as if the server is only sending a cookie.
 
 If using (EC)DHE key establishment, servers offer exactly one
 KeyShareEntry in the ServerHello. This value MUST correspond to the KeyShareEntry value offered
@@ -2140,9 +2115,6 @@ indicated in the "supported_groups" extension.
 If a HelloRetryRequest was received, the client MUST verify that the
 selected NamedGroup matches that supplied in the selected_group field and MUST
 abort the handshake with an "illegal_parameter" alert if it does not.
-
-[[TODO: Recommendation about what the client offers.
-Presumably which integer DH groups and which curves.]]
 
 ####  Diffie-Hellman Parameters {#ffdhe-param}
 
@@ -2189,7 +2161,7 @@ for each curve.
 
 The "pre_shared_key" extension is used to indicate the identity of the
 pre-shared key to be used with a given handshake in association
-with PSK key establishment (see {{RFC4279}} for background).
+with PSK key establishment.
 
 The "extension_data" field of this extension contains a
 "PreSharedKeyExtension" value:
@@ -2248,14 +2220,13 @@ the KDF. For externally established PSKs, the Hash algorithm MUST be set when th
 PSK is established.
 
 Prior to accepting PSK key establishment, the server MUST validate the
-corresponding binder value (see {{psk-binder}} below) If this
-value is not present or does not validate the server MUST abort the
-handshake.  Servers SHOULD NOT attempt to validate multiple binders;
-rather they SHOULD select a single PSK and validate solely the
-binder that corresponds to that PSK.
-
-In order to accept PSK key establishment, the server sends a
-"pre_shared_key" extension indicating the selected identity. 
+corresponding binder value (see {{psk-binder}} below). If this value is
+not present or does not validate, the server MUST abort the handshake.
+Servers SHOULD NOT attempt to validate multiple binders; rather they
+SHOULD select a single PSK and validate solely the binder that
+corresponds to that PSK. In order to accept PSK key establishment, the
+server sends a "pre_shared_key" extension indicating the selected
+identity.
 
 Clients MUST verify that the server's selected_identity is within the
 range supplied by the client, that the server selected the cipher
@@ -2265,18 +2236,23 @@ and that the "key_share", and
 ke_modes and auth_modes values. If these values are not consistent,
 the client MUST abort the handshake with an "illegal_parameter" alert.
 
+If the server supplies an "early_data" extension, the client MUST
+verify that the server's selected_identity is 0. If any
+other value is returned, the client MUST abort the handshake
+with an "illegal_parameter" alert.
+
 This extension MUST be the last extension in the ClientHello (this
 facilitates implementation as described below). Servers MUST check
 that it is the last extension and otherwise fail the handshake with an
 "illegal_parameter" alert.
 
-If the server supplies an "early_data" extension, the client MUST
-verify that the server's selected_identity is 0. If any
-other value is returned, the client MUST abort the handshake
-with an "unknown_psk_identity" alert.
 
 #### PSK Binder
 
+The PSK binder value forms a binding between a PSK
+and the current handshake, as well as between the session where the
+PSK was established (if via a NewSessionTicket message)
+and the session where it was used.
 Each entry in the binders list is computed as an HMAC over the portion
 of the ClientHello up to and including the PreSharedKeyExtension.identities
 field. That is, it includes all of the ClientHello but not the binder
@@ -2316,7 +2292,8 @@ a "psk_key_exchange_modes" extension, servers MUST abort the handshake.
 Servers MUST NOT select a key exchange mode that is not listed by the
 client. This extension also restricts the modes for use with PSK resumption;
 servers SHOULD NOT send NewSessionTicket with tickets that are not
-compatible with the advertised modes.
+compatible with the advertised modes; however if it does so, the impact
+will just be that the client's attempts at resumption fail.
 
 %%% Key Exchange Messages
 
@@ -2487,16 +2464,12 @@ that determines the rest of the handshake.
 
 ###  Encrypted Extensions
 
-When this message will be sent:
-
-> In all handshakes, the server MUST send the
+In all handshakes, the server MUST send the
 EncryptedExtensions message immediately after the
 ServerHello message. This is the first message that is encrypted
 under keys derived from handshake_traffic_secret.
 
-Meaning of this message:
-
-> The EncryptedExtensions message contains any extensions
+The EncryptedExtensions message contains any extensions
 which should be protected, i.e., any which are not needed to
 establish the cryptographic context, but which are not
 associated with individual certificates. The client
@@ -2518,9 +2491,7 @@ extensions
 
 ###  Certificate Request
 
-When this message will be sent:
-
-> A server which is authenticating with a certificate can optionally
+A server which is authenticating with a certificate can optionally
 request a certificate from the client. This message, if sent, will
 follow EncryptedExtensions.
 
@@ -2667,22 +2638,17 @@ and length fields.
 
 ###  Certificate
 
-When this message will be sent:
-
-> The server MUST send a Certificate message whenever the agreed-upon
+The server MUST send a Certificate message whenever the agreed-upon
 key exchange method uses certificates for authentication (this
 includes all key exchange methods defined in this document except PSK).
+This message conveys the endpoint's certificate chain to the peer.
 
-> The client MUST send a Certificate message if and only if server has
+The client MUST send a Certificate message if and only if the server has
 requested client authentication via a CertificateRequest message
 ({{certificate-request}}). If the server requests client authentication
 but no suitable certificate is available, the client
 MUST send a Certificate message containing no certificates (i.e., with
 the "certificate_list" field having length 0).
-
-Meaning of this message:
-
-> This message conveys the endpoint's certificate chain to the peer.
 
 Structure of this message:
 
@@ -2717,7 +2683,7 @@ certificate_list
 
 extensions:
 : A set of extension values for the CertificateEntry. The "Extension"
-  format is defined in {{hello-extensions}}. Valid extensions include
+  format is defined in {{extensions}}. Valid extensions include
   OCSP Status extensions ({{!RFC6066}} and {{!RFC6961}}) and
   SignedCertificateTimestamps ({{!RFC6962}}).  Any extension presented
   in a Certificate message must only be presented if the corresponding
@@ -2804,8 +2770,6 @@ layer endpoint, local configuration and preferences).
 
 The following rules apply to certificates sent by the client:
 
-In particular:
-
 - The certificate type MUST be X.509v3 {{RFC5280}}, unless explicitly negotiated
   otherwise (e.g., {{RFC5081}}).
 
@@ -2857,9 +2821,8 @@ an RSA key signed with an ECDSA key).
 
 ###  Certificate Verify
 
-When this message will be sent:
 
-> This message is used to provide explicit proof that an endpoint
+This message is used to provide explicit proof that an endpoint
 possesses the private key corresponding to its certificate
 and also provides integrity for the handshake up
 to this point. Servers MUST send this message when
@@ -2938,29 +2901,23 @@ defined solely for use in legacy certificates, and are not valid for
 CertificateVerify signatures.
 
 Note: When used with non-certificate-based handshakes (e.g., PSK), the
-client's signature does not cover the server's certificate directly,
-although it does cover the server's Finished message, which
-transitively includes the server's certificate when the PSK derives
-from a certificate-authenticated handshake.  {{PSK-FINISHED}}
-describes a concrete attack on this mode if the Finished is omitted
-from the signature. It is unsafe to use certificate-based client
+client's signature does not cover the server's certificate directly.
+When the PSK was established through a NewSessionTicket, the client's
+signature transitively covers the server's certificate through
+the PSK binder. {{PSK-FINISHED}}
+describes a concrete attack on constructions that do not bind to
+the server's certificate. It is unsafe to use certificate-based client
 authentication when the client might potentially share the same
-PSK/key-id pair with two different endpoints. In order to ensure
-this, implementations MUST NOT mix certificate-based client
-authentication with PSK.
-
+PSK/key-id pair with two different endpoints and implementations
+MUST NOT combine external PSKs with certificate-based authentication.
 
 ###  Finished
 
-When this message will be sent:
-
-> The Finished message is the final message in the authentication
+The Finished message is the final message in the authentication
 block. It is essential for providing authentication of the handshake
 and of the computed keys.
 
-Meaning of this message:
-
-> Recipients of Finished messages MUST verify that the contents are
+Recipients of Finished messages MUST verify that the contents are
 correct. Once a side has sent its Finished message and received and
 validated the Finished message from its peer, it may begin to send and
 receive application data over the connection.
@@ -3044,8 +3001,8 @@ authentication state. Clients SHOULD attempt to use each
 ticket no more than once, with more recent tickets being used
 first.
 
-Any ticket MUST only be resumed with a cipher suite that is identical
-to that negotiated connection where the ticket was established.
+Any ticket MUST only be resumed with a cipher suite that has the
+same KDF hash as that used to establish the original connection.
 
 Note: Although the resumption_psk depends on the client's second
 flight, servers which do not request client authentication MAY compute
@@ -3090,7 +3047,7 @@ lookup key or a self-encrypted and self-authenticated value. Section
 
 extensions
 : A set of extension values for the ticket. The "Extension"
-  format is defined in {{hello-extensions}}. Clients MUST ignore
+  format is defined in {{extensions}}. Clients MUST ignore
   unrecognized extensions.
 {:br }
 
@@ -3136,7 +3093,8 @@ the responses).
 
 %%% Updating Keys
 
-       enum { update_not_requested(0), update_requested(1), (255)
+       enum {
+           update_not_requested(0), update_requested(1), (255)
        } KeyUpdateRequest;
 
        struct {
@@ -3299,8 +3257,8 @@ by an encrypted body, which itself contains a type and optional padding.
        } TLSInnerPlaintext;
 
        struct {
-           ContentType opaque_type = 23; /* application_data, see TLSInnerPlaintext.type */
-           ProtocolVersion legacy_record_version = 0x0301;    /* TLS v1.x */
+           ContentType opaque_type = 23; /* application_data */
+           ProtocolVersion legacy_record_version = 0x0301; /* TLS v1.x */
            uint16 length;
            opaque encrypted_record[length];
        } TLSCiphertext;
@@ -3716,7 +3674,6 @@ missing_extension
 : Sent by endpoints that receive a hello message not containing an
   extension that is mandatory to send for the offered TLS version
   or other negotiated parameters.
-[[TODO: IANA Considerations.]]
 
 unsupported_extension
 : Sent by endpoints receiving any hello message containing an extension
@@ -3754,8 +3711,6 @@ certificate_required
 : Sent by servers when a client certificate is desired but none was provided by
   the client.
 {:br }
-
-[[TODO: IANA Considerations for new alert values.]]
 
 New Alert values are assigned by IANA as described in {{iana-considerations}}.
 
@@ -3821,32 +3776,32 @@ In this diagram, the following formatting conventions apply:
                  v
            Early Secret
                  |
-                 +---------> Derive-Secret(., "client early traffic secret",
-                 |                         ClientHello)
-                 |                        = client_early_traffic_secret
+                 +------> Derive-Secret(., "client early traffic secret",
+                 |                      ClientHello)
+                 |                     = client_early_traffic_secret
                  |
-                 +---------> Derive-Secret(.,
-                 |                         "external psk binder key" |
-                 |                         "resumption psk binder key",
-                 |                         "")
-                 |                        = binder_key
+                 +------> Derive-Secret(.,
+                 |                      "external psk binder key" |
+                 |                      "resumption psk binder key",
+                 |                      "")
+                 |                     = binder_key
                  |
-                 +--------> Derive-Secret(., "early exporter master secret",
-                 |                        ClientHello)
-                 |                        = early_exporter_secret
+                 +-----> Derive-Secret(., "early exporter master secret",
+                 |                     ClientHello)
+                 |                     = early_exporter_secret
                  v
 (EC)DHE -> HKDF-Extract
                  |
                  v
          Handshake Secret
                  |
-                 +---------> Derive-Secret(., "client handshake traffic secret",
-                 |                         ClientHello...ServerHello)
-                 |                         = client_handshake_traffic_secret
+                 +-----> Derive-Secret(., "client handshake traffic secret",
+                 |                     ClientHello...ServerHello)
+                 |                     = client_handshake_traffic_secret
                  |
-                 +---------> Derive-Secret(., "server handshake traffic secret",
-                 |                         ClientHello...ServerHello)
-                 |                         = server_handshake_traffic_secret
+                 +-----> Derive-Secret(., "server handshake traffic secret",
+                 |                     ClientHello...ServerHello)
+                 |                     = server_handshake_traffic_secret
                  |
                  v
       0 -> HKDF-Extract
@@ -3854,21 +3809,21 @@ In this diagram, the following formatting conventions apply:
                  v
             Master Secret
                  |
-                 +---------> Derive-Secret(., "client application traffic secret",
-                 |                         ClientHello...Server Finished)
-                 |                         = client_traffic_secret_0
+                 +-----> Derive-Secret(., "client application traffic secret",
+                 |                     ClientHello...Server Finished)
+                 |                     = client_traffic_secret_0
                  |
-                 +---------> Derive-Secret(., "server application traffic secret",
-                 |                         ClientHello...Server Finished)
-                 |                         = server_traffic_secret_0
+                 +-----> Derive-Secret(., "server application traffic secret",
+                 |                     ClientHello...Server Finished)
+                 |                     = server_traffic_secret_0
                  |
-                 +---------> Derive-Secret(., "exporter master secret",
-                 |                         ClientHello...Server Finished)
-                 |                         = exporter_secret
+                 +-----> Derive-Secret(., "exporter master secret",
+                 |                     ClientHello...Server Finished)
+                 |                     = exporter_secret
                  |
-                 +---------> Derive-Secret(., "resumption master secret",
-                                           ClientHello...Client Finished)
-                                           = resumption_secret
+                 +-----> Derive-Secret(., "resumption master secret",
+                                       ClientHello...Client Finished)
+                                       = resumption_secret
 ~~~~
 
 The general pattern here is that the secrets shown down the left side
@@ -4095,11 +4050,14 @@ and their allocation policies are below:
   Standards Action {{RFC5226}}.
 
 -  TLS Alert Registry: Future values are allocated via Standards
-  Action {{RFC5226}}.
+  Action {{RFC5226}}. IANA [SHALL update/has updated] this registry
+  to include values for "end_of_early_data" and "missing_extension".
 
 -  TLS HandshakeType Registry: Future values are allocated via
   Standards Action {{RFC5226}}. IANA [SHALL update/has updated] this registry
-  to rename item 4 from "NewSessionTicket" to "new_session_ticket".
+  to rename item 4 from "NewSessionTicket" to "new_session_ticket"
+  and to add the "hello_retry_request", "encrypted_extensions",
+  and "key_update" values.
 
 This document also uses a registry originally created in {{RFC4366}}. IANA has
 updated it to reference this document. The registry and its allocation policy
@@ -4170,6 +4128,9 @@ is listed below:
 | supported_versions [[this document]]     |         Yes |      Client | No                |
 | ticket_early_data_info [[this document]] |         Yes |      Ticket | No                |
 
+IANA [SHALL update/has updated] this registry to include the values listed above
+that correspond to this document.
+
 In addition, this document defines two new registries to be maintained
 by IANA
 
@@ -4218,19 +4179,6 @@ server configuration issues. They are no longer considered appropriate
 for general use and should be assumed to be potentially unsafe. The set
 of curves specified here is sufficient for interoperability with all
 currently deployed and properly configured TLS implementations.
-
-#### Deprecated Extensions
-
-The following extensions are no longer applicable to TLS 1.3, although
-TLS 1.3 clients MAY send them if they are willing to negotiate them
-with prior versions of TLS. TLS 1.3 servers MUST ignore these
-extensions if they are negotiating TLS 1.3:
-truncated_hmac {{RFC6066}},
-srp {{RFC5054}},
-encrypt_then_mac {{RFC7366}},
-extended_master_secret {{RFC7627}},
-SessionTicket {{RFC5077}},
-and renegotiation_info {{RFC5746}}.
 
 %%### Server Parameters Messages
 %%### Authentication Messages
@@ -4363,7 +4311,7 @@ TLS protocol issues:
   a malformed plaintext of all-zeros?
 
 - Do you properly ignore unrecognized cipher suites ({{client-hello}}),
-  hello extensions ({{hello-extensions}}), named groups ({{negotiated-groups}}),
+  hello extensions ({{extensions}}), named groups ({{negotiated-groups}}),
   and signature algorithms ({{signature-algorithms}})?
 
 Cryptographic details:
@@ -4477,10 +4425,6 @@ See {{zero-rtt-backwards-compatibility}}.
 If the version chosen by the server is not supported by the client (or not
 acceptable), the client MUST abort the handshake with a "protocol_version" alert.
 
-If a TLS server receives a ClientHello containing a version number greater than
-the highest version supported by the server, it MUST reply according to the
-highest version supported by the server.
-
 Some legacy server implementations are known to not implement the TLS
 specification properly and might abort connections upon encountering
 TLS extensions or versions which it is not aware of. Interoperability
@@ -4494,8 +4438,8 @@ to downgrade attacks and is NOT RECOMMENDED.
 
 A TLS server can also receive a ClientHello indicating a version number smaller
 than its highest supported version. If the "supported_versions" extension
-is present, the server MUST negotiate the highest server-supported version
-found in that extension. If the "supported_versions" extension is not
+is present, the server MUST negotiate using that extension as described in
+{{supported-versions}}. If the "supported_versions" extension is not
 present, the server MUST negotiate the minimum of ClientHello.legacy_version
 and TLS 1.2. For example, if
 the server supports TLS 1.0, 1.1, and 1.2, and legacy_version is TLS 1.0, the
@@ -4565,8 +4509,6 @@ been shown to be insecure in some scenarios.
 
 #  Overview of Security Properties {#security-analysis}
 
-[[TODO: This section is still a WIP and needs a bunch more work.]]
-
 A complete security analysis of TLS is outside the scope of this document.
 In this section, we provide an informal description the desired properties
 as well as references to more detailed work in the research literature
@@ -4610,7 +4552,7 @@ peer identity should match the client's identity.
 
 Uniqueness of the session key:
 : Any two distinct handshakes should produce distinct, unrelated session
-keys {::comment}TODO{:/comment}
+keys.
 
 Downgrade protection.
 : The cryptographic parameters should be the same on both sides and
@@ -4724,8 +4666,6 @@ Order protection/non-replayability
 : An attacker should not be able to cause the receiver to accept a
 record which it has already accepted or cause the receiver to accept
 record N+1 without having first processed record N.
-[[TODO: If we merge in DTLS to this document, we will need to update
-this guarantee.]]
 
 Length concealment.
 : Given a record with a given external length, the attacker should not be able
