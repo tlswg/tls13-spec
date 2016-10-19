@@ -439,6 +439,8 @@ draft-17
 
 - Replace Client.key_shares in response to HRR (*)
 
+- Remove redundant labels for traffic key derivation (*)
+
 - Explicitly allow predicting ClientFinished for NST.
 
 - Clarify conditions for allowing 0-RTT with PSK.
@@ -3939,25 +3941,20 @@ The traffic keying material is generated from the following input values:
 * A purpose value indicating the specific value being generated
 * The length of the key
 
-The keying material is computed using:
+The traffic keying material is generated from an input traffic secret value using:
 
-       key = HKDF-Expand-Label(Secret, purpose, "", key_length_
-The following table describes the inputs to the key calculation for
-each class of traffic keys:
+~~~~
+    [sender]_write_key = HKDF-Expand-Label(Secret, "key", "", key_length)
+    [sender]_write_iv = HKDF-Expand-Label(Secret, "iv", "", iv_length)
+~~~~
+
+[sender] denotes the sending side.
 
 | Record Type | Secret | 
 |:------------|--------|
 | 0-RTT Application | client_early_traffic_secret |
 | Handshake         | [sender]_handshake_traffic_secret |
 | Application Data  | [sender]_traffic_secret_N |
-
-The [sender] in this table denotes the sending side. The
-following table indicates the purpose values for each type of key:
-
-| Key Type         | Purpose            |
-|:-----------------|:-------------------|
-| key | "key" |
-| iv  | "iv"  |
 
 All the traffic keying material is recomputed whenever the
 underlying Secret changes (e.g., when changing from the handshake to
