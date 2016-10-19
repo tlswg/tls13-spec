@@ -1592,7 +1592,7 @@ extensions
 : A list of extensions.  Note that only extensions offered by the
   client can appear in the server's list. In TLS 1.3, as opposed to
   previous versions of TLS, the server's extensions are split between
-  the ServerHello, EncryptedExtensions {{encrypted-extensions}}
+  the ServerHello and EncryptedExtensions {{encrypted-extensions}}
   message. The ServerHello MUST only include extensions which are
   required to establish the cryptographic context. Currently the only
   such extensions are "key_share", "pre_shared_key", and "signature_algorithms".
