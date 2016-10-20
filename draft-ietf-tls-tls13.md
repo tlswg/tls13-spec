@@ -431,10 +431,10 @@ draft-17
 
 - Add max_early_data_size field to TicketEarlyDataInfo (*)
 
-- Add a 0-RTT exporter and change the transcript for the regular exporter (*).
+- Add a 0-RTT exporter and change the transcript for the regular exporter (*)
 
 - Merge TicketExtensions and Extensions registry. Changes
-  ticket_early_data_info code point (*).
+  ticket_early_data_info code point (*)
 
 - Replace Client.key_shares in response to HRR (*)
 
@@ -442,13 +442,14 @@ draft-17
 
 - Harmonize requirements about cipher suite matching: for resumption you
   need to match KDF but for 0-RTT you need whole cipher suite. This
-  allows PSKs to actually negotiate cipher suites. (*).
+  allows PSKs to actually negotiate cipher suites. (*)
 
-- Explicitly allow non-offered extensions in NewSessionTicket.
+- Explicitly allow non-offered extensions in NewSessionTicket
 
-- Explicitly allow predicting ClientFinished for NST.
+- Explicitly allow predicting ClientFinished for NST
 
-- Clarify conditions for allowing 0-RTT with PSK.
+- Clarify conditions for allowing 0-RTT with PSK
+
 
 draft-16
 
@@ -1001,7 +1002,7 @@ to be used with the PSK MUST also be provisioned.
 ## Zero-RTT Data
 
 When clients and servers share a PSK (either obtained out-of-band or
-via a previous handshake), TLS 1.3 allows clients to end data on its
+via a previous handshake), TLS 1.3 allows clients to send data on the
 first flight ("early data"). The client uses the PSK to authenticate
 the server and to encrypt the early data.
 
@@ -1009,12 +1010,8 @@ When clients use a PSK obtained out-of-band then the following
 additional information MUST be provisioned to both parties:
 
   * The cipher suite for use with this PSK
-  * The key exchange and authentication modes this PSK is allowed to be used with
   * The Application-Layer Protocol Negotiation (ALPN) protocol, if any is to be used
   * The Server Name Indication (SNI), if any is to be used
-
-Note: only the first two of these need to be provisioned to use
-an out-of-band PSK in 1-RTT mode.
 
 As shown in {{tls-0-rtt}}, the Zero-RTT data is just added to the 1-RTT
 handshake in the first flight. The rest of the handshake uses the same messages
@@ -1224,9 +1221,10 @@ numerical information may be omitted.
 The names assigned to enumerateds do not need to be unique.  The numerical value
 can describe a range over which the same name applies.  The value includes the
 minimum and maximum inclusive values in that range, separated by two period
-characters.
+characters. This is principally useful for reserving regions of the space.
 
        enum { sad(0), meh(1..254), happy (255) } Mood;
+
 
 
 ##  Constructed Types
@@ -1719,7 +1717,10 @@ The list of extension types is maintained by IANA as described in
 
 The client sends its extensions in the ClientHello. The server MAY
 send extensions in the ServerHello, EncryptedExtensions, Certificate,
-and HelloRetryRequest messages. The table in {{iana-considerations}}
+and HelloRetryRequest messages. The NewSessionTicket also allows
+the server to send extensions to the client though these are
+not directly associated with the extensions in the ClientHello.
+The table in {{iana-considerations}}
 indicates where a given extension may appear. If the client receives
 an extension which is not specified for a given message it MUST
 abort the handshake with an "illegal_parameter" alert.
@@ -2103,7 +2104,7 @@ these rules and abort the handshake with an
 
 Upon receipt of this extension in a HelloRetryRequest, the client MUST
 verify that (1) the selected_group field corresponds to a group which was provided
-in the "supported_groups" extension in the original ClientHello and (2)
+in the "supported_groups" extension in the original ClientHello; and (2)
 the selected_group field does not correspond to a group which was
 provided in the "key_share" extension in the original ClientHello. If either of
 these checks fails, then the client MUST abort the handshake with an
@@ -2476,7 +2477,7 @@ EncryptedExtensions message immediately after the
 ServerHello message. This is the first message that is encrypted
 under keys derived from handshake_traffic_secret.
 
-The EncryptedExtensions message contains any extensions
+The EncryptedExtensions message contains extensions
 which should be protected, i.e., any which are not needed to
 establish the cryptographic context, but which are not
 associated with individual certificates. The client
@@ -2881,7 +2882,7 @@ and for a client signature is "TLS 1.3, client
 CertificateVerify".
 
 For example, if Hash(Handshake Context + Certificate) was 32 bytes of
-01 (this length would make sense for SHA-256, the input to the final
+01 (this length would make sense for SHA-256), the input to the final
 signing process for a server CertificateVerify would be:
 
        2020202020202020202020202020202020202020202020202020202020202020
@@ -2992,8 +2993,7 @@ a NewSessionTicket message. This message creates a pre-shared key
 from the resumption master secret:
 
 ~~~~
-   resumption_psk = HKDF-Expand-Label(
-                                      resumption_secret,
+   resumption_psk = HKDF-Expand-Label(resumption_secret,
                                       "resumption psk", "", Hash.Length)
 ~~~~
 
@@ -3895,7 +3895,8 @@ The traffic keying material is generated from an input traffic secret value usin
     [sender]_write_iv = HKDF-Expand-Label(Secret, "iv", "", iv_length)
 ~~~~
 
-[sender] denotes the sending side.
+[sender] denotes the sending side. The Secret value for each record type
+is shown in the table below.
 
 | Record Type | Secret |
 |:------------|--------|
