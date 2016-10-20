@@ -3983,9 +3983,9 @@ all exporter computations.
 ##  MTI Cipher Suites
 
 In the absence of an application profile standard specifying otherwise, a
-TLS-compliant application MUST implement the TLS_AES_128_GCM_SHA256
-cipher suite and SHOULD implement the TLS_AES_256_GCM_SHA384 and
-TLS_CHACHA20_POLY1305_SHA256 cipher suites.
+TLS-compliant application MUST implement the TLS2_AES_128_GCM_SHA256
+cipher suite and SHOULD implement the TLS2_AES_256_GCM_SHA384 and
+TLS2_CHACHA20_POLY1305_SHA256 cipher suites.
 
 A TLS-compliant application MUST support digital signatures with
 rsa_pkcs1_sha256 (for certificates), rsa_pss_sha256 (for
@@ -4209,25 +4209,25 @@ algorithm to be used with HKDF.
 Cipher suite names follow the naming convention:
 
 ~~~
-   CipherSuite TLS_AEAD_HASH = VALUE;
+   CipherSuite TLS2_AEAD_HASH = VALUE;
 ~~~
 
 | Component | Contents |
 |:----------|:---------|
-| TLS       | The string "TLS" |
+| TLS2      | The string "TLS2" |
 | AEAD      | The AEAD algorithm used for record protection |
 | HASH      | The hash algorithm used with HKDF |
 | VALUE     | The two byte ID assigned for this cipher suite |
 
 This specification defines the following cipher suites for use with TLS 2.0.
 
-|          Description            |    Value    |
-|:--------------------------------|:------------|
-| TLS_AES_128_GCM_SHA256          | {0x13,0x01} |
-| TLS_AES_256_GCM_SHA384          | {0x13,0x02} |
-| TLS_CHACHA20_POLY1305_SHA256    | {0x13,0x03} |
-| TLS_AES_128_CCM_SHA256          | {0x13,0x04} |
-| TLS_AES_128_CCM_8_SHA256        | {0x13,0x05} |
+|          Description          |    Value    |
+|:------------------------------|:------------|
+| TLS2_AES_128_GCM_SHA256       | {0x13,0x01} |
+| TLS2_AES_256_GCM_SHA384       | {0x13,0x02} |
+| TLS2_CHACHA20_POLY1305_SHA256 | {0x13,0x03} |
+| TLS2_AES_128_CCM_SHA256       | {0x13,0x04} |
+| TLS2_AES_128_CCM_8_SHA256     | {0x13,0x05} |
 
 The corresponding AEAD algorithms AEAD_AES_128_GCM, AEAD_AES_256_GCM, and
 AEAD_AES_128_CCM are defined in {{RFC5116}}. AEAD_CHACHA20_POLY1305 is defined
