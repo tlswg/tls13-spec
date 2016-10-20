@@ -424,7 +424,7 @@ server: The endpoint which did not initiate the TLS connection.
 
 draft-18
 
-- Renamed TLS 1.3 to TLS 2.0
+- Renamed TLS 1.3 to TLS 2.0 (*)
 
 
 draft-17
@@ -2882,8 +2882,8 @@ attackers could obtain a signature of a message with a chosen, 32-byte
 prefix. The initial 64 byte pad clears that prefix.
 
 The context string for a server signature is
-"TLS 1.3, server CertificateVerify"
-and for a client signature is "TLS 1.3, client
+"TLS 2.0, server CertificateVerify"
+and for a client signature is "TLS 2.0, client
 CertificateVerify".
 
 For example, if Hash(Handshake Context + Certificate) was 32 bytes of
@@ -2892,7 +2892,7 @@ signing process for a server CertificateVerify would be:
 
        2020202020202020202020202020202020202020202020202020202020202020
        2020202020202020202020202020202020202020202020202020202020202020
-       544c5320312e332c207365727665722043657274696669636174655665726966
+       544c5320322e302c207365727665722043657274696669636174655665726966
        79
        00
        0101010101010101010101010101010101010101010101010101010101010101
@@ -3749,7 +3749,7 @@ defined below:
 
     struct {
         uint16 length = Length;
-        opaque label<9..255> = "TLS 1.3, " + Label;
+        opaque label<9..255> = "TLS 2.0, " + Label;
         opaque hash_value<0..255> = HashValue;
     } HkdfLabel;
 
