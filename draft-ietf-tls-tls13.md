@@ -2363,7 +2363,7 @@ can behave in one of two ways:
   server has ignored any early data and an ordinary 1-RTT handshake is
   required.
 
-- Return an empty extension, indicating that it intends to
+- Return its own extension, indicating that it intends to
   process the early data. It is not possible for the server
   to accept only a subset of the early data messages.
 
