@@ -444,6 +444,8 @@ draft-17
   need to match KDF but for 0-RTT you need whole cipher suite. This
   allows PSKs to actually negotiate cipher suites. (*)
 
+- Move SCT and OCSP into Certificate.extensions (*)
+
 - Explicitly allow non-offered extensions in NewSessionTicket
 
 - Explicitly allow predicting ClientFinished for NST
