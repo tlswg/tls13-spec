@@ -1213,17 +1213,12 @@ target of the assignment is well specified.
        Color color = Color.blue;     /* overspecified, legal */
        Color color = blue;           /* correct, type implicit */
 
-For enumerateds that are never converted to external representation, the
-numerical information may be omitted.
-
-       enum { low, medium, high } Amount;
-
 The names assigned to enumerateds do not need to be unique.  The numerical value
 can describe a range over which the same name applies.  The value includes the
 minimum and maximum inclusive values in that range, separated by two period
 characters. This is principally useful for reserving regions of the space.
 
-       enum { sad(0), meh(1..254), happy (255) } Mood;
+       enum { sad(0), meh(1..254), happy(255) } Mood;
 
 
 
@@ -1287,7 +1282,7 @@ presentation language.
 
 For example:
 
-       enum { apple, orange, banana } VariantTag;
+       enum { apple(0), orange(1), banana(2) } VariantTag;
 
        struct {
            uint16 number;
@@ -1300,7 +1295,7 @@ For example:
        } V2;
 
        struct {
-           select (VariantTag) { /* value of selector is implicit */
+           select (VariantTag) {
                case apple:
                  V1;   /* VariantBody, tag = apple */
                case orange:
