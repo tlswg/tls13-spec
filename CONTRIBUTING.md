@@ -1,4 +1,4 @@
-# Contributing to TLS 1.3
+# Contributing to TLS 2.0
 
 Before submitting feedback, please familiarize yourself with our current issues
 list and review the [working
