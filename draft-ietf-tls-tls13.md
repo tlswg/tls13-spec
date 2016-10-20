@@ -763,7 +763,7 @@ TLS supports three basic key exchange modes:
 
 - A pre-shared symmetric key (PSK), and
 
-- A combination of a pre-shared symmetric and Diffie-Hellman.
+- A combination of PSK and Diffie-Hellman.
 
 {{tls-full}} below shows the basic full TLS handshake:
 
