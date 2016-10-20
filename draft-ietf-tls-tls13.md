@@ -2300,6 +2300,8 @@ servers SHOULD NOT send NewSessionTicket with tickets that are not
 compatible with the advertised modes; however if it does so, the impact
 will just be that the client's attempts at resumption fail.
 
+The server MUST NOT send a "psk_key_exchange_modes" extension.
+
 %%% Key Exchange Messages
 
        enum { psk_ke(0), psk_dhe_ke(1), (255) } PskKeyExchangeMode;
