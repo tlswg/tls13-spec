@@ -1252,7 +1252,7 @@ Fields and variables may be assigned a fixed value using "=", as in:
            T2 f2;
        } T;
 
-###  Variants
+##  Variants
 
 Defined structures may have variants based on some knowledge that is available
 within the environment. The selector must be an enumerated type that defines
