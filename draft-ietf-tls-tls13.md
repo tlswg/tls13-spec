@@ -3611,7 +3611,8 @@ record_overflow
 handshake_failure
 : Reception of a "handshake_failure" alert message indicates that the
   sender was unable to negotiate an acceptable set of security
-  parameters given the options available.
+  parameters given the options available. The sender MAY
+  send "insufficient_security" alert instead.
 
 bad_certificate
 : A certificate was corrupt, contained signatures that did not
@@ -3664,8 +3665,9 @@ protocol_version
 
 insufficient_security
 : Returned instead of "handshake_failure" when a negotiation has
-  failed specifically because the server requires ciphers more
-  secure than those supported by the client.
+  failed specifically because the server recognized the security parameters
+  advertised by client but chose to reject them because of local policy
+  or configuration.
 
 internal_error
 : An internal error unrelated to the peer or the correctness of the
