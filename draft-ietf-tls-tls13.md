@@ -3006,7 +3006,9 @@ ticket no more than once, with more recent tickets being used
 first.
 
 Any ticket MUST only be resumed with a cipher suite that has the
-same KDF hash as that used to establish the original connection.
+same KDF hash as that used to establish the original connection,
+and if the client provides the same SNI value as described in
+Section 3 of {{RFC6066}}.
 
 Note: Although the resumption_psk depends on the client's second
 flight, servers which do not request client authentication MAY compute
