@@ -4265,17 +4265,9 @@ should generally support certificate revocation messages. Certificates should
 always be verified to ensure proper signing by a trusted Certificate Authority
 (CA). The selection and addition of trusted CAs should be done very carefully.
 Users should be able to view information about the certificate and root CA.
-
-
-## Cipher Suite Support
-
-TLS supports a range of key sizes and security levels, including some that
-provide no or minimal security. A proper implementation will probably not
-support many cipher suites. Applications SHOULD also enforce minimum and
-maximum key sizes. For example, certification paths containing keys or
-signatures weaker than 2048-bit RSA or 224-bit ECDSA are not appropriate
-for secure applications.
-See also {{backwards-compatibility-security-restrictions}}.
+Applications SHOULD also enforce minimum and maximum key sizes. For example,
+certification paths containing keys or signatures weaker than 2048-bit RSA or
+224-bit ECDSA are not appropriate for secure applications.
 
 
 ## Implementation Pitfalls
