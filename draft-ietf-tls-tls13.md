@@ -1654,8 +1654,7 @@ Structure of this message:
 The version and extensions fields have the
 same meanings as their corresponding values in the ServerHello.
 The server SHOULD send only the extensions necessary for the client to
-generate a correct ClientHello pair (currently no such extensions
-exist). As with ServerHello, a
+generate a correct ClientHello pair. As with ServerHello, a
 HelloRetryRequest MUST NOT contain any extensions that were not first
 offered by the client in its ClientHello, with the exception of optionally the
 "cookie" (see {{cookie}}) extension.
