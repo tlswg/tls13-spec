@@ -1,5 +1,5 @@
 ---
-title: The Transport Layer Security (TLS) Protocol Version 1.3
+title: The Transport Layer Security (TLS) Protocol Version 2.0
 abbrev: TLS
 docname: draft-ietf-tls-tls13-latest
 category: std
@@ -326,7 +326,7 @@ informative:
        date: 2015-09
 --- abstract
 
-This document specifies version 1.3 of the Transport Layer Security
+This document specifies version 2.0 of the Transport Layer Security
 (TLS) protocol.  TLS allows client/server applications to
 communicate over the Internet in a way that is designed to prevent eavesdropping,
 tampering, and message forgery.
@@ -335,7 +335,7 @@ tampering, and message forgery.
 
 #  Introduction
 
-DISCLAIMER: This is a WIP draft of TLS 1.3 and has not yet seen significant security analysis.
+DISCLAIMER: This is a WIP draft of TLS 2.0 and has not yet seen significant security analysis.
 
 RFC EDITOR: PLEASE REMOVE THE FOLLOWING PARAGRAPH
 The source for this draft is maintained in GitHub. Suggested changes
@@ -385,7 +385,7 @@ initiate TLS handshaking and how to interpret the authentication
 certificates exchanged are left to the judgment of the designers and
 implementors of protocols that run on top of TLS.
 
-This document defines TLS version 1.3. While TLS 1.3 is not directly
+This document defines TLS version 2.0. While TLS 2.0 is not directly
 compatible with previous versions, all versions of TLS incorporate a
 versioning mechanism which allows clients and servers to interoperably
 negotiate a common version if one is supported.
@@ -421,6 +421,11 @@ server: The endpoint which did not initiate the TLS connection.
 
 (*) indicates changes to the wire protocol which may require implementations
     to update.
+
+draft-18
+
+- Renamed TLS 1.3 to TLS 2.0 (*)
+
 
 draft-17
 
@@ -741,8 +746,8 @@ TLS 1.2:
 
 * RSASSA-PSS signature schemes are defined in {{signature-algorithms}}.
 
-An implementation of TLS 1.3 that also supports TLS 1.2 might need to include
-changes to support these changes even when TLS 1.3 is not in use.  See the
+An implementation of TLS 2.0 that also supports TLS 1.2 might need to include
+changes to support these changes even when TLS 2.0 is not in use.  See the
 referenced sections for more details.
 
 
@@ -943,7 +948,7 @@ of the PSK. If the server accepts it, then the security context of the
 new connection is tied to the original connection. In TLS 1.2 and
 below, this functionality was provided by "session IDs" and
 "session tickets" {{RFC5077}}. Both mechanisms are obsoleted in TLS
-1.3.
+2.0.
 
 PSKs can be used with (EC)DHE exchange in order to provide forward
 secrecy in combination with shared keys, or can be used alone, at the
@@ -1004,7 +1009,7 @@ to be used with the PSK MUST also be provisioned.
 ## Zero-RTT Data
 
 When clients and servers share a PSK (either obtained out-of-band or
-via a previous handshake), TLS 1.3 allows clients to send data on the
+via a previous handshake), TLS 2.0 allows clients to send data on the
 first flight ("early data"). The client uses the PSK to authenticate
 the server and to encrypt the early data.
 
@@ -1449,13 +1454,13 @@ ClientHello (without modification) except:
 - Including a "cookie" extension if one was provided in the
   HelloRetryRequest.
 
-Because TLS 1.3 forbids renegotiation, if a server receives a
+Because TLS 2.0 forbids renegotiation, if a server receives a
 ClientHello at any other time, it MUST terminate the connection.
 
 If a server established a TLS connection with a previous version of TLS
-and receives a TLS 1.3 ClientHello in a renegotiation, it MUST retain the
-previous protocol version. In particular, it MUST NOT negotiate TLS 1.3.
-A client that receives a TLS 1.3 ServerHello during renegotiation
+and receives a TLS 2.0 ClientHello in a renegotiation, it MUST retain the
+previous protocol version. In particular, it MUST NOT negotiate TLS 2.0.
+A client that receives a TLS 2.0 ServerHello during renegotiation
 MUST abort the handshake with a "protocol_version" alert.
 
 Structure of this message:
@@ -1482,7 +1487,7 @@ are bytes following the compression_methods at the end of the ClientHello. Note
 that this method of detecting optional data differs from the normal TLS method
 of having a variable-length field, but it is used for compatibility with TLS
 before extensions were defined.
-As of TLS 1.3, all clients and servers will send at least
+As of TLS 2.0, all clients and servers will send at least
 one extension (at least "key_share" or "pre_shared_key").
 
 legacy_version
@@ -1492,7 +1497,7 @@ legacy_version
   version negotiation, leading to "version intolerance" in which
   the server rejects an otherwise acceptable ClientHello with a version
   number higher than it supports.
-  In TLS 1.3, the client indicates its version preferences in the
+  In TLS 2.0, the client indicates its version preferences in the
   "supported_versions" extension ({{supported-versions}}) and this field MUST
   be set to 0x0303, which was the version number for TLS 1.2.
   (See {{backward-compatibility}} for details about backward compatibility.)
@@ -1502,13 +1507,13 @@ random
   See {{implementation-notes}} for additional information.
 
 legacy_session_id
-: Versions of TLS before TLS 1.3 supported a session resumption
+: Versions of TLS before TLS 2.0 supported a session resumption
   feature which has been merged with Pre-Shared Keys in this version
   (see {{resumption-and-psk}}).
-  This field MUST be ignored by a server negotiating TLS 1.3 and
+  This field MUST be ignored by a server negotiating TLS 2.0 and
   MUST be set as a zero length vector (i.e., a single zero byte
   length field) by clients which do not have a cached session ID
-  set by a pre-TLS 1.3 server.
+  set by a pre-TLS 2.0 server.
 
 cipher_suites
 : This is a list of the symmetric cipher options supported by the
@@ -1520,13 +1525,13 @@ cipher_suites
   usual. Values are defined in {{cipher-suites}}.
 
 legacy_compression_methods
-: Versions of TLS before 1.3 supported compression with the list of
-  supported compression methods being sent in this field. For every TLS 1.3
+: Versions of TLS before 2.0 supported compression with the list of
+  supported compression methods being sent in this field. For every TLS 2.0
   ClientHello, this vector MUST contain exactly one byte set to
   zero, which corresponds to the "null" compression method in
-  prior versions of TLS. If a TLS 1.3 ClientHello is
+  prior versions of TLS. If a TLS 2.0 ClientHello is
   received with any other value in this field, the server MUST
-  abort the handshake with an "illegal_parameter" alert. Note that TLS 1.3
+  abort the handshake with an "illegal_parameter" alert. Note that TLS 2.0
   servers might receive TLS 1.2 or prior ClientHellos which contain
   other compression methods and MUST follow the procedures for
   the appropriate prior version of TLS.
@@ -1539,10 +1544,10 @@ extensions
 
 In the event that a client requests additional functionality using
 extensions, and this functionality is not supplied by the server, the
-client MAY abort the handshake. Note that TLS 1.3 ClientHello messages
+client MAY abort the handshake. Note that TLS 2.0 ClientHello messages
 always contain extensions (minimally they must contain
 "supported_versions" or they will be interpreted as TLS 1.2 ClientHello
-messages). TLS 1.3 servers may receive TLS 1.2 ClientHello messages
+messages). TLS 2.0 servers may receive TLS 1.2 ClientHello messages
 without extensions. If negotiating TLS 1.2, a server MUST check that
 the message either contains no data after legacy_compression_methods
 or that it contains a valid extensions block with no data following.
@@ -1591,15 +1596,15 @@ extensions
   the only such extensions are "key_share" and "pre_shared_key".
 {:br }
 
-TLS 1.3 has a downgrade protection mechanism embedded in the server's
-random value. TLS 1.3 server implementations which respond to a
+TLS 2.0 has a downgrade protection mechanism embedded in the server's
+random value. TLS 2.0 server implementations which respond to a
 ClientHello indicating only support for TLS 1.2 or below
 MUST set the last eight bytes of their Random value
 to the bytes:
 
       44 4F 57 4E 47 52 44 01
 
-TLS 1.3 server implementations which respond to a
+TLS 2.0 server implementations which respond to a
 ClientHello indicating only support for TLS 1.1 or below
 SHOULD set the last eight
 bytes of their Random value to the bytes:
@@ -1607,7 +1612,7 @@ bytes of their Random value to the bytes:
       44 4F 57 4E 47 52 44 00
 
 
-TLS 1.3 clients receiving a TLS 1.2 or below ServerHello MUST check
+TLS 2.0 clients receiving a TLS 1.2 or below ServerHello MUST check
 that the last eight octets are not equal to either of these values. TLS
 1.2 clients SHOULD also perform this check if the ServerHello
 indicates TLS 1.1 or below. If a match is found, the client MUST abort
@@ -1735,7 +1740,7 @@ extensions MAY appear in any order, with the exception of
 the last extension in the ClientHello.
 There MUST NOT be more than one extension of the same type.
 
-In TLS 1.3, unlike TLS 1.2, extensions are renegotiated with each
+In TLS 2.0, unlike TLS 1.2, extensions are renegotiated with each
 handshake even when in resumption-PSK mode. However, 0-RTT parameters are
 those negotiated in the previous handshake; mismatches may require
 rejecting 0-RTT (see {{early-data-indication}}).
@@ -1793,7 +1798,7 @@ in previous versions of TLS.
 
 RFC EDITOR: PLEASE REMOVE THIS SECTION
 
-While the eventual version indicator for the RFC version of TLS 1.3 will
+While the eventual version indicator for the RFC version of TLS 2.0 will
 be 0x0304, implementations of draft versions of this specification SHOULD
 instead advertise 0x7f00 | draft_version
 in ServerHello.version, and HelloRetryRequest.server_version.
@@ -1916,7 +1921,7 @@ RSASSA-PSS algorithms
   both the corresponding hash algorithm as defined in {{SHS}}. When used in
   signed TLS handshake messages, the length of the salt MUST be equal to the
   length of the digest output.  This codepoint is defined for use with TLS 1.2
-  as well as TLS 1.3.
+  as well as TLS 2.0.
 
 EdDSA algorithms
 : Indicates a signature algorithm using EdDSA as defined in
@@ -1927,7 +1932,7 @@ EdDSA algorithms
 rsa_pkcs1_sha1, dsa_sha1, and ecdsa_sha1 SHOULD NOT be offered. Clients
 offering these values for backwards compatibility MUST list them as the lowest
 priority (listed after all other algorithms in SignatureSchemeList).
-TLS 1.3 servers MUST NOT offer a SHA-1
+TLS 2.0 servers MUST NOT offer a SHA-1
 signed certificate unless no valid certificate chain can be produced without it
 (see {{server-certificate-selection}}).
 
@@ -1937,7 +1942,7 @@ trust anchors are not validated since they begin a certification path (see
 path MAY use a signature algorithm that is not advertised as being supported
 in the "signature_algorithms" extension.
 
-Note that TLS 1.2 defines this extension differently. TLS 1.3 implementations
+Note that TLS 1.2 defines this extension differently. TLS 2.0 implementations
 willing to negotiate TLS 1.2 MUST behave in accordance with the requirements of
 {{RFC5246}} when negotiating that version. In particular:
 
@@ -1946,7 +1951,7 @@ willing to negotiate TLS 1.2 MUST behave in accordance with the requirements of
 * In TLS 1.2, the extension contained hash/signature pairs. The pairs are
   encoded in two octets, so SignatureScheme values have been allocated to
   align with TLS 1.2's encoding. Some legacy pairs are left unallocated. These
-  algorithms are deprecated as of TLS 1.3. They MUST NOT be offered or
+  algorithms are deprecated as of TLS 2.0. They MUST NOT be offered or
   negotiated by any implementation. In particular, MD5 {{SLOTH}} and SHA-224
   MUST NOT be used.
 
@@ -1956,7 +1961,7 @@ willing to negotiate TLS 1.2 MUST behave in accordance with the requirements of
   any curve that they advertised in the "supported_groups" extension.
 
 * Implementations that advertise support for RSASSA-PSS (which is mandatory in
-  TLS 1.3), MUST be prepared to accept a signature using that scheme even when
+  TLS 2.0), MUST be prepared to accept a signature using that scheme even when
   TLS 1.2 is negotiated. In TLS 1.2, RSASSA-PSS is used with RSA cipher suites.
 
 
@@ -1966,7 +1971,7 @@ When sent by the client, the "supported_groups" extension indicates
 the named groups which the client supports for key exchange, ordered
 from most preferred to least preferred.
 
-Note: In versions of TLS prior to TLS 1.3, this extension was named
+Note: In versions of TLS prior to TLS 2.0, this extension was named
 "elliptic_curves" and only contained elliptic curve groups. See {{RFC4492}} and
 {{RFC7919}}. This extension was also used to negotiate
 ECDSA curves. Signature algorithms are now negotiated independently (see
@@ -2013,7 +2018,7 @@ Finite Field Groups (DHE)
 Items in named_group_list are ordered according to the client's
 preferences (most preferred choice first).
 
-As of TLS 1.3, servers are permitted to send the "supported_groups"
+As of TLS 2.0, servers are permitted to send the "supported_groups"
 extension to the client. If the server has a group it prefers to the
 ones in the "key_share" extension but is still willing to accept the
 ClientHello, it SHOULD send "supported_groups" to update the client's
@@ -2155,8 +2160,8 @@ For x25519 and x448, the contents are the byte string inputs and outputs of the
 corresponding functions defined in {{RFC7748}}, 32 bytes for x25519 and 56
 bytes for x448.
 
-Note: Versions of TLS prior to 1.3 permitted point format negotiation;
-TLS 1.3 removes this feature in favor of a single point format
+Note: Versions of TLS prior to 2.0 permitted point format negotiation;
+TLS 2.0 removes this feature in favor of a single point format
 for each curve.
 
 ### Pre-Shared Key Extension
@@ -2696,7 +2701,7 @@ extensions:
   in the first CertificateEntry.
 {:br }
 
-Note: Prior to TLS 1.3, "certificate_list" ordering required each certificate
+Note: Prior to TLS 2.0, "certificate_list" ordering required each certificate
 to certify the one immediately preceding it,
 however some implementations allowed some flexibility. Servers sometimes send
 both a current and deprecated intermediate for transitional purposes, and others
@@ -2716,7 +2721,7 @@ request.
 sending OCSP responses to the client. In TLS 1.2 and below, the
 server sends an empty extension to indicate negotiation of this
 extension and the OCSP information is carried in a CertificateStatus
-message. In TLS 1.3, the server's OCSP information is carried in
+message. In TLS 2.0, the server's OCSP information is carried in
 an extension in the CertificateEntry containing the associated
 certificate. Specifically:
 The body of the "status_request" or "status_request_v2" extension
@@ -2725,7 +2730,7 @@ in {{RFC6066}} and {{RFC6961}} respectively.
 
 Similarly, {{!RFC6962}} provides a mechanism for a server to send a
 Signed Certificate Timestamp (SCT) as an extension in the ServerHello.
-In TLS 1.3, the server's SCT information is carried in an extension in
+In TLS 2.0, the server's SCT information is carried in an extension in
 CertificateEntry.
 
 #### Server Certificate Selection
@@ -2853,7 +2858,7 @@ hash output described in {{authentication-messages}} namely:
 
        Hash(Handshake Context + Certificate)
 
-In TLS 1.3, the digital signature process takes as input:
+In TLS 2.0, the digital signature process takes as input:
 
 - A signing key
 - A context string
@@ -2873,8 +2878,8 @@ attackers could obtain a signature of a message with a chosen, 32-byte
 prefix. The initial 64 byte pad clears that prefix.
 
 The context string for a server signature is
-"TLS 1.3, server CertificateVerify"
-and for a client signature is "TLS 1.3, client
+"TLS 2.0, server CertificateVerify"
+and for a client signature is "TLS 2.0, client
 CertificateVerify".
 
 For example, if Hash(Handshake Context + Certificate) was 32 bytes of
@@ -2883,7 +2888,7 @@ signing process for a server CertificateVerify would be:
 
        2020202020202020202020202020202020202020202020202020202020202020
        2020202020202020202020202020202020202020202020202020202020202020
-       544c5320312e332c207365727665722043657274696669636174655665726966
+       544c5320322e302c207365727665722043657274696669636174655665726966
        79
        00
        0101010101010101010101010101010101010101010101010101010101010101
@@ -3225,7 +3230,7 @@ fragment
   specified by the type field.
 {:br }
 
-This document describes TLS Version 1.3, which uses the version 0x0304.
+This document describes TLS Version 2.0, which uses the version 0x0304.
 This version value is historical, deriving from the use of 0x0301
 for TLS 1.0 and 0x0300 for SSL 3.0. In order to maximize backwards
 compatibility, the record layer version identifies as simply TLS 1.0.
@@ -3245,7 +3250,7 @@ described in the following section.
 ## Record Payload Protection
 
 The record protection functions translate a TLSPlaintext structure into a
-TLSCiphertext. The deprotection functions reverse the process. In TLS 1.3
+TLSCiphertext. The deprotection functions reverse the process. In TLS 2.0
 as opposed to previous versions of TLS, all ciphers are modeled as
 "Authenticated Encryption with Additional Data" (AEAD) {{RFC5116}}.
 AEAD functions provide a unified encryption and authentication
@@ -3338,7 +3343,7 @@ separate integrity check. That is:
 If the decryption fails, the receiver MUST terminate the connection
 with a "bad_record_mac" alert.
 
-An AEAD algorithm used in TLS 1.3 MUST NOT produce an expansion of greater than 255
+An AEAD algorithm used in TLS 2.0 MUST NOT produce an expansion of greater than 255
 bytes.  An endpoint that receives a record from its peer with
 TLSCipherText.length larger than 2^14 + 256 octets MUST terminate
 the connection with a "record_overflow" alert.  This limit is derived from the maximum
@@ -3581,7 +3586,7 @@ implementation SHOULD send the alert indicated by the descriptions
 below. The phrase "{terminate the connection, abort the handshake}
 with a X alert" MUST send alert X if it sends any alert. All
 alerts defined in this section below, as well as all unknown alerts
-are universally considered fatal as of TLS 1.3 (see
+are universally considered fatal as of TLS 2.0 (see
 {{alert-protocol}}).
 
 The following error alerts are defined:
@@ -3742,7 +3747,7 @@ defined below:
 
     struct {
         uint16 length = Length;
-        opaque label<9..255> = "TLS 1.3, " + Label;
+        opaque label<9..255> = "TLS 2.0, " + Label;
         opaque hash_value<0..255> = HashValue;
     } HkdfLabel;
 
@@ -3758,7 +3763,7 @@ Given a set of n InputSecrets, the final "master secret" is computed
 by iteratively invoking HKDF-Extract with InputSecret_1, InputSecret_2,
 etc.  The initial secret is simply a string of zeroes as long as the size
 of the Hash that is the basis for the HKDF. Concretely, for the
-present version of TLS 1.3, secrets are added in the following order:
+present version of TLS 2.0, secrets are added in the following order:
 
 - PSK
 - (EC)DHE shared secret
@@ -3957,7 +3962,7 @@ provided, the value is computed as:
 
 Where Secret is either the early_exporter_secret or the exporter_secret.
 Implementations MUST use the exporter_secret unless explicitly specified
-by the application. When adding TLS 1.3 to TLS 1.2 stacks, the exporter_secret
+by the application. When adding TLS 2.0 to TLS 1.2 stacks, the exporter_secret
 MUST be for the existing exporter interface.
 
 If no context is provided, the value is computed as:
@@ -3976,9 +3981,9 @@ all exporter computations.
 ##  MTI Cipher Suites
 
 In the absence of an application profile standard specifying otherwise, a
-TLS-compliant application MUST implement the TLS_AES_128_GCM_SHA256
-cipher suite and SHOULD implement the TLS_AES_256_GCM_SHA384 and
-TLS_CHACHA20_POLY1305_SHA256 cipher suites.
+TLS-compliant application MUST implement the TLS2_AES_128_GCM_SHA256
+cipher suite and SHOULD implement the TLS2_AES_256_GCM_SHA384 and
+TLS2_CHACHA20_POLY1305_SHA256 cipher suites.
 
 A TLS-compliant application MUST support digital signatures with
 rsa_pkcs1_sha256 (for certificates), rsa_pss_sha256 (for
@@ -4009,7 +4014,7 @@ applicable features:
 
 A client is considered to be attempting to negotiate using this
 specification if the ClientHello contains a "supported_versions"
-extension with a version indicating TLS 1.3. Such a ClientHello message
+extension with a version indicating TLS 2.0. Such a ClientHello message
 MUST meet the following requirements:
 
  * If not containing a "pre_shared_key" extension, it MUST contain both
@@ -4083,13 +4088,13 @@ is listed below:
    "No".
 
    IANA [shall update/has updated] this registry to include a "TLS
-   1.3" column with the following six values: "Client", indicating
+   2.0" column with the following six values: "Client", indicating
    that the server shall not send them. "Clear", indicating
    that they shall be in the ServerHello. "Encrypted", indicating that
    they shall be in the EncryptedExtensions block, "Certificate" indicating that
    they shall be in the Certificate block, "Ticket" indicating that they
    can appear in the NewSessionTicket message (only) and "No" indicating
-   that they are not used in TLS 1.3. This column [shall be/has been]
+   that they are not used in TLS 2.0. This column [shall be/has been]
    initially populated with the values in this document.
 
    IANA [shall update/has updated] this registry to include a
@@ -4098,7 +4103,7 @@ is listed below:
    in HelloRetryRequest. This column [shall be/has been] initially populated
    with the values in this document.
 
-| Extension                                | Recommended |   TLS 1.3   | HelloRetryRequest |
+| Extension                                | Recommended |   TLS 2.0   | HelloRetryRequest |
 |:-----------------------------------------|------------:|------------:|------------------:|
 | server_name [RFC6066]                    |         Yes |   Encrypted | No                |
 | max_fragment_length [RFC6066]            |         Yes |   Encrypted | No                |
@@ -4158,6 +4163,10 @@ SignatureAlgorithm Registry, both originally created in {{RFC5246}}.  IANA
 "Reserved" and the TLS SignatureAlgorithm Registry to list values 4-233 as
 "Reserved".
 
+NOTE: This specification was previously named TLS 1.3 during development.
+Any documents published prior to the final release of this document that
+referred to TLS 1.3 refer to draft versions of this specification.
+
 --- back
 
 
@@ -4165,7 +4174,7 @@ SignatureAlgorithm Registry, both originally created in {{RFC5246}}.  IANA
 
 This section describes protocol types and constants. Values listed as
 _RESERVED were used in previous versions of TLS and are listed here
-for completeness. TLS 1.3 implementations MUST NOT send them but
+for completeness. TLS 2.0 implementations MUST NOT send them but
 might receive them from older TLS implementations.
 
 %%## Record Layer
@@ -4178,7 +4187,7 @@ might receive them from older TLS implementations.
 %%#### Supported Groups Extension
 
 Values within "obsolete_RESERVED" ranges were used in previous versions
-of TLS and MUST NOT be offered or negotiated by TLS 1.3 implementations.
+of TLS and MUST NOT be offered or negotiated by TLS 2.0 implementations.
 The obsolete curves have various known/theoretical weaknesses or have
 had very little usage, in some cases only due to unintentional
 server configuration issues. They are no longer considered appropriate
@@ -4198,35 +4207,35 @@ algorithm to be used with HKDF.
 Cipher suite names follow the naming convention:
 
 ~~~
-   CipherSuite TLS_AEAD_HASH = VALUE;
+   CipherSuite TLS2_AEAD_HASH = VALUE;
 ~~~
 
 | Component | Contents |
 |:----------|:---------|
-| TLS       | The string "TLS" |
+| TLS2      | The string "TLS2" |
 | AEAD      | The AEAD algorithm used for record protection |
 | HASH      | The hash algorithm used with HKDF |
 | VALUE     | The two byte ID assigned for this cipher suite |
 
-This specification defines the following cipher suites for use with TLS 1.3.
+This specification defines the following cipher suites for use with TLS 2.0.
 
-|          Description            |    Value    |
-|:--------------------------------|:------------|
-| TLS_AES_128_GCM_SHA256          | {0x13,0x01} |
-| TLS_AES_256_GCM_SHA384          | {0x13,0x02} |
-| TLS_CHACHA20_POLY1305_SHA256    | {0x13,0x03} |
-| TLS_AES_128_CCM_SHA256          | {0x13,0x04} |
-| TLS_AES_128_CCM_8_SHA256        | {0x13,0x05} |
+|          Description          |    Value    |
+|:------------------------------|:------------|
+| TLS2_AES_128_GCM_SHA256       | {0x13,0x01} |
+| TLS2_AES_256_GCM_SHA384       | {0x13,0x02} |
+| TLS2_CHACHA20_POLY1305_SHA256 | {0x13,0x03} |
+| TLS2_AES_128_CCM_SHA256       | {0x13,0x04} |
+| TLS2_AES_128_CCM_8_SHA256     | {0x13,0x05} |
 
 The corresponding AEAD algorithms AEAD_AES_128_GCM, AEAD_AES_256_GCM, and
 AEAD_AES_128_CCM are defined in {{RFC5116}}. AEAD_CHACHA20_POLY1305 is defined
 in {{RFC7539}}. AEAD_AES_128_CCM_8 is defined in {{RFC6655}}. The corresponding
 hash algorithms are defined in {{SHS}}.
 
-Although TLS 1.3 uses the same cipher suite space as previous versions
-of TLS, TLS 1.3 cipher suites are defined differently, only specifying
+Although TLS 2.0 uses the same cipher suite space as previous versions
+of TLS, TLS 2.0 cipher suites are defined differently, only specifying
 the symmetric ciphers, and cannot be used for TLS 1.2. Similarly,
-TLS 1.2 and lower cipher suites cannot be used with TLS 1.3.
+TLS 1.2 and lower cipher suites cannot be used with TLS 2.0.
 
 New cipher suite values are assigned by IANA as described in
 {{iana-considerations}}.
@@ -4291,7 +4300,7 @@ TLS protocol issues:
 
 -  Have you ensured that all support for SSL, RC4, EXPORT ciphers, and
   MD5 (via the "signature_algorithms" extension) is completely removed from
-  all possible configurations that support TLS 1.3 or later, and that
+  all possible configurations that support TLS 2.0 or later, and that
   attempts to use these obsolete capabilities fail correctly?
   (see {{backward-compatibility}})
 
@@ -4353,7 +4362,7 @@ always able to use a new session ticket when creating a new connection.
 ## Unauthenticated Operation
 
 Previous versions of TLS offered explicitly unauthenticated cipher suites based
-on anonymous Diffie-Hellman. These modes have been deprecated in TLS 1.3.
+on anonymous Diffie-Hellman. These modes have been deprecated in TLS 2.0.
 However, it is still possible to negotiate parameters that do not provide
 verifiable server authentication by several methods, including:
 
@@ -4365,7 +4374,7 @@ Either technique used alone is vulnerable to man-in-the-middle attacks
 and therefore unsafe for general use. However, it is also possible to
 bind such connections to an external authentication mechanism via
 out-of-band validation of the server's public key, trust on first
-use, or channel bindings {{RFC5929}}. [[NOTE: TLS 1.3 needs a new
+use, or channel bindings {{RFC5929}}. [[NOTE: TLS 2.0 needs a new
 channel binding definition that has not yet been defined.]]
 If no such mechanism is used, then the connection has no protection
 against active man-in-the-middle attack; applications MUST NOT use TLS
@@ -4385,7 +4394,7 @@ in the server.
 
 Prior versions of TLS used the record layer version number for various
 purposes. (TLSPlaintext.legacy_record_version & TLSCiphertext.legacy_record_version)
-As of TLS 1.3, this field is deprecated and its value MUST be ignored by all
+As of TLS 2.0, this field is deprecated and its value MUST be ignored by all
 implementations. Version negotiation is performed using only the handshake versions.
 (ClientHello.legacy_version,
 ClientHello "supported_versions" extension & ServerHello.version)
@@ -4401,17 +4410,17 @@ handshakes. (see {{server-certificate-selection}})
 
 TLS 1.2 and prior supported an "Extended Master Secret" {{?RFC7627}} extension
 which digested large parts of the handshake transcript into the master secret.
-Because TLS 1.3 always hashes in the transcript up to the server CertificateVerify,
-implementations which support both TLS 1.3 and earlier versions SHOULD
+Because TLS 2.0 always hashes in the transcript up to the server CertificateVerify,
+implementations which support both TLS 2.0 and earlier versions SHOULD
 indicate the use of the Extended Master Secret extension in their APIs
-whenever TLS 1.3 is used.
+whenever TLS 2.0 is used.
 
 ## Negotiating with an older server
 
-A TLS 1.3 client who wishes to negotiate with such older servers will send a
-normal TLS 1.3 ClientHello containing 0x0303 (TLS 1.2) in
+A TLS 2.0 client who wishes to negotiate with such older servers will send a
+normal TLS 2.0 ClientHello containing 0x0303 (TLS 1.2) in
 ClientHello.legacy_version but with the correct version in the
-"supported_versions" extension. If the server does not support TLS 1.3 it
+"supported_versions" extension. If the server does not support TLS 2.0 it
 will respond with a ServerHello containing an older version number. If the
 client agrees to use this version, the negotiation will proceed as appropriate
 for the negotiated protocol. A client resuming a session SHOULD initiate the
@@ -4457,22 +4466,22 @@ MUST always be ignored.
 to the ClientHello with an older ServerHello, but it will not correctly skip
 the 0-RTT data and fail to complete the handshake. This can cause issues when
 a client attempts to use 0-RTT, particularly against multi-server deployments. For
-example, a deployment could deploy TLS 1.3 gradually with some servers
-implementing TLS 1.3 and some implementing TLS 1.2, or a TLS 1.3 deployment
+example, a deployment could deploy TLS 2.0 gradually with some servers
+implementing TLS 2.0 and some implementing TLS 1.2, or a TLS 2.0 deployment
 could be downgraded to TLS 1.2.
 
 A client that attempts to send 0-RTT data MUST fail a connection if it receives
 a ServerHello with TLS 1.2 or older.  A client that attempts to repair this
-error SHOULD NOT send a TLS 1.2 ClientHello, but instead send a TLS 1.3
+error SHOULD NOT send a TLS 1.2 ClientHello, but instead send a TLS 2.0
 ClientHello without 0-RTT data.
 
 To avoid this error condition, multi-server deployments SHOULD ensure a uniform
-and stable deployment of TLS 1.3 without 0-RTT prior to enabling 0-RTT.
+and stable deployment of TLS 2.0 without 0-RTT prior to enabling 0-RTT.
 
 ## Backwards Compatibility Security Restrictions
 
 If an implementation negotiates use of TLS 1.2, then negotiation of cipher
-suites also supported by TLS 1.3 SHOULD be preferred, if available.
+suites also supported by TLS 2.0 SHOULD be preferred, if available.
 
 The security of RC4 cipher suites is considered insufficient for the reasons
 cited in {{RFC7465}}. Implementations MUST NOT offer or negotiate RC4 cipher suites
@@ -4486,7 +4495,7 @@ The security of SSL 2.0 {{SSL2}} is considered insufficient for the reasons enum
 in {{RFC6176}}, and MUST NOT be negotiated for any reason.
 
 Implementations MUST NOT send an SSL version 2.0 compatible CLIENT-HELLO.
-Implementations MUST NOT negotiate TLS 1.3 or later using an SSL version 2.0 compatible
+Implementations MUST NOT negotiate TLS 2.0 or later using an SSL version 2.0 compatible
 CLIENT-HELLO. Implementations are NOT RECOMMENDED to accept an SSL version 2.0 compatible
 CLIENT-HELLO in order to negotiate older versions of TLS.
 
@@ -4569,7 +4578,7 @@ attackers. The client's identity should be protected against both passive
 and active attackers.
 {:br}
 
-Informally, the signature-based modes of TLS 1.3 provide for the
+Informally, the signature-based modes of TLS 2.0 provide for the
 establishment of a unique, secret, shared, key established by an
 (EC)DHE key exchange and authenticated by the server's signature over
 the handshake transcript, as well as tied to the server's identity by
@@ -4610,7 +4619,7 @@ the session secret from the exported value. Note: exporters can
 produce arbitrary-length values. If exporters are to be
 used as channel bindings, the exported value MUST be large
 enough to provide collision resistance. The exporters provided in
-TLS 1.3 are derived from the same handshake contexts as the
+TLS 2.0 are derived from the same handshake contexts as the
 early traffic keys and the application traffic keys respectively,
 and thus have similar security properties. Note that they do
 not include the client's certificate; future applications
@@ -4675,7 +4684,7 @@ used and the previous generation key is deleted, an attacker who compromises
 the endpoint should not be able to decrypt traffic encrypted with the old key.
 {:br}
 
-Informally, TLS 1.3 provides these properties by AEAD-protecting the
+Informally, TLS 2.0 provides these properties by AEAD-protecting the
 plaintext with a strong key. AEAD encryption {{RFC5116}} provides confidentiality
 and integrity for the data. Non-replayability is provided by using
 a separate nonce for each record, with the nonce being derived from
