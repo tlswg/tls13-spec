@@ -3781,15 +3781,15 @@ In this diagram, the following formatting conventions apply:
                  v
            Early Secret
                  |
-                 +------> Derive-Secret(., "client early traffic secret",
-                 |                      ClientHello)
-                 |                     = client_early_traffic_secret
-                 |
                  +------> Derive-Secret(.,
                  |                      "external psk binder key" |
                  |                      "resumption psk binder key",
                  |                      "")
                  |                     = binder_key
+                 |
+                 +------> Derive-Secret(., "client early traffic secret",
+                 |                      ClientHello)
+                 |                     = client_early_traffic_secret
                  |
                  +-----> Derive-Secret(., "early exporter master secret",
                  |                     ClientHello)
