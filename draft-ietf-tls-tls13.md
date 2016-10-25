@@ -2630,11 +2630,9 @@ for each scenario:
 
 | Mode | Handshake Context | Base Key |
 |------|-------------------|----------|
-| 1-RTT (Server) | ClientHello ... later of EncryptedExtensions/CertificateRequest | [sender]_handshake_traffic_secret |
-| 1-RTT (Client) | ClientHello ... ServerFinished     | [sender]_handshake_traffic_secret |
-| Post-Handshake | ClientHello ... ClientFinished + CertificateRequest | [sender]_traffic_secret_N |
-
-The [sender] in this table denotes the sending side.
+| Server | ClientHello ... later of EncryptedExtensions/CertificateRequest | server_handshake_traffic_secret |
+| Client | ClientHello ... ServerFinished     | client_handshake_traffic_secret |
+| Post-Handshake | ClientHello ... ClientFinished + CertificateRequest | client_traffic_secret_N |
 
 In all cases, the handshake context is formed by concatenating the
 indicated handshake messages, including the handshake message type
