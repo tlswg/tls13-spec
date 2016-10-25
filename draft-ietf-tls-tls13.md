@@ -2308,7 +2308,7 @@ The server MUST NOT send a "psk_key_exchange_modes" extension.
        } PskKeyExchangeModes;
 
 psk_ke
-: PSK-only key establishment. In this mode, the server MUST not
+: PSK-only key establishment. In this mode, the server MUST NOT
 supply a "key_share" value.
 
 psk_dhe_ke
@@ -2583,7 +2583,7 @@ certificate_extensions
   extensions.
 {:br }
 
-Servers which are authenticating with a PSK MUST not send the CertificateRequest
+Servers which are authenticating with a PSK MUST NOT send the CertificateRequest
 message.
 
 ## Authentication Messages
