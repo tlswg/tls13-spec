@@ -2985,13 +2985,7 @@ records, there MUST NOT be any other records between them.
 
 At any time after the server has received the client Finished message, it MAY send
 a NewSessionTicket message. This message creates a pre-shared key
-(PSK) binding between the ticket value and the following two values derived
-from the resumption master secret:
-
-~~~~
-   resumption_psk = HKDF-Expand-Label(resumption_secret,
-                                      "resumption psk", "", Hash.Length)
-~~~~
+(PSK) binding between the ticket value and the resumption master secret (RMS).
 
 The client MAY use this PSK for future handshakes by including the
 ticket value in the "pre_shared_key" extension in its ClientHello
@@ -3009,7 +3003,7 @@ same KDF hash as that used to establish the original connection,
 and if the client provides the same SNI value as described in
 Section 3 of {{RFC6066}}.
 
-Note: Although the resumption_psk depends on the client's second
+Note: Although the RMS depends on the client's second
 flight, servers which do not request client authentication MAY compute
 the remainder of the transcript independently and then send a
 NewSessionTicket immediately upon sending its Finished rather than
