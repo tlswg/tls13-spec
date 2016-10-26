@@ -424,9 +424,13 @@ server: The endpoint which did not initiate the TLS connection.
 
 draft-18
 
+- Remove unnecessary resumption_psk which is the only thing expanded from
+  the resumption master secret. (*).
+
 - Fix signature_algorithms entry in extensions table.
 
 - Restate rule from RFC 6066 that you can't resume unless SNI is the same.
+
 
 draft-17
 
@@ -2989,7 +2993,7 @@ records, there MUST NOT be any other records between them.
 
 At any time after the server has received the client Finished message, it MAY send
 a NewSessionTicket message. This message creates a pre-shared key
-(PSK) binding between the ticket value and the resumption master secret (RMS).
+(PSK) binding between the ticket value and the resumption master secret.
 
 The client MAY use this PSK for future handshakes by including the
 ticket value in the "pre_shared_key" extension in its ClientHello
@@ -3007,7 +3011,7 @@ same KDF hash as that used to establish the original connection,
 and if the client provides the same SNI value as described in
 Section 3 of {{RFC6066}}.
 
-Note: Although the RMS depends on the client's second
+Note: Although the resumption master secret depends on the client's second
 flight, servers which do not request client authentication MAY compute
 the remainder of the transcript independently and then send a
 NewSessionTicket immediately upon sending its Finished rather than
@@ -4592,8 +4596,8 @@ and the current handshake, as well as between the session where the
 PSK was established and the session where it was used. This binding
 transitively includes the original handshake transcript, because that
 transcript is digested into the values which produce the Resumption
-Master Secret. This requires that both the KDF used to produce the RMS
-and the MAC used to compute the binder be collision
+Master Secret. This requires that both the KDF used to produce the
+resumption master secret and the MAC used to compute the binder be collision
 resistant. These are properties of HKDF and HMAC respectively when
 used with collision resistant hash functions and producing output of
 at least 256 bits.  Any future replacement of these functions MUST
