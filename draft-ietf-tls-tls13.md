@@ -431,6 +431,8 @@ draft-18
 
 - Restate rule from RFC 6066 that you can't resume unless SNI is the same.
 
+- Explicitly state that "insufficient_security" may be a replacement for
+  "handshake_failure".
 
 draft-17
 
@@ -1566,7 +1568,8 @@ or HelloRetryRequest message.
 The server will send this message in response to a ClientHello message when
 it was able to find an acceptable set of algorithms and the client's
 "key_share" extension was acceptable. If it is not able to find an acceptable
-set of parameters, the server will respond with a "handshake_failure" fatal alert.
+set of parameters, the server will respond with a "handshake_failure" or
+"insufficient_security" fatal alert.
 
 Structure of this message:
 
@@ -1648,7 +1651,7 @@ groups that are mutually supported, but
 the client's ClientHello did not contain sufficient information to
 proceed with the handshake.
 If a server cannot successfully select algorithms, it MUST abort
-the handshake with a "handshake_failure" alert.
+the handshake with a "handshake_failure" or "insufficient_security" alert.
 
 Structure of this message:
 
