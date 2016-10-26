@@ -3663,7 +3663,7 @@ protocol_version
 
 insufficient_security
 : Returned instead of "handshake_failure" when a negotiation has
-  failed specifically because the server requires ciphers more
+  failed specifically because the server requires parameters more
   secure than those supported by the client.
 
 internal_error
