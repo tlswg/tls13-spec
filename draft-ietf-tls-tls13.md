@@ -912,12 +912,12 @@ the server MUST abort the handshake with an appropriate alert.
          Client                                               Server
 
          ClientHello
-         + key_share               -------->
-                                   <--------       HelloRetryRequest
+         + key_share             -------->
+                                 <--------         HelloRetryRequest
                                                          + key_share
 
          ClientHello
-         + key_share               -------->
+         + key_share             -------->
                                                          ServerHello
                                                          + key_share
                                                {EncryptedExtensions}
@@ -925,11 +925,11 @@ the server MUST abort the handshake with an appropriate alert.
                                                       {Certificate*}
                                                 {CertificateVerify*}
                                                           {Finished}
-                                   <--------     [Application Data*]
+                                 <--------       [Application Data*]
          {Certificate*}
          {CertificateVerify*}
-         {Finished}                -------->
-         [Application Data]        <------->     [Application Data]
+         {Finished}              -------->
+         [Application Data]      <------->        [Application Data]
 ~~~
 {: #tls-restart title="Message flow for a full handshake with mismatched parameters"}
 
@@ -987,7 +987,7 @@ Subsequent Handshake:
        ClientHello
        + key_share*
        + psk_key_exchange_modes
-       + pre_shared_key         -------->
+       + pre_shared_key          -------->
                                                        ServerHello
                                                   + pre_shared_key
                                                       + key_share*
@@ -1038,17 +1038,17 @@ as with a 1-RTT handshake with PSK resumption.
          + pre_shared_key_modes
          + pre_shared_key
          (Application Data*)
-         (end_of_early_data)       -------->
+         (end_of_early_data)     -------->
                                                          ServerHello
                                                         + early_data
                                                     + pre_shared_key
                                                         + key_share*
                                                {EncryptedExtensions}
                                                           {Finished}
-                                   <--------     [Application Data*]
-         {Finished}                -------->
+                                 <--------       [Application Data*]
+         {Finished}              -------->
 
-         [Application Data]        <------->      [Application Data]
+         [Application Data]      <------->        [Application Data]
 
                *  Indicates optional or situation-dependent
                   messages/extensions that are not always sent.
@@ -3783,14 +3783,14 @@ In this diagram, the following formatting conventions apply:
                  v
            Early Secret
                  |
-                 +------> Derive-Secret(.,
-                 |                      "external psk binder key" |
-                 |                      "resumption psk binder key",
-                 |                      "")
+                 +-----> Derive-Secret(.,
+                 |                     "external psk binder key" |
+                 |                     "resumption psk binder key",
+                 |                     "")
                  |                     = binder_key
                  |
-                 +------> Derive-Secret(., "client early traffic secret",
-                 |                      ClientHello)
+                 +-----> Derive-Secret(., "client early traffic secret",
+                 |                     ClientHello)
                  |                     = client_early_traffic_secret
                  |
                  +-----> Derive-Secret(., "early exporter master secret",
