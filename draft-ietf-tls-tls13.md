@@ -1833,7 +1833,7 @@ Clients MUST NOT use cookies in subsequent connections.
 
 The client uses the "signature_algorithms" extension to indicate to the server
 which signature algorithms may be used in digital signatures. Clients which
-desire the server to authenticate via a certificate MUST send this extension.
+desire the server to authenticate itself via a certificate MUST send this extension.
 If a server
 is authenticating via a certificate and the client has not sent a
 "signature_algorithms" extension then the server MUST
