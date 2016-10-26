@@ -422,6 +422,12 @@ server: The endpoint which did not initiate the TLS connection.
 (*) indicates changes to the wire protocol which may require implementations
     to update.
 
+draft-18
+
+- Fix signature_algorithms entry in extensions table.
+
+- Restate rule from RFC 6066 that you can't resume unless SNI is the same.
+
 draft-17
 
 - Remove the 0-RTT Finished, resumption_context, and replace with a
