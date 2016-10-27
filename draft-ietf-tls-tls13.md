@@ -2872,7 +2872,7 @@ the concatenation of:
 
 - 64 bytes of octet 32
 - The context string
-- A single 0 byte which servers as the separator
+- A single 0 byte which serves as the separator
 - The content to be signed
 
 This structure is intended to prevent an attack on previous versions
