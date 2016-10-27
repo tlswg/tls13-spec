@@ -3647,7 +3647,9 @@ access_denied
 
 decode_error
 : A message could not be decoded because some field was out of the
-  specified range or the length of the message was incorrect.
+  specified range, the length of the message was incorrect, or the record
+  length was invalid for a given message type and "record_overflow" does
+  not apply.
   This alert is used for errors where the message does not conform
   to the formal protocol syntax.
   This alert should never be observed in communication between
