@@ -2181,7 +2181,7 @@ The "extension_data" field of this extension contains a
 %%% Key Exchange Messages
 
        struct {
-           opaque identity<0..2^16-1>;
+           opaque identity<1..2^16-1>;
            uint32 obfuscated_ticket_age;
        } PskIdentity;
 
@@ -2190,7 +2190,7 @@ The "extension_data" field of this extension contains a
        struct {
            select (Handshake.msg_type) {
                case client_hello:
-                   PskIdentity identities<6..2^16-1>;
+                   PskIdentity identities<7..2^16-1>;
                    PskBinderEntry binders<33..2^16-1>;
 
                case server_hello:
