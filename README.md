@@ -3,7 +3,7 @@ TLS 1.3 Draft Specifications
 =============================
 
 This is the working area for the [IETF TLS Working
-Group](https://trac.tools.ietf.org/wg/tls/trac/wiki) draft of [TLS 1.3]
+Group](https://datatracker.ietf.org/wg/tls/documents/) draft of [TLS 1.3]
 
 TLS 1.3 specification:
 * [Editor's copy](https://tlswg.github.io/tls13-spec/)
