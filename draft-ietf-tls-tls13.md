@@ -1493,7 +1493,7 @@ that this method of detecting optional data differs from the normal TLS method
 of having a variable-length field, but it is used for compatibility with TLS
 before extensions were defined.
 As of TLS 1.3, all clients and servers will send at least
-one extension (at least "key_share" or "pre_shared_key").
+one extension (e.g. "key_share" or "pre_shared_key").
 
 legacy_version
 : In previous versions of TLS, this field was used for version negotiation
