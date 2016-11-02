@@ -4060,7 +4060,8 @@ and their allocation policies are below:
 
 -  TLS Alert Registry: Future values are allocated via Standards
   Action {{RFC5226}}. IANA [SHALL update/has updated] this registry
-  to include values for "end_of_early_data" and "missing_extension".
+  to include values for "end_of_early_data", "missing_extension",
+  and "certificate_required".
 
 -  TLS HandshakeType Registry: Future values are allocated via
   Standards Action {{RFC5226}}. IANA [SHALL update/has updated] this registry
