@@ -2876,7 +2876,7 @@ the concatenation of:
 - The content to be signed
 
 This structure is intended to prevent an attack on previous versions
-of previous versions of TLS in which the ServerKeyExchange format meant that
+of TLS in which the ServerKeyExchange format meant that
 attackers could obtain a signature of a message with a chosen, 32-byte
 prefix. The initial 64 byte pad clears that prefix.
 
