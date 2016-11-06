@@ -3296,7 +3296,7 @@ legacy_record_version
   the protocol version, so this value is redundant.
 
 length
-: The length (in bytes) of the following TLSCiphertext.fragment, which
+: The length (in bytes) of the following TLSCiphertext.encrypted_record, which
   is the sum of the lengths of the content and the padding, plus one
   for the inner content type. The length MUST NOT exceed 2^14 + 256.
   An endpoint that receives a record that exceeds this length MUST
@@ -3320,7 +3320,7 @@ TLSPlaintext.type, and any padding bytes (zeros).
 The AEAD output consists of the ciphertext output by the AEAD
 encryption operation. The length of the plaintext is greater than
 TLSPlaintext.length due to the inclusion of TLSPlaintext.type and
-however much padding is supplied by the sender.  The length of the
+the padding supplied by the sender.  The length of the
 AEAD output will generally be larger than the plaintext, but by an
 amount that varies with the AEAD algorithm. Since the ciphers might
 incorporate padding, the amount of overhead could vary with different
