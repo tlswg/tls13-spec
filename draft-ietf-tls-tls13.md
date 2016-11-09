@@ -387,7 +387,7 @@ implementors of protocols that run on top of TLS.
 
 This document defines TLS version 1.3. While TLS 1.3 is not directly
 compatible with previous versions, all versions of TLS incorporate a
-versioning mechanism which allows clients and servers to interoperably
+versioning mechanism which allows compliant clients and servers to interoperably
 negotiate a common version if one is supported.
 
 ##  Conventions and Terminology
@@ -404,9 +404,9 @@ connection: A transport-layer connection between two endpoints.
 
 endpoint: Either the client or server of the connection.
 
-handshake: An initial negotiation between client and server that establishes the parameters of their transactions.
+handshake: An initial negotiation between client and server that establishes the parameters of their subsequent interactions.
 
-peer: An endpoint. When discussing a particular endpoint, "peer" refers to the endpoint that is remote to the primary subject of discussion.
+peer: An endpoint. When discussing a particular endpoint, "peer" refers to the endpoint that is not the primary subject of discussion.
 
 receiver: An endpoint that is receiving records.
 
@@ -420,7 +420,8 @@ server: The endpoint which did not initiate the TLS connection.
 ##  Major Differences from TLS 1.2
 
 (*) indicates changes to the wire protocol which may require implementations
-    to update.
+    to update, in versions draft-14 and later.  (There are not known implementations
+    of previous versions that would need to be updated for such changes.)
 
 draft-18
 
@@ -434,7 +435,7 @@ draft-18
 
 draft-17
 
-- Remove the 0-RTT Finished, resumption_context, and replace with a
+- Remove 0-RTT Finished and resumption_context, and replace with a
   psk_binder field in the PSK itself (*)
 
 - Restructure PSK key exchange negotiation modes (*)
@@ -446,7 +447,7 @@ draft-17
 - Merge TicketExtensions and Extensions registry. Changes
   ticket_early_data_info code point (*)
 
-- Replace Client.key_shares in response to HRR (*)
+- Replace Client.key_share in response to HRR (*)
 
 - Remove redundant labels for traffic key derivation (*)
 
@@ -801,7 +802,7 @@ Auth | {CertificateVerify*}
      v {Finished}                -------->
        [Application Data]        <------->      [Application Data]
 
-              +  Indicates extensions sent in the
+              +  Indicates noteworthy extensions sent in the
                  previously noted message.
 
               *  Indicates optional or situation-dependent
@@ -893,7 +894,7 @@ Upon receiving the server's messages, the client responds with its Authenticatio
 messages, namely Certificate and CertificateVerify (if requested), and Finished.
 
 At this point, the handshake is complete, and the client and server may exchange
-application layer data. Application data MUST NOT be sent prior to sending the
+application-layer data. Application data MUST NOT be sent prior to sending the
 Finished message. Note that while the server may send application data
 prior to receiving the client's Authentication messages, any data sent at
 that point is, of course, being sent to an unauthenticated peer.
@@ -901,12 +902,13 @@ that point is, of course, being sent to an unauthenticated peer.
 ## Incorrect DHE Share
 
 If the client has not provided a sufficient "key_share" extension (e.g., it
-includes only DHE or ECDHE groups unacceptable or unsupported by the
+includes only DHE or ECDHE groups unacceptable to or unsupported by the
 server), the server corrects the mismatch with a HelloRetryRequest and
 the client needs to restart the handshake with an appropriate
 "key_share" extension, as shown in Figure 2.
 If no common cryptographic parameters can be negotiated,
-the server MUST abort the handshake with an appropriate alert.
+the server MUST abort the handshake with an appropriate alert
+instead of sending a useless HelloRetryRequest.
 
 ~~~
          Client                                               Server
@@ -950,12 +952,14 @@ send the client a PSK identity that corresponds to a key derived from
 the initial handshake (see {{NewSessionTicket}}). The client
 can then use that PSK identity in future handshakes to negotiate use
 of the PSK. If the server accepts it, then the security context of the
-new connection is tied to the original connection. In TLS 1.2 and
+new connection is tied to the original connection and the key derived
+from the initial handshake is used to bootstrap the cryptographic state
+instead of a full hanshake. In TLS 1.2 and
 below, this functionality was provided by "session IDs" and
 "session tickets" {{RFC5077}}. Both mechanisms are obsoleted in TLS
 1.3.
 
-PSKs can be used with (EC)DHE exchange in order to provide forward
+PSKs can be used with (EC)DHE key exchange in order to provide forward
 secrecy in combination with shared keys, or can be used alone, at the
 cost of losing forward secrecy.
 
@@ -1419,7 +1423,8 @@ If the server selects a PSK, then it MUST also select a key
 establishment mode from the set indicated by client's
 "psk_key_exchange_modes extension (PSK alone or with (EC)DHE). Note
 that if the PSK can be used without (EC)DHE then non-overlap in the
-"supported_groups" parameters need not be fatal.
+"supported_groups" parameters need not be fatal, as it is in the
+non-PSK case discussed in the previous paragraph.
 
 The server indicates its selected parameters in the ServerHello as
 follows:
@@ -1465,8 +1470,6 @@ ClientHello at any other time, it MUST terminate the connection.
 If a server established a TLS connection with a previous version of TLS
 and receives a TLS 1.3 ClientHello in a renegotiation, it MUST retain the
 previous protocol version. In particular, it MUST NOT negotiate TLS 1.3.
-A client that receives a TLS 1.3 ServerHello during renegotiation
-MUST abort the handshake with a "protocol_version" alert.
 
 Structure of this message:
 
@@ -1483,11 +1486,12 @@ Structure of this message:
            opaque legacy_session_id<0..32>;
            CipherSuite cipher_suites<2..2^16-2>;
            opaque legacy_compression_methods<1..2^8-1>;
-           Extension extensions<0..2^16-1>;
+           [[ Extension extensions<8..2^16-1>; ]]
        } ClientHello;
 
-TLS allows extensions to follow the compression_methods field in an extensions
-block. The presence of extensions can be detected by determining whether there
+All versions of TLS allow extensions to optionally follow the
+compression_methods field as an extensions
+field. The presence of extensions can be detected by determining whether there
 are bytes following the compression_methods at the end of the ClientHello. Note
 that this method of detecting optional data differs from the normal TLS method
 of having a variable-length field, but it is used for compatibility with TLS
@@ -1503,7 +1507,7 @@ legacy_version
   the server rejects an otherwise acceptable ClientHello with a version
   number higher than it supports.
   In TLS 1.3, the client indicates its version preferences in the
-  "supported_versions" extension ({{supported-versions}}) and this field MUST
+  "supported_versions" extension ({{supported-versions}}) and the legacy_version field MUST
   be set to 0x0303, which was the version number for TLS 1.2.
   (See {{backward-compatibility}} for details about backward compatibility.)
 
@@ -1631,6 +1635,9 @@ when static RSA is used.
 
 Note: This is an update to TLS 1.2 so in practice many TLS 1.2 clients
 and servers will not behave as specified above.
+
+A client that receives a TLS 1.3 ServerHello during renegotiation
+MUST abort the handshake with a "protocol_version" alert.
 
 RFC EDITOR: PLEASE REMOVE THE FOLLOWING PARAGRAPH
 Implementations of draft versions (see {{draft-version-indicator}}) of this
