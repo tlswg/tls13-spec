@@ -3367,7 +3367,7 @@ N_MIN) for the AEAD algorithm (see {{RFC5116}} Section 4). An AEAD
 algorithm where N_MAX is less than 8 bytes MUST NOT be used with TLS.
 The per-record nonce for the AEAD construction is formed as follows:
 
-  1. The little endian 64-bit record sequence number is padded to the 
+  1. The big endian 64-bit record sequence number is padded to the 
      left with zeroes to iv_length.
 
   2. The padded sequence number is XORed with the static client_write_iv
