@@ -1486,7 +1486,7 @@ Structure of this message:
            opaque legacy_session_id<0..32>;
            CipherSuite cipher_suites<2..2^16-2>;
            opaque legacy_compression_methods<1..2^8-1>;
-           [[ Extension extensions<8..2^16-1>; ]]
+           Extension extensions<8..2^16-1>;
        } ClientHello;
 
 All versions of TLS allow extensions to optionally follow the
