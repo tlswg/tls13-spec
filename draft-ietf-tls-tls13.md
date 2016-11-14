@@ -2187,7 +2187,15 @@ Although X9.62 supports multiple point formats, any given curve
 MUST specify only a single point format. All curves currently
 specified in this document MUST only be used with the uncompressed
 point format (the format for all ECDH functions is considered
-uncompressed).
+uncompressed). Peers MUST validate each other's public value Y by ensuring
+that the point is a valid point on the elliptic
+curve. For all elliptic curves except for x25519 and x448, the appropriate
+validation procedures are defined in Section 5.6.2.6 of {{KEYAGREEMENT}}.
+This process consists of three steps: (1) verify that Y is not the point at 
+infinity (O), (2) verify that for Y = (x0, y0) both integers in the correct
+interval, (3) ensure that (x0, y0) is a correct solution to the elliptic curve equation.
+For the curves allowed with TLS, it is not necessary to verify membership
+in the correct subgroup.
 
 For x25519 and x448, the contents are the byte string inputs and outputs of the
 corresponding functions defined in {{RFC7748}}, 32 bytes for x25519 and 56
