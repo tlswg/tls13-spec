@@ -138,6 +138,23 @@ informative:
          ins: M. Dworkin
        seriesinfo:
          NIST: Special Publication 800-38D
+
+  KEYAGREEMENT:
+       title: "Recommendation for Pair-Wise Key Establishment Schemes Using Discrete Logarithm Cryptography"
+       date: 2013-05
+       author:
+         org: American National Standards Institute
+          -
+           ins: E. Barker
+          -
+           ins: Lily Chen
+          - 
+           ins: A. Roginsky
+          -
+           ins: M. Smid
+        seriesinfo:
+          NIST: Special Publication 800-38D
+
   PKCS6:
        title: "PKCS #6: RSA Extended Certificate Syntax Standard, version 1.5"
        author:
