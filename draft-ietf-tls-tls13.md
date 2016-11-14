@@ -1686,6 +1686,15 @@ this specification are:
 
 - key_share (see {{key-share}})
 
+If the client offers 0-RTT and the server responds with HelloRetryRequest,
+the server will need to be able to discard any 0-RTT encrypted data
+while waiting for the repeated ClientHello. This is somewhat complicated
+by the fact that the plaintext ClientHello will have a five byte header
+and the encrypted records have a two-byte header starting with the
+length. The server can distinguish these by examining the first bit of
+the first byte of the record, which will be high if and only if the
+record is encrypted.
+
 
 ##  Extensions
 
@@ -3264,17 +3273,18 @@ by an encrypted body, which itself contains a type and optional padding.
        } TLSInnerPlaintext;
 
        struct {
-           ContentType opaque_type = 23; /* application_data */
-           ProtocolVersion legacy_record_version = 0x0301; /* TLS v1.x */
-           uint16 length;
+           uint16 masked_length;
            opaque encrypted_record[length];
        } TLSCiphertext;
 
-content
-: The cleartext of TLSPlaintext.fragment.
 
-type
-: The content type of the record.
+:masked_length
+
+The length value with the high bit set. Records are always less than
+2^15 bytes, so this bit is unused. Having the high bit set allows
+receivers to easily distinguish TLS 1.3 encrypted packets from
+TLS 1.2 compatible framed plaintext packets (which start with the
+content type).
 
 zeros
 : An arbitrary-length run of zero-valued bytes may
