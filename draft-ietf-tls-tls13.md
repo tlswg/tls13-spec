@@ -2206,10 +2206,10 @@ specified in this document MUST only be used with the uncompressed
 point format (the format for all ECDH functions is considered
 uncompressed). Peers MUST validate each other's public value Y by ensuring
 that the point is a valid point on the elliptic
-curve, and that the point does not generate a small subgroup.
+curve.
 
 For the curves secp256r1, secp384r1 and secp521r1, the appropriate
-validation procedures are defined in Section 4.3.7 of {{X962}
+validation procedures are defined in Section 4.3.7 of {{X962}}
 and alternatively in Section 5.6.2.6  of {{KEYAGREEMENT}}.
 This process consists of three steps: (1) verify that Y is not the point at 
 infinity (O), (2) verify that for Y = (x, y) both integers are in the correct
