@@ -3428,18 +3428,17 @@ mechanism through TLS extensions or some other means.
 
 ## Limits on Key Usage
 
-There are cryptographic limits on the amount of plaintext which can be
-safely encrypted under a given set of keys.  {{AEAD-LIMITS}} provides
-an analysis of these limits under the assumption that the underlying
-primitive (AES or ChaCha20) has no weaknesses. Implementations SHOULD
-do a key update {{key-update}} prior to reaching these limits.
+Using AES-GCM to provide authenticity of authenticated data, content of the plaintext and information leakage (see Note below) protection for the plaintext, the maximum amount of data (padded records) which can be safely encrypted with a single key is 2^48 128-bit blocks (2^64 bytes). When the maximum amount of data is reached, the chance of having a collision among 128-bit blocks of the ciphertext is below 1^(-32) which is negligible. The recommended maximum amount of data (2^64 bytes) is made with the assumption that the (padded) record size is either 128 bits, a multiple of 128 bits or a lot larger than 128 bits. If the (padded) record size is 2^x bytes, then the data limit with GCM for each key is 2^(64-x) records.
 
-For AES-GCM, up to 2^24.5 full-size records (about 24 million)
-may be encrypted on a
-given connection while keeping a safety margin of approximately
-2^-57 for Authenticated Encryption (AE) security. For
-ChaCha20/Poly1305, the record sequence number would wrap before the
-safety limit is reached.
+When the padded record size is less than 128 bits (16 bytes), if l is the length of the padded record in bits, then the data limit with GCM for each key is reduced to 2^64 x l /128 bytes or 2^(64-x) x l/128 records.
+
+[AEAD-LIMITS] provides the analysis for the data limit recommendation for GCM above.
+
+Since the block size of AES is 128 bits, there will be collisions among different sets of ciphertext from multiple sessions using GCM (or any other modes of AES) when the total amount of the ciphertext of all considered sessions is more than 2^64 128-bit blocks. This fact does not seem to create a practical security weakness of using AES GCM. 
+
+For ChaCha20/Poly1305, the record sequence number would wrap before the safety limit is reached.
+
+Note: Information leakage in the context of TLS is a chosen-plaintext distinguishing attack where the attacker provides 2 128-bit plaintext blocks to a GCM encryption engine, after seeing one encrypted block for one of the 2 plaintext blocks, the attacker knows which plaintext block was encrypted. Or, it means that there is a collision among 128-bit blocks of the ciphertext. 
 
 #  Alert Protocol
 
