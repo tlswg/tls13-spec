@@ -2409,11 +2409,11 @@ with a "bad_record_mac" alert as per {{record-payload-protection}}.
 
 If the server rejects the "early_data" extension, the client
 application MAY opt to retransmit the data once the handshake has
-been completed. TLS stacks SHOULD not do this automatically and
-client applications MUST take care that the negotiated parameters
-are consistent with those it expected. For example, if the selected
-ALPN protocol has changed, it is likely unsafe to retransmit the
-original application layer data.
+been completed. If TLS stacks do this automatically, they should
+take care that the negotiated parameters from the full handshake
+are consistent with those it expected from the 0-RTT handshake. 
+For example, if the selected ALPN protocol has changed, it is 
+likely unsafe to retransmit the original application layer data.
 
 #### Processing Order
 
