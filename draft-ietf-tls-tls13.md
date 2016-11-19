@@ -4474,8 +4474,8 @@ and stable deployment of TLS 1.3 without 0-RTT prior to enabling 0-RTT.
 
 ## Backwards Compatibility Security Restrictions
 
-If an implementation negotiates use of TLS 1.2, then negotiation of cipher
-suites also supported by TLS 1.3 SHOULD be preferred, if available.
+Implementations negotiating use of older versions of TLS SHOULD prefer
+forward secure and AEAD cipher suites, when available.
 
 The security of RC4 cipher suites is considered insufficient for the reasons
 cited in {{RFC7465}}. Implementations MUST NOT offer or negotiate RC4 cipher suites
