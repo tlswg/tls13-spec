@@ -324,6 +324,15 @@ informative:
          ins: Florian Weimer
          org: Red Hat Product Security
        date: 2015-09
+  Menezes:
+       title: "On Reusing Ephemeral Keys In Diffie-Hellman Key Agreement Protocols"
+       author:
+       -
+         ins: A. Menezes
+       -
+         ins: B. Ustaoglu
+       seriesinfo: International Journal of Applied Cryptography, Volume 2 Issue 2, Pages 154-158 
+       date: January, 2010
 --- abstract
 
 This document specifies version 1.3 of the Transport Layer Security
@@ -4037,6 +4046,26 @@ lacking a "server_name" extension by terminating the connection with a
 Security issues are discussed throughout this memo, especially in
 {{implementation-notes}}, {{backward-compatibility}}, and {{security-analysis}}.
 
+## Re-using Ephemeral shares
+
+This document refers to client and server key shares as ephemeral. This literally
+means that they are used for a short time. Keeping the private key secret forever
+is necessary for the property of Perfect Forward Secrecy. The simplest and safest 
+way to achieve this is to generate a new Diffie-Hellman share for each TLS 
+handshake. This has some cost in processing power. 
+
+Alternatively, it is possible to save some CPU cycles by generating a 
+Diffie-Hellman share and using it for several TLS handshakes for a short amount
+of time. If a key is used more than once, then the public key validations in 
+{{ffdhe-param}} and {{ecdhe-param}} become MUST requirements, or else parts of
+the private key may leak. See {{Menezes}} for more details.
+
+In all cases it is mandatory to keep the private key of the Diffie-Hellman key
+share from leaking. Measures to ensure that are implementation-dependent, but
+often include wiping the memory that held the key after the last use, preventing
+swap-out of that memory, and not providing an interface for the export of such 
+private keys. Possession of such keys will allow an attacker to decrypt the 
+contents of any TLS connection that was set up using this key.
 
 #  IANA Considerations
 
