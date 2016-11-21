@@ -785,7 +785,7 @@ TLS supports three basic key exchange modes:
 
 Key  ^ ClientHello
 Exch | + key_share*
-     | + pre_shared_key_modes*
+     | + psk_key_exchange_modes*
      v + pre_shared_key*         -------->
                                                        ServerHello  ^ Key
                                                       + key_share*  | Exch
@@ -1035,7 +1035,7 @@ as with a 1-RTT handshake with PSK resumption.
          ClientHello
          + early_data
          + key_share*
-         + pre_shared_key_modes
+         + psk_key_exchange_modes
          + pre_shared_key
          (Application Data*)
          (end_of_early_data)     -------->
