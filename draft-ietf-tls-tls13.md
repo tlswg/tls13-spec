@@ -1417,7 +1417,7 @@ abort the handshake.
 
 If the server selects a PSK, then it MUST also select a key
 establishment mode from the set indicated by client's
-"psk_key_exchange_modes extension (PSK alone or with (EC)DHE). Note
+"psk_key_exchange_modes" extension (PSK alone or with (EC)DHE). Note
 that if the PSK can be used without (EC)DHE then non-overlap in the
 "supported_groups" parameters need not be fatal.
 
@@ -2298,7 +2298,7 @@ supports the use of PSKs with these modes, which restricts both the
 use of PSKs offered in this ClientHello and those which the server
 might supply via NewSessionTicket.
 
-A clients MUST provide a "psk_key_exchange_modes" extension if it offers
+A client MUST provide a "psk_key_exchange_modes" extension if it offers
 a "pre_shared_key" extension. If clients offer "pre_shared_key" without
 a "psk_key_exchange_modes" extension, servers MUST abort the handshake.
 Servers MUST NOT select a key exchange mode that is not listed by the
@@ -2700,7 +2700,7 @@ extensions:
   SignedCertificateTimestamps ({{!RFC6962}}).  Any extension presented
   in a Certificate message must only be presented if the corresponding
   ClientHello extension was presented in the initial handshake.
-  If an extension applies the the entire chain, it SHOULD be included
+  If an extension applies to the entire chain, it SHOULD be included
   in the first CertificateEntry.
 {:br }
 
@@ -3126,7 +3126,7 @@ next generation of keys, computed as described in
 {{updating-traffic-keys}}. Upon receiving a KeyUpdate, the receiver
 MUST update its receiving keys.
 
-If the request_udate field is set to "update_requested" then the receiver MUST
+If the request_update field is set to "update_requested" then the receiver MUST
 send a KeyUpdate of its own with request_update set to "update_not_requested" prior
 to sending its next application data record. This mechanism allows either side to force an update to the
 entire connection, but causes an implementation which
@@ -4158,7 +4158,7 @@ by IANA
 Finally, this document obsoletes the TLS HashAlgorithm Registry and the TLS
 SignatureAlgorithm Registry, both originally created in {{RFC5246}}.  IANA
 [SHALL update/has updated] the TLS HashAlgorithm Registry to list values 7-223 as
-"Reserved" and the TLS SignatureAlgorithm Registry to list values 4-233 as
+"Reserved" and the TLS SignatureAlgorithm Registry to list values 4-223 as
 "Reserved".
 
 --- back
