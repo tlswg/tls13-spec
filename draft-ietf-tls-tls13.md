@@ -3744,7 +3744,7 @@ defined below:
 
     struct {
         uint16 length = Length;
-        opaque label<9..255> = "TLS 1.3, " + Label;
+        opaque label<10..255> = "TLS 1.3, " + Label;
         opaque hash_value<0..255> = HashValue;
     } HkdfLabel;
 
