@@ -2366,19 +2366,19 @@ any) have been sent, an "end_of_early_data" alert of type
 which will be encrypted with the 0-RTT traffic keys.
 
 A server which receives an "early_data" extension
-can behave in one of two ways:
+can behave in one of three ways:
 
 - Ignore the extension and return a regular 1-RTT response. This indicates that
   the server has ignored any early data and an ordinary 1-RTT handshake is
-  required.
+  required.  The server then ignores early data using trial decryption.
+
+- Request that the client send another ClientHello by responding with a
+  HelloRetryRequest.  A client MUST NOT include the "early_data" extension in
+  its followup ClientHello.  The server then ignores early data.
 
 - Return its own extension, indicating that it intends to
   process the early data. It is not possible for the server
   to accept only a subset of the early data messages.
-
-- Request that the client send another ClientHello by responding with a
-  HelloRetryRequest.  A client MUST NOT include the "early_data" extension in
-  its followup ClientHello.
 
 In order to accept early data, the server MUST have accepted a
 PSK cipher suite and selected the first key offered in the
