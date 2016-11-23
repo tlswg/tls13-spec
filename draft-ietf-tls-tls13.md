@@ -3431,9 +3431,7 @@ mechanism through TLS extensions or some other means.
 The maximum amount of plaintext data that can be safely encrypted with
 AES-GCM in a session is 2^48 128-bit blocks (2^52 bytes), assuming
 probability of success at 1/2^32. The padding {{record-padding}} is
-considered to be a part of plaintext in this section. If the average
-record size in a session is 2^x bytes, the data limit with AES-GCM
-for each key is 2^(52-x) records.
+considered to be a part of plaintext in this section.
 
 The plaintext size must be rounded up to the next 16-byte boundary for
 the purpose of data limits calculation in this section.
