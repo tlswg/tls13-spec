@@ -1087,9 +1087,9 @@ Protocols MUST NOT use 0-RTT data without a profile that defines its
 use. That profile needs to identify which messages or interactions are
 safe to use with 0-RTT. In addition, to avoid accidental misuse,
 implementations SHOULD NOT enable 0-RTT unless specifically
-requested. Special functions for 0-RTT data are RECOMMENDED to ensure
-that an application is always aware that it is sending or receiving
-data that might be replayed.
+requested. Implementations SHOULD provide special functions for 0-RTT data
+to ensure that an application is always aware that it is sending or 
+receiving data that might be replayed.
 
 The same warnings apply to any use of the early exporter secret.
 
