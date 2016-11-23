@@ -2368,9 +2368,9 @@ which will be encrypted with the 0-RTT traffic keys.
 A server which receives an "early_data" extension
 can behave in one of three ways:
 
-- Ignore the extension and return a regular 1-RTT response. This indicates that
-  the server has ignored any early data and an ordinary 1-RTT handshake is
-  required.  The server then ignores early data using trial decryption.
+- Ignore the extension and return a regular 1-RTT response.  The server then
+  ignores early data using trial decryption until it is able to receive the
+  client's second flight and complete an ordinary 1-RTT handshake.
 
 - Request that the client send another ClientHello by responding with a
   HelloRetryRequest.  A client MUST NOT include the "early_data" extension in
