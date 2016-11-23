@@ -2368,8 +2368,8 @@ which will be encrypted with the 0-RTT traffic keys.
 A server which receives an "early_data" extension
 can behave in one of two ways:
 
-- Ignore the extension and return no response. This indicates that the
-  server has ignored any early data and an ordinary 1-RTT handshake is
+- Ignore the extension and return a regular 1-RTT response. This indicates that
+  the server has ignored any early data and an ordinary 1-RTT handshake is
   required.
 
 - Return its own extension, indicating that it intends to
