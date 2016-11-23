@@ -1114,13 +1114,15 @@ against potential security issues, including:
   statistical analysis aimed at revealing the identity of the original
   user.
 
-It is recommended that implementations include defenses against 0-RTT
-replay, including time-based defenses (see {{replay-time}}). It is
-important to note that time-based defenses alone are insufficient to
-mitigate idempotency and side-effect issues. As a measure to ensure
-continued and robust defenses against application issues it is RECOMMENDED
-that any application using 0-RTT data intentionally replay still-valid
-encrypted 0-RTT data non-deterministically.
+It is RECOMMENDED that implementations include defenses against 0-RTT replay,
+including time-based defenses (see {{replay-time}}). It is important to note
+that time-based defenses alone are insufficient to mitigate idempotency and
+side-effect issues. It is RECOMMENDED that applications include additional
+mitigations to prevent undesired behavior due to replayed 0-RTT data. As a
+measure to ensure continued and robust defenses against application issues it
+is also RECOMMENDED that any application using 0-RTT data intentionally replay
+still-valid encrypted 0-RTT data non-deterministically. 0-RTT capable clients
+and implementations MAY also intentionally replay 0-RTT data.
 
 The same warnings apply to any use of the early exporter secret.
 
