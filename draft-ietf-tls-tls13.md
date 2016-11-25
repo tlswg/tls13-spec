@@ -4850,6 +4850,10 @@ Archives of the list can be found at:
   Microsoft \\
   mnystrom@microsoft.com
 
+* Kazuho Oku \\
+  DeNA Co., Ltd. \\
+  kazuhooku@gmail.com
+
 * Alfredo Pironti (co-author of [RFC7627]) \\
   INRIA \\
   alfredo.pironti@inria.fr
