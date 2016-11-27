@@ -2842,7 +2842,7 @@ authenticating via a certificate.
 Clients MUST send this
 message whenever authenticating via a Certificate (i.e., when
 the Certificate message is non-empty). When sent, this message MUST appear immediately
-after the Certificate Message and immediately prior to the Finished
+after the Certificate message and immediately prior to the Finished
 message.
 
 Structure of this message:
@@ -2870,7 +2870,7 @@ In TLS 1.3, the digital signature process takes as input:
 The digital signature is then computed using the signing key over
 the concatenation of:
 
-- 64 bytes of octet 32
+- A string that consists of octet 32 (0x20) repeated 64 times
 - The context string
 - A single 0 byte which serves as the separator
 - The content to be signed
