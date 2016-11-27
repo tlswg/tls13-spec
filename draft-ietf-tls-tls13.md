@@ -3033,7 +3033,7 @@ ticket_lifetime
   Servers MUST NOT use any value more than 604800 seconds (7 days).
   The value of zero indicates that the ticket should be discarded
   immediately. Clients MUST NOT cache session tickets for longer than
-  7 days, regardless of the ticket_lifetime. It MAY delete the ticket
+  7 days, regardless of the ticket_lifetime and MAY delete the ticket
   earlier based on local policy. A server MAY treat a ticket as valid
   for a shorter period of time than what is stated in the
   ticket_lifetime.
