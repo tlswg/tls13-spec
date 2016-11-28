@@ -3322,7 +3322,7 @@ TLSPlaintext.type, and any padding bytes (zeros).
 The AEAD output consists of the ciphertext output by the AEAD
 encryption operation. The length of the plaintext is greater than
 TLSPlaintext.length due to the inclusion of TLSPlaintext.type and
-however much padding is supplied by the sender.  The length of the
+any padding supplied by the sender.  The length of the
 AEAD output will generally be larger than the plaintext, but by an
 amount that varies with the AEAD algorithm. Since the ciphers might
 incorporate padding, the amount of overhead could vary with different
