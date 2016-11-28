@@ -2648,7 +2648,7 @@ for each scenario:
 
 In all cases, the handshake context is formed by concatenating the
 indicated handshake messages, including the handshake message type
-and length fields.
+and length fields, but not including record layer headers.
 
 ###  Certificate
 
@@ -3756,7 +3756,9 @@ defined below:
 ~~~~
 
 The Hash function and the HKDF hash are the cipher suite hash algorithm.
-Hash.length is its output length.
+Hash.length is its output length. Messages are the concatenation of the
+indicated handshake messages, including the handshake message type
+and length fields, but not including record layer headers.
 
 Given a set of n InputSecrets, the final "master secret" is computed
 by iteratively invoking HKDF-Extract with InputSecret_1, InputSecret_2,
