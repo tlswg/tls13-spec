@@ -3331,7 +3331,7 @@ client_write_iv or server_write_iv, and the additional data input is empty
 The plaintext is the concatenation of TLSPlaintext.fragment,
 TLSPlaintext.type, and any padding bytes (zeros).
 
-The AEAD output consists of the ciphertext output by the AEAD
+The AEAD output consists of the ciphertext output from the AEAD
 encryption operation. The length of the plaintext is greater than
 TLSPlaintext.length due to the inclusion of TLSPlaintext.type and
 any padding supplied by the sender.  The length of the
@@ -3354,8 +3354,8 @@ separate integrity check. That is:
 If the decryption fails, the receiver MUST terminate the connection
 with a "bad_record_mac" alert.
 
-An AEAD algorithm used in TLS 1.3 MUST NOT produce an expansion of greater than 255
-bytes.  An endpoint that receives a record from its peer with
+An AEAD algorithm used in TLS 1.3 MUST NOT produce an expansion greater than
+255 octets.  An endpoint that receives a record from its peer with
 TLSCipherText.length larger than 2^14 + 256 octets MUST terminate
 the connection with a "record_overflow" alert.  This limit is derived from the maximum
 TLSPlaintext length of 2^14 octets + 1 octet for ContentType + the
@@ -3370,7 +3370,7 @@ and whenever the key is changed.
 
 The sequence number is incremented after reading or writing each record.
 The first record transmitted under a particular set of traffic keys
-record key MUST use sequence number 0.
+MUST use sequence number 0.
 
 Sequence numbers do not wrap.  If a TLS implementation would need to
 wrap a sequence number, it MUST either rekey ({{key-update}}) or
@@ -3413,7 +3413,7 @@ sensitive.  Implementations MUST NOT send Handshake or Alert records
 that have a zero-length TLSInnerPlaintext.content.
 
 The padding sent is automatically verified by the record protection
-mechanism: Upon successful decryption of a TLSCiphertext.fragment,
+mechanism: upon successful decryption of a TLSCiphertext.encrypted_record,
 the receiving implementation scans the field from the end toward the
 beginning until it finds a non-zero octet. This non-zero octet is the
 content type of the message.
