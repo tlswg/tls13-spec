@@ -353,8 +353,9 @@ provide the following properties:
   authenticated. Authentication can happen via asymmetric cryptography
   (e.g., RSA {{RSA}}, ECDSA {{ECDSA}}) or a pre-shared symmetric key.
 
-- Confidentiality: Data sent over the channel is not visible to
-  attackers.
+- Confidentiality: Data sent over the channel is only visible to the
+  endpoints. TLS does not hide the length of the data it transmits,
+  though endpoints are able to pad in order to obscure lengths.
 
 - Integrity: Data sent over the channel cannot be modified by attackers.
 
