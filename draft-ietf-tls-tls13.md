@@ -1878,37 +1878,37 @@ SignatureSchemeList value:
 
        enum {
            /* RSASSA-PKCS1-v1_5 algorithms */
-           rsa_pkcs1_sha1 (0x0201),
-           rsa_pkcs1_sha256 (0x0401),
-           rsa_pkcs1_sha384 (0x0501),
-           rsa_pkcs1_sha512 (0x0601),
+           rsa_pkcs1_sha1(0x0201),
+           rsa_pkcs1_sha256(0x0401),
+           rsa_pkcs1_sha384(0x0501),
+           rsa_pkcs1_sha512(0x0601),
 
            /* ECDSA algorithms */
-           ecdsa_secp256r1_sha256 (0x0403),
-           ecdsa_secp384r1_sha384 (0x0503),
-           ecdsa_secp521r1_sha512 (0x0603),
+           ecdsa_secp256r1_sha256(0x0403),
+           ecdsa_secp384r1_sha384(0x0503),
+           ecdsa_secp521r1_sha512(0x0603),
 
            /* RSASSA-PSS algorithms */
-           rsa_pss_sha256 (0x0804),
-           rsa_pss_sha384 (0x0805),
-           rsa_pss_sha512 (0x0806),
+           rsa_pss_sha256(0x0804),
+           rsa_pss_sha384(0x0805),
+           rsa_pss_sha512(0x0806),
 
            /* EdDSA algorithms */
-           ed25519 (0x0807),
-           ed448 (0x0808),
+           ed25519(0x0807),
+           ed448(0x0808),
 
            /* Reserved Code Points */
-           dsa_sha1_RESERVED (0x0202),
-           dsa_sha256_RESERVED (0x0402),
-           dsa_sha384_RESERVED (0x0502),
-           dsa_sha512_RESERVED (0x0602),
-           ecdsa_sha1_RESERVED (0x0203),
-           obsolete_RESERVED (0x0000..0x0200),
-           obsolete_RESERVED (0x0204..0x0400),
-           obsolete_RESERVED (0x0404..0x0500),
-           obsolete_RESERVED (0x0504..0x0600),
-           obsolete_RESERVED (0x0604..0x06FF),
-           private_use (0xFE00..0xFFFF),
+           dsa_sha1_RESERVED(0x0202),
+           dsa_sha256_RESERVED(0x0402),
+           dsa_sha384_RESERVED(0x0502),
+           dsa_sha512_RESERVED(0x0602),
+           ecdsa_sha1_RESERVED(0x0203),
+           obsolete_RESERVED(0x0000..0x0200),
+           obsolete_RESERVED(0x0204..0x0400),
+           obsolete_RESERVED(0x0404..0x0500),
+           obsolete_RESERVED(0x0504..0x0600),
+           obsolete_RESERVED(0x0604..0x06FF),
+           private_use(0xFE00..0xFFFF),
            (0xFFFF)
        } SignatureScheme;
 
@@ -2010,19 +2010,19 @@ The "extension_data" field of this extension contains a
 
        enum {
            /* Elliptic Curve Groups (ECDHE) */
-           obsolete_RESERVED (1..22),
-           secp256r1 (23), secp384r1 (24), secp521r1 (25),
-           obsolete_RESERVED (26..28),
-           x25519 (29), x448 (30),
+           obsolete_RESERVED(1..22),
+           secp256r1(23), secp384r1(24), secp521r1(25),
+           obsolete_RESERVED(26..28),
+           x25519(29), x448(30),
 
            /* Finite Field Groups (DHE) */
-           ffdhe2048 (256), ffdhe3072 (257), ffdhe4096 (258),
-           ffdhe6144 (259), ffdhe8192 (260),
+           ffdhe2048(256), ffdhe3072(257), ffdhe4096 (258),
+           ffdhe6144(259), ffdhe8192(260),
 
            /* Reserved Code Points */
-           ffdhe_private_use (0x01FC..0x01FF),
-           ecdhe_private_use (0xFE00..0xFEFF),
-           obsolete_RESERVED (0xFF01..0xFF02),
+           ffdhe_private_use(0x01FC..0x01FF),
+           ecdhe_private_use(0xFE00..0xFEFF),
+           obsolete_RESERVED(0xFF01..0xFF02),
            (0xFFFF)
        } NamedGroup;
 
