@@ -1604,19 +1604,17 @@ extensions
 {:br }
 
 TLS 1.3 has a downgrade protection mechanism embedded in the server's
-random value.  TLS 1.3 server implementations MAY respond to a
-ClientHello indicating only support for TLS 1.2 or below with a
-ServerHello containing the appropriate version field.
+random value. TLS 1.3 servers which negotiate TLS 1.2 or below in
+response to a ClientHello MUST set the last eight bytes of their
+Random value specially.
 
-TLS 1.3 server implementations which respond with a TLS 1.2
-ServerHello, MUST set the last eight bytes of their Random value to
-the bytes:
+If negotiating TLS 1.2, servers MUST set the last eight bytes of their
+Random value to the bytes:
 
       44 4F 57 4E 47 52 44 01
 
-TLS 1.3 server implementations which respond with a ServerHello
-indicating support for TLS 1.1 or below SHOULD set the last
-eight bytes of their Random value to the bytes:
+If negotiating TLS 1.1, TLS 1.3 servers MUST and TLS 1.2 servers SHOULD
+set the last eight bytes of their Random value to the bytes:
 
       44 4F 57 4E 47 52 44 00
 
