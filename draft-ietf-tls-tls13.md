@@ -1090,9 +1090,42 @@ Protocols MUST NOT use 0-RTT data without a profile that defines its
 use. That profile needs to identify which messages or interactions are
 safe to use with 0-RTT. In addition, to avoid accidental misuse,
 implementations SHOULD NOT enable 0-RTT unless specifically
-requested. Special functions for 0-RTT data are RECOMMENDED to ensure
-that an application is always aware that it is sending or receiving
-data that might be replayed.
+requested. Implementations SHOULD provide special functions for 0-RTT data
+to ensure that an application is always aware that it is sending or
+receiving data that might be replayed.
+
+Implementations and applications using 0-RTT data MUST take precautions
+against potential security issues, including:
+
+* If actions triggered by 0-RTT data are not idempotent, attackers may
+  cause undesired behavior. For example if 0-RTT data is used to make a
+  purchase using a non-idempotent action, an attacker may cause multiple
+  purchases to be made.
+
+* Attackers may also use side-effects triggered by 0-RTT data to cause
+  undesired behavior. For example if 0-RTT data is used to make application
+  calls that are associated with throttles or are recorded in application
+  logs, an attacker may exhaust throttling limits, or flood logs.
+
+* If 0-RTT data is used to "warm" or "prime" caches or, in general, to
+  cause a system to carry out actions that are observable, attackers may
+  replay 0-RTT data to aid analysis which can compromise the secrecy of the
+  0-RTT data payload. For example, a log-in system may pre-fetch a user's
+  profile based on information in 0-RTT data, including a user's profile
+  image. Attackers may replay a particular user's 0-RTT data, while then
+  also measuring the fetch time of suspected user's profile images, to aid
+  statistical analysis aimed at revealing the identity of the original
+  user.
+
+It is RECOMMENDED that implementations include defenses against 0-RTT replay,
+including time-based defenses (see {{replay-time}}). It is important to note
+that time-based defenses alone are insufficient to mitigate idempotency and
+side-effect issues. It is RECOMMENDED that applications include additional
+mitigations to prevent undesired behavior due to replayed 0-RTT data. As a
+measure to ensure continued and robust defenses against application issues it
+is also RECOMMENDED that any application using 0-RTT data intentionally replay
+still-valid encrypted 0-RTT data non-deterministically. 0-RTT capable clients
+and implementations MAY also intentionally replay 0-RTT data.
 
 The same warnings apply to any use of the early exporter secret.
 
