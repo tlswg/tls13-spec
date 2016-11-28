@@ -2374,7 +2374,9 @@ can behave in one of three ways:
 
 - Request that the client send another ClientHello by responding with a
   HelloRetryRequest.  A client MUST NOT include the "early_data" extension in
-  its followup ClientHello.  The server then ignores early data.
+  its followup ClientHello.  The server then ignores early data by skipping
+  all records with external content type of "application_data" (indicating
+  that they are encrypted).
 
 - Return its own extension, indicating that it intends to
   process the early data. It is not possible for the server
