@@ -1729,6 +1729,8 @@ A number of TLS messages contain tag-length-value encoded extensions structures.
            cookie(44),
            psk_key_exchange_modes(45),
            ticket_early_data_info(46),
+           certificate_authorities(47),
+           oid_filters(48),
            (65535)
        } ExtensionType;
 
@@ -1742,23 +1744,23 @@ Here:
 The list of extension types is maintained by IANA as described in
 {{iana-considerations}}.
 
-The client sends its extensions in the ClientHello. The server MAY
-send extensions in the ServerHello, EncryptedExtensions, Certificate,
-and HelloRetryRequest messages. The NewSessionTicket also allows
-the server to send extensions to the client though these are
-not directly associated with the extensions in the ClientHello.
+Extensions are generally structured in a request/response fashion (though
+some extensions are just indications with no corresponding response). The client
+sends its "request" extensions in the ClientHello message and the server sends
+its response extensions in the ServerHello, EncryptedExtensions
+and HelloRetryRequest messages. The server sends "request" extensions
+in the CertificateRequest message which can be responded to with
+the client's Certificate message. The server can also send "request"
+extensions in the NewSessionTicket, though the client does not respond
+directly to these. Implementations MUST NOT send "response" extensions
+if the remote endpoint did not send the corresponding "request" extension.
+Upon receiving such an extension, an endpoint MUST abort the handshake with an
+"unsupported_extension" alert.
+
 The table in {{iana-considerations}}
 indicates where a given extension may appear. If the client receives
 an extension which is not specified for a given message it MUST
 abort the handshake with an "illegal_parameter" alert.
-
-The server MUST NOT send any extensions which did not appear in the
-corresponding ClientHello, with the exception of the NewSessionTicket
-message and the "cookie" extension in the HelloRetryRequest message.
-Upon receiving an unexpected extension, it MUST abort the handshake with an
-"unsupported_extension" alert. Server-oriented extensions are supported by
-having the client send an extension with zero-length extension_data
-indicating support for that extension type.
 
 When multiple extensions of different types are present, the
 extensions MAY appear in any order, with the exception of
@@ -1990,6 +1992,37 @@ willing to negotiate TLS 1.2 MUST behave in accordance with the requirements of
   TLS 1.3), MUST be prepared to accept a signature using that scheme even when
   TLS 1.2 is negotiated. In TLS 1.2, RSASSA-PSS is used with RSA cipher suites.
 
+
+#### Certificate Authorities
+
+The "certificate_authorities" extension is used to indicate the
+certificate authorities which an endpoint supports and which SHOULD
+be used by the receiving endpoint to guide certificate selection.
+
+The body of the "certificate_authorities" extension consists of a
+CertificateAuthorities structure.
+
+%%% Server Parameters Messages
+
+       opaque DistinguishedName<1..2^16-1>;
+
+       struct {
+           DistinguishedName authorities<3..2^16-1>;
+       } CertificateAuthoritiesExtension;
+
+authorities
+: A list of the distinguished names {{X501}} of acceptable
+  certificate authorities, represented in DER-encoded {{X690}} format.  These
+  distinguished names may specify a desired distinguished name for a
+  root CA or for a subordinate CA; thus, this message can be used to
+  describe known roots as well as a desired authorization space.
+{:br}
+
+The client MAY send the "certificate_authorities" extension in the ClientHello
+message. The server MAY send it in the CertificateRequest message.
+
+The "trusted_ca_keys" extension, which serves a somewhat similar
+purpose {{RFC6066}}, but is more complicated, is not used in TLS 1.3.
 
 ### Negotiated Groups
 
@@ -2536,19 +2569,9 @@ Structure of this message:
 
 %%% Server Parameters Messages
 
-       opaque DistinguishedName<1..2^16-1>;
-
-       struct {
-           opaque certificate_extension_oid<1..2^8-1>;
-           opaque certificate_extension_values<0..2^16-1>;
-       } CertificateExtension;
-
        struct {
            opaque certificate_request_context<0..2^8-1>;
-           SignatureScheme
-             supported_signature_algorithms<2..2^16-2>;
-           DistinguishedName certificate_authorities<0..2^16-1>;
-           CertificateExtension certificate_extensions<0..2^16-1>;
+           Extension extensions<2..2^16-1>;
        } CertificateRequest;
 
 certificate_request_context
@@ -2560,24 +2583,41 @@ certificate_request_context
   unless used for the post-handshake authentication exchanges
   described in {{post-handshake-authentication}}.
 
-supported_signature_algorithms
-: A list of the signature algorithms that the server is
-  able to verify, listed in descending order of preference. Any
-  certificates provided by the client MUST be signed using a
-  signature algorithm found in supported_signature_algorithms.
+extensions
+: An optional set of extensions describing the parameters of the
+  certificate being requested. The "signature_algorithms"
+  extension MUST be specified.
+{:br}
 
-certificate_authorities
-: A list of the distinguished names {{X501}} of acceptable
-  certificate_authorities, represented in DER-encoded {{X690}} format.  These
-  distinguished names may specify a desired distinguished name for a
-  root CA or for a subordinate CA; thus, this message can be used to
-  describe known roots as well as a desired authorization space.  If
-  the certificate_authorities list is empty, then the client MAY
-  send any certificate that meets the rest of the selection criteria
-  in the CertificateRequest, unless there is some external arrangement
-  to the contrary.
+In prior versions of TLS, the CertificateRequest message
+carried a list of signature algorithms and certificate authorities
+which the server would accept. In TLS 1.3 the former is expressed
+by sending the "signature_algorithms" extension. The latter is
+expressed by sending the "certificate_authorities" extension
+(see {{certificate-authorities}}).
 
-certificate_extensions
+Servers which are authenticating with a PSK MUST NOT send the
+CertificateRequest message.
+
+
+#### OID Filters
+
+The "oid_filters" extension allows servers to provide a set of OID/value
+pairs which it would like the client's certificate to match.
+
+%%% Server Parameters Messages
+
+      struct {
+          opaque certificate_extension_oid<1..2^8-1>;
+          opaque certificate_extension_values<0..2^16-1>;
+      } OIDFilter;
+
+      struct {
+          OIDFilter filters<0..2^16-1>;
+      } OIDFilterExtension;
+
+
+filters
 : A list of certificate extension OIDs {{RFC5280}} with their allowed
   values, represented in DER-encoded {{X690}} format. Some certificate
   extension OIDs allow multiple values (e.g. Extended Key Usage).
@@ -2615,9 +2655,6 @@ certificate_extensions
   Separate specifications may define matching rules for other certificate
   extensions.
 {:br }
-
-Servers which are authenticating with a PSK MUST NOT send the CertificateRequest
-message.
 
 ## Authentication Messages
 
@@ -4112,11 +4149,11 @@ is listed below:
    IANA [shall update/has updated] this registry to include a "TLS
    1.3" column which lists the messages in which the extension may
    appear using the following notation: CH (ClientHello), SH (ServerHello),
-   EE (EncryptedExtensions), CT (Certificate, CR (CertificateREquest), TK (Ticket)
+   EE (EncryptedExtensions), CT (Certificate, CR (CertificateRequest), TK (Ticket)
    and HRR (HElloRetryRequest).This column [shall be/has been]
    initially populated with the values in this document.
 
-| Extension                                | Recommended |   TLS 1.3   | 
+| Extension                                | Recommended |   TLS 1.3   |
 |:-----------------------------------------|------------:|------------:|
 | server_name [RFC6066]                    |         Yes |      CH, EE |
 | max_fragment_length [RFC6066]            |         Yes |      CH, EE |
@@ -4130,14 +4167,14 @@ is listed below:
 | cert_type [RFC6091]                      |         Yes |      CH, EE |
 | supported_groups [RFC7919]               |         Yes |      CH, EE |
 | ec_point_formats [RFC4492]               |         Yes |           - |
-| srp [RFC5054]                            |          No |           - | 
-| signature_algorithms [RFC5246]           |         Yes |          CH |
-| use_srtp [RFC5764]                       |         Yes |      CH, EE | 
+| srp [RFC5054]                            |          No |           - |
+| signature_algorithms [RFC5246]           |         Yes |      CH, CR |
+| use_srtp [RFC5764]                       |         Yes |      CH, EE |
 | heartbeat [RFC6520]                      |         Yes |      CH, EE |
 | application_layer_protocol_negotiation [RFC7301] | Yes |      CH, EE |
 | status_request_v2 [RFC6961]              |         Yes |           - |
-| signed_certificate_timestamp [RFC6962]   |          No |      CH, CT |
-| client_certificate_type [RFC7250]        |         Yes |      CH, EE | 
+| signed_certificate_timestamp [RFC6962]   |          No |  CH, CR, CT |
+| client_certificate_type [RFC7250]        |         Yes |      CH, EE |
 | server_certificate_type [RFC7250]        |         Yes |      CH, CT |
 | padding [RFC7685]                        |         Yes |          CH |
 | encrypt_then_mac [RFC7366]               |         Yes |           - |
@@ -4151,6 +4188,8 @@ is listed below:
 | cookie [[this document]]                 |         Yes |     CH, HRR |
 | supported_versions [[this document]]     |         Yes |          CH |
 | ticket_early_data_info [[this document]] |         Yes |          TK |
+| certificate_authorities [[this document]]|         Yes |      CH, CR |
+| oid_filters [[this document]]            |          No |          CR |
 
 IANA [SHALL update/has updated] this registry to include the values listed above
 that correspond to this document.
