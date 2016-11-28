@@ -3212,6 +3212,8 @@ not preserved in the record layer (i.e., multiple messages of the same
 ContentType MAY be coalesced into a single TLSPlaintext record, or a single
 message MAY be fragmented across several records).
 Alert messages ({{alert-protocol}}) MUST NOT be fragmented across records.
+An endpoint that receives a fragmented alert message MUST terminate the
+connection with a "decode_error" alert.
 
 %%% Record Layer
 
@@ -3258,9 +3260,10 @@ Endpoints supporting other versions negotiate the version to use
 by following the procedure and requirements in {{backward-compatibility}}.
 
 Implementations MUST NOT send zero-length fragments of Handshake or
-Alert types, even if those fragments contain padding. Zero-length
-fragments of Application Data MAY be sent as they are potentially
-useful as a traffic analysis countermeasure.
+Alert types, even if those fragments contain padding. An endpoint that
+receives such a fragment MUST terminate the connection with a
+"decode_error" alert. Zero-length fragments of Application Data MAY
+be sent as they are potentially useful as a traffic analysis countermeasure.
 
 When record protection has not yet been engaged, TLSPlaintext
 structures are written directly onto the wire. Once record protection
