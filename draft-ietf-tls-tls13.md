@@ -4144,7 +4144,7 @@ is listed below:
 | use_srtp [RFC5764]                       |         Yes |   Encrypted | No                |
 | heartbeat [RFC6520]                      |         Yes |   Encrypted | No                |
 | application_layer_protocol_negotiation [RFC7301] | Yes |   Encrypted | No                |
-| status_request_v2 [RFC6961]              |         Yes | Certificate | No                |
+| status_request_v2 [RFC6961]              |         Yes |          No | No                |
 | signed_certificate_timestamp [RFC6962]   |          No | Certificate | No                |
 | client_certificate_type [RFC7250]        |         Yes |   Encrypted | No                |
 | server_certificate_type [RFC7250]        |         Yes | Certificate | No                |
