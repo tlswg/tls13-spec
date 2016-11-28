@@ -886,9 +886,10 @@ Certificate:
   the server's long-term key.  [{{certificate}}]
 
 CertificateVerify:
-: a signature over the entire handshake using the public key
-  in the Certificate message. This message is omitted if the
-  endpoint is not authenticating via a certificate. [{{certificate-verify}}]
+: a signature over the entire handshake using the private key
+  corresponding to the public key in the Certificate message. This
+  message is omitted if the endpoint is not authenticating via a
+  certificate. [{{certificate-verify}}]
 
 Finished:
 : a MAC (Message Authentication Code) over the entire handshake.
