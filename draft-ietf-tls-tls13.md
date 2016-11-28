@@ -3413,7 +3413,7 @@ sensitive.  Implementations MUST NOT send Handshake or Alert records
 that have a zero-length TLSInnerPlaintext.content.
 
 The padding sent is automatically verified by the record protection
-mechanism: upon successful decryption of a TLSCiphertext.encrypted_record,
+mechanism; upon successful decryption of a TLSCiphertext.encrypted_record,
 the receiving implementation scans the field from the end toward the
 beginning until it finds a non-zero octet. This non-zero octet is the
 content type of the message.
