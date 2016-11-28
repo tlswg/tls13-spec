@@ -423,6 +423,13 @@ server: The endpoint which did not initiate the TLS connection.
 (*) indicates changes to the wire protocol which may require implementations
     to update.
 
+draft-19
+
+- Hash context_value input to Exporters (*).
+
+- Remove spurious requirement to implement "pre_shared_key".
+
+
 draft-18
 
 - Remove unnecessary resumption_psk which is the only thing expanded from
@@ -3972,22 +3979,20 @@ the TLS PRF. This document replaces the PRF with HKDF, thus requiring
 a new construction. The exporter interface remains the same. If context is
 provided, the value is computed as:
 
-    HKDF-Expand-Label(Secret, label, context_value, key_length)
+    HKDF-Expand-Label(Secret, label, Hash(context_value), key_length)
 
 Where Secret is either the early_exporter_secret or the exporter_secret.
 Implementations MUST use the exporter_secret unless explicitly specified
 by the application. When adding TLS 1.3 to TLS 1.2 stacks, the exporter_secret
 MUST be for the existing exporter interface.
 
-If no context is provided, the value is computed as:
-
-    HKDF-Expand-Label(Secret, label, "", key_length)
-
-Note that providing no context computes the same value as providing an empty
-context. As of this document's publication, no allocated exporter label is used
-with both modes. Future specifications MUST NOT provide an empty context and no
-context with the same label and SHOULD provide a context, possibly empty, in
-all exporter computations.
+If no context is provided, the value is computed as above but with a
+zero-length context_value. Note that providing no context computes the
+same value as providing an empty context. As of this document's
+publication, no allocated exporter label is used with both
+modes. Future specifications MUST NOT provide an empty context and no
+context with the same label and SHOULD provide a context, possibly
+empty, in all exporter computations.
 
 
 #  Compliance Requirements
