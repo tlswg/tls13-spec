@@ -3377,11 +3377,12 @@ A 64-bit sequence number is maintained separately for reading and writing
 records.  Each sequence number is set to zero at the beginning of a connection
 and whenever the key is changed.
 
-The sequence number is incremented after reading or writing each record.
+The sequence number is incremented by one after reading or writing each record.
 The first record transmitted under a particular set of traffic keys
 MUST use sequence number 0.
 
-Sequence numbers do not wrap.  If a TLS implementation would need to
+Because the size of sequence numbers is 64-bit, they should not
+wrap. If a TLS implementation would need to
 wrap a sequence number, it MUST either rekey ({{key-update}}) or
 terminate the connection.
 
