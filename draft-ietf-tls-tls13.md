@@ -1729,6 +1729,7 @@ A number of TLS messages contain tag-length-value encoded extensions structures.
            cookie(44),
            psk_key_exchange_modes(45),
            ticket_early_data_info(46),
+           ticket_resumption_across_domains(47),
            (65535)
        } ExtensionType;
 
@@ -3032,7 +3033,8 @@ first.
 Any ticket MUST only be resumed with a cipher suite that has the
 same KDF hash as that used to establish the original connection,
 and if the client provides the same SNI value as described in
-Section 3 of {{RFC6066}}.
+Section 3 of {{RFC6066}}, unless resumption with different SNI value is
+explicitly negotiated when the session ticket is issued.
 
 Note: Although the resumption master secret depends on the client's second
 flight, servers which do not request client authentication MAY compute
@@ -3081,7 +3083,8 @@ extensions
   unrecognized extensions.
 {:br }
 
-This document defines one ticket extension, "ticket_early_data_info"
+This document defines two ticket extensions, "ticket_early_data_info" and
+"ticket_resumption_across_domains".
 
 %%% Ticket Establishment
 
@@ -3099,6 +3102,18 @@ max_early_data_size
   SHOULD terminate the connection with an "unexpected_message" alert.
 {:br }
 
+"ticket_resumption_across_domains" extension has an empty body. Its presence
+indicates that the ticket MAY be used for any SNI value for which the
+certificate presented by the server is valid. By sending this extension, the
+server indicates that the server names that share the certificate are expected
+to be able to accept those tickets, and that it can correctly handle the ticket
+issued for a different SNI value.
+
+The application profile may specify additional restrictions requiring the
+clients to ignore this extension and the servers to reject the tickets with
+mismatching SNI value. In particular, if the application requires per-domain
+user input in order to choose or to decline to provide an identity for the
+purpose of client authentication, the client MUST ignore this extension.
 
 ### Post-Handshake Authentication
 
@@ -4160,6 +4175,7 @@ is listed below:
 | cookie [[this document]]                 |         Yes |      Client | Yes               |
 | supported_versions [[this document]]     |         Yes |      Client | No                |
 | ticket_early_data_info [[this document]] |         Yes |      Ticket | No                |
+| ticket_resumption_across_domains [[this document]] | Yes |    Ticket | No                |
 
 IANA [SHALL update/has updated] this registry to include the values listed above
 that correspond to this document.
