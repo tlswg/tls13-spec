@@ -2430,13 +2430,18 @@ Specifically, if the server fails to decrypt any 0-RTT record following
 an accepted "early_data" extension it MUST terminate the connection
 with a "bad_record_mac" alert as per {{record-payload-protection}}.
 
-If the server rejects the "early_data" extension, the client
-application MAY opt to retransmit the data once the handshake has
-been completed. TLS stacks SHOULD not do this automatically and
-client applications MUST take care that the negotiated parameters
-are consistent with those it expected. For example, if the selected
-ALPN protocol has changed, it is likely unsafe to retransmit the
-original application layer data.
+If the server rejects the "early_data" extension, the client application
+MAY opt to retransmit early data once the handshake has been completed.
+A TLS implementation SHOULD NOT automatically re-send early data;
+applications are in a better position to decide when re-transmission is
+appropriate.  Automatic re-transmission of early data could result in
+assumptions about the status of the connection being incorrect. In
+particular, a TLS implementation MUST NOT automatically re-send early
+data unless the negotiated connection selects the same ALPN protocol. An
+application might need to construct different messages if a different
+protocol is selected. Similarly, if early data assumes anything about
+the connection state, it might be sent in error after the handshake
+completes.
 
 #### Processing Order
 
