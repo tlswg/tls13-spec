@@ -4112,8 +4112,8 @@ is listed below:
    IANA [shall update/has updated] this registry to include a "TLS
    1.3" column which lists the messages in which the extension may
    appear using the following notation: CH (ClientHello), SH (ServerHello),
-   EE (EncryptedExtensions), CT (Certificate, CR (CertificateREquest), TK (Ticket)
-   and HRR (HElloRetryRequest).This column [shall be/has been]
+   EE (EncryptedExtensions), CT (Certificate), CR (CertificateRequest), NST (NewSessionTicket)
+   and HRR (HElloRetryRequest). This column [shall be/has been]
    initially populated with the values in this document.
 
 | Extension                                | Recommended |   TLS 1.3   | 
@@ -4150,7 +4150,7 @@ is listed below:
 | early_data [[this document]]             |         Yes |      CH, EE |
 | cookie [[this document]]                 |         Yes |     CH, HRR |
 | supported_versions [[this document]]     |         Yes |          CH |
-| ticket_early_data_info [[this document]] |         Yes |          TK |
+| ticket_early_data_info [[this document]] |         Yes |         NST |
 
 IANA [SHALL update/has updated] this registry to include the values listed above
 that correspond to this document.
