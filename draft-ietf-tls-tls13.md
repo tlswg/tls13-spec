@@ -2523,7 +2523,7 @@ Structure of this message:
        } EncryptedExtensions;
 
 extensions
-: A list of extensions.
+: A list of extensions. For more information, see the table in {{iana-considerations}}.
 {:br }
 
 ###  Certificate Request
