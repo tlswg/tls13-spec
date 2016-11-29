@@ -4110,56 +4110,47 @@ is listed below:
    "No".
 
    IANA [shall update/has updated] this registry to include a "TLS
-   1.3" column with the following six values: "Client", indicating
-   that the server shall not send them. "Clear", indicating
-   that they shall be in the ServerHello. "Encrypted", indicating that
-   they shall be in the EncryptedExtensions block, "Certificate" indicating that
-   they shall be in the Certificate block, "Ticket" indicating that they
-   can appear in the NewSessionTicket message (only) and "No" indicating
-   that they are not used in TLS 1.3. This column [shall be/has been]
+   1.3" column which lists the messages in which the extension may
+   appear using the following notation: CH (ClientHello), SH (ServerHello),
+   EE (EncryptedExtensions), CT (Certificate, CR (CertificateREquest), TK (Ticket)
+   and HRR (HElloRetryRequest).This column [shall be/has been]
    initially populated with the values in this document.
 
-   IANA [shall update/has updated] this registry to include a
-   "HelloRetryRequest" column with the following two values: "Yes", indicating
-   it may be sent in HelloRetryRequest, and "No", indicating it may not be sent
-   in HelloRetryRequest. This column [shall be/has been] initially populated
-   with the values in this document.
-
-| Extension                                | Recommended |   TLS 1.3   | HelloRetryRequest |
-|:-----------------------------------------|------------:|------------:|------------------:|
-| server_name [RFC6066]                    |         Yes |   Encrypted | No                |
-| max_fragment_length [RFC6066]            |         Yes |   Encrypted | No                |
-| client_certificate_url [RFC6066]         |         Yes |   Encrypted | No                |
-| trusted_ca_keys [RFC6066]                |         Yes |   Encrypted | No                |
-| truncated_hmac [RFC6066]                 |         Yes |          No | No                |
-| status_request [RFC6066]                 |         Yes | Certificate | No                |
-| user_mapping [RFC4681]                   |         Yes |   Encrypted | No                |
-| client_authz [RFC5878]                   |          No |          No | No                |
-| server_authz [RFC5878]                   |          No |          No | No                |
-| cert_type [RFC6091]                      |         Yes |   Encrypted | No                |
-| supported_groups [RFC7919]               |         Yes |   Encrypted | No                |
-| ec_point_formats [RFC4492]               |         Yes |          No | No                |
-| srp [RFC5054]                            |          No |          No | No                |
-| signature_algorithms [RFC5246]           |         Yes |      Client | No                |
-| use_srtp [RFC5764]                       |         Yes |   Encrypted | No                |
-| heartbeat [RFC6520]                      |         Yes |   Encrypted | No                |
-| application_layer_protocol_negotiation [RFC7301] | Yes |   Encrypted | No                |
-| status_request_v2 [RFC6961]              |         Yes |          No | No                |
-| signed_certificate_timestamp [RFC6962]   |          No | Certificate | No                |
-| client_certificate_type [RFC7250]        |         Yes |   Encrypted | No                |
-| server_certificate_type [RFC7250]        |         Yes | Certificate | No                |
-| padding [RFC7685]                        |         Yes |      Client | No                |
-| encrypt_then_mac [RFC7366]               |         Yes |          No | No                |
-| extended_master_secret [RFC7627]         |         Yes |          No | No                |
-| SessionTicket TLS [RFC4507]              |         Yes |          No | No                |
-| renegotiation_info [RFC5746]             |         Yes |          No | No                |
-| key_share [[this document]]              |         Yes |       Clear | Yes               |
-| pre_shared_key [[this document]]         |         Yes |       Clear | No                |
-| psk_key_exchange_modes [[this document]] |         Yes |      Client | No                |
-| early_data [[this document]]             |         Yes |   Encrypted | No                |
-| cookie [[this document]]                 |         Yes |      Client | Yes               |
-| supported_versions [[this document]]     |         Yes |      Client | No                |
-| ticket_early_data_info [[this document]] |         Yes |      Ticket | No                |
+| Extension                                | Recommended |   TLS 1.3   | 
+|:-----------------------------------------|------------:|------------:|
+| server_name [RFC6066]                    |         Yes |      CH, EE |
+| max_fragment_length [RFC6066]            |         Yes |      CH, EE |
+| client_certificate_url [RFC6066]         |         Yes |      CH, EE |
+| trusted_ca_keys [RFC6066]                |         Yes |      CH, EE |
+| truncated_hmac [RFC6066]                 |         Yes |           - |
+| status_request [RFC6066]                 |         Yes |      CH, CT |
+| user_mapping [RFC4681]                   |         Yes |      CH, EE |
+| client_authz [RFC5878]                   |          No |           - |
+| server_authz [RFC5878]                   |          No |           - |
+| cert_type [RFC6091]                      |         Yes |      CH, EE |
+| supported_groups [RFC7919]               |         Yes |      CH, EE |
+| ec_point_formats [RFC4492]               |         Yes |           - |
+| srp [RFC5054]                            |          No |           - | 
+| signature_algorithms [RFC5246]           |         Yes |          CH |
+| use_srtp [RFC5764]                       |         Yes |      CH, EE | 
+| heartbeat [RFC6520]                      |         Yes |      CH, EE |
+| application_layer_protocol_negotiation [RFC7301] | Yes |      CH, EE |
+| status_request_v2 [RFC6961]              |         Yes |           - |
+| signed_certificate_timestamp [RFC6962]   |          No |      CH, CT |
+| client_certificate_type [RFC7250]        |         Yes |      CH, EE | 
+| server_certificate_type [RFC7250]        |         Yes |      CH, CT |
+| padding [RFC7685]                        |         Yes |          CH |
+| encrypt_then_mac [RFC7366]               |         Yes |           - |
+| extended_master_secret [RFC7627]         |         Yes |           - |
+| SessionTicket TLS [RFC4507]              |         Yes |           - |
+| renegotiation_info [RFC5746]             |         Yes |           - |
+| key_share [[this document]]              |         Yes | CH, SH, HRR |
+| pre_shared_key [[this document]]         |         Yes |      CH, SH |
+| psk_key_exchange_modes [[this document]] |         Yes |          CH |
+| early_data [[this document]]             |         Yes |      CH, EE |
+| cookie [[this document]]                 |         Yes |     CH, HRR |
+| supported_versions [[this document]]     |         Yes |          CH |
+| ticket_early_data_info [[this document]] |         Yes |          TK |
 
 IANA [SHALL update/has updated] this registry to include the values listed above
 that correspond to this document.
