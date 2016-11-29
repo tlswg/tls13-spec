@@ -4121,7 +4121,7 @@ is listed below:
    and HRR (HElloRetryRequest). This column [shall be/has been]
    initially populated with the values in this document.
 
-| Extension                                | Recommended |   TLS 1.3   | 
+| Extension                                | Recommended |   TLS 1.3   |
 |:-----------------------------------------|------------:|------------:|
 | server_name [RFC6066]                    |         Yes |      CH, EE |
 | max_fragment_length [RFC6066]            |         Yes |      CH, EE |
@@ -4135,14 +4135,14 @@ is listed below:
 | cert_type [RFC6091]                      |         Yes |      CH, EE |
 | supported_groups [RFC7919]               |         Yes |      CH, EE |
 | ec_point_formats [RFC4492]               |         Yes |           - |
-| srp [RFC5054]                            |          No |           - | 
+| srp [RFC5054]                            |          No |           - |
 | signature_algorithms [RFC5246]           |         Yes |          CH |
-| use_srtp [RFC5764]                       |         Yes |      CH, EE | 
+| use_srtp [RFC5764]                       |         Yes |      CH, EE |
 | heartbeat [RFC6520]                      |         Yes |      CH, EE |
 | application_layer_protocol_negotiation [RFC7301] | Yes |      CH, EE |
 | status_request_v2 [RFC6961]              |         Yes |           - |
 | signed_certificate_timestamp [RFC6962]   |          No |      CH, CT |
-| client_certificate_type [RFC7250]        |         Yes |      CH, EE | 
+| client_certificate_type [RFC7250]        |         Yes |      CH, EE |
 | server_certificate_type [RFC7250]        |         Yes |      CH, CT |
 | padding [RFC7685]                        |         Yes |          CH |
 | encrypt_then_mac [RFC7366]               |         Yes |           - |
