@@ -4759,7 +4759,9 @@ Archives of the list can be found at:
   Google \\
   davidben@google.com
 
-* Benjamin Beurdouche
+* Benjamin Beurdouche \\
+  INRIA & Microsoft Research - Joint Center \\
+  benjamin.beurdouche@ens.fr
 
 * Karthikeyan Bhargavan (co-author of [RFC7627]) \\
   INRIA \\
