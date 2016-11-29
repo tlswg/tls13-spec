@@ -4937,3 +4937,7 @@ Archives of the list can be found at:
 * Kazu Yamamoto \\
   Internet Initiative Japan Inc. \\
   kazu@iij.ad.jp
+
+* Alessandro Ghedini \\
+  CloudFlare Inc. \\
+  alessandro@cloudflare.com
