@@ -3520,7 +3520,7 @@ message. Unknown alert types MUST be treated as fatal.
            protocol_version(70),
            insufficient_security(71),
            internal_error(80),
-           inappropriate_fallback(86),
+           inappropriate_fallback_RESERVED(86),
            user_canceled(90),
            no_renegotiation_RESERVED(100),
            missing_extension(109),
@@ -3696,10 +3696,6 @@ internal_error
 : An internal error unrelated to the peer or the correctness of the
   protocol (such as a memory allocation failure) makes it impossible
   to continue.
-
-inappropriate_fallback
-: Sent by a server in response to an invalid connection retry attempt
-  from a client. (see [RFC7507])
 
 missing_extension
 : Sent by endpoints that receive a hello message not containing an
