@@ -3386,8 +3386,8 @@ wrap. If a TLS implementation would need to
 wrap a sequence number, it MUST either rekey ({{key-update}}) or
 terminate the connection.
 
-The length of the per-record nonce (iv_length) is set to max(8 bytes,
-N_MIN) for the AEAD algorithm (see {{RFC5116}} Section 4). An AEAD
+The length of the per-record nonce (iv_length) is set to the larger of
+8 bytes and N_MIN for the AEAD algorithm (see {{RFC5116}} Section 4). An AEAD
 algorithm where N_MAX is less than 8 bytes MUST NOT be used with TLS.
 The per-record nonce for the AEAD construction is formed as follows:
 
