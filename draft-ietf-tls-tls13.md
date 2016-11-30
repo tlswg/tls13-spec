@@ -1024,12 +1024,12 @@ to be used with the PSK MUST also be provisioned.
 
 ## Zero-RTT Data
 
-When clients and servers share a PSK (either obtained out-of-band or
+When clients and servers share a PSK (either obtained externally or
 via a previous handshake), TLS 1.3 allows clients to send data on the
 first flight ("early data"). The client uses the PSK to authenticate
 the server and to encrypt the early data.
 
-When clients use a PSK obtained out-of-band then the following
+When clients use a PSK obtained externally then the following
 additional information MUST be provisioned to both parties:
 
   * The cipher suite for use with this PSK
