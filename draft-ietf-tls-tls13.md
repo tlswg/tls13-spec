@@ -4118,7 +4118,7 @@ is listed below:
    1.3" column which lists the messages in which the extension may
    appear using the following notation: CH (ClientHello), SH (ServerHello),
    EE (EncryptedExtensions), CT (Certificate), CR (CertificateRequest), NST (NewSessionTicket)
-   and HRR (HElloRetryRequest). This column [shall be/has been]
+   and HRR (HelloRetryRequest). This column [shall be/has been]
    initially populated with the values in this document.
 
 | Extension                                | Recommended |   TLS 1.3   |
