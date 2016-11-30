@@ -4582,7 +4582,7 @@ absence of an attack (See {{BBFKZG16}}; defns 8 and 9}).
 
 Forward secret
 : If the long-term keying material (in this case the signature keys in certificate-based
-authentication modes or the PSK in PSK-(EC)DHE modes) are compromised after
+authentication modes or the external/resumption PSK in PSK with (EC)DHE) are compromised after
 the handshake is complete, this does not compromise the security of the
 session key (See {{DOW92}}).
 
@@ -4602,11 +4602,11 @@ identities. {{SIGMA}} describes the analysis of this type of key
 exchange protocol. If fresh (EC)DHE keys are used for each connection,
 then the output keys are forward secret.
 
-The PSK and resumption-PSK modes bootstrap from a long-term shared
+The external PSK and resumption PSK bootstrap from a long-term shared
 secret into a unique per-connection short-term session key. This
 secret may have been established in a previous handshake. If
-PSK-(EC)DHE modes are used, this session key will also be forward
-secret. The resumption-PSK mode has been designed so that the
+PSK with (EC)DHE key establishment is used, this session key will also be forward
+secret. The resumption PSK has been designed so that the
 resumption master secret computed by connection N and needed to form
 connection N+1 is separate from the traffic keys used by connection N,
 thus providing forward secrecy between the connections.
