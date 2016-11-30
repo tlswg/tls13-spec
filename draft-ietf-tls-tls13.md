@@ -351,7 +351,7 @@ provide the following properties:
 - Authentication: The server side of the channel is always
   authenticated; the client side is optionally
   authenticated. Authentication can happen via asymmetric cryptography
-  (e.g., RSA {{RSA}}, ECDSA {{ECDSA}}) or a pre-shared symmetric key.
+  (e.g., RSA {{RSA}}, ECDSA {{ECDSA}}) or a pre-shared key (PSK).
 
 - Confidentiality: Data sent over the channel is only visible to the
   endpoints. TLS does not hide the length of the data it transmits,
@@ -779,12 +779,12 @@ termination of the connection, optionally preceded by an alert message
 
 TLS supports three basic key exchange modes:
 
-- Diffie-Hellman (both the finite field and elliptic curve
+- (EC)DHE (Diffie-Hellman both the finite field and elliptic curve
   varieties),
 
-- A pre-shared symmetric key (PSK), and
+- PSK-only, and
 
-- A combination of PSK and Diffie-Hellman.
+- PSK with (EC)DHE
 
 {{tls-full}} below shows the basic full TLS handshake:
 
@@ -2343,7 +2343,7 @@ psk_ke
 supply a "key_share" value.
 
 psk_dhe_ke
-: PSK key establishment with (EC)DHE key establishment. In this mode,
+: PSK with (EC)DHE key establishment. In this mode,
 the client and servers MUST supply "key_share" values as described
 in {{key-share}}.
 {:br}
