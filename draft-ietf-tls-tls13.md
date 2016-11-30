@@ -1809,12 +1809,18 @@ prepared to negotiate (for this specification, that means minimally
 0x0304, but if previous versions of TLS are supported, they MUST
 be present as well).
 
-Servers which are compliant with this specification MUST use only the
-"supported_versions" extension, if present, to determine client
-preferences and MUST only select a version of TLS present in that
-extension. They MUST ignore any unknown versions. If the extension is
-not present, they MUST negotiate TLS 1.2 or prior as specified in
+If this extension is not present, servers which are compliant with
+this specification MUST negotiate TLS 1.2 or prior as specified in
 {{RFC5246}}, even if ClientHello.legacy_version is 0x0304 or later.
+
+If this extension is present, servers MUST ignore the
+ClientHello.legacy_version value and MUST use only the
+"supported_versions" extension to determine client
+preferences. Servers MUST only select a version of TLS present in that
+extension and MUST ignore any unknown versions. Note that this
+mechanism makes it possible to negotiate a version prior to TLS 1.2 if
+one side supports a sparse range. Implementations of TLS 1.3 which support
+prior versions are RECOMMENDED to at least support TLS 1.2.
 
 The server MUST NOT send the "supported_versions" extension. The
 server's selected version is contained in the ServerHello.version field as
