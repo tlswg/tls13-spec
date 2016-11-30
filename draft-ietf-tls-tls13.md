@@ -351,7 +351,7 @@ provide the following properties:
 - Authentication: The server side of the channel is always
   authenticated; the client side is optionally
   authenticated. Authentication can happen via asymmetric cryptography
-  (e.g., RSA {{RSA}}, ECDSA {{ECDSA}}) or a pre-shared symmetric key.
+  (e.g., RSA {{RSA}}, ECDSA {{ECDSA}}) or a pre-shared key (PSK).
 
 - Confidentiality: Data sent over the channel is only visible to the
   endpoints. TLS does not hide the length of the data it transmits,
@@ -779,12 +779,12 @@ termination of the connection, optionally preceded by an alert message
 
 TLS supports three basic key exchange modes:
 
-- Diffie-Hellman (both the finite field and elliptic curve
+- (EC)DHE (Diffie-Hellman both the finite field and elliptic curve
   varieties),
 
-- A pre-shared symmetric key (PSK), and
+- PSK-only, and
 
-- A combination of PSK and Diffie-Hellman.
+- PSK with (EC)DHE
 
 {{tls-full}} below shows the basic full TLS handshake:
 
@@ -1024,12 +1024,12 @@ to be used with the PSK MUST also be provisioned.
 
 ## Zero-RTT Data
 
-When clients and servers share a PSK (either obtained out-of-band or
+When clients and servers share a PSK (either obtained externally or
 via a previous handshake), TLS 1.3 allows clients to send data on the
 first flight ("early data"). The client uses the PSK to authenticate
 the server and to encrypt the early data.
 
-When clients use a PSK obtained out-of-band then the following
+When clients use a PSK obtained externally then the following
 additional information MUST be provisioned to both parties:
 
   * The cipher suite for use with this PSK
@@ -2343,7 +2343,7 @@ psk_ke
 supply a "key_share" value.
 
 psk_dhe_ke
-: PSK key establishment with (EC)DHE key establishment. In this mode,
+: PSK with (EC)DHE key establishment. In this mode,
 the client and servers MUST supply "key_share" values as described
 in {{key-share}}.
 {:br}
@@ -4582,7 +4582,7 @@ absence of an attack (See {{BBFKZG16}}; defns 8 and 9}).
 
 Forward secret
 : If the long-term keying material (in this case the signature keys in certificate-based
-authentication modes or the PSK in PSK-(EC)DHE modes) are compromised after
+authentication modes or the external/resumption PSK in PSK with (EC)DHE modes) are compromised after
 the handshake is complete, this does not compromise the security of the
 session key (See {{DOW92}}).
 
@@ -4602,11 +4602,11 @@ identities. {{SIGMA}} describes the analysis of this type of key
 exchange protocol. If fresh (EC)DHE keys are used for each connection,
 then the output keys are forward secret.
 
-The PSK and resumption-PSK modes bootstrap from a long-term shared
+The external PSK and resumption PSK bootstrap from a long-term shared
 secret into a unique per-connection short-term session key. This
 secret may have been established in a previous handshake. If
-PSK-(EC)DHE modes are used, this session key will also be forward
-secret. The resumption-PSK mode has been designed so that the
+PSK with (EC)DHE key establishment is used, this session key will also be forward
+secret. The resumption PSK has been designed so that the
 resumption master secret computed by connection N and needed to form
 connection N+1 is separate from the traffic keys used by connection N,
 thus providing forward secrecy between the connections.
