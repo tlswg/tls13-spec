@@ -4,6 +4,7 @@ addons:
   apt:
     packages:
      - python-pip
+dist: trusty
 
 install:
  - gem install kramdown-rfc2629
