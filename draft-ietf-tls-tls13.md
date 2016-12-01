@@ -3753,8 +3753,7 @@ New Alert values are assigned by IANA as described in {{iana-considerations}}.
 #  Cryptographic Computations
 
 In order to begin connection protection, the TLS Record Protocol
-requires specification of a suite of algorithms, a master secret, and
-the client and server random values.
+requires specification of a suite of algorithms and a master secret.
 
 ## Key Schedule
 
