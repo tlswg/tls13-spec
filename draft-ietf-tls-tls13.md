@@ -2220,11 +2220,10 @@ The "extension_data" field of this extension contains a
 
        } PreSharedKeyExtension;
 
-identities
-: A list of the identities (labels for keys) that the client is willing
-  to negotiate with the server. If sent alongside the "early_data"
-  extension (see {{early-data-indication}}), the first identity is the
-  one used for 0-RTT data.
+identity
+: A label for a key. For instance, a ticket defined
+  in {{ticket establishment}}, or a label for a pre-shraed key
+  established externally.
 
 obfuscated_ticket_age
 : For each ticket, the time since the client learned about the server
@@ -2236,6 +2235,12 @@ obfuscated_ticket_age
   week, 32 bits is enough to represent any plausible age, even in
   milliseconds. External tickets SHOULD use an obfuscated_ticket_age of
   0; servers MUST ignore this value for external tickets.
+
+identities
+: A list of the identities that the client is willing
+  to negotiate with the server. If sent alongside the "early_data"
+  extension (see {{early-data-indication}}), the first identity is the
+  one used for 0-RTT data.
 
 binders
 : A series of HMAC values, one for
