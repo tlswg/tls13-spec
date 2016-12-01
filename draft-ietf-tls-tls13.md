@@ -2222,7 +2222,7 @@ The "extension_data" field of this extension contains a
 
 identity
 : A label for a key. For instance, a ticket defined
-  in {{ticket establishment}}, or a label for a pre-shraed key
+  in {{ticket-establishment}}, or a label for a pre-shraed key
   established externally.
 
 obfuscated_ticket_age
