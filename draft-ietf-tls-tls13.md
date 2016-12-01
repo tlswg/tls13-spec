@@ -3074,7 +3074,7 @@ ticket_age_add
   obtain the value that is transmitted by the client.
 
 ticket
-: The value of the ticket to be used as the PSK identifier.
+: The value of the ticket to be used as the PSK identity.
 The ticket itself is an opaque label. It MAY either be a database
 lookup key or a self-encrypted and self-authenticated value. Section
 4 of {{RFC5077}} describes a recommended ticket construction mechanism.
