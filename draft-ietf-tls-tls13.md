@@ -3766,7 +3766,7 @@ functions as defined for HKDF {{RFC5869}}, as well as the functions
 defined below:
 
 ~~~~
-    HKDF-Expand-Label(Secret, Label, HashValue, Length) =
+    HKDF-Expand-Label(Secret, Label, Value, Length) =
          HKDF-Expand(Secret, HkdfLabel, Length)
 
     Where HkdfLabel is specified as:
@@ -3774,7 +3774,7 @@ defined below:
     struct {
         uint16 length = Length;
         opaque label<10..255> = "TLS 1.3, " + Label;
-        opaque hash_value<0..255> = HashValue;
+        opaque value<0..255> = Value;
     } HkdfLabel;
 
     Derive-Secret(Secret, Label, Messages) =
