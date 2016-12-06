@@ -2638,7 +2638,7 @@ The computations for the Authentication messages all uniformly
 take the following inputs:
 
 - The certificate and signing key to be used.
-- A Handshake Context based on the hash of the handshake messages
+- A Handshake Context based on the transcript of the handshake messages
 - A base key to be used to compute a MAC key.
 
 Based on these inputs, the messages then contain:
