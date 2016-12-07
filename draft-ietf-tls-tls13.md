@@ -3754,8 +3754,8 @@ New Alert values are assigned by IANA as described in {{iana-considerations}}.
 
 In order to authenticate and to start encrypting the exchange, the TLS Record
 Protocol needs to derive a suite of secrets via the key schedule. To perform
-these operations, a peer makes use of observed handshake messages, an optional
-pre-shared secret and an optional output of the (EC)DHE key exchange.
+these operations, a peer makes use of observed handshake messages and at least
+one of a pre-shared secret and the output of a (EC)DHE key exchange.
 
 ## Key Schedule
 
