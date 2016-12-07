@@ -4907,7 +4907,7 @@ Archives of the list can be found at:
   dansimon@microsoft.com
 
 * Nick Sullivan \\
-  CloudFlare Inc. \\
+  Cloudflare Inc. \\
   nick@cloudflare.com
 
 * Bjoern Tackmann \\
@@ -4919,7 +4919,7 @@ Archives of the list can be found at:
   mt@mozilla.com
 
 * Filippo Valsorda \\
-  CloudFlare Inc. \\
+  Cloudflare Inc. \\
   filippo@cloudflare.com
 
 * Tom Weinstein
@@ -4937,5 +4937,5 @@ Archives of the list can be found at:
   kazu@iij.ad.jp
 
 * Alessandro Ghedini \\
-  CloudFlare Inc. \\
+  Cloudflare Inc. \\
   alessandro@cloudflare.com
