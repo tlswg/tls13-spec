@@ -1619,7 +1619,7 @@ Structure of this message:
            ProtocolVersion version;
            Random random;
            CipherSuite cipher_suite;
-           Extension extensions<0..2^16-1>;
+           Extension extensions<6..2^16-1>;
        } ServerHello;
 
 version
