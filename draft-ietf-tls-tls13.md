@@ -1761,16 +1761,19 @@ Here:
 The list of extension types is maintained by IANA as described in
 {{iana-considerations}}.
 
-Extensions are generally structured in a request/response fashion (though
-some extensions are just indications with no corresponding response). The client
-sends its "request" extensions in the ClientHello message and the server sends
-its response extensions in the ServerHello, EncryptedExtensions
-and HelloRetryRequest messages. The server sends "request" extensions
+Extensions are generally structured in a request/response fashion, though
+some extensions are just indications with no corresponding response. The client
+sends its extension requests in the ClientHello message and the server sends
+its extension responses in the ServerHello, EncryptedExtensions
+and HelloRetryRequest messages. The server sends extension requests,
 in the CertificateRequest message which can be responded to with
-the client's Certificate message. The server can also send "request"
+the client's Certificate message. The server can also send unsolicited
 extensions in the NewSessionTicket, though the client does not respond
-directly to these. Implementations MUST NOT send "response" extensions
-if the remote endpoint did not send the corresponding "request" extension.
+directly to these.
+
+Implementations MUST NOT send extension responses
+if the remote endpoint did not send the corresponding extension requests,
+with the exception of the "cookie" extension in HelloRetryRequest.
 Upon receiving such an extension, an endpoint MUST abort the handshake with an
 "unsupported_extension" alert.
 
@@ -2023,7 +2026,7 @@ certificate authorities which an endpoint supports and which SHOULD
 be used by the receiving endpoint to guide certificate selection.
 
 The body of the "certificate_authorities" extension consists of a
-CertificateAuthorities structure.
+CertificateAuthoritiesExtension structure.
 
 %%% Server Parameters Messages
 
@@ -2036,7 +2039,7 @@ CertificateAuthorities structure.
 authorities
 : A list of the distinguished names {{X501}} of acceptable
   certificate authorities, represented in DER-encoded {{X690}} format.  These
-  distinguished names may specify a desired distinguished name for a
+  distinguished names specify a desired distinguished name for a
   root CA or for a subordinate CA; thus, this message can be used to
   describe known roots as well as a desired authorization space.
 {:br}
@@ -2044,8 +2047,10 @@ authorities
 The client MAY send the "certificate_authorities" extension in the ClientHello
 message. The server MAY send it in the CertificateRequest message.
 
-The "trusted_ca_keys" extension, which serves a somewhat similar
-purpose {{RFC6066}}, but is more complicated, is not used in TLS 1.3.
+The "trusted_ca_keys" extension, which serves a similar
+purpose {{RFC6066}}, but is more complicated, is not used in TLS 1.3
+(although it may appear in ClientHello messages from clients which are
+offering prior versions of TLS).
 
 ### Negotiated Groups
 
@@ -2651,7 +2656,8 @@ CertificateRequest message.
 #### OID Filters
 
 The "oid_filters" extension allows servers to provide a set of OID/value
-pairs which it would like the client's certificate to match.
+pairs which it would like the client's certificate to match. This
+extension MUST only be sent in the CertificateRequest message.
 
 %%% Server Parameters Messages
 
