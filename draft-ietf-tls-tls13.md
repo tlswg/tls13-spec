@@ -443,6 +443,10 @@ draft-19
 
 - Hash context_value input to Exporters (*).
 
+- Restructure CertificateRequest to have the selectors
+  in extensions. This also allowed defining a "certificate_authorities"
+  extension which can be used by the client instead of trusted_ca_keys.
+
 - Remove spurious requirement to implement "pre_shared_key".
 
 - Clarify location of "early_data" from server (it goes in EE,
