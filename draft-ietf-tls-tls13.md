@@ -1517,7 +1517,7 @@ Structure of this message:
            Random random;
            opaque legacy_session_id<0..32>;
            CipherSuite cipher_suites<2..2^16-2>;
-           opaque legacy_compression_methods<1..2^8-1>;
+           opaque legacy_compression_methods[2] = 0x0100;
            Extension extensions<8..2^16-1>;
        } ClientHello;
 
