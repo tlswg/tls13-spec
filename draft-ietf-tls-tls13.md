@@ -3263,14 +3263,6 @@ a KeyUpdate with the old key is received before accepting any messages
 encrypted with the new key. Failure to do so may allow message truncation
 attacks.
 
-## Handshake Layer and Key Changes
-
-Handshake messages MUST NOT span key changes. Because
-the ServerHello, Finished, and KeyUpdate messages signal a key change,
-upon receiving these messages a receiver MUST verify that the end
-of these messages aligns with a record boundary; if not, then it MUST
-terminate the connection with an "unexpected_message" alert.
-
 #  Record Protocol
 
 The TLS record protocol takes messages to be transmitted, fragments
@@ -3290,49 +3282,38 @@ assigned by IANA in the TLS Content Type Registry as described in
 
 ## Record Layer
 
-The TLS record layer receives uninterpreted data from higher layers in
-non-empty blocks of arbitrary size.
-
 The record layer fragments information blocks into TLSPlaintext
 records carrying data in chunks of 2^14 bytes or less. Message
 boundaries are handled differently depending on the underlying
-ContentType and MUST following rules.
+ContentType. Any future content types MUST specify appropriate
+rules. Note that these rules are stricter than what was enforced in TLS 1.2.
+
+Handshake messages MAY be coalesced into a single
+TLSPlaintext record or fragmented across several records, provided
+that:
+
+- Handshake messages MUST NOT be interleaved with other record
+  types. That is, if a handshake message is split over two or more
+  records, there MUST NOT be any other records between them.
+
+- Handshake messages MUST NOT span key changes. Because
+  the ServerHello, Finished, and KeyUpdate messages signal a key change,
+  upon receiving these messages a receiver MUST verify that the end
+  of these messages aligns with a record boundary; if not, then it MUST
+  terminate the connection with an "unexpected_message" alert.
+
+Implementations MUST NOT send zero-length fragments of Handshake
+types, even if those fragments contain padding.
 
 Alert messages ({{alert-protocol}}) MUST NOT be fragmented across
 records and multiple Alert messages MUST NOT be coalesced into a
 single TLSPlaintext record. In other words, a record with an Alert
-type MUST contain exactly one message. This is the default behaviour
-to be adopted by new record content type.
+type MUST contain exactly one message.
 
-Application Data messages are carried by the record layer and are
-fragmented and encrypted as described below. The messages are treated
-as transparent data to the record layer. Zero-length
-fragments of Application Data MAY be sent as they are potentially
+Application Data messages contain data that is opaque to
+TLS. Application Data messages are always protected. Zero-length
+fragments of Application Data MAY be sent as as they are potentially
 useful as a traffic analysis countermeasure.
-
-Since Handshake messages can be larger than a record content, a single
-Handshake message MAY be fragmented across several records. Moreover,
-multiple Handshake messages MAY be coalesced into a single
-TLSPlaintext record. However, the following constraints MUST be
-observed:
-
-- Implementations MUST NOT send zero-length fragments of Handshake
-  types, even if those fragments contain padding.
-
-- Handshake messages MUST NOT be interleaved with other record
-  types. That is, if a message is split over two or more handshake
-  records, there MUST NOT be any other records between them.
-
-RFC EDITOR: The following point could be completely moved from the 4.6
-section if needed. This way, all the relevant information concerning
-record splitting/coalescing/interleaving would be in the same place.
-
-- As stated in {{handshake-layer-and-key-changes}}, Handshake messages
-  MUST NOT span key changes.
-
-These rules are stricter than what was enforced in TLS 1.2, but it
-matches the behaviour of current implementations and simplifies the
-way records are handled.
 
 
 %%% Record Layer
