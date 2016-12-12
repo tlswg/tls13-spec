@@ -3759,9 +3759,10 @@ New Alert values are assigned by IANA as described in {{iana-considerations}}.
 
 #  Cryptographic Computations
 
-In order to begin connection protection, the TLS Record Protocol
-requires specification of a suite of algorithms, a master secret, and
-the client and server random values.
+In order to authenticate and to start encrypting the exchange, the TLS Record
+Protocol needs to derive a suite of secrets via the key schedule. To perform
+these operations, a peer makes use of observed handshake messages and at least
+one of a pre-shared secret and the output of a (EC)DHE key exchange.
 
 ## Key Schedule
 
