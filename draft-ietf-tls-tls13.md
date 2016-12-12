@@ -3973,8 +3973,10 @@ If a given secret is not available, then the 0-value consisting of
 a string of Hash.length zeroes is used.  Note that this does not mean skipping
 rounds, so if PSK is not in use Early Secret will still be
 HKDF-Extract(0, 0). For the computation of the binder_secret, the label is "external
-psk binder key" for external PSKs and "resumption psk binder key" for
-resumption PSKs. The different labels prevents the substitution of one
+psk binder key" for external PSKs (those provisioned outside of TLS)
+and "resumption psk binder key" for
+resumption PSKs (those provisioned as the resumption master secret of
+a previous handshake). The different labels prevents the substitution of one
 type of PSK for the other.
 
 There are multiple potential Early Secret values depending on
