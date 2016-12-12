@@ -138,6 +138,23 @@ informative:
          ins: M. Dworkin
        seriesinfo:
          NIST: Special Publication 800-38D
+
+  KEYAGREEMENT:
+       title: "Recommendation for Pair-Wise Key Establishment Schemes Using Discrete Logarithm Cryptography"
+       date: 2013-05
+       author:
+         org: American National Standards Institute
+          -
+           ins: E. Barker
+          -
+           ins: Lily Chen
+          - 
+           ins: A. Roginsky
+          -
+           ins: M. Smid
+        seriesinfo:
+          NIST: Special Publication 800-38D
+
   PKCS6:
        title: "PKCS #6: RSA Extended Certificate Syntax Standard, version 1.5"
        author:
@@ -2187,11 +2204,26 @@ Although X9.62 supports multiple point formats, any given curve
 MUST specify only a single point format. All curves currently
 specified in this document MUST only be used with the uncompressed
 point format (the format for all ECDH functions is considered
-uncompressed).
+uncompressed). Peers MUST validate each other's public value Y by ensuring
+that the point is a valid point on the elliptic
+curve.
 
-For x25519 and x448, the contents are the byte string inputs and outputs of the
+For the curves secp256r1, secp384r1 and secp521r1, the appropriate
+validation procedures are defined in Section 4.3.7 of {{X962}}
+and alternatively in Section 5.6.2.6  of {{KEYAGREEMENT}}.
+This process consists of three steps: (1) verify that Y is not the point at 
+infinity (O), (2) verify that for Y = (x, y) both integers are in the correct
+interval, (3) ensure that (x, y) is a correct solution to the elliptic curve equation.
+For these curves, implementers do not need to verify membership in the correct subgroup. 
+
+For x25519 and x448, the contents of the public value are the byte string inputs and outputs of the
 corresponding functions defined in {{RFC7748}}, 32 bytes for x25519 and 56
-bytes for x448.
+bytes for x448. Peers SHOULD use the approach specified in {{RFC7748}} to calculate
+the Diffie-Hellman shared secret, and MUST
+check whether the computed Diffie-Hellman shared secret is the all-zero value and abort if so, as described
+in Section 6 of {{RFC7748}}. If implementers
+use an alternative implementation of these elliptic curves, they should perform
+the additional checks specified in Section 7 of {{RFC7748}}.
 
 Note: Versions of TLS prior to 1.3 permitted point format negotiation;
 TLS 1.3 removes this feature in favor of a single point format
