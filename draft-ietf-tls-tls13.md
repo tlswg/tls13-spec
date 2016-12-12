@@ -4930,6 +4930,10 @@ Archives of the list can be found at:
   Facebook \\
   subodh@fb.com
 
+* Benjamin Kaduk \\
+  Akamai \\
+  kaduk@mit.edu
+
 * Daniel Kahn Gillmor \\
   ACLU \\
   dkg@fifthhorseman.net
