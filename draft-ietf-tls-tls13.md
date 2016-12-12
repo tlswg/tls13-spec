@@ -4217,7 +4217,7 @@ is listed below:
 | server_name [RFC6066]                    |         Yes |      CH, EE |
 | max_fragment_length [RFC6066]            |         Yes |      CH, EE |
 | client_certificate_url [RFC6066]         |         Yes |      CH, EE |
-| trusted_ca_keys [RFC6066]                |         Yes |      CH, EE |
+| trusted_ca_keys [RFC6066]                |         Yes |           - |
 | truncated_hmac [RFC6066]                 |         Yes |           - |
 | status_request [RFC6066]                 |         Yes |      CH, CT |
 | user_mapping [RFC4681]                   |         Yes |      CH, EE |
