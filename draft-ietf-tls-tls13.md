@@ -1820,8 +1820,8 @@ ClientHello.legacy_version value and MUST use only the
 preferences. Servers MUST only select a version of TLS present in that
 extension and MUST ignore any unknown versions. Note that this
 mechanism makes it possible to negotiate a version prior to TLS 1.2 if
-one side supports a sparse range. Implementations of TLS 1.3 which support
-prior versions are RECOMMENDED to at least support TLS 1.2.
+one side supports a sparse range. Implementations of TLS 1.3 which choose
+to support prior versions of TLS SHOULD support TLS 1.2.
 
 The server MUST NOT send the "supported_versions" extension. The
 server's selected version is contained in the ServerHello.version field as
