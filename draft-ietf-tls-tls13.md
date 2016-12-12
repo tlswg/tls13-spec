@@ -445,7 +445,9 @@ draft-19
 
 - Restructure CertificateRequest to have the selectors
   in extensions. This also allowed defining a "certificate_authorities"
-  extension which can be used by the client instead of trusted_ca_keys.
+  extension which can be used by the client instead of trusted_ca_keys (*).
+
+- Tighten record framing requirements and require checking of them (*).
 
 - Remove spurious requirement to implement "pre_shared_key".
 
