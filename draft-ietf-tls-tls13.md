@@ -1050,14 +1050,14 @@ as with a 1-RTT handshake with PSK resumption.
          + key_share*
          + psk_key_exchange_modes
          + pre_shared_key
-         (Application Data*)
-         (end_of_early_data)     -------->
+         (Application Data*)     -------->
                                                          ServerHello
                                                     + pre_shared_key
                                                         + key_share*
                                                {EncryptedExtensions}
                                                           {Finished}
                                  <--------       [Application Data*]
+         (end_of_early_data)
          {Finished}              -------->
 
          [Application Data]      <------->        [Application Data]
@@ -2381,11 +2381,10 @@ MUST be the first PSK listed in the client's "pre_shared_key" extension.
 0-RTT messages sent in the first flight have the same content types
 as their corresponding messages sent in other flights (handshake,
 application_data, and alert respectively) but are protected under
-different keys. After all the 0-RTT application data messages (if
-any) have been sent, an "end_of_early_data" alert of type
-"warning" is sent to indicate the end of the flight.
-0-RTT MUST always be followed by an "end_of_early_data" alert,
-which will be encrypted with the 0-RTT traffic keys.
+different keys.  After receiving the server's Finished message, if the
+server has accepted early data, an "end_of_early_data" alert of type
+"warning" MUST be sent to indicate the key change. This message will
+be encrypted with the 0-RTT traffic keys.
 
 A server which receives an "early_data" extension
 can behave in one of three ways:
@@ -3560,7 +3559,8 @@ close_notify
 end_of_early_data
 : This alert is sent by the client to indicate that all 0-RTT
   application_data messages have been transmitted (or none will
-  be sent at all) and that this is the end of the flight. This
+  be sent at all) and that the following records are protected
+  under handshake traffic keys. This
   alert MUST be at the warning level. Servers MUST NOT send this
   alert and clients receiving it MUST terminate the connection
   with an "unexpected_message" alert.
