@@ -429,6 +429,8 @@ draft-19
 
 - Remove spurious requirement to implement "pre_shared_key".
 
+- Clarify location of "early_data" from server (it goes in EE,
+  as indicated by the table in S 10).
 
 draft-18
 
@@ -1051,7 +1053,6 @@ as with a 1-RTT handshake with PSK resumption.
          (Application Data*)
          (end_of_early_data)     -------->
                                                          ServerHello
-                                                        + early_data
                                                     + pre_shared_key
                                                         + key_share*
                                                {EncryptedExtensions}
@@ -2399,7 +2400,8 @@ can behave in one of three ways:
   all records with external content type of "application_data" (indicating
   that they are encrypted).
 
-- Return its own extension, indicating that it intends to
+- Return its own extension in EncryptedExtensions,
+  indicating that it intends to
   process the early data. It is not possible for the server
   to accept only a subset of the early data messages.
 
