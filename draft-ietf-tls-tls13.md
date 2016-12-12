@@ -1569,11 +1569,12 @@ cipher_suites
   usual. Values are defined in {{cipher-suites}}.
 
 legacy_compression_methods
-: Versions of TLS before 1.3 supported compression with the list of
-  supported compression methods being sent in this field. For every TLS 1.3
-  ClientHello, this vector MUST contain exactly one byte set to
-  zero, which corresponds to the "null" compression method in
-  prior versions of TLS. If a TLS 1.3 ClientHello is
+: Versions of TLS before 1.3 supported compression of the plaintext prior to
+  encryption, with the list of supported compression methods being sent
+  in this field.  TLS 1.3 clients MUST send a field that corresponds to the
+  "null" compression method in older versions of TLS (that is, a vector
+  containing a single zero octet: 0x0100).
+  If a TLS 1.3 ClientHello is
   received with any other value in this field, the server MUST
   abort the handshake with an "illegal_parameter" alert. Note that TLS 1.3
   servers might receive TLS 1.2 or prior ClientHellos which contain
@@ -1583,7 +1584,9 @@ legacy_compression_methods
 extensions
 : Clients request extended functionality from servers by sending
   data in the extensions field.  The actual "Extension" format is
-  defined in {{extensions}}.
+  defined in {{extensions}}.  In TLS 1.3, support for and the presence
+  of certain extensions is mandatory, as functionality is moved into
+  extensions to preserve ClientHello compatibility with previous versions.
 {:br }
 
 In the event that a client requests additional functionality using
@@ -1591,8 +1594,9 @@ extensions, and this functionality is not supplied by the server, the
 client MAY abort the handshake. Note that TLS 1.3 ClientHello messages
 always contain extensions (minimally they must contain
 "supported_versions" or they will be interpreted as TLS 1.2 ClientHello
-messages). TLS 1.3 servers may receive TLS 1.2 ClientHello messages
-without extensions. If negotiating TLS 1.2, a server MUST check that
+messages). TLS 1.3 servers might receive ClientHello messages from versions
+of TLS prior to 1.3 that do not contain extensions.
+If negotiating a version of TLS prior to 1.3, a server MUST check that
 the message either contains no data after legacy_compression_methods
 or that it contains a valid extensions block with no data following.
 If not, then it MUST abort the handshake with a "decode_error" alert.
@@ -1670,7 +1674,7 @@ values, it is not possible for an active attacker to modify the
 randoms without detection as long as ephemeral ciphers are used.
 It does not provide downgrade protection when static RSA is used.
 
-Note: This is an update to TLS 1.2 so in practice many TLS 1.2 clients
+Note: This is a change from RFC 5246, so in practice many TLS 1.2 clients
 and servers will not behave as specified above.
 
 A client that receives a TLS 1.3 ServerHello during renegotiation
@@ -1691,7 +1695,7 @@ message if they were able to find an acceptable set of algorithms and
 groups that are mutually supported, but
 the client's ClientHello did not contain sufficient information to
 proceed with the handshake.
-If a server cannot successfully select algorithms, it MUST abort
+If a server cannot successfully select algorithms and groups, it MUST abort
 the handshake with a "handshake_failure" alert.
 
 Structure of this message:
@@ -1890,14 +1894,16 @@ Cookies serve two primary purposes:
 When sending a HelloRetryRequest, the server MAY provide a "cookie" extension to the
 client (this is an exception to the usual rule that the only extensions that
 may be sent are those that appear in the ClientHello). When sending the
-new ClientHello, the client MUST echo the value of the extension.
-Clients MUST NOT use cookies in subsequent connections.
+new ClientHello, the client MUST echo the value of the extension and SHOULD
+subsequently delete the local copy of the cookie value.
+Clients MUST NOT reuse cookie values in subsequent connections.
 
 
 ###  Signature Algorithms
 
 The client uses the "signature_algorithms" extension to indicate to the server
-which signature algorithms may be used in digital signatures. Clients which
+which signature algorithms can be used in digital signatures over TLS protocol
+structures and digital signatures of X.509 certificates. Clients which
 desire the server to authenticate itself via a certificate MUST send this extension.
 If a server
 is authenticating via a certificate and the client has not sent a
@@ -1976,12 +1982,13 @@ ECDSA algorithms
   represented as a DER-encoded {{X690}} ECDSA-Sig-Value structure.
 
 RSASSA-PSS algorithms
-: Indicates a signature algorithm using RSASSA-PSS {{RFC3447}} with MGF1. The
+: Indicates a signature algorithm using RSASSA-PSS {{RFC3447}} with mask
+  generation function 1. The
   digest used in the mask generation function and the digest being signed are
   both the corresponding hash algorithm as defined in {{SHS}}. When used in
   signed TLS handshake messages, the length of the salt MUST be equal to the
-  length of the digest output.  This codepoint is defined for use with TLS 1.2
-  as well as TLS 1.3.
+  length of the digest output.  The corresponding codepoint is also
+  defined for use with TLS 1.2.
 
 EdDSA algorithms
 : Indicates a signature algorithm using EdDSA as defined in
@@ -2077,14 +2084,14 @@ The "extension_data" field of this extension contains a
 
        enum {
            /* Elliptic Curve Groups (ECDHE) */
-           obsolete_RESERVED(1..22),
-           secp256r1(23), secp384r1(24), secp521r1(25),
-           obsolete_RESERVED(26..28),
-           x25519(29), x448(30),
+           obsolete_RESERVED(0x0001..0x0016),
+           secp256r1(0x0017), secp384r1(0x0018), secp521r1(0x0019),
+           obsolete_RESERVED(0x001A..0x001C),
+           x25519(0x001D), x448(0x001E),
 
            /* Finite Field Groups (DHE) */
-           ffdhe2048(256), ffdhe3072(257), ffdhe4096 (258),
-           ffdhe6144(259), ffdhe8192(260),
+           ffdhe2048(0x0100), ffdhe3072(0x0101), ffdhe4096 (0x0102),
+           ffdhe6144(0x0103), ffdhe8192(0x0104),
 
            /* Reserved Code Points */
            ffdhe_private_use(0x01FC..0x01FF),
@@ -2098,7 +2105,7 @@ The "extension_data" field of this extension contains a
        } NamedGroupList;
 
 Elliptic Curve Groups (ECDHE)
-: Indicates support of the corresponding named curve, defined
+: Indicates support for the corresponding named curve, defined
   either in FIPS 186-4 {{DSS}} or in {{RFC7748}}.
   Values 0xFE00 through 0xFEFF are reserved for private use.
 
@@ -2148,8 +2155,7 @@ group
 key_exchange
 : Key exchange information.  The contents of this field are
   determined by the specified group and its corresponding
-  definition.  Endpoints MUST NOT send empty or otherwise
-  invalid key_exchange values for any reason.
+  definition.
 {:br }
 
 The "extension_data" field of this extension contains a
@@ -2205,7 +2211,7 @@ these checks fails, then the client MUST abort the handshake with an
 "illegal_parameter" alert.  Otherwise, when sending the new ClientHello, the
 client MUST replace the original "key_share" extension with one
 containing only a new KeyShareEntry for the group indicated in the
-selected_group field.
+selected_group field of the triggering HelloRetryRequest.
 
 If using (EC)DHE key establishment, servers offer exactly one
 KeyShareEntry in the ServerHello. This value MUST correspond to the KeyShareEntry value offered
