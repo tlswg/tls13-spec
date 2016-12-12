@@ -2218,9 +2218,10 @@ KeyShareEntry in the ServerHello. This value MUST correspond to the KeyShareEntr
 by the client that the server has selected for the negotiated key exchange.
 Servers MUST NOT send a KeyShareEntry for any group not
 indicated in the "supported_groups" extension.
-If a HelloRetryRequest was received, the client MUST verify that the
-selected NamedGroup matches that supplied in the selected_group field and MUST
-abort the handshake with an "illegal_parameter" alert if it does not.
+Servers MUST NOT send a KeyShareEntry when using the "psk_ke" PskKeyExchangeMode.
+If a HelloRetryRequest was received by the client, the client MUST verify that the
+selected NamedGroup matches one that the client sent in its supported_groups
+extension and MUST abort the handshake with an "illegal_parameter" alert otherwise.
 
 ####  Diffie-Hellman Parameters {#ffdhe-param}
 
@@ -2342,7 +2343,8 @@ selected_identity
 
 Each PSK is associated with a single Hash algorithm. For PSKs established
 via the ticket mechanism ({{NewSessionTicket}}), this is the Hash used for
-the KDF. For externally established PSKs, the Hash algorithm MUST be set when the
+the KDF of the session in which the ticket was issued.
+For externally established PSKs, the Hash algorithm MUST be set when the
 PSK is established.
 
 Prior to accepting PSK key establishment, the server MUST validate the
@@ -2357,9 +2359,9 @@ identity.
 Clients MUST verify that the server's selected_identity is within the
 range supplied by the client, that the server selected the cipher
 suite associated with the PSK,
-and that the "key_share", and
-"signature_algorithms" extensions are consistent with the indicated
-ke_modes and auth_modes values. If these values are not consistent,
+and that the "key_share" extension in the ServerHello is consistent
+with the ke_modes offered in the ClientHello psk_key_exchange_modes
+extension.  If these values are not consistent,
 the client MUST abort the handshake with an "illegal_parameter" alert.
 
 If the server supplies an "early_data" extension, the client MUST
@@ -2402,7 +2404,7 @@ ClientHello2, its binder will be computed over:
 
        ClientHello1 + HelloRetryRequest + ClientHello2[truncated]
 
-The full ClientHello is included in all other handshake hash computations.
+The full ClientHello2 is included in all subsequent handshake hash computations.
 
 ### Pre-Shared Key Exchange Modes
 
@@ -2418,7 +2420,7 @@ a "psk_key_exchange_modes" extension, servers MUST abort the handshake.
 Servers MUST NOT select a key exchange mode that is not listed by the
 client. This extension also restricts the modes for use with PSK resumption;
 servers SHOULD NOT send NewSessionTicket with tickets that are not
-compatible with the advertised modes; however if it does so, the impact
+compatible with the advertised modes; however a server does so, the impact
 will just be that the client's attempts at resumption fail.
 
 The server MUST NOT send a "psk_key_exchange_modes" extension.
@@ -2458,8 +2460,9 @@ The "extension_data" field of this extension contains an
        } EarlyDataIndication;
 
 For PSKs provisioned via NewSessionTicket, a server MUST validate that
-the ticket age for the selected PSK identity (computed by un-masking
-PskIdentity.obfuscated_ticket_age) is within a small tolerance of the
+the ticket age for the selected PSK identity (computed by subtracting
+ticket_age_add from PskIdentity.obfuscated_ticket_age modulo 2^32)
+is within a small tolerance of the
 time since the ticket was issued (see {{replay-time}}).  If it is not,
 the server SHOULD proceed with the handshake but reject 0-RTT, and
 SHOULD NOT take any other action that assumes that this ClientHello is
@@ -2470,7 +2473,7 @@ protocol, etc.) are the same as those which were negotiated in the connection
 which established the PSK. The PSK used to encrypt the early data
 MUST be the first PSK listed in the client's "pre_shared_key" extension.
 
-0-RTT messages sent in the first flight have the same content types
+0-RTT messages sent in the first flight have the same (encrypted) content types
 as their corresponding messages sent in other flights (handshake,
 application_data, and alert respectively) but are protected under
 different keys.  After receiving the server's Finished message, if the
@@ -2510,7 +2513,7 @@ Future extensions MUST define their interaction with 0-RTT.
 If any of these checks fail, the server MUST NOT respond
 with the extension and must discard all the remaining first
 flight data (thus falling back to 1-RTT). If the client attempts
-a 0-RTT handshake but the server rejects it, it will generally
+a 0-RTT handshake but the server rejects it, the server will generally
 not have the 0-RTT record protection keys and must instead
 trial decrypt each record with the 1-RTT handshake keys
 until it finds one that decrypts properly, and then pick up
@@ -2575,8 +2578,8 @@ To properly validate the ticket age, a server needs to save at least two items:
   the ticket age from the "obfuscated_ticket_age" parameter.
 
 There are several potential sources of error that make an exact
-measurement of time difficult.  Variations in client and server clocks
-are likely to be minimal, outside of gross time corrections.  Network
+measurement of time difficult.  Variations in client and server clock rates
+are likely to be minimal, though potentially with gross time corrections.  Network
 propagation delays are most likely causes of a mismatch in legitimate
 values for elapsed time.  Both the NewSessionTicket and ClientHello
 messages might be retransmitted and therefore delayed, which might be
@@ -2646,7 +2649,9 @@ certificate_request_context
   of this connection (thus preventing replay of client
   CertificateVerify messages). This field SHALL be zero length
   unless used for the post-handshake authentication exchanges
-  described in {{post-handshake-authentication}}.
+  described in {{post-handshake-authentication}}.  This does not
+  affect the uniqueness within the connection, since there will
+  only be one CertificateRequest during the initial handshake.
 
 extensions
 : An optional set of extensions describing the parameters of the
@@ -2686,15 +2691,16 @@ extension MUST only be sent in the CertificateRequest message.
 filters
 : A list of certificate extension OIDs {{RFC5280}} with their allowed
   values, represented in DER-encoded {{X690}} format. Some certificate
-  extension OIDs allow multiple values (e.g. Extended Key Usage).
+  extension OIDs allow multiple values (e.g., Extended Key Usage).
   If the server has included a non-empty certificate_extensions list,
-  the client certificate MUST contain all of the specified extension
+  the client certificate included in the response
+  MUST contain all of the specified extension
   OIDs that the client recognizes. For each extension OID recognized
   by the client, all of the specified values MUST be present in the
   client certificate (but the certificate MAY have other values as
   well). However, the client MUST ignore and skip any unrecognized
-  certificate extension OIDs. If the client has ignored some of the
-  required certificate extension OIDs, and supplied a certificate
+  certificate extension OIDs. If the client ignored some of the
+  required certificate extension OIDs and supplied a certificate
   that does not satisfy the request, the server MAY at its discretion
   either continue the session without client authentication, or
   abort the handshake with an "unsupported_certificate" alert.
@@ -2724,9 +2730,11 @@ filters
 
 ## Authentication Messages
 
-As discussed in {{protocol-overview}}, TLS uses a common
+As discussed in {{protocol-overview}}, TLS generally uses a common
 set of messages for authentication, key confirmation, and handshake
-integrity: Certificate, CertificateVerify, and Finished. These
+integrity: Certificate, CertificateVerify, and Finished.
+(The PreSharedKey binders also perform key confirmation, in a
+similar fashion.) These three
 messages are always sent as the last messages in their handshake
 flight. The Certificate and CertificateVerify messages are only
 sent under certain circumstances, as defined below. The Finished
