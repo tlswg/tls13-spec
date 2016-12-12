@@ -3103,10 +3103,6 @@ TLS also allows other messages to be sent after the main handshake.
 These messages use a handshake content type and are encrypted under the application
 traffic key.
 
-Handshake messages sent after the handshake MUST NOT be interleaved with other
-record types. That is, if a message is split over two or more handshake
-records, there MUST NOT be any other records between them.
-
 ### New Session Ticket Message {#NewSessionTicket}
 
 At any time after the server has received the client Finished message, it MAY send
@@ -3292,21 +3288,52 @@ with an "unexpected_message" alert.  New record content type values are
 assigned by IANA in the TLS Content Type Registry as described in
 {{iana-considerations}}.
 
-Application Data messages are carried by the record layer and are
-fragmented and encrypted as described below. The messages are treated
-as transparent data to the record layer.
-
 ## Record Layer
 
 The TLS record layer receives uninterpreted data from higher layers in
 non-empty blocks of arbitrary size.
 
-The record layer fragments information blocks into TLSPlaintext records
-carrying data in chunks of 2^14 bytes or less. Message boundaries are
-not preserved in the record layer (i.e., multiple messages of the same
-ContentType MAY be coalesced into a single TLSPlaintext record, or a single
-message MAY be fragmented across several records).
-Alert messages ({{alert-protocol}}) MUST NOT be fragmented across records.
+The record layer fragments information blocks into TLSPlaintext
+records carrying data in chunks of 2^14 bytes or less. Message
+boundaries are handled differently depending on the underlying
+ContentType and MUST following rules.
+
+Alert messages ({{alert-protocol}}) MUST NOT be fragmented across
+records and multiple Alert messages MUST NOT be coalesced into a
+single TLSPlaintext record. In other words, a record with an Alert
+type MUST contain exactly one message. This is the default behaviour
+to be adopted by new record content type.
+
+Application Data messages are carried by the record layer and are
+fragmented and encrypted as described below. The messages are treated
+as transparent data to the record layer. Zero-length
+fragments of Application Data MAY be sent as they are potentially
+useful as a traffic analysis countermeasure.
+
+Since Handshake messages can be larger than a record content, a single
+Handshake message MAY be fragmented across several records. Moreover,
+multiple Handshake messages MAY be coalesced into a single
+TLSPlaintext record. However, the following constraints MUST be
+observed:
+
+- Implementations MUST NOT send zero-length fragments of Handshake
+  types, even if those fragments contain padding.
+
+- Handshake messages MUST NOT be interleaved with other record
+  types. That is, if a message is split over two or more handshake
+  records, there MUST NOT be any other records between them.
+
+RFC EDITOR: The following point could be completely moved from the 4.6
+section if needed. This way, all the relevant information concerning
+record splitting/coalescing/interleaving would be in the same place.
+
+- As stated in {{handshake-layer-and-key-changes}}, Handshake messages
+  MUST NOT span key changes.
+
+These rules are stricter than what was enforced in TLS 1.2, but it
+matches the behaviour of current implementations and simplifies the
+way records are handled.
+
 
 %%% Record Layer
 
@@ -3351,11 +3378,6 @@ for TLS 1.0 and 0x0300 for SSL 3.0. In order to maximize backwards
 compatibility, the record layer version identifies as simply TLS 1.0.
 Endpoints supporting other versions negotiate the version to use
 by following the procedure and requirements in {{backward-compatibility}}.
-
-Implementations MUST NOT send zero-length fragments of Handshake or
-Alert types, even if those fragments contain padding. Zero-length
-fragments of Application Data MAY be sent as they are potentially
-useful as a traffic analysis countermeasure.
 
 When record protection has not yet been engaged, TLSPlaintext
 structures are written directly onto the wire. Once record protection
