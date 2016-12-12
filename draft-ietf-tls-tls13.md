@@ -3759,15 +3759,17 @@ New Alert values are assigned by IANA as described in {{iana-considerations}}.
 
 #  Cryptographic Computations
 
-In order to begin connection protection, the TLS Record Protocol
-requires specification of a suite of algorithms, a master secret, and
-the client and server random values.
+The TLS handshake establishes one or more input secrets which
+are combined to create the actual working keying material, as detailed
+below. The key derivation process incorporates both the input secrets
+and the handshake transcript. Note that because the handshake
+transcript includes the random values in the Hello messages,
+any given handshake will have different traffic secrets, even
+if the same input secrets are used, as is the case when
++the same PSK is used for multiple connections
 
 ## Key Schedule
 
-The TLS handshake establishes one or more input secrets which
-are combined to create the actual working keying material, as detailed
-below.
 The key derivation process makes use of the HKDF-Extract and HKDF-Expand
 functions as defined for HKDF {{RFC5869}}, as well as the functions
 defined below:
