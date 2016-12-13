@@ -2456,6 +2456,7 @@ The "extension_data" field of this extension contains an
                case hello_retry_request:
                case new_session_ticket:
                   uint32 max_early_data_size;
+           }
        } EarlyDataIndication;
 
 See {{ticket-establishment}} for the use of the max_early_data_size field.
