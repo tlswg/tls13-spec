@@ -3441,7 +3441,11 @@ opaque_type
   decryption.
 
 legacy_record_version
-: The legacy_record_version field is identical to TLSPlaintext.legacy_record_version and is always 0x0301.
+: The legacy_record_version field is always 0x0301.  TLS 1.3 TLSCiphertexts
+  are not generated until after TLS 1.3 has been negotiated, so there are
+  no historical compatibility concerns where other values might be received.
+  Implementations MAY verify that the legacy_record_version field is 0x0301
+  and abort the connection if it is not.
   Note that the handshake protocol including the ClientHello and ServerHello messages authenticates
   the protocol version, so this value is redundant.
 
@@ -4440,7 +4444,7 @@ TLS protocol issues:
   size? In particular, the certificate and certificate request
   handshake messages can be large enough to require fragmentation.
 
--  Do you ignore the TLS record layer version number in all TLS
+-  Do you ignore the TLS record layer version number in all unencrypted TLS
   records? (see {{backward-compatibility}})
 
 -  Have you ensured that all support for SSL, RC4, EXPORT ciphers, and
@@ -4538,11 +4542,14 @@ remains compatible and the client supports the highest protocol version availabl
 in the server.
 
 Prior versions of TLS used the record layer version number for various
-purposes. (TLSPlaintext.legacy_record_version & TLSCiphertext.legacy_record_version)
-As of TLS 1.3, this field is deprecated and its value MUST be ignored by all
-implementations. Version negotiation is performed using only the handshake versions.
+purposes. (TLSPlaintext.legacy_record_version and TLSCiphertext.legacy_record_version)
+As of TLS 1.3, this field is deprecated. The value of
+TLSPlaintext.legacy_record_version MUST be ignored by all
+implementations. The value of TLSCiphertext.legacy_record_version MAY be ignored,
+or MAY be validated to match the fixed constant value.
+Version negotiation is performed using only the handshake versions.
 (ClientHello.legacy_version,
-ClientHello "supported_versions" extension & ServerHello.version)
+ClientHello "supported_versions" extension, and ServerHello.version)
 In order to maximize interoperability with older endpoints, implementations
 that negotiate the use of TLS 1.0-1.2 SHOULD set the record layer
 version number to the negotiated version for the ServerHello and all
@@ -4644,7 +4651,9 @@ Implementations MUST NOT negotiate TLS 1.3 or later using an SSL version 2.0 com
 CLIENT-HELLO. Implementations are NOT RECOMMENDED to accept an SSL version 2.0 compatible
 CLIENT-HELLO in order to negotiate older versions of TLS.
 
-Implementations MUST NOT send or accept any records with a version less than 0x0300.
+Implementations MUST NOT send any records with a version less than 0x0300.
+Implementations SHOULD NOT accept any records with a version less than 0x0300
+(but may inadvertently do so if the record version number is ignored completely).
 
 The security of SSL 3.0 {{SSL3}} is considered insufficient for the reasons enumerated
 in {{RFC7568}}, and MUST NOT be negotiated for any reason.
