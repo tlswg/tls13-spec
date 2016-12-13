@@ -2814,8 +2814,8 @@ Structure of this message:
 
 certificate_request_context
 : If this message is in response to a CertificateRequest, the
-  value of certificate_request_context in that message. Otherwise,
-  in the case of server authentication this field SHALL be zero length.
+  value of certificate_request_context in that message. Otherwise
+  (in the case of server authentication), this field SHALL be zero length.
 
 certificate_list
 : This is a sequence (chain) of CertificateEntry structures, each
@@ -2831,8 +2831,8 @@ extensions:
 : A set of extension values for the CertificateEntry. The "Extension"
   format is defined in {{extensions}}. Valid extensions include
   OCSP Status extensions ({{!RFC6066}} and {{!RFC6961}}) and
-  SignedCertificateTimestamps ({{!RFC6962}}).  Any extension presented
-  in a Certificate message must only be presented if the corresponding
+  SignedCertificateTimestamps ({{!RFC6962}}).  An extension MUST only be presented
+  in a Certificate message if the corresponding
   ClientHello extension was presented in the initial handshake.
   If an extension applies to the entire chain, it SHOULD be included
   in the first CertificateEntry.
@@ -2840,15 +2840,15 @@ extensions:
 
 Note: Prior to TLS 1.3, "certificate_list" ordering required each certificate
 to certify the one immediately preceding it,
-however some implementations allowed some flexibility. Servers sometimes send
+however, some implementations allowed some flexibility. Servers sometimes send
 both a current and deprecated intermediate for transitional purposes, and others
 are simply configured incorrectly, but these cases can nonetheless be validated
 properly. For maximum compatibility, all implementations SHOULD be prepared to
 handle potentially extraneous certificates and arbitrary orderings from any TLS
 version, with the exception of the end-entity certificate which MUST be first.
 
-The server's certificate list MUST always be non-empty. A client will
-send an empty certificate list if it does not have an appropriate
+The server's certificate_list MUST always be non-empty. A client will
+send an empty certificate_list if it does not have an appropriate
 certificate to send in response to the server's authentication
 request.
 
@@ -2856,7 +2856,7 @@ request.
 
 {{!RFC6066}} and {{!RFC6961}} provide extensions to negotiate the server
 sending OCSP responses to the client. In TLS 1.2 and below, the
-server sends an empty extension to indicate negotiation of this
+server replies with an empty extension to indicate negotiation of this
 extension and the OCSP information is carried in a CertificateStatus
 message. In TLS 1.3, the server's OCSP information is carried in
 an extension in the CertificateEntry containing the associated
@@ -2920,7 +2920,7 @@ The following rules apply to certificates sent by the client:
   otherwise (e.g., {{RFC5081}}).
 
 - If the certificate_authorities list in the certificate request
-  message was non-empty, one of the certificates in the certificate
+  message was non-empty, at least one of the certificates in the certificate
   chain SHOULD be issued by one of the listed CAs.
 
 - The certificates MUST be signed using an acceptable signature
@@ -3067,6 +3067,8 @@ Recipients of Finished messages MUST verify that the contents are
 correct. Once a side has sent its Finished message and received and
 validated the Finished message from its peer, it may begin to send and
 receive application data over the connection.
+Early data may be sent prior to the receipt of the peer's Finished
+message, per {{early-data-indication}}.
 
 The key used to compute the finished message is computed from the
 Base key defined in {{authentication-messages}} using HKDF (see
@@ -3110,14 +3112,15 @@ Note: Alerts and any other record types are not handshake messages
 and are not included in the hash computations.
 
 Any records following a 1-RTT Finished message MUST be encrypted under the
-application traffic key. In particular, this includes any alerts sent by the
+appropriate application traffic key {{updating-traffic-keys}}.
+In particular, this includes any alerts sent by the
 server in response to client Certificate and CertificateVerify messages.
 
 ## Post-Handshake Messages
 
 TLS also allows other messages to be sent after the main handshake.
-These messages use a handshake content type and are encrypted under the application
-traffic key.
+These messages use a handshake content type and are encrypted under the
+appropriate application traffic key.
 
 ### New Session Ticket Message {#NewSessionTicket}
 
@@ -3138,14 +3141,17 @@ first.
 
 Any ticket MUST only be resumed with a cipher suite that has the
 same KDF hash as that used to establish the original connection,
-and if the client provides the same SNI value as described in
-Section 3 of {{RFC6066}}.
+and only if the client provides the same SNI value as in the original
+connection, as described in Section 3 of {{RFC6066}}.
 
 Note: Although the resumption master secret depends on the client's second
 flight, servers which do not request client authentication MAY compute
 the remainder of the transcript independently and then send a
 NewSessionTicket immediately upon sending its Finished rather than
-waiting for the client Finished.
+waiting for the client Finished.  This might be appropriate in cases
+where the client is expected to open multiple TLS connections in
+parallel and would benefit from the reduced overhead of a resumption
+handshake, for example.
 
 
 %%% Ticket Establishment
@@ -3163,7 +3169,7 @@ ticket_lifetime
   Servers MUST NOT use any value more than 604800 seconds (7 days).
   The value of zero indicates that the ticket should be discarded
   immediately. Clients MUST NOT cache session tickets for longer than
-  7 days, regardless of the ticket_lifetime and MAY delete the ticket
+  7 days, regardless of the ticket_lifetime, and MAY delete the ticket
   earlier based on local policy. A server MAY treat a ticket as valid
   for a shorter period of time than what is stated in the
   ticket_lifetime.
@@ -3178,8 +3184,11 @@ ticket_age_add
 ticket
 : The value of the ticket to be used as the PSK identity.
 The ticket itself is an opaque label. It MAY either be a database
-lookup key or a self-encrypted and self-authenticated value. Section
-4 of {{RFC5077}} describes a recommended ticket construction mechanism.
+lookup key or a self-encrypted and self-authenticated value. It
+MUST NOT be unprotected plaintext that can be modified by the
+recipient or an attacker without being rejected when presented back
+to the server.  Section 4 of {{RFC5077}} describes a recommended
+ticket construction mechanism.
 
 
 extensions
@@ -3240,16 +3249,16 @@ the responses).
 
 
 request_update
-: Indicates that the recipient of the KeyUpdate should respond with its
+: Indicates whether the recipient of the KeyUpdate should respond with its
 own KeyUpdate. If an implementation receives any other value, it MUST
 terminate the connection with an "illegal_parameter" alert.
 {:br }
 
 The KeyUpdate handshake message is used to indicate that the sender is
 updating its sending cryptographic keys. This message can be sent by
-the server after sending its first flight and the client after sending
-its second flight. Implementations that receive a KeyUpdate message
-prior to receiving a Finished message as part of the 1-RTT handshake
+either peer after it has sent a Finished message.
+Implementations that receive a KeyUpdate message
+prior to receiving a Finished message
 MUST terminate the connection with an "unexpected_message" alert.
 After sending a KeyUpdate message, the sender SHALL send all its traffic using the
 next generation of keys, computed as described in
@@ -3262,8 +3271,9 @@ to sending its next application data record. This mechanism allows either side t
 entire connection, but causes an implementation which
 receives multiple KeyUpdates while it is silent to respond with
 a single update. Note that implementations may receive an arbitrary
-number of messages between sending a KeyUpdate and receiving the
-peer's KeyUpdate because those messages may already be in flight.
+number of messages between sending a KeyUpdate with request_update set
+to update_requested and receiving the
+peer's KeyUpdate, because those messages may already be in flight.
 However, because send and receive keys are derived from independent
 traffic secrets, retaining the receive traffic secret does not threaten
 the forward secrecy of data sent before the sender changed keys.
