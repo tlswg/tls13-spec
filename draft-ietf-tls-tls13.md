@@ -4956,6 +4956,10 @@ Archives of the list can be found at:
   Google \\
   agl@google.com
 
+* Olivier Levillain \\
+  ANSSI \\
+  olivier.levillain@ssi.gouv.fr
+
 * Xiaoyin Liu \\
   University of North Carolina at Chapel Hill \\
   xiaoyin.l@outlook.com
