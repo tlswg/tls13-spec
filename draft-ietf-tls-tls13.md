@@ -146,7 +146,7 @@ informative:
            ins: E. Barker
          -
            ins: Lily Chen
-         - 
+         -
            ins: A. Roginsky
          -
            ins: M. Smid
@@ -2263,10 +2263,10 @@ curve.
 For the curves secp256r1, secp384r1 and secp521r1, the appropriate
 validation procedures are defined in Section 4.3.7 of {{X962}}
 and alternatively in Section 5.6.2.6  of {{KEYAGREEMENT}}.
-This process consists of three steps: (1) verify that Y is not the point at 
+This process consists of three steps: (1) verify that Y is not the point at
 infinity (O), (2) verify that for Y = (x, y) both integers are in the correct
 interval, (3) ensure that (x, y) is a correct solution to the elliptic curve equation.
-For these curves, implementers do not need to verify membership in the correct subgroup. 
+For these curves, implementers do not need to verify membership in the correct subgroup.
 
 For x25519 and x448, the contents of the public value are the byte string inputs and outputs of the
 corresponding functions defined in {{RFC7748}}, 32 bytes for x25519 and 56
@@ -3985,6 +3985,13 @@ calls to Derive-Secret may take different Messages arguments,
 even with the same secret. In a 0-RTT exchange, Derive-Secret is
 called with four distinct transcripts; in a 1-RTT only exchange
 with three distinct transcripts.
+
+The complete transcript passed to Derive-Secret is always taken from the
+following sequence of handshake messages, starting at the first ClientHello and
+including only those messages that were sent: ClientHello, HelloRetryRequest,
+ClientHello, ServerHello, EncryptedExtensions, Server CertificateRequest, Server
+Certificate, Server CertificateVerify, Server Finished, EndOfEarlyData, Client
+Certificate, Client CertificateVerify, Client Finished.
 
 If a given secret is not available, then the 0-value consisting of
 a string of Hash.length zeroes is used.  Note that this does not mean skipping
