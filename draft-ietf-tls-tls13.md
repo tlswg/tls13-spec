@@ -3377,7 +3377,7 @@ length
   "record_overflow" alert.
 
 fragment
-: The data being transmitted. This value transparent and treated as an
+: The data being transmitted. This value is transparent and is treated as an
   independent block to be dealt with by the higher-level protocol
   specified by the type field.
 {:br }
@@ -3386,7 +3386,7 @@ This document describes TLS Version 1.3, which uses the version 0x0304.
 This version value is historical, deriving from the use of 0x0301
 for TLS 1.0 and 0x0300 for SSL 3.0. In order to maximize backwards
 compatibility, the record layer version identifies as simply TLS 1.0.
-Endpoints supporting other versions negotiate the version to use
+Endpoints supporting multiple versions negotiate the version to use
 by following the procedure and requirements in {{backward-compatibility}}.
 
 When record protection has not yet been engaged, TLSPlaintext
@@ -3517,7 +3517,9 @@ wrap. If a TLS implementation would need to
 wrap a sequence number, it MUST either rekey ({{key-update}}) or
 terminate the connection.
 
-The length of the per-record nonce (iv_length) is set to the larger of
+Each AEAD algorithm will specify a range of possible lengths for the
+per-record nonce, from N_MIN bytes to N_MAX bytes of input ({{RFC5116}}).
+The length of the TLS per-record nonce (iv_length) is set to the larger of
 8 bytes and N_MIN for the AEAD algorithm (see {{RFC5116}} Section 4). An AEAD
 algorithm where N_MAX is less than 8 bytes MUST NOT be used with TLS.
 The per-record nonce for the AEAD construction is formed as follows:
@@ -3752,7 +3754,8 @@ unexpected_message
 bad_record_mac
 : This alert is returned if a record is received which cannot be
   deprotected. Because AEAD algorithms combine decryption and
-  verification, this alert is used for all deprotection failures.
+  verification, and also to avoid side channel attacks,
+  this alert is used for all deprotection failures.
   This alert should never be observed in communication between
   proper implementations, except when messages were corrupted
   in the network.
@@ -3912,7 +3915,7 @@ defined below:
 ~~~~
 
 The Hash function and the HKDF hash are the cipher suite hash algorithm.
-Hash.length is its output length. Messages are the concatenation of the
+Hash.length is its output length in bytes. Messages are the concatenation of the
 indicated handshake messages, including the handshake message type
 and length fields, but not including record layer headers. Note that
 in some cases a zero-length HashValue (indicated by "") is passed to
@@ -3920,8 +3923,8 @@ HKDF-Expand-Label.
 
 Given a set of n InputSecrets, the final "master secret" is computed
 by iteratively invoking HKDF-Extract with InputSecret_1, InputSecret_2,
-etc.  The initial secret is simply a string of zeroes as long as the size
-of the Hash that is the basis for the HKDF. Concretely, for the
+etc.  The initial secret is simply a string of Hash.length zero bytes.
+Concretely, for the
 present version of TLS 1.3, secrets are added in the following order:
 
 - PSK
@@ -4002,11 +4005,11 @@ can be used to derive working keys without additional context.
 Note that the different
 calls to Derive-Secret may take different Messages arguments,
 even with the same secret. In a 0-RTT exchange, Derive-Secret is
-called with four distinct transcripts; in a 1-RTT only exchange
+called with four distinct transcripts; in a 1-RTT-only exchange
 with three distinct transcripts.
 
 If a given secret is not available, then the 0-value consisting of
-a string of Hash.length zeroes is used.  Note that this does not mean skipping
+a string of Hash.length zero bytes is used.  Note that this does not mean skipping
 rounds, so if PSK is not in use Early Secret will still be
 HKDF-Extract(0, 0). For the computation of the binder_secret, the label is "external
 psk binder key" for external PSKs (those provisioned outside of TLS)
@@ -4178,7 +4181,7 @@ MUST meet the following requirements:
  * If not containing a "pre_shared_key" extension, it MUST contain both
    a "signature_algorithms" extension and a "supported_groups" extension.
  * If containing a "supported_groups" extension, it MUST also contain a
-   "key_share" extension, and vice versa. (an empty KeyShare.client_shares
+   "key_share" extension, and vice versa. (An empty KeyShare.client_shares
    vector is permitted)
 
 Servers receiving a ClientHello which does not conform to these
@@ -4295,8 +4298,8 @@ is listed below:
 IANA [SHALL update/has updated] this registry to include the values listed above
 that correspond to this document.
 
-In addition, this document defines two new registries to be maintained
-by IANA
+In addition, this document defines a new registry to be maintained
+by IANA:
 
 -  TLS SignatureScheme Registry: Values with the first byte in the range
   0-254 (decimal) are assigned via Specification Required {{RFC5226}}.
@@ -4454,7 +4457,7 @@ TLS protocol issues:
   (see {{backward-compatibility}})
 
 -  Do you handle TLS extensions in ClientHello correctly, including
-  unknown extensions.
+  unknown extensions?
 
 -  When the server has requested a client certificate, but no
   suitable certificate is available, do you correctly send an empty
@@ -4569,7 +4572,8 @@ whenever TLS 1.3 is used.
 
 ## Negotiating with an older server
 
-A TLS 1.3 client who wishes to negotiate with such older servers will send a
+A TLS 1.3 client who wishes to negotiate with servers that do not
+support TLS 1.3 will send a
 normal TLS 1.3 ClientHello containing 0x0303 (TLS 1.2) in
 ClientHello.legacy_version but with the correct version in the
 "supported_versions" extension. If the server does not support TLS 1.3 it
@@ -4578,7 +4582,8 @@ client agrees to use this version, the negotiation will proceed as appropriate
 for the negotiated protocol. A client resuming a session SHOULD initiate the
 connection using the version that was previously negotiated.
 
-Note that 0-RTT data is not compatible with older servers.
+Note that 0-RTT data is not compatible with older servers and SHOULD NOT
+be sent absent knowledge that the server supports TLS 1.3.
 See {{zero-rtt-backwards-compatibility}}.
 
 If the version chosen by the server is not supported by the client (or not
@@ -4586,10 +4591,10 @@ acceptable), the client MUST abort the handshake with a "protocol_version" alert
 
 Some legacy server implementations are known to not implement the TLS
 specification properly and might abort connections upon encountering
-TLS extensions or versions which it is not aware of. Interoperability
+TLS extensions or versions which they are not aware of. Interoperability
 with buggy servers is a complex topic beyond the scope of this document.
 Multiple connection attempts may be required in order to negotiate
-a backwards compatible connection, however this practice is vulnerable
+a backwards compatible connection, however, this practice is vulnerable
 to downgrade attacks and is NOT RECOMMENDED.
 
 
@@ -4616,7 +4621,7 @@ MUST always be ignored.
 
 0-RTT data is not compatible with older servers. An older server will respond
 to the ClientHello with an older ServerHello, but it will not correctly skip
-the 0-RTT data and fail to complete the handshake. This can cause issues when
+the 0-RTT data and will fail to complete the handshake. This can cause issues when
 a client attempts to use 0-RTT, particularly against multi-server deployments. For
 example, a deployment could deploy TLS 1.3 gradually with some servers
 implementing TLS 1.3 and some implementing TLS 1.2, or a TLS 1.3 deployment
@@ -4682,7 +4687,7 @@ We cover properties of the handshake separately from those of the record layer.
 The TLS handshake is an Authenticated Key Exchange (AKE) protocol which
 is intended to provide both one-way authenticated (server-only) and
 mutually authenticated (client and server) functionality. At the completion
-of the handshake, each side outputs its view on the following values:
+of the handshake, each side outputs its view of the following values:
 
 - A "session key" (the master secret) from which can be derived a set of working keys.
 - A set of cryptographic parameters (algorithms, etc.)
@@ -4724,7 +4729,8 @@ Forward secret
 : If the long-term keying material (in this case the signature keys in certificate-based
 authentication modes or the external/resumption PSK in PSK with (EC)DHE modes) are compromised after
 the handshake is complete, this does not compromise the security of the
-session key (See {{DOW92}}).
+session key (See {{DOW92}}).  The forward secrecy property is not satisfied
+when PSK is used in the "psk_ke" PskKeyExchangeMode.
 
 Protection of endpoint identities.
 : The server's identity (certificate) should be protected against passive
@@ -4865,7 +4871,7 @@ a fresh handshake and establish a new session key with an (EC)DHE
 exchange.
 
 The reader should refer to the following references for analysis of the
-TLS record layer.
+TLS record layer. [TODO]
 
 # Working Group Information
 
