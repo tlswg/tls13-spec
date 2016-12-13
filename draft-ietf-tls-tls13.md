@@ -3293,7 +3293,7 @@ attacks.
 
 The TLS record protocol takes messages to be transmitted, fragments
 the data into manageable blocks, protects the records, and transmits
-the result. Received data is decrypted and verified, reassembled, and
+the result. Received data is verified and decrypted, reassembled, and
 then delivered to higher-level clients.
 
 TLS records are typed, which allows multiple higher level protocols to
