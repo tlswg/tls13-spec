@@ -2454,6 +2454,7 @@ The "extension_data" field of this extension contains an
            select (Handshake.msg_type) {
                case client_hello:
                case hello_retry_request:
+                  // empty.
                case new_session_ticket:
                   uint32 max_early_data_size;
            }
