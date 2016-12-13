@@ -2456,7 +2456,7 @@ The "extension_data" field of this extension contains an
                   uint32 max_early_data_size;
 
                case client_hello:
-               case hello_retry_request:
+               case encrypted_extensions:
                   // empty
            };
        } EarlyDataIndication;
