@@ -2315,8 +2315,8 @@ obfuscated_ticket_age
   prevents passive observers from correlating sessions unless tickets
   are reused.  Note: because ticket lifetimes are restricted to a
   week, 32 bits is enough to represent any plausible age, even in
-  milliseconds. External tickets SHOULD use an obfuscated_ticket_age of
-  0; servers MUST ignore this value for external tickets.
+  milliseconds. For identities established externally an obfuscated_ticket_age of
+  0 SHOULD be used, and servers MUST ignore the value.
 
 identities
 : A list of the identities that the client is willing
