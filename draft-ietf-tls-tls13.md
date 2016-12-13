@@ -3452,7 +3452,8 @@ legacy_record_version
 length
 : The length (in bytes) of the following TLSCiphertext.encrypted_record, which
   is the sum of the lengths of the content and the padding, plus one
-  for the inner content type. The length MUST NOT exceed 2^14 + 256.
+  for the inner content type, plus any expansion added by the AEAD algorithm.
+  The length MUST NOT exceed 2^14 + 256.
   An endpoint that receives a record that exceeds this length MUST
   terminate the connection with a "record_overflow" alert.
 
@@ -3468,12 +3469,12 @@ the nonce is derived from the sequence number (see {{nonce}}) and the
 client_write_iv or server_write_iv, and the additional data input is empty
 (zero length).  Derivation of traffic keys is defined in {{traffic-key-calculation}}.
 
-The plaintext is the concatenation of TLSPlaintext.fragment,
-TLSPlaintext.type, and any padding bytes (zeros).
+The plaintext is the concatenation of TLSInnerPlaintext.fragment,
+TLSInnerPlaintext.type, and any padding bytes (zeros).
 
 The AEAD output consists of the ciphertext output from the AEAD
 encryption operation. The length of the plaintext is greater than
-TLSPlaintext.length due to the inclusion of TLSPlaintext.type and
+TLSInnerPlaintext.length due to the inclusion of TLSInnerPlaintext.type and
 any padding supplied by the sender.  The length of the
 AEAD output will generally be larger than the plaintext, but by an
 amount that varies with the AEAD algorithm. Since the ciphers might
@@ -3488,7 +3489,7 @@ nonce, and the AEADEncrypted value. The output is either the plaintext
 or an error indicating that the decryption failed. There is no
 separate integrity check. That is:
 
-       plaintext of fragment =
+       plaintext of encrypted_record =
            AEAD-Decrypt(write_key, nonce, AEADEncrypted)
 
 If the decryption fails, the receiver MUST terminate the connection
