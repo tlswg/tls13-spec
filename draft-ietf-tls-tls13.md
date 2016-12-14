@@ -4653,6 +4653,9 @@ Old versions of TLS permitted the use of very low strength ciphers.
 Ciphers with a strength less than 112 bits MUST NOT be offered or
 negotiated for any version of TLS for any reason.
 
+The security of SSL 3.0 {{SSL3}} is considered insufficient for the reasons enumerated
+in {{RFC7568}}, and MUST NOT be negotiated for any reason.
+
 The security of SSL 2.0 {{SSL2}} is considered insufficient for the reasons enumerated
 in {{RFC6176}}, and MUST NOT be negotiated for any reason.
 
@@ -4661,17 +4664,14 @@ Implementations MUST NOT negotiate TLS 1.3 or later using an SSL version 2.0 com
 CLIENT-HELLO. Implementations are NOT RECOMMENDED to accept an SSL version 2.0 compatible
 CLIENT-HELLO in order to negotiate older versions of TLS.
 
-Implementations MUST NOT send any records with a version less than 0x0300.
-Implementations SHOULD NOT accept any records with a version less than 0x0300
-(but may inadvertently do so if the record version number is ignored completely).
-
-The security of SSL 3.0 {{SSL3}} is considered insufficient for the reasons enumerated
-in {{RFC7568}}, and MUST NOT be negotiated for any reason.
-
 Implementations MUST NOT send a ClientHello.legacy_version or ServerHello.version
 set to 0x0300 or less. Any endpoint receiving a Hello message with
 ClientHello.legacy_version or ServerHello.version set to 0x0300 MUST
 abort the handshake with a "protocol_version" alert.
+
+Implementations MUST NOT send any records with a version less than 0x0300.
+Implementations SHOULD NOT accept any records with a version less than 0x0300
+(but may inadvertently do so if the record version number is ignored completely).
 
 Implementations MUST NOT use the Truncated HMAC extension, defined in
 Section 7 of [RFC6066], as it is not applicable to AEAD algorithms and has
