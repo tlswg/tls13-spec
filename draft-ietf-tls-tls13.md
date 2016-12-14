@@ -3605,16 +3605,19 @@ One of the content types supported by the TLS record layer is the
 alert type.  Like other messages, alert messages are encrypted as
 specified by the current connection state.
 
-Alert messages convey the severity of the message (warning or fatal)
-and a description of the alert. Warning-level messages are used to
+Alert messages convey a description of the alert and a legacy field
+that conveyed the severity of the message in previous versions of
+TLS.  In TLS 1.3, the severity is implicit in the type of alert
+being sent, and can safely be ignored.
+Some alerts are sent to
 indicate orderly closure of the connection or the end of
 early data (see {{closure-alerts}}).
-Upon receiving a warning-level alert, the TLS implementation SHOULD
+Upon receiving such an alert, the TLS implementation SHOULD
 indicate end-of-data to the application and, if appropriate for
 the alert type, send a closure alert in response.
 
-Fatal-level messages are used to indicate abortive closure of the
-connection (See {{error-alerts}}). Upon receiving a fatal-level alert,
+Error alerts indicate abortive closure of the
+connection (See {{error-alerts}}). Upon receiving an error alert,
 the TLS implementation SHOULD indicate an error to the application and
 MUST NOT allow any further data to be sent or received on the
 connection.  Servers and clients MUST forget keys and secrets
@@ -3736,12 +3739,13 @@ parties immediately close the connection.
 Whenever an implementation encounters a fatal error condition, it
 SHOULD send an appropriate fatal alert and MUST close the connection
 without sending or receiving any additional data. In the rest of this
-specification, the phrase "{terminate the connection, abort the
-handshake}" is used without a specific alert means that the
+specification, when the phrases "terminate the connection" and "abort the
+handshake" are used without a specific alert it means that the
 implementation SHOULD send the alert indicated by the descriptions
-below. The phrase "{terminate the connection, abort the handshake}
-with a X alert" MUST send alert X if it sends any alert. All
-alerts defined in this section below, as well as all unknown alerts
+below. The phrases "terminate the connection with a X alert" and
+"abort the handshake with a X alert" mean that the implementation
+MUST send alert X if it sends any alert. All
+alerts defined in this section below, as well as all unknown alerts,
 are universally considered fatal as of TLS 1.3 (see
 {{alert-protocol}}).
 
