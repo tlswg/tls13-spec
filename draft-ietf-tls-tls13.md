@@ -1584,9 +1584,9 @@ legacy_compression_methods
 extensions
 : Clients request extended functionality from servers by sending
   data in the extensions field.  The actual "Extension" format is
-  defined in {{extensions}}.  In TLS 1.3, support for and the presence
+  defined in {{extensions}}.  In TLS 1.3, use
   of certain extensions is mandatory, as functionality is moved into
-  extensions to preserve ClientHello compatibility with previous versions.
+  extensions to preserve ClientHello compatibility with previous versions of TLS.
 {:br }
 
 In the event that a client requests additional functionality using
@@ -1674,7 +1674,7 @@ values, it is not possible for an active attacker to modify the
 randoms without detection as long as ephemeral ciphers are used.
 It does not provide downgrade protection when static RSA is used.
 
-Note: This is a change from RFC 5246, so in practice many TLS 1.2 clients
+Note: This is a change from {{RFC5246}}, so in practice many TLS 1.2 clients
 and servers will not behave as specified above.
 
 A client that receives a TLS 1.3 ServerHello during renegotiation
@@ -4187,7 +4187,7 @@ MUST meet the following requirements:
    a "signature_algorithms" extension and a "supported_groups" extension.
  * If containing a "supported_groups" extension, it MUST also contain a
    "key_share" extension, and vice versa. (An empty KeyShare.client_shares
-   vector is permitted)
+   vector is permitted.)
 
 Servers receiving a ClientHello which does not conform to these
 requirements MUST abort the handshake with a "missing_extension"
