@@ -3394,7 +3394,8 @@ by an encrypted body, which itself contains a type and optional padding.
        } TLSCiphertext;
 
 content
-: The cleartext of TLSPlaintext.fragment.
+: The byte encoding of a handshake or an alert message, or the the raw bytes of
+the application's data to send.
 
 type
 : The content type of the record.
