@@ -1567,8 +1567,8 @@ cipher_suites
   the server does not recognize, support, or wish to use, the server
   MUST ignore those cipher suites, and process the remaining ones as
   usual. Values are defined in {{cipher-suites}}. If the client is
-  attempting a PSK key establishment, it MUST only advertise the single
-  cipher suite associated with the PSK.
+  attempting a PSK key establishment, it MUST advertise at least one
+  cipher suite containing a Hash associated with the PSK.
 
 legacy_compression_methods
 : Versions of TLS before 1.3 supported compression with the list of
@@ -2482,9 +2482,8 @@ server sends a "pre_shared_key" extension indicating the selected
 identity.
 
 Clients MUST verify that the server's selected_identity is within the
-range supplied by the client, that the server selected the cipher
-suite associated with the PSK,
-and that the "key_share", and
+range supplied by the client, that the server selected a cipher suite
+containing a Hash associated with the PSK, and that the "key_share", and
 "signature_algorithms" extensions are consistent with the indicated
 ke_modes and auth_modes values. If these values are not consistent,
 the client MUST abort the handshake with an "illegal_parameter" alert.
