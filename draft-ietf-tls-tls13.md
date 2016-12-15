@@ -3855,7 +3855,7 @@ and the handshake transcript. Note that because the handshake
 transcript includes the random values in the Hello messages,
 any given handshake will have different traffic secrets, even
 if the same input secrets are used, as is the case when
-+the same PSK is used for multiple connections
+the same PSK is used for multiple connections
 
 ## Key Schedule
 
