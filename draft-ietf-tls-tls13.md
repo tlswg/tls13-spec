@@ -1566,7 +1566,9 @@ cipher_suites
   order of client preference. If the list contains cipher suites
   the server does not recognize, support, or wish to use, the server
   MUST ignore those cipher suites, and process the remaining ones as
-  usual. Values are defined in {{cipher-suites}}.
+  usual. Values are defined in {{cipher-suites}}. If the client is
+  attempting a PSK key establishment, it MUST only advertise the single
+  cipher suite associated with the PSK.
 
 legacy_compression_methods
 : Versions of TLS before 1.3 supported compression with the list of
