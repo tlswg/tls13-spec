@@ -840,7 +840,7 @@ Auth | {CertificateVerify*}
                  messages/extensions that are not always sent.
 
               {} Indicates messages protected using keys
-                 derived from handshake_traffic_secret.
+                 derived from a [sender]_handshake_traffic_secret.
 
               [] Indicates messages protected using keys
                  derived from traffic_secret_N
@@ -985,7 +985,7 @@ can then use that PSK identity in future handshakes to negotiate use
 of the PSK. If the server accepts it, then the security context of the
 new connection is tied to the original connection and the key derived
 from the initial handshake is used to bootstrap the cryptographic state
-instead of a full hanshake. In TLS 1.2 and
+instead of a full handshake. In TLS 1.2 and
 below, this functionality was provided by "session IDs" and
 "session tickets" {{RFC5077}}. Both mechanisms are obsoleted in TLS
 1.3.
@@ -1036,9 +1036,10 @@ Subsequent Handshake:
 
 As the server is authenticating via a PSK, it does not send a
 Certificate or a CertificateVerify message. When a client offers resumption
-via PSK, it SHOULD also supply a "key_share" extension to the server as well
-to allow the server to decline resumption and fall back to a full handshake,
-if needed. The server responds with a "pre_shared_key" extension
+via PSK, it SHOULD also supply a "key_share" extension to the server (to provide
+forward secrecy) as well as allow the server to decline resumption and fall back
+to a full handshake, if needed. The server responds with a "pre_shared_key"
+extension to negotiate use of PSK key establishment and can (as shown here)
 to negotiate use of PSK key establishment and can (as shown here)
 respond with a "key_share" extension to do (EC)DHE key
 establishment, thus providing forward secrecy.
@@ -1091,7 +1092,7 @@ as with a 1-RTT handshake with PSK resumption.
                   derived from client_early_traffic_secret.
 
                {} Indicates messages protected using keys
-                  derived from handshake_traffic_secret.
+                  derived from a [sender]_handshake_traffic_secret.
 
                [] Indicates messages protected using keys
                   derived from traffic_secret_N
@@ -1459,7 +1460,7 @@ non-PSK case discussed in the previous paragraph.
 The server indicates its selected parameters in the ServerHello as
 follows:
 
-- If PSK is being used then the server will send a
+- If PSK is being used, then the server will send a
 "pre_shared_key" extension indicating the selected key.
 - If PSK is not being used, then (EC)DHE and certificate-based
 authentication are always used.
@@ -1667,7 +1668,7 @@ protection against downgrade attacks over and above that provided
 by the Finished exchange: because the ServerKeyExchange, a message
 present in TLS 1.2 and below, includes a signature over both random
 values, it is not possible for an active attacker to modify the
-randoms without detection as long as ephemeral ciphers are used.
+random values without detection as long as ephemeral ciphers are used.
 It does not provide downgrade protection when static RSA is used.
 
 Note: This is an update to TLS 1.2 so in practice many TLS 1.2 clients
@@ -1884,7 +1885,7 @@ Cookies serve two primary purposes:
 
 - Allowing the server to offload state to the client, thus allowing it to send
   a HelloRetryRequest without storing any state. The server does this by
-  pickling that post-ClientHello hash state into the cookie (protected
+  setting the post-ClientHello hash state as the cookie (protected
   with some suitable integrity algorithm).
 
 When sending a HelloRetryRequest, the server MAY provide a "cookie" extension to the
@@ -1901,7 +1902,7 @@ which signature algorithms may be used in digital signatures. Clients which
 desire the server to authenticate itself via a certificate MUST send this extension.
 If a server
 is authenticating via a certificate and the client has not sent a
-"signature_algorithms" extension then the server MUST
+"signature_algorithms" extension then, the server MUST
 abort the handshake with a "missing_extension" alert
 (see {{mti-extensions}}).
 
@@ -2045,8 +2046,8 @@ CertificateAuthoritiesExtension structure.
 authorities
 : A list of the distinguished names {{X501}} of acceptable
   certificate authorities, represented in DER-encoded {{X690}} format.  These
-  distinguished names specify a desired distinguished name for a
-  root CA or for a subordinate CA; thus, this message can be used to
+  distinguished names specify a desired distinguished name for a root CA,
+  subordinate CA, or trust anchor; thus, this message can be used to
   describe known roots as well as a desired authorization space.
 {:br}
 
@@ -2596,7 +2597,7 @@ that determines the rest of the handshake.
 In all handshakes, the server MUST send the
 EncryptedExtensions message immediately after the
 ServerHello message. This is the first message that is encrypted
-under keys derived from handshake_traffic_secret.
+under keys derived from the server_handshake_traffic_secret.
 
 The EncryptedExtensions message contains extensions
 which should be protected, i.e., any which are not needed to
@@ -3314,7 +3315,7 @@ type MUST contain exactly one message.
 
 Application Data messages contain data that is opaque to
 TLS. Application Data messages are always protected. Zero-length
-fragments of Application Data MAY be sent as as they are potentially
+fragments of Application Data MAY be sent as they are potentially
 useful as a traffic analysis countermeasure.
 
 
@@ -3520,7 +3521,9 @@ Application Data records may contain a zero-length TLSInnerPlaintext.content if
 the sender desires.  This permits generation of plausibly-sized cover
 traffic in contexts where the presence or absence of activity may be
 sensitive.  Implementations MUST NOT send Handshake or Alert records
-that have a zero-length TLSInnerPlaintext.content.
+that have a zero-length TLSInnerPlaintext.content, if such a message
+is recieved, the receiving implementation MUST terminate the connection
+with an "unexpected_message" alert.
 
 The padding sent is automatically verified by the record protection
 mechanism; upon successful decryption of a TLSCiphertext.encrypted_record,
@@ -3764,7 +3767,7 @@ illegal_parameter
 unknown_ca
 : A valid certificate chain or partial chain was received, but the
   certificate was not accepted because the CA certificate could not
-  be located or couldn't be matched with a known, trusted CA.
+  be located or could not be matched with a known trust anchor.
 
 access_denied
 : A valid certificate or PSK was received, but when access control was
@@ -3981,7 +3984,7 @@ HKDF-Extract(0, 0). For the computation of the binder_secret, the label is "exte
 psk binder key" for external PSKs (those provisioned outside of TLS)
 and "resumption psk binder key" for
 resumption PSKs (those provisioned as the resumption master secret of
-a previous handshake). The different labels prevents the substitution of one
+a previous handshake). The different labels prevent the substitution of one
 type of PSK for the other.
 
 There are multiple potential Early Secret values depending on
@@ -4106,7 +4109,7 @@ empty, in all exporter computations.
 
 #  Compliance Requirements
 
-##  MTI Cipher Suites
+##  Mandatory-to-Implement Cipher Suites
 
 In the absence of an application profile standard specifying otherwise, a
 TLS-compliant application MUST implement the TLS_AES_128_GCM_SHA256
@@ -4119,7 +4122,7 @@ CertificateVerify and certificates), and ecdsa_secp256r1_sha256. A
 TLS-compliant application MUST support key exchange with secp256r1
 (NIST P-256) and SHOULD support key exchange with X25519 {{RFC7748}}.
 
-##  MTI Extensions
+##  Mandatory-to-Implement Extensions
 
 In the absence of an application profile standard specifying otherwise, a
 TLS-compliant application MUST implement the following TLS extensions:
@@ -4389,8 +4392,8 @@ unsatisfactory, {{RFC4086}} provides guidance on the generation of random values
 Implementations are responsible for verifying the integrity of certificates and
 should generally support certificate revocation messages. Certificates should
 always be verified to ensure proper signing by a trusted Certificate Authority
-(CA). The selection and addition of trusted CAs should be done very carefully.
-Users should be able to view information about the certificate and root CA.
+(CA). The selection and addition of trusted anchors should be done very carefully.
+Users should be able to view information about the certificate and trust anchor.
 Applications SHOULD also enforce minimum and maximum key sizes. For example,
 certification paths containing keys or signatures weaker than 2048-bit RSA or
 224-bit ECDSA are not appropriate for secure applications.
@@ -4423,7 +4426,7 @@ TLS protocol issues:
   (see {{backward-compatibility}})
 
 -  Do you handle TLS extensions in ClientHello correctly, including
-  unknown extensions.
+  unknown extensions?
 
 -  When the server has requested a client certificate, but no
   suitable certificate is available, do you correctly send an empty
@@ -4761,7 +4764,7 @@ to avoid leaking information about the identities due to length.
 The 0-RTT mode of operation generally provides the same security
 properties as 1-RTT data, with the two exceptions that the 0-RTT
 encryption keys do not provide full forward secrecy and that the
-the server is not able to guarantee full uniqueness of the handshake
+server is not able to guarantee full uniqueness of the handshake
 (non-replayability) without keeping potentially undue amounts of
 state. See {{early-data-indication}} for one mechanism to limit
 the exposure to replay.
