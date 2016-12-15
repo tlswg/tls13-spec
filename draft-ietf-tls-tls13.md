@@ -1567,7 +1567,7 @@ cipher_suites
   the server does not recognize, support, or wish to use, the server
   MUST ignore those cipher suites, and process the remaining ones as
   usual. Values are defined in {{cipher-suites}}. If the client is
-  attempting a PSK key establishment, it MUST advertise at least one
+  attempting a PSK key establishment, it SHOULD advertise at least one
   cipher suite containing a Hash associated with the PSK.
 
 legacy_compression_methods
