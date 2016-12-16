@@ -1566,7 +1566,9 @@ cipher_suites
   order of client preference. If the list contains cipher suites
   the server does not recognize, support, or wish to use, the server
   MUST ignore those cipher suites, and process the remaining ones as
-  usual. Values are defined in {{cipher-suites}}.
+  usual. Values are defined in {{cipher-suites}}. If the client is
+  attempting a PSK key establishment, it SHOULD advertise at least one
+  cipher suite containing a Hash associated with the PSK.
 
 legacy_compression_methods
 : Versions of TLS before 1.3 supported compression with the list of
@@ -2272,132 +2274,6 @@ Note: Versions of TLS prior to 1.3 permitted point format negotiation;
 TLS 1.3 removes this feature in favor of a single point format
 for each curve.
 
-### Pre-Shared Key Extension
-
-The "pre_shared_key" extension is used to indicate the identity of the
-pre-shared key to be used with a given handshake in association
-with PSK key establishment.
-
-The "extension_data" field of this extension contains a
-"PreSharedKeyExtension" value:
-
-%%% Key Exchange Messages
-
-       struct {
-           opaque identity<1..2^16-1>;
-           uint32 obfuscated_ticket_age;
-       } PskIdentity;
-
-       opaque PskBinderEntry<32..255>;
-
-       struct {
-           select (Handshake.msg_type) {
-               case client_hello:
-                   PskIdentity identities<7..2^16-1>;
-                   PskBinderEntry binders<33..2^16-1>;
-
-               case server_hello:
-                   uint16 selected_identity;
-           };
-
-       } PreSharedKeyExtension;
-
-identity
-: A label for a key. For instance, a ticket defined
-  in {{ticket-establishment}}, or a label for a pre-shared key
-  established externally.
-
-obfuscated_ticket_age
-: For each ticket, the time since the client learned about the server
-  configuration that it is using, in milliseconds.  This value is
-  added modulo 2^32 to with the "ticket_age_add" value that was
-  included with the ticket, see {{NewSessionTicket}}.  This addition
-  prevents passive observers from correlating sessions unless tickets
-  are reused.  Note: because ticket lifetimes are restricted to a
-  week, 32 bits is enough to represent any plausible age, even in
-  milliseconds. For identities established externally an obfuscated_ticket_age of
-  0 SHOULD be used, and servers MUST ignore the value.
-
-identities
-: A list of the identities that the client is willing
-  to negotiate with the server. If sent alongside the "early_data"
-  extension (see {{early-data-indication}}), the first identity is the
-  one used for 0-RTT data.
-
-binders
-: A series of HMAC values, one for
-  each PSK offered in the "pre_shared_keys" extension and in the same
-  order, computed as described below.
-
-selected_identity
-: The server's chosen identity expressed as a (0-based) index into
-  the identities in the client's list.
-{: br}
-
-Each PSK is associated with a single Hash algorithm. For PSKs established
-via the ticket mechanism ({{NewSessionTicket}}), this is the Hash used for
-the KDF. For externally established PSKs, the Hash algorithm MUST be set when the
-PSK is established.
-
-Prior to accepting PSK key establishment, the server MUST validate the
-corresponding binder value (see {{psk-binder}} below). If this value is
-not present or does not validate, the server MUST abort the handshake.
-Servers SHOULD NOT attempt to validate multiple binders; rather they
-SHOULD select a single PSK and validate solely the binder that
-corresponds to that PSK. In order to accept PSK key establishment, the
-server sends a "pre_shared_key" extension indicating the selected
-identity.
-
-Clients MUST verify that the server's selected_identity is within the
-range supplied by the client, that the server selected the cipher
-suite associated with the PSK,
-and that the "key_share", and
-"signature_algorithms" extensions are consistent with the indicated
-ke_modes and auth_modes values. If these values are not consistent,
-the client MUST abort the handshake with an "illegal_parameter" alert.
-
-If the server supplies an "early_data" extension, the client MUST
-verify that the server's selected_identity is 0. If any
-other value is returned, the client MUST abort the handshake
-with an "illegal_parameter" alert.
-
-This extension MUST be the last extension in the ClientHello (this
-facilitates implementation as described below). Servers MUST check
-that it is the last extension and otherwise fail the handshake with an
-"illegal_parameter" alert.
-
-
-#### PSK Binder
-
-The PSK binder value forms a binding between a PSK
-and the current handshake, as well as between the session where the
-PSK was established (if via a NewSessionTicket message)
-and the session where it was used.
-Each entry in the binders list is computed as an HMAC over the portion
-of the ClientHello up to and including the PreSharedKeyExtension.identities
-field. That is, it includes all of the ClientHello but not the binder
-list itself. The length fields for the message (including the overall
-length, the length of the extensions block, and the length of the "pre_shared_key"
-extension) are all set as if the binder were present.
-
-The binding_value is computed in the same way as the Finished
-message ({{finished}}) but with the BaseKey being the binder_key
-(see {{key-schedule}}).
-
-If the handshake includes a HelloRetryRequest, the initial ClientHello
-and HelloRetryRequest are included in the transcript along with the
-new ClientHello.  For instance, if the client sends ClientHello1, its
-binder will be computed over:
-
-       ClientHello1[truncated]
-
-If the server responds with HelloRetryRequest, and the client then sends
-ClientHello2, its binder will be computed over:
-
-       ClientHello1 + HelloRetryRequest + ClientHello2[truncated]
-
-The full ClientHello is included in all other handshake hash computations.
-
 ### Pre-Shared Key Exchange Modes
 
 In order to use PSKs, clients MUST also send a "psk_key_exchange_modes"
@@ -2434,7 +2310,6 @@ psk_dhe_ke
 the client and servers MUST supply "key_share" values as described
 in {{key-share}}.
 {:br}
-
 
 ### Early Data Indication
 
@@ -2529,6 +2404,130 @@ application might need to construct different messages if a different
 protocol is selected. Similarly, if early data assumes anything about
 the connection state, it might be sent in error after the handshake
 completes.
+
+### Pre-Shared Key Extension
+
+The "pre_shared_key" extension is used to indicate the identity of the
+pre-shared key to be used with a given handshake in association
+with PSK key establishment.
+
+The "extension_data" field of this extension contains a
+"PreSharedKeyExtension" value:
+
+%%% Key Exchange Messages
+
+       struct {
+           opaque identity<1..2^16-1>;
+           uint32 obfuscated_ticket_age;
+       } PskIdentity;
+
+       opaque PskBinderEntry<32..255>;
+
+       struct {
+           select (Handshake.msg_type) {
+               case client_hello:
+                   PskIdentity identities<7..2^16-1>;
+                   PskBinderEntry binders<33..2^16-1>;
+
+               case server_hello:
+                   uint16 selected_identity;
+           };
+
+       } PreSharedKeyExtension;
+
+identity
+: A label for a key. For instance, a ticket defined
+  in {{ticket-establishment}}, or a label for a pre-shared key
+  established externally.
+
+obfuscated_ticket_age
+: For each ticket, the time since the client learned about the server
+  configuration that it is using, in milliseconds.  This value is
+  added modulo 2^32 to with the "ticket_age_add" value that was
+  included with the ticket, see {{NewSessionTicket}}.  This addition
+  prevents passive observers from correlating sessions unless tickets
+  are reused.  Note: because ticket lifetimes are restricted to a
+  week, 32 bits is enough to represent any plausible age, even in
+  milliseconds. For identities established externally an obfuscated_ticket_age of
+  0 SHOULD be used, and servers MUST ignore the value.
+
+identities
+: A list of the identities that the client is willing
+  to negotiate with the server. If sent alongside the "early_data"
+  extension (see {{early-data-indication}}), the first identity is the
+  one used for 0-RTT data.
+
+binders
+: A series of HMAC values, one for
+  each PSK offered in the "pre_shared_keys" extension and in the same
+  order, computed as described below.
+
+selected_identity
+: The server's chosen identity expressed as a (0-based) index into
+  the identities in the client's list.
+{: br}
+
+Each PSK is associated with a single Hash algorithm. For PSKs established
+via the ticket mechanism ({{NewSessionTicket}}), this is the Hash used for
+the KDF. For externally established PSKs, the Hash algorithm MUST be set when the
+PSK is established.
+
+Prior to accepting PSK key establishment, the server MUST validate the
+corresponding binder value (see {{psk-binder}} below). If this value is
+not present or does not validate, the server MUST abort the handshake.
+Servers SHOULD NOT attempt to validate multiple binders; rather they
+SHOULD select a single PSK and validate solely the binder that
+corresponds to that PSK. In order to accept PSK key establishment, the
+server sends a "pre_shared_key" extension indicating the selected
+identity.
+
+Clients MUST verify that the server's selected_identity is within the
+range supplied by the client, that the server selected a cipher suite
+containing a Hash associated with the PSK, and that the "key_share", and
+"signature_algorithms" extensions are consistent with the indicated
+ke_modes and auth_modes values. If these values are not consistent,
+the client MUST abort the handshake with an "illegal_parameter" alert.
+
+If the server supplies an "early_data" extension, the client MUST
+verify that the server's selected_identity is 0. If any
+other value is returned, the client MUST abort the handshake
+with an "illegal_parameter" alert.
+
+This extension MUST be the last extension in the ClientHello (this
+facilitates implementation as described below). Servers MUST check
+that it is the last extension and otherwise fail the handshake with an
+"illegal_parameter" alert.
+
+#### PSK Binder
+
+The PSK binder value forms a binding between a PSK
+and the current handshake, as well as between the session where the
+PSK was established (if via a NewSessionTicket message)
+and the session where it was used.
+Each entry in the binders list is computed as an HMAC over the portion
+of the ClientHello up to and including the PreSharedKeyExtension.identities
+field. That is, it includes all of the ClientHello but not the binder
+list itself. The length fields for the message (including the overall
+length, the length of the extensions block, and the length of the "pre_shared_key"
+extension) are all set as if the binder were present.
+
+The binding_value is computed in the same way as the Finished
+message ({{finished}}) but with the BaseKey being the binder_key
+(see {{key-schedule}}).
+
+If the handshake includes a HelloRetryRequest, the initial ClientHello
+and HelloRetryRequest are included in the transcript along with the
+new ClientHello.  For instance, if the client sends ClientHello1, its
+binder will be computed over:
+
+       ClientHello1[truncated]
+
+If the server responds with HelloRetryRequest, and the client then sends
+ClientHello2, its binder will be computed over:
+
+       ClientHello1 + HelloRetryRequest + ClientHello2[truncated]
+
+The full ClientHello is included in all other handshake hash computations.
 
 #### Processing Order
 
@@ -3394,7 +3393,8 @@ by an encrypted body, which itself contains a type and optional padding.
        } TLSCiphertext;
 
 content
-: The cleartext of TLSPlaintext.fragment.
+: The byte encoding of a handshake or an alert message, or the the raw bytes of
+the application's data to send.
 
 type
 : The content type of the record.
@@ -3855,7 +3855,7 @@ and the handshake transcript. Note that because the handshake
 transcript includes the random values in the Hello messages,
 any given handshake will have different traffic secrets, even
 if the same input secrets are used, as is the case when
-+the same PSK is used for multiple connections
+the same PSK is used for multiple connections
 
 ## Key Schedule
 
