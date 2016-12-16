@@ -2469,24 +2469,40 @@ selected_identity
 
 Each PSK is associated with a single Hash algorithm. For PSKs established
 via the ticket mechanism ({{NewSessionTicket}}), this is the Hash used for
-the KDF. For externally established PSKs, the Hash algorithm MUST be set when the
-PSK is established.
+the KDF. For externally established PSKs, the Hash algorithm MUST be
+decided during the establishment of the PSK.
 
-Prior to accepting PSK key establishment, the server MUST validate the
-corresponding binder value (see {{psk-binder}} below). If this value is
-not present or does not validate, the server MUST abort the handshake.
-Servers SHOULD NOT attempt to validate multiple binders; rather they
-SHOULD select a single PSK and validate solely the binder that
-corresponds to that PSK. In order to accept PSK key establishment, the
-server sends a "pre_shared_key" extension indicating the selected
-identity.
+In order to attempt a PSK key establishment, Clients SHOULD advertise at least one
+cipher suite containing a Hash associated with the PSK.
 
-Clients MUST verify that the server's selected_identity is within the
-range supplied by the client, that the server selected a cipher suite
-containing a Hash associated with the PSK, and that the "key_share", and
-"signature_algorithms" extensions are consistent with the indicated
-ke_modes and auth_modes values. If these values are not consistent,
-the client MUST abort the handshake with an "illegal_parameter" alert.
+In order to perform a PSK key establishment, Servers SHOULD go through these steps:
+
+1. Servers SHOULD first pick a cipher suite.
+
+2. Servers SHOULD find a PSK Identity matching the Hash of the chosen cipher suite.
+
+3. Servers MUST attempt to validate the Binder associated to the chosen Identity.
+
+If no PSK Identity matching the chosen cipher suite is found, a Server SHOULD
+process with a normal handshake and ignore any other PSK extensions.
+
+If the associated binder value (see {{psk-binder}} below) is not present or does
+not validate, the Server MUST abort the handshake. Servers SHOULD NOT attempt
+to validate multiple binders.
+
+If the binder validates, to finally accept the PSK key establishment, Servers MUST
+send a "pre_shared_key" extension indicating the selected identity.
+
+Note that this process is more involved if the Client wishes to use the early_data
+extension. Not only the Hash function should match, but the entire cipher suite as well.
+Other extensions can also define an early_data requirement to match.
+
+After receiving a Server Hello, Clients MUST verify that the server's
+selected_identity is within the range supplied by the client, that the
+server selected a cipher suite containing the Hash associated with the PSK,
+and that the "key_share", and "signature_algorithms" extensions are consistent
+with the indicated ke_modes and auth_modes values. If these values are not
+consistent, the client MUST abort the handshake with an "illegal_parameter" alert.
 
 If the server supplies an "early_data" extension, the client MUST
 verify that the server's selected_identity is 0. If any
