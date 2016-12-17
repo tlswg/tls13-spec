@@ -452,6 +452,8 @@ draft-19
 - Consolidate "ticket_early_data_info" and "early_data" into a single
   extension (*).
 
+- Change end_of_early_data to be a handshake message (*).
+
 - Remove spurious requirement to implement "pre_shared_key".
 
 - Clarify location of "early_data" from server (it goes in EE,
@@ -1082,7 +1084,7 @@ as with a 1-RTT handshake with PSK resumption.
                                                {EncryptedExtensions}
                                                           {Finished}
                                  <--------       [Application Data*]
-         (end_of_early_data)
+         (EndOfEarlyData)
          {Finished}              -------->
 
          [Application Data]      <------->        [Application Data]
@@ -1377,7 +1379,9 @@ processed and transmitted as specified by the current active session state.
            hello_request_RESERVED(0),
            client_hello(1),
            server_hello(2),
+           hello_verify_request_RESERVED(3),
            new_session_ticket(4),
+           end_of_early_data(5),
            hello_retry_request(6),
            encrypted_extensions(8),
            certificate(11),
@@ -1397,6 +1401,7 @@ processed and transmitted as specified by the current active session state.
            select (Handshake.msg_type) {
                case client_hello:          ClientHello;
                case server_hello:          ServerHello;
+               case end_of_early_data:     EndOfEarlyData;
                case hello_retry_request:   HelloRetryRequest;
                case encrypted_extensions:  EncryptedExtensions;
                case certificate_request:   CertificateRequest;
@@ -2355,9 +2360,9 @@ MUST be the first PSK listed in the client's "pre_shared_key" extension.
 as their corresponding messages sent in other flights (handshake,
 application_data, and alert respectively) but are protected under
 different keys.  After receiving the server's Finished message, if the
-server has accepted early data, an "end_of_early_data" alert of type
-"warning" MUST be sent to indicate the key change. This message will
-be encrypted with the 0-RTT traffic keys.
+server has accepted early data, an EndOfEarlyData message
+will be sent to indicate the key change. This message will be encrypted
+with the 0-RTT traffic keys.
 
 A server which receives an "early_data" extension
 can behave in one of three ways:
@@ -2544,11 +2549,11 @@ The full ClientHello is included in all other handshake hash computations.
 #### Processing Order
 
 Clients are permitted to "stream" 0-RTT data until they
-receive the server's Finished, only then sending the "end_of_early_data"
-alert. In order to avoid deadlock, when accepting "early_data",
+receive the server's Finished, only then sending the EndOfEarlyData
+message. In order to avoid deadlock, when accepting "early_data",
 servers MUST process the client's ClientHello and then immediately
 send the ServerHello, rather than waiting for the client's
-"end_of_early_data" alert.
+EndOfEarlyData message.
 
 #### Replay Properties {#replay-time}
 
@@ -3110,6 +3115,19 @@ Any records following a 1-RTT Finished message MUST be encrypted under the
 application traffic key. In particular, this includes any alerts sent by the
 server in response to client Certificate and CertificateVerify messages.
 
+## End of Early Data
+
+%%% Updating Keys
+
+       struct {} EndOfEarlyData;
+       
+The EndOfEarlyData message is sent by the client to indicate that all 0-RTT
+application_data messages have been transmitted (or none will
+be sent at all) and that the following records are protected
+under handshake traffic keys. Servers MUST NOT send this
+message and clients receiving it MUST terminate the connection
+with an "unexpected_message" alert.
+
 ## Post-Handshake Messages
 
 TLS also allows other messages to be sent after the main handshake.
@@ -3602,7 +3620,6 @@ message. Unknown alert types MUST be treated as fatal.
 
        enum {
            close_notify(0),
-           end_of_early_data(1),
            unexpected_message(10),
            bad_record_mac(20),
            decryption_failed_RESERVED(21),
@@ -3653,15 +3670,6 @@ close_notify
 : This alert notifies the recipient that the sender will not send
   any more messages on this connection. Any data received after a
   closure MUST be ignored.
-
-end_of_early_data
-: This alert is sent by the client to indicate that all 0-RTT
-  application_data messages have been transmitted (or none will
-  be sent at all) and that the following records are protected
-  under handshake traffic keys. This
-  alert MUST be at the warning level. Servers MUST NOT send this
-  alert and clients receiving it MUST terminate the connection
-  with an "unexpected_message" alert.
 
 user_canceled
 : This alert notifies the recipient that the sender is canceling the
@@ -4194,14 +4202,13 @@ and their allocation policies are below:
 
 -  TLS Alert Registry: Future values are allocated via Standards
   Action {{RFC5226}}. IANA [SHALL update/has updated] this registry
-  to include values for "end_of_early_data", "missing_extension",
-  and "certificate_required".
+  to include values for "missing_extension" and "certificate_required".
 
 -  TLS HandshakeType Registry: Future values are allocated via
   Standards Action {{RFC5226}}. IANA [SHALL update/has updated] this registry
   to rename item 4 from "NewSessionTicket" to "new_session_ticket"
   and to add the "hello_retry_request", "encrypted_extensions",
-  and "key_update" values.
+  "end_of_early_data", and "key_update" values.
 
 This document also uses a registry originally created in {{RFC4366}}. IANA has
 updated it to reference this document. The registry and its allocation policy
