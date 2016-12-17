@@ -1526,7 +1526,7 @@ Structure of this message:
            Random random;
            opaque legacy_session_id<0..32>;
            CipherSuite cipher_suites<2..2^16-2>;
-           opaque legacy_compression_methods[2] = 0x0100;
+           opaque legacy_compression_methods<1..2^8-1>;
            Extension extensions<8..2^16-1>;
        } ClientHello;
 
@@ -1580,12 +1580,11 @@ cipher_suites
   cipher suite containing a Hash associated with the PSK.
 
 legacy_compression_methods
-: Versions of TLS before 1.3 supported compression of the plaintext prior to
-  encryption, with the list of supported compression methods being sent
-  in this field.  TLS 1.3 clients MUST send a field that corresponds to the
-  "null" compression method in older versions of TLS (that is, a vector
-  containing a single zero octet: 0x0100).
-  If a TLS 1.3 ClientHello is
+: Versions of TLS before 1.3 supported compression with the list of
+  supported compression methods being sent in this field. For every TLS 1.3
+  ClientHello, this vector MUST contain exactly one byte set to
+  zero, which corresponds to the "null" compression method in
+  prior versions of TLS. If a TLS 1.3 ClientHello is
   received with any other value in this field, the server MUST
   abort the handshake with an "illegal_parameter" alert. Note that TLS 1.3
   servers might receive TLS 1.2 or prior ClientHellos which contain
@@ -1904,16 +1903,14 @@ Cookies serve two primary purposes:
 When sending a HelloRetryRequest, the server MAY provide a "cookie" extension to the
 client (this is an exception to the usual rule that the only extensions that
 may be sent are those that appear in the ClientHello). When sending the
-new ClientHello, the client MUST echo the value of the extension and SHOULD
-subsequently delete the local copy of the cookie value.
-Clients MUST NOT reuse cookie values in subsequent connections.
+new ClientHello, the client MUST echo the value of the extension.
+Clients MUST NOT use cookies in subsequent connections.
 
 
 ###  Signature Algorithms
 
 The client uses the "signature_algorithms" extension to indicate to the server
-which signature algorithms can be used in digital signatures over TLS protocol
-structures and digital signatures of X.509 certificates. Clients which
+which signature algorithms may be used in digital signatures. Clients which
 desire the server to authenticate itself via a certificate MUST send this extension.
 If a server
 is authenticating via a certificate and the client has not sent a
@@ -1997,7 +1994,7 @@ RSASSA-PSS algorithms
   digest used in the mask generation function and the digest being signed are
   both the corresponding hash algorithm as defined in {{SHS}}. When used in
   signed TLS handshake messages, the length of the salt MUST be equal to the
-  length of the digest output.  The corresponding codepoint is also
+  length of the digest output.  This codepoint is also
   defined for use with TLS 1.2.
 
 EdDSA algorithms
@@ -2227,8 +2224,8 @@ If using (EC)DHE key establishment, servers offer exactly one
 KeyShareEntry in the ServerHello. This value MUST correspond to the KeyShareEntry value offered
 by the client that the server has selected for the negotiated key exchange.
 Servers MUST NOT send a KeyShareEntry for any group not
-indicated in the "supported_groups" extension.
-Servers MUST NOT send a KeyShareEntry when using the "psk_ke" PskKeyExchangeMode.
+indicated in the "supported_groups" extension and
+MUST NOT send a KeyShareEntry when using the "psk_ke" PskKeyExchangeMode.
 If a HelloRetryRequest was received by the client, the client MUST verify that the
 selected NamedGroup matches one that the client sent in its supported_groups
 extension and MUST abort the handshake with an "illegal_parameter" alert otherwise.
@@ -2514,9 +2511,10 @@ identity.
 
 Clients MUST verify that the server's selected_identity is within the
 range supplied by the client, that the server selected a cipher suite
-containing a Hash associated with the PSK, and that the "key_share", and
-"signature_algorithms" extensions are consistent with the indicated
-ke_modes and auth_modes values. If these values are not consistent,
+containing a Hash associated with the PSK and that a server
+"key_share" extension is present if required by the
+ClientHello "psk_key_exchange_modes". If these values are not
+consistent
 the client MUST abort the handshake with an "illegal_parameter" alert.
 
 If the server supplies an "early_data" extension, the client MUST
@@ -2670,9 +2668,7 @@ certificate_request_context
   of this connection (thus preventing replay of client
   CertificateVerify messages). This field SHALL be zero length
   unless used for the post-handshake authentication exchanges
-  described in {{post-handshake-authentication}}.  This does not
-  affect the uniqueness within the connection, since there will
-  only be one CertificateRequest during the initial handshake.
+  described in {{post-handshake-authentication}}.
 
 extensions
 : An optional set of extensions describing the parameters of the
@@ -2852,7 +2848,7 @@ extensions:
 : A set of extension values for the CertificateEntry. The "Extension"
   format is defined in {{extensions}}. Valid extensions include
   OCSP Status extensions ({{!RFC6066}} and {{!RFC6961}}) and
-  SignedCertificateTimestamps ({{!RFC6962}}).  An extension MUST only be presented
+  SignedCertificateTimestamps ({{!RFC6962}}).  An extension MUST only be present
   in a Certificate message if the corresponding
   ClientHello extension was presented in the initial handshake.
   If an extension applies to the entire chain, it SHOULD be included
@@ -3218,11 +3214,8 @@ ticket_age_add
 ticket
 : The value of the ticket to be used as the PSK identity.
 The ticket itself is an opaque label. It MAY either be a database
-lookup key or a self-encrypted and self-authenticated value. It
-MUST NOT be unprotected plaintext that can be modified by the
-recipient or an attacker without being rejected when presented back
-to the server.  Section 4 of {{RFC5077}} describes a recommended
-ticket construction mechanism.
+lookup key or a self-encrypted and self-authenticated value. Section
+4 of {{RFC5077}} describes a recommended ticket construction mechanism.
 
 
 extensions
@@ -4213,8 +4206,8 @@ MUST meet the following requirements:
  * If not containing a "pre_shared_key" extension, it MUST contain both
    a "signature_algorithms" extension and a "supported_groups" extension.
  * If containing a "supported_groups" extension, it MUST also contain a
-   "key_share" extension, and vice versa. (An empty KeyShare.client_shares
-   vector is permitted.)
+   "key_share" extension, and vice versa. An empty KeyShare.client_shares
+   vector is permitted.
 
 Servers receiving a ClientHello which does not conform to these
 requirements MUST abort the handshake with a "missing_extension"
