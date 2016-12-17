@@ -449,6 +449,9 @@ draft-19
 
 - Tighten record framing requirements and require checking of them (*).
 
+- Consolidate "ticket_early_data_info" and "early_data" into a single
+  extension (*).
+
 - Remove spurious requirement to implement "pre_shared_key".
 
 - Clarify location of "early_data" from server (it goes in EE,
@@ -1753,7 +1756,6 @@ A number of TLS messages contain tag-length-value encoded extensions structures.
            supported_versions(43),
            cookie(44),
            psk_key_exchange_modes(45),
-           ticket_early_data_info(46),
            certificate_authorities(47),
            oid_filters(48),
            (65535)
@@ -2319,12 +2321,22 @@ supply an "early_data" extension as well as the "pre_shared_key"
 extension.
 
 The "extension_data" field of this extension contains an
-"EarlyDataIndication" value:
+"EarlyDataIndication" value.
 
 %%% Key Exchange Messages
 
        struct {
+           select (Handshake.msg_type) {
+               case new_session_ticket:
+                  uint32 max_early_data_size;
+
+               case client_hello:
+               case encrypted_extensions:
+                  // empty
+           };
        } EarlyDataIndication;
+
+See {{ticket-establishment}} for the use of the max_early_data_size field.
 
 For PSKs provisioned via NewSessionTicket, a server MUST validate that
 the ticket age for the selected PSK identity (computed by un-masking
@@ -3173,15 +3185,8 @@ extensions
   unrecognized extensions.
 {:br }
 
-This document defines one ticket extension, "ticket_early_data_info"
-
-%%% Ticket Establishment
-
-       struct {
-           uint32 max_early_data_size;
-       } TicketEarlyDataInfo;
-
-This extension indicates that the ticket may be used to send 0-RTT data
+The sole extension currently defined for NewSessionTicket is
+"early_data", indicating that the ticket may be used to send 0-RTT data
 ({{early-data-indication}})). It contains the following value:
 
 max_early_data_size
@@ -3190,7 +3195,6 @@ max_early_data_size
   receiving more than max_early_data_size bytes of 0-RTT data
   SHOULD terminate the connection with an "unexpected_message" alert.
 {:br }
-
 
 ### Post-Handshake Authentication
 
@@ -4254,10 +4258,9 @@ is listed below:
 | key_share [[this document]]              |         Yes | CH, SH, HRR |
 | pre_shared_key [[this document]]         |         Yes |      CH, SH |
 | psk_key_exchange_modes [[this document]] |         Yes |          CH |
-| early_data [[this document]]             |         Yes |      CH, EE |
+| early_data [[this document]]             |         Yes | CH, EE, NST |
 | cookie [[this document]]                 |         Yes |     CH, HRR |
 | supported_versions [[this document]]     |         Yes |          CH |
-| ticket_early_data_info [[this document]] |         Yes |         NST |
 | certificate_authorities [[this document]]|         Yes |      CH, CR |
 | oid_filters [[this document]]            |          No |          CR |
 
