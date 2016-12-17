@@ -2618,8 +2618,9 @@ symmetric, so the optimal tradeoff may involve an asymmetric replay window.
 ## Server Parameters
 
 The next two messages from the server, EncryptedExtensions and
-CertificateRequest, contain encrypted information from the server
-that determines the rest of the handshake.
+CertificateRequest, contain information from the server
+that determines the rest of the handshake. These messages
+are encrypted with keys derived from the server_handshake_traffic_secret.
 
 ###  Encrypted Extensions
 
@@ -2758,6 +2759,8 @@ messages are always sent as the last messages in their handshake
 flight. The Certificate and CertificateVerify messages are only
 sent under certain circumstances, as defined below. The Finished
 message is always sent as part of the Authentication block.
+These messages are encrypted under keys derived from
+[sender]_handshake_traffic_secret.
 
 The computations for the Authentication messages all uniformly
 take the following inputs:
@@ -3146,7 +3149,8 @@ application_data messages have been transmitted (or none will
 be sent at all) and that the following records are protected
 under handshake traffic keys. Servers MUST NOT send this
 message and clients receiving it MUST terminate the connection
-with an "unexpected_message" alert.
+with an "unexpected_message" alert. This message is encrypted
+under keys derived from the client_early_traffic_secret.
 
 ## Post-Handshake Messages
 
