@@ -2488,7 +2488,12 @@ selected_identity
 Each PSK is associated with a single Hash algorithm. For PSKs established
 via the ticket mechanism ({{NewSessionTicket}}), this is the Hash used for
 the KDF. For externally established PSKs, the Hash algorithm MUST be set when the
-PSK is established.
+PSK is established. The server must ensure that it selects a compatible
+PSK (if any) and cipher suites.
+
+Implementor's note: the most straightforward way to implement the
+PSK/cipher suite matching requirements is to negotiate the cipher
+suite first and then exclude any incompatible PSKs.
 
 Prior to accepting PSK key establishment, the server MUST validate the
 corresponding binder value (see {{psk-binder}} below). If this value is
