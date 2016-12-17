@@ -1041,8 +1041,8 @@ Subsequent Handshake:
 
 As the server is authenticating via a PSK, it does not send a
 Certificate or a CertificateVerify message. When a client offers resumption
-via PSK, it SHOULD also supply a "key_share" extension to the server (to provide
-forward secrecy) as well as allow the server to decline resumption and fall back
+via PSK, it SHOULD also supply a "key_share" extension to the server to
+allow the server to decline resumption and fall back
 to a full handshake, if needed. The server responds with a "pre_shared_key"
 extension to negotiate use of PSK key establishment and can (as shown here)
 to negotiate use of PSK key establishment and can (as shown here)
@@ -1894,7 +1894,7 @@ Cookies serve two primary purposes:
 
 - Allowing the server to offload state to the client, thus allowing it to send
   a HelloRetryRequest without storing any state. The server does this by
-  setting the post-ClientHello hash state as the cookie (protected
+  storing the serialized hash state in the cookie (protected
   with some suitable integrity algorithm).
 
 When sending a HelloRetryRequest, the server MAY provide a "cookie" extension to the
@@ -1911,7 +1911,7 @@ which signature algorithms may be used in digital signatures. Clients which
 desire the server to authenticate itself via a certificate MUST send this extension.
 If a server
 is authenticating via a certificate and the client has not sent a
-"signature_algorithms" extension then, the server MUST
+"signature_algorithms" extension, then the server MUST
 abort the handshake with a "missing_extension" alert
 (see {{mti-extensions}}).
 
@@ -2055,9 +2055,9 @@ CertificateAuthoritiesExtension structure.
 authorities
 : A list of the distinguished names {{X501}} of acceptable
   certificate authorities, represented in DER-encoded {{X690}} format.  These
-  distinguished names specify a desired distinguished name for a root CA,
-  subordinate CA, or trust anchor; thus, this message can be used to
-  describe known roots as well as a desired authorization space.
+  distinguished names specify a desired distinguished name for trust anchor
+  or subordinate CA; thus, this message can be used to
+  describe known trust anchors as well as a desired authorization space.
 {:br}
 
 The client MAY send the "certificate_authorities" extension in the ClientHello
@@ -3543,8 +3543,8 @@ Application Data records may contain a zero-length TLSInnerPlaintext.content if
 the sender desires.  This permits generation of plausibly-sized cover
 traffic in contexts where the presence or absence of activity may be
 sensitive.  Implementations MUST NOT send Handshake or Alert records
-that have a zero-length TLSInnerPlaintext.content, if such a message
-is recieved, the receiving implementation MUST terminate the connection
+that have a zero-length TLSInnerPlaintext.content; if such a message
+is received, the receiving implementation MUST terminate the connection
 with an "unexpected_message" alert.
 
 The padding sent is automatically verified by the record protection
@@ -4141,7 +4141,7 @@ CertificateVerify and certificates), and ecdsa_secp256r1_sha256. A
 TLS-compliant application MUST support key exchange with secp256r1
 (NIST P-256) and SHOULD support key exchange with X25519 {{RFC7748}}.
 
-##  Mandatory-to-Implement Extensions
+##  Mandatory-to-Implement Extensions {#mti-extensions}
 
 In the absence of an application profile standard specifying otherwise, a
 TLS-compliant application MUST implement the following TLS extensions:
@@ -4409,7 +4409,7 @@ unsatisfactory, {{RFC4086}} provides guidance on the generation of random values
 Implementations are responsible for verifying the integrity of certificates and
 should generally support certificate revocation messages. Certificates should
 always be verified to ensure proper signing by a trusted Certificate Authority
-(CA). The selection and addition of trusted anchors should be done very carefully.
+(CA). The selection and addition of trust anchors should be done very carefully.
 Users should be able to view information about the certificate and trust anchor.
 Applications SHOULD also enforce minimum and maximum key sizes. For example,
 certification paths containing keys or signatures weaker than 2048-bit RSA or
