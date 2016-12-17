@@ -2523,20 +2523,22 @@ that it is the last extension and otherwise fail the handshake with an
 
 #### PSK Binder
 
-The PSK binder value forms a binding between a PSK
-and the current handshake, as well as between the session where the
-PSK was established (if via a NewSessionTicket message)
-and the session where it was used.
-Each entry in the binders list is computed as an HMAC over the portion
-of the ClientHello up to and including the PreSharedKeyExtension.identities
-field. That is, it includes all of the ClientHello but not the binder
-list itself. The length fields for the message (including the overall
-length, the length of the extensions block, and the length of the "pre_shared_key"
-extension) are all set as if the binder were present.
+The PSK binder value forms a binding between a PSK and the current
+handshake, as well as between the session where the PSK was
+established (if via a NewSessionTicket message) and the session where
+it was used.  Each entry in the binders list is computed as an HMAC
+over the portion of the ClientHello (including the handshake header)
+up to and including the PreSharedKeyExtension.identities field. That
+is, it includes all of the ClientHello but not the binder list
+itself. The length fields for the message (including the overall
+length, the length of the extensions block, and the length of the
+"pre_shared_key" extension) are all set as if binders of the correct
+lengths were present.
 
 The binding_value is computed in the same way as the Finished
 message ({{finished}}) but with the BaseKey being the binder_key
-(see {{key-schedule}}).
+derived via the key schedule from the corresponding PSK which
+is being offered (see {{key-schedule}}).
 
 If the handshake includes a HelloRetryRequest, the initial ClientHello
 and HelloRetryRequest are included in the transcript along with the
@@ -3982,7 +3984,7 @@ In this diagram, the following formatting conventions apply:
                  |
                  +-----> Derive-Secret(., "resumption master secret",
                                        ClientHello...Client Finished)
-                                       = resumption_secret
+                                       = resumption_master_secret
 ~~~~
 
 The general pattern here is that the secrets shown down the left side
