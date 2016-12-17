@@ -1379,7 +1379,7 @@ processed and transmitted as specified by the current active session state.
            hello_request_RESERVED(0),
            client_hello(1),
            server_hello(2),
-           hello_retry_request_RESERVED(3),
+           hello_verify_request_RESERVED(3),
            new_session_ticket(4),
            end_of_early_data(5),
            hello_retry_request(6),
@@ -2361,7 +2361,7 @@ as their corresponding messages sent in other flights (handshake,
 application_data, and alert respectively) but are protected under
 different keys.  After receiving the server's Finished message, if the
 server has accepted early data, an EndOfEarlyData message
-will be sent to indicate key change. This message will be encrypted
+will be sent to indicate the key change. This message will be encrypted
 with the 0-RTT traffic keys.
 
 A server which receives an "early_data" extension
@@ -2550,7 +2550,7 @@ The full ClientHello is included in all other handshake hash computations.
 
 Clients are permitted to "stream" 0-RTT data until they
 receive the server's Finished, only then sending the EndOfEarlyData
-message In order to avoid deadlock, when accepting "early_data",
+message. In order to avoid deadlock, when accepting "early_data",
 servers MUST process the client's ClientHello and then immediately
 send the ServerHello, rather than waiting for the client's
 EndOfEarlyData message.
