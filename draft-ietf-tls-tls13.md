@@ -4375,6 +4375,109 @@ currently deployed and properly configured TLS implementations.
 %%### Ticket Establishment
 %%### Updating Keys
 
+# State Machine
+
+This section provides a summary of the legal state transitions for the
+client and server handshakes. State names have no formal meaning but
+are provided in all capitals (e.g., START) for ease of comprehension.
+Messages which are sent only sometimes are indicated in [].
+
+## Client
+
+~~~~
+                +-----> START
+           Recv |        |
+            HRR |        | Send CH
+                |        v
+       +->      +---- WAIT_SH            
+       |                 |                 
+       |                 | Recv SH         
+       |                 |                 
+       |                 V                 
+       |              WAIT_EE            
+       |                 |                 
+       |                 | Recv EE         
+       |                 |                 
+       |          +------+------+          
+       |          |             |              
+       |   SH+PSK |             | SH
+       |          |             v
+       |          |         WAIT_CERT_CR
+   Can |          |          |       |
+  Send |          |          |       |
+ Early |          |     Recv |       | Recv CR
+  Data |          |     Cert |       |
+  Here |          |          |       v
+       |          |          |    WAIT_CERT
+       |          |          |       |
+       |          |          |       | Recv Cert
+       |          |          v       v
+       |          |           WAIT_CV
+       |          |              |
+       |          |              | Recv CV
+       |          |              v
+       |          +-------> WAIT_FINISHED
+       |                         |
+       |                         | Recv Finished
+       |                         |
+       |                         v
+       +->                  [Send EOED]
+                            [Send Cert + CV]
+                            Send Finished
+                                 |
+                                 v
+                             CONNECTED
+~~~~
+
+## Server
+
+~~~~
+         +-----> START
+ Recv CH |      |  |
+ Send HRR|      |  | Recv CH
+         +------+  |
+                   v
+                NEGOTIATED
+                   |
+                   | Send SH
+                   | Send EE
+                   | [Send Cert + CV]
+                   | Send Finished
+                   |
+           +-------+-------+
+           |               |
+ No 0-RTT  |               | 0-RTT
+           |               |
+           |               v
+           |           WAIT_EOED <---+
+           |      Recv |       |     | Recv
+           |      EOED |       |     | App Data
+           |           |       +-----+
+           |           v
+           +------> WAIT_2FLT
+                       |
+               +-------+-------+        
+               |               | Client
+               |               | Auth
+               |               v
+               |           WAIT_CERT
+               |           |       |
+            No |     Recv  |       | Recv
+        Client |     Empty |       | Cert
+          Auth |     Cert  |       v
+               |           |    WAIT_CV
+               |           |       |
+               |           |       | Recv
+               |           |       | CV
+               |           v       v
+               +------->  WAIT_FINISHED
+                           |
+                           | Recv Finished
+                           |
+                           v
+                       CONNECTED
+~~~~
+
 ## Cipher Suites
 
 A symmetric cipher suite defines the pair of the AEAD algorithm and hash
