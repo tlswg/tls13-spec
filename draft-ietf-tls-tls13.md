@@ -3908,7 +3908,8 @@ etc.  The initial secret is simply a string of zeroes as long as the size
 of the Hash that is the basis for the HKDF. Concretely, for the
 present version of TLS 1.3, secrets are added in the following order:
 
-- PSK
+- PSK (a pre-shared key established externally or a resumption master
+  secret from a previous connection)
 - (EC)DHE shared secret
 
 This produces a full key derivation schedule shown in the diagram below.
