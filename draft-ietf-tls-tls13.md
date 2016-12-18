@@ -5039,6 +5039,10 @@ Archives of the list can be found at:
   Independent \\
   ilariliusvaara@welho.com
 
+* Carl Mehner \\
+  USAA \\
+  carl.mehner@usaa.com
+
 * Jan Mikkelsen \\
   Transactionware \\
   janm@transactionware.com
