@@ -892,12 +892,12 @@ The server then sends two messages to establish the Server Parameters:
 EncryptedExtensions:
 : responses to any extensions that are not required to
   determine the cryptographic parameters, other than those
-  that are specific to individual certificates. See {{encrypted-extensions}}.
+  that are specific to individual certificates. \[{{encrypted-extensions}}]
 
 CertificateRequest:
 : if certificate-based client authentication is desired, the
   desired parameters for that certificate. This message is
-  omitted if client authentication is not desired. See {{certificate-request}}.
+  omitted if client authentication is not desired. \[{{certificate-request}}]
 
 Finally, the client and server exchange Authentication messages. TLS
 uses the same set of messages every time that authentication is needed.
@@ -912,19 +912,19 @@ Certificate:
   public keys {{RFC7250}} or the cached information extension
   {{?RFC7924}} are in use, then this message will not
   contain a certificate but rather some other value corresponding to
-  the server's long-term key.  See {{certificate}}.
+  the server's long-term key.  \[{{certificate}}]
 
 CertificateVerify:
 : a signature over the entire handshake using the private key
   corresponding to the public key in the Certificate message. This
   message is omitted if the endpoint is not authenticating via a
-  certificate. See {{certificate-verify}}.
+  certificate. \[{{certificate-verify}}]
 
 Finished:
 : a MAC (Message Authentication Code) over the entire handshake.
   This message provides key confirmation, binds the endpoint's identity
   to the exchanged keys, and in PSK mode
-  also authenticates the handshake. See {{finished}}.
+  also authenticates the handshake. \[{{finished}}]
 {:br }
 
 Upon receiving the server's messages, the client responds with its Authentication
