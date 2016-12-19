@@ -4150,23 +4150,25 @@ For X25519 and X448, see {{RFC7748}}.
 
 {{!RFC5705}} defines keying material exporters for TLS in terms of the TLS
 pseudorandom function (PRF). This document replaces the PRF with HKDF, thus
-requiring a new construction. The exporter interface remains the same. If
-context is provided, the value is computed as:
+requiring a new construction. The exporter interface remains the same.
+
+The exporter value is computed as:
 
     HKDF-Expand-Label(Secret, label, Hash(context_value), key_length)
 
 Where Secret is either the early_exporter_secret or the exporter_secret.
-Implementations MUST use the exporter_secret unless explicitly specified
-by the application. When adding TLS 1.3 to TLS 1.2 stacks, the exporter_secret
-MUST be for the existing exporter interface.
+Implementations MUST use the exporter_secret unless explicitly specified by the
+application.  A separate interface for the early exporter is RECOMMENDED,
+especially on a server where a single interface can make the early exporter
+inaccessible.
 
-If no context is provided, the value is computed as above but with a
-zero-length context_value. Note that providing no context computes the
-same value as providing an empty context. As of this document's
-publication, no allocated exporter label is used with both
-modes. Future specifications MUST NOT provide an empty context and no
-context with the same label and SHOULD provide a context, possibly
-empty, in all exporter computations.
+If no context is provided, the context_value is zero-length. Consequently,
+providing no context computes the same value as providing an empty context. As
+of this document's publication, no allocated exporter label is used both with
+and without a context. Future specifications MUST NOT define a use of exporters
+that permit both an empty context and no context with the same label. New uses
+of exporters SHOULD provide a context in all exporter computations, though the
+value could be empty.
 
 
 #  Compliance Requirements
