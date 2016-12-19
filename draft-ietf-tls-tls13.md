@@ -3143,7 +3143,7 @@ server in response to client Certificate and CertificateVerify messages.
 %%% Updating Keys
 
        struct {} EndOfEarlyData;
-       
+
 The EndOfEarlyData message is sent by the client to indicate that all 0-RTT
 application_data messages have been transmitted (or none will
 be sent at all) and that the following records are protected
@@ -4148,10 +4148,10 @@ For X25519 and X448, see {{RFC7748}}.
 
 ### Exporters
 
-{{!RFC5705}} defines keying material exporters for TLS in terms of
-the TLS PRF. This document replaces the PRF with HKDF, thus requiring
-a new construction. The exporter interface remains the same. If context is
-provided, the value is computed as:
+{{!RFC5705}} defines keying material exporters for TLS in terms of the TLS
+pseudorandom function (PRF). This document replaces the PRF with HKDF, thus
+requiring a new construction. The exporter interface remains the same. If
+context is provided, the value is computed as:
 
     HKDF-Expand-Label(Secret, label, Hash(context_value), key_length)
 
