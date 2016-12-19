@@ -4400,8 +4400,7 @@ Using PSK |                 | Using Certificate
           |                 v
           |            WAIT_CERT_CR
           |        Recv |       | Recv CertificateRequest
-          | Certificate |       |
-          |             |       v
+          | Certificate |       v
           |             |    WAIT_CERT
           |             |       | Recv Certificate
           |             v       v
@@ -4441,7 +4440,6 @@ Using PSK |                 | Using Certificate
           |        Recv |       |     | Recv
           |        EOED |       |     | Application Data
           |             |       +-----+
-          |             |
           +> WAIT_FLT2 <+
                    |   
           +--------+--------+
@@ -4450,9 +4448,8 @@ Using PSK |                 | Using Certificate
           |                 v
           |             WAIT_CERT
        No |        Recv |       | Recv Certificate
-   Client |       Empty |       | 
-     Auth |  Certificate|       v
-          |             |    WAIT_CV
+     Auth |       Empty |       v
+          | Certificate |    WAIT_CV
           |             |       | Recv
           |             |       | CertificateVerify
           +-> WAIT_FINISHED <---+
