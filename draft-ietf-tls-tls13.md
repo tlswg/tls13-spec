@@ -4456,9 +4456,7 @@ Using PSK |                 | Using Certificate
           |             |       | Recv
           |             |       | CertificateVerify
           +-> WAIT_FINISHED <---+
-                   |
                    | Recv Finished
-                   |
                    v
                CONNECTED
 ~~~~
