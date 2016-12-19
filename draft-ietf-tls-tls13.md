@@ -4163,12 +4163,13 @@ especially on a server where a single interface can make the early exporter
 inaccessible.
 
 If no context is provided, the context_value is zero-length. Consequently,
-providing no context computes the same value as providing an empty context. As
-of this document's publication, no allocated exporter label is used both with
-and without a context. Future specifications MUST NOT define a use of exporters
-that permit both an empty context and no context with the same label. New uses
-of exporters SHOULD provide a context in all exporter computations, though the
-value could be empty.
+providing no context computes the same value as providing an empty context. This
+is a change from previous versions of TLS where an empty context produced a
+different output to an absent context. As of this document's publication, no
+allocated exporter label is used both with and without a context. Future
+specifications MUST NOT define a use of exporters that permit both an empty
+context and no context with the same label. New uses of exporters SHOULD provide
+a context in all exporter computations, though the value could be empty.
 
 
 #  Compliance Requirements
