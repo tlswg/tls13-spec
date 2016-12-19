@@ -5115,6 +5115,10 @@ Archives of the list can be found at:
   Ecole Normale Superieure, Paris \\
   hoeteck@alum.mit.edu
 
+* David Wong \\
+  NCC Group \\
+  david.wong@nccgroup.trust
+
 * Tim Wright \\
   Vodafone \\
   timothy.wright@vodafone.com
