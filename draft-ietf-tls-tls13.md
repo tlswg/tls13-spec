@@ -340,6 +340,16 @@ informative:
          ins: Florian Weimer
          org: Red Hat Product Security
        date: 2015-09
+  REKEY:
+      title: "Increasing the Lifetime of a Key: A Comparative Analysis of the Security of Re-keying Techniques"
+      author:
+      -
+        ins: M. Abdalla
+      -
+        ins: M. Bellare
+      seriesinfo: ASIACRYPT2000
+      date: 2000-10
+
 --- abstract
 
 This document specifies version 1.3 of the Transport Layer Security
@@ -3143,7 +3153,7 @@ server in response to client Certificate and CertificateVerify messages.
 %%% Updating Keys
 
        struct {} EndOfEarlyData;
-       
+
 The EndOfEarlyData message is sent by the client to indicate that all 0-RTT
 application_data messages have been transmitted (or none will
 be sent at all) and that the following records are protected
@@ -4890,13 +4900,18 @@ process a record). In general, it is not known how to remove this
 type of channel because even a constant time padding removal
 function will then feed the content into data-dependent functions.
 
-Generation N+1 keys are derived from generation N keys via a key
-derivation function {{updating-traffic-keys}}. As long as this function is truly one way, it
-is not possible to compute the previous keys after a key change
-(forward secrecy). However, TLS does not provide security for
-data which is sent after the traffic secret is compromised,
-even after a key update (backward secrecy); systems which want backward secrecy must do
-a fresh handshake and establish a new session key with an (EC)DHE
+The re-keying technique in TLS 1.3 (see {{updating-traffic-keys}}) follows the
+construction of the serial generator in [REKEY], which shows that re-keying can
+allow keys to be used for a larger number of encryptions than without
+re-keying. This relies on the security of the HKDF-Expand-Label function as a
+pseudorandom function (PRF).  In addition, as long as this function is truly
+one way, it is not possible to compute traffic keys from prior to a key change
+(forward secrecy).
+
+TLS does not provide security for data which is sent after a traffic secret is
+compromised (backward secrecy). Compromise of a traffic secret also compromises
+future confidentiality and integrity.  Systems which want backward secrecy need
+to do a fresh handshake and establish a new session key with an (EC)DHE
 exchange.
 
 The reader should refer to the following references for analysis of the
