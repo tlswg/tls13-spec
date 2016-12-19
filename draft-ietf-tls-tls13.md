@@ -4089,8 +4089,8 @@ The traffic keying material is generated from the following input values:
 The traffic keying material is generated from an input traffic secret value using:
 
 ~~~~
-    \[sender]_write_key = HKDF-Expand-Label(Secret, "key", "", key_length)
-    \[sender]_write_iv = HKDF-Expand-Label(Secret, "iv", "", iv_length)
+    [sender]_write_key = HKDF-Expand-Label(Secret, "key", "", key_length)
+    [sender]_write_iv = HKDF-Expand-Label(Secret, "iv", "", iv_length)
 ~~~~
 
 \[sender] denotes the sending side. The Secret value for each record type
