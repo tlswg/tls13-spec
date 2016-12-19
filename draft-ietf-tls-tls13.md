@@ -4980,6 +4980,10 @@ Archives of the list can be found at:
 * David M. Garrett \\
   dave@nulldereference.com
 
+* Alessandro Ghedini \\
+  Cloudflare Inc. \\
+  alessandro@cloudflare.com
+
 * Vipul Gupta (co-author of [RFC4492]) \\
   Sun Microsystems Laboratories \\
   vipul.gupta@sun.com
@@ -4995,7 +4999,6 @@ Archives of the list can be found at:
 * David Hopwood \\
   Independent Consultant \\
   david.hopwood@blueyonder.co.uk
-
 
 * Subodh Iyengar \\
   Facebook \\
@@ -5126,7 +5129,3 @@ Archives of the list can be found at:
 * Kazu Yamamoto \\
   Internet Initiative Japan Inc. \\
   kazu@iij.ad.jp
-
-* Alessandro Ghedini \\
-  Cloudflare Inc. \\
-  alessandro@cloudflare.com
