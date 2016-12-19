@@ -284,7 +284,7 @@ informative:
        -
          ins: M. Wiener
        seriesinfo: Designs, Codes and Cryptography
-       data: 1992
+       date: 1992
   SIGMA:
        title: "SIGMA: the 'SIGn-and-MAc' approach to authenticated Diffie-Hellman and its use in the IKE protocols"
        author:
@@ -875,8 +875,8 @@ potentially some other extensions.
 
 The server processes the ClientHello and determines the appropriate
 cryptographic parameters for the connection. It then responds with its
-own ServerHello, which indicates the negotiated connection
-parameters. [{{server-hello}}]. The combination of the ClientHello
+own ServerHello ({{server-hello}}), which indicates the negotiated connection
+parameters. The combination of the ClientHello
 and the ServerHello determines the shared keys. If (EC)DHE
 key establishment is in use, then the ServerHello
 contains a "key_share" extension with the server's ephemeral
@@ -892,12 +892,12 @@ The server then sends two messages to establish the Server Parameters:
 EncryptedExtensions:
 : responses to any extensions that are not required to
   determine the cryptographic parameters, other than those
-  that are specific to individual certificates. [{{encrypted-extensions}}]
+  that are specific to individual certificates. \[{{encrypted-extensions}}]
 
 CertificateRequest:
 : if certificate-based client authentication is desired, the
   desired parameters for that certificate. This message is
-  omitted if client authentication is not desired. [{{certificate-request}}]
+  omitted if client authentication is not desired. \[{{certificate-request}}]
 
 Finally, the client and server exchange Authentication messages. TLS
 uses the same set of messages every time that authentication is needed.
@@ -912,19 +912,19 @@ Certificate:
   public keys {{RFC7250}} or the cached information extension
   {{?RFC7924}} are in use, then this message will not
   contain a certificate but rather some other value corresponding to
-  the server's long-term key.  [{{certificate}}]
+  the server's long-term key.  \[{{certificate}}]
 
 CertificateVerify:
 : a signature over the entire handshake using the private key
   corresponding to the public key in the Certificate message. This
   message is omitted if the endpoint is not authenticating via a
-  certificate. [{{certificate-verify}}]
+  certificate. \[{{certificate-verify}}]
 
 Finished:
 : a MAC (Message Authentication Code) over the entire handshake.
   This message provides key confirmation, binds the endpoint's identity
   to the exchanged keys, and in PSK mode
-  also authenticates the handshake. [{{finished}}]
+  also authenticates the handshake. \[{{finished}}]
 {:br }
 
 Upon receiving the server's messages, the client responds with its Authentication
@@ -1614,7 +1614,7 @@ If not, then it MUST abort the handshake with a "decode_error" alert.
 After sending the ClientHello message, the client waits for a ServerHello
 or HelloRetryRequest message.
 
-###  Server Hello
+### Server Hello {#server-hello}
 
 The server will send this message in response to a ClientHello message when
 it was able to find an acceptable set of algorithms and the client's
@@ -2760,7 +2760,7 @@ flight. The Certificate and CertificateVerify messages are only
 sent under certain circumstances, as defined below. The Finished
 message is always sent as part of the Authentication block.
 These messages are encrypted under keys derived from
-[sender]_handshake_traffic_secret.
+\[sender]_handshake_traffic_secret.
 
 The computations for the Authentication messages all uniformly
 take the following inputs:
@@ -2852,7 +2852,7 @@ certificate_list
 extensions:
 : A set of extension values for the CertificateEntry. The "Extension"
   format is defined in {{extensions}}. Valid extensions include
-  OCSP Status extensions ({{!RFC6066}} and {{!RFC6961}}) and
+  OCSP Status extensions ({{RFC6066}} and {{!RFC6961}}) and
   SignedCertificateTimestamps ({{!RFC6962}}).  An extension MUST only be present
   in a Certificate message if the corresponding
   ClientHello extension was presented in the initial handshake.
@@ -2876,7 +2876,7 @@ request.
 
 #### OCSP Status and SCT Extensions
 
-{{!RFC6066}} and {{!RFC6961}} provide extensions to negotiate the server
+{{RFC6066}} and {{!RFC6961}} provide extensions to negotiate the server
 sending OCSP responses to the client. In TLS 1.2 and below, the
 server replies with an empty extension to indicate negotiation of this
 extension and the OCSP information is carried in a CertificateStatus
@@ -3857,7 +3857,7 @@ internal_error
 
 inappropriate_fallback
 : Sent by a server in response to an invalid connection retry attempt
-  from a client. (see [RFC7507])
+  from a client {{!RFC7507}}.
 
 missing_extension
 : Sent by endpoints that receive a hello message not containing an
@@ -3873,22 +3873,22 @@ unsupported_extension
 certificate_unobtainable
 : Sent by servers when unable to obtain a certificate from a URL
   provided by the client via the "client_certificate_url" extension
-  [RFC6066].
+  {{RFC6066}}.
 
 unrecognized_name
 : Sent by servers when no server exists identified by the name
   provided by the client via the "server_name" extension
-  [RFC6066].
+  {{RFC6066}}.
 
 bad_certificate_status_response
 : Sent by clients when an invalid or unacceptable OCSP response is
   provided by the server via the "status_request" extension
-  [RFC6066].
+  {{RFC6066}}.
 
 bad_certificate_hash_value
 : Sent by servers when a retrieved object does not have the correct hash
   provided by the client via the "client_certificate_url" extension
-  [RFC6066].
+  {{RFC6066}}.
 
 unknown_psk_identity
 : Sent by servers when PSK key establishment is desired but no
@@ -4093,14 +4093,14 @@ The traffic keying material is generated from an input traffic secret value usin
     [sender]_write_iv = HKDF-Expand-Label(Secret, "iv", "", iv_length)
 ~~~~
 
-[sender] denotes the sending side. The Secret value for each record type
+\[sender] denotes the sending side. The Secret value for each record type
 is shown in the table below.
 
 | Record Type | Secret |
 |:------------|--------|
 | 0-RTT Application | client_early_traffic_secret |
-| Handshake         | [sender]_handshake_traffic_secret |
-| Application Data  | [sender]_traffic_secret_N |
+| Handshake         | \[sender]_handshake_traffic_secret |
+| Application Data  | \[sender]_traffic_secret_N |
 
 All the traffic keying material is recomputed whenever the
 underlying Secret changes (e.g., when changing from the handshake to
@@ -4244,21 +4244,21 @@ and their allocation policies are below:
   Values with the first byte 255 (decimal) are reserved for Private
   Use {{RFC5226}}.
 
-  IANA [SHALL add/has added] the cipher suites listed in {{cipher-suites}} to
+  IANA \[SHALL add/has added] the cipher suites listed in {{cipher-suites}} to
   the registry. The "Value" and "Description" columns are taken from the table.
   The "DTLS-OK" and "Recommended" columns are both marked as "Yes" for each new
-  cipher suite. [[This assumes {{?I-D.sandj-tls-iana-registry-updates}} has been
+  cipher suite. \[\[This assumes {{?I-D.sandj-tls-iana-registry-updates}} has been
   applied.]]
 
 -  TLS ContentType Registry: Future values are allocated via
   Standards Action {{RFC5226}}.
 
 -  TLS Alert Registry: Future values are allocated via Standards
-  Action {{RFC5226}}. IANA [SHALL update/has updated] this registry
+  Action {{RFC5226}}. IANA \[SHALL update/has updated] this registry
   to include values for "missing_extension" and "certificate_required".
 
 -  TLS HandshakeType Registry: Future values are allocated via
-  Standards Action {{RFC5226}}. IANA [SHALL update/has updated] this registry
+  Standards Action {{RFC5226}}. IANA \[SHALL update/has updated] this registry
   to rename item 4 from "NewSessionTicket" to "new_session_ticket"
   and to add the "hello_retry_request", "encrypted_extensions",
   "end_of_early_data", and "key_update" values.
@@ -4270,21 +4270,21 @@ is listed below:
 - TLS ExtensionType Registry: Values with the first byte in the range
    0-254 (decimal) are assigned via Specification Required {{RFC5226}}.
    Values with the first byte 255 (decimal) are reserved for Private
-   Use {{RFC5226}}. IANA [SHALL update/has updated]
+   Use {{RFC5226}}. IANA \[SHALL update/has updated]
    this registry to include the "key_share", "pre_shared_key", and
    "early_data" extensions as defined in this document.
 
-   IANA [shall update/has updated] this registry to add a
-   "Recommended" column. IANA [shall/has] initially populated this
+   IANA \[shall update/has updated] this registry to add a
+   "Recommended" column. IANA \[shall/has] initially populated this
    column with the values in the table below. This table has been generated
    by marking Standards Track RFCs as "Yes" and all others as
    "No".
 
-   IANA [shall update/has updated] this registry to include a "TLS
+   IANA \[shall update/has updated] this registry to include a "TLS
    1.3" column which lists the messages in which the extension may
    appear using the following notation: CH (ClientHello), SH (ServerHello),
    EE (EncryptedExtensions), CT (Certificate), CR (CertificateRequest), NST (NewSessionTicket)
-   and HRR (HelloRetryRequest). This column [shall be/has been]
+   and HRR (HelloRetryRequest). This column \[shall be/has been]
    initially populated with the values in this document.
 
 | Extension                                | Recommended |   TLS 1.3   |
@@ -4315,16 +4315,16 @@ is listed below:
 | extended_master_secret [RFC7627]         |         Yes |           - |
 | SessionTicket TLS [RFC4507]              |         Yes |           - |
 | renegotiation_info [RFC5746]             |         Yes |           - |
-| key_share [[this document]]              |         Yes | CH, SH, HRR |
-| pre_shared_key [[this document]]         |         Yes |      CH, SH |
-| psk_key_exchange_modes [[this document]] |         Yes |          CH |
-| early_data [[this document]]             |         Yes | CH, EE, NST |
-| cookie [[this document]]                 |         Yes |     CH, HRR |
-| supported_versions [[this document]]     |         Yes |          CH |
-| certificate_authorities [[this document]]|         Yes |      CH, CR |
-| oid_filters [[this document]]            |          No |          CR |
+| key_share \[\[this document]]            |         Yes | CH, SH, HRR |
+| pre_shared_key \[\[this document]]       |         Yes |      CH, SH |
+| psk_key_exchange_modes \[\[this document]] |       Yes |          CH |
+| early_data \[\[this document]]           |         Yes | CH, EE, NST |
+| cookie \[\[this document]]               |         Yes |     CH, HRR |
+| supported_versions \[\[this document]]   |         Yes |          CH |
+| certificate_authorities \[\[this document]]|       Yes |      CH, CR |
+| oid_filters \[\[this document]]          |          No |          CR |
 
-IANA [SHALL update/has updated] this registry to include the values listed above
+IANA \[SHALL update/has updated] this registry to include the values listed above
 that correspond to this document.
 
 In addition, this document defines a new registry to be maintained
@@ -4337,14 +4337,14 @@ by IANA:
   second byte in the range 0-3 that are not currently allocated are reserved for
   backwards compatibility.
   This registry SHALL have a "Recommended" column.
-  The registry [shall be/ has been] initially populated with the values described in
+  The registry \[shall be/ has been] initially populated with the values described in
   {{signature-algorithms}}. The following values SHALL be marked as
   "Recommended": ecdsa_secp256r1_sha256, ecdsa_secp384r1_sha384,
   rsa_pss_sha256, rsa_pss_sha384, rsa_pss_sha512, ed25519.
 
 Finally, this document obsoletes the TLS HashAlgorithm Registry and the TLS
 SignatureAlgorithm Registry, both originally created in {{RFC5246}}.  IANA
-[SHALL update/has updated] the TLS HashAlgorithm Registry to list values 7-223 as
+\[SHALL update/has updated] the TLS HashAlgorithm Registry to list values 7-223 as
 "Reserved" and the TLS SignatureAlgorithm Registry to list values 4-223 as
 "Reserved".
 
@@ -4555,7 +4555,7 @@ Either technique used alone is vulnerable to man-in-the-middle attacks
 and therefore unsafe for general use. However, it is also possible to
 bind such connections to an external authentication mechanism via
 out-of-band validation of the server's public key, trust on first
-use, or channel bindings {{RFC5929}}. [[NOTE: TLS 1.3 needs a new
+use, or channel bindings {{RFC5929}}. \[\[NOTE: TLS 1.3 needs a new
 channel binding definition that has not yet been defined.]]
 If no such mechanism is used, then the connection has no protection
 against active man-in-the-middle attack; applications MUST NOT use TLS
@@ -4592,7 +4592,7 @@ deployments, all implementations SHOULD support validation of certification path
 based on the expectations in this document, even when handling prior TLS versions'
 handshakes. (see {{server-certificate-selection}})
 
-TLS 1.2 and prior supported an "Extended Master Secret" {{?RFC7627}} extension
+TLS 1.2 and prior supported an "Extended Master Secret" {{RFC7627}} extension
 which digested large parts of the handshake transcript into the master secret.
 Because TLS 1.3 always hashes in the transcript up to the server CertificateVerify,
 implementations which support both TLS 1.3 and earlier versions SHOULD
@@ -4900,7 +4900,7 @@ a fresh handshake and establish a new session key with an (EC)DHE
 exchange.
 
 The reader should refer to the following references for analysis of the
-TLS record layer. [TODO]
+TLS record layer. \[TODO]
 
 # Working Group Information
 
