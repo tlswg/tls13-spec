@@ -1796,10 +1796,39 @@ with the exception of the "cookie" extension in HelloRetryRequest.
 Upon receiving such an extension, an endpoint MUST abort the handshake with an
 "unsupported_extension" alert.
 
-The table in {{iana-considerations}}
-indicates where a given extension may appear. If the client receives
-an extension which is not specified for a given message it MUST
-abort the handshake with an "illegal_parameter" alert.
+The table below indicates the messages where a given extension may
+appear, using the following notation: CH (ClientHello), SH
+(ServerHello), EE (EncryptedExtensions), CT (Certificate), CR
+(CertificateRequest), NST (NewSessionTicket) and HRR
+(HelloRetryRequest). If an implementation receives an extension which
+it recognizes and which is not specified for the message in which it
+appears it MUST abort the handshake with an "illegal_parameter" alert.
+
+| Extension                                |   TLS 1.3   |
+|:-----------------------------------------|------------:|
+| server_name [RFC6066]                    |      CH, EE |
+| max_fragment_length [RFC6066]            |      CH, EE |
+| client_certificate_url [RFC6066]         |      CH, EE |
+| status_request [RFC6066]                 |      CH, CT |
+| user_mapping [RFC4681]                   |      CH, EE |
+| cert_type [RFC6091]                      |      CH, EE |
+| supported_groups [RFC7919]               |      CH, EE |
+| signature_algorithms [RFC5246]           |      CH, CR |
+| use_srtp [RFC5764]                       |      CH, EE |
+| heartbeat [RFC6520]                      |      CH, EE |
+| application_layer_protocol_negotiation [RFC7301]|      CH, EE |
+| signed_certificate_timestamp [RFC6962]   |  CH, CR, CT |
+| client_certificate_type [RFC7250]        |      CH, EE |
+| server_certificate_type [RFC7250]        |      CH, CT |
+| padding [RFC7685]                        |          CH |
+| key_share \[\[this document]]            | CH, SH, HRR |
+| pre_shared_key \[\[this document]]       |      CH, SH |
+| psk_key_exchange_modes \[\[this document]]|          CH |
+| early_data \[\[this document]]           | CH, EE, NST |
+| cookie \[\[this document]]               |     CH, HRR |
+| supported_versions \[\[this document]]   |          CH |
+| certificate_authorities \[\[this document]]|      CH, CR |
+| oid_filters \[\[this document]]          |          CR |
 
 When multiple extensions of different types are present, the
 extensions MAY appear in any order, with the exception of
@@ -4275,50 +4304,10 @@ is listed below:
 
 -  IANA \[SHALL update/has updated] this registry to include a "TLS
    1.3" column which lists the messages in which the extension may
-   appear using the following notation: CH (ClientHello), SH (ServerHello),
-   EE (EncryptedExtensions), CT (Certificate), CR (CertificateRequest), NST (NewSessionTicket)
-   and HRR (HelloRetryRequest). This column \[SHALL be/has been]
-   initially populated with the values in this document.
-
-| Extension                                |   TLS 1.3   |
-|:-----------------------------------------|------------:|
-| server_name [RFC6066]                    |      CH, EE |
-| max_fragment_length [RFC6066]            |      CH, EE |
-| client_certificate_url [RFC6066]         |      CH, EE |
-| trusted_ca_keys [RFC6066]                |           - |
-| truncated_hmac [RFC6066]                 |           - |
-| status_request [RFC6066]                 |      CH, CT |
-| user_mapping [RFC4681]                   |      CH, EE |
-| client_authz [RFC5878]                   |           - |
-| server_authz [RFC5878]                   |           - |
-| cert_type [RFC6091]                      |      CH, EE |
-| supported_groups [RFC7919]               |      CH, EE |
-| ec_point_formats [RFC4492]               |           - |
-| srp [RFC5054]                            |           - |
-| signature_algorithms [RFC5246]           |      CH, CR |
-| use_srtp [RFC5764]                       |      CH, EE |
-| heartbeat [RFC6520]                      |      CH, EE |
-| application_layer_protocol_negotiation [RFC7301]|      CH, EE |
-| status_request_v2 [RFC6961]              |           - |
-| signed_certificate_timestamp [RFC6962]   |  CH, CR, CT |
-| client_certificate_type [RFC7250]        |      CH, EE |
-| server_certificate_type [RFC7250]        |      CH, CT |
-| padding [RFC7685]                        |          CH |
-| encrypt_then_mac [RFC7366]               |           - |
-| extended_master_secret [RFC7627]         |           - |
-| SessionTicket TLS [RFC4507]              |           - |
-| renegotiation_info [RFC5746]             |           - |
-| key_share \[\[this document]]            | CH, SH, HRR |
-| pre_shared_key \[\[this document]]       |      CH, SH |
-| psk_key_exchange_modes \[\[this document]]          CH |
-| early_data \[\[this document]]           | CH, EE, NST |
-| cookie \[\[this document]]               |     CH, HRR |
-| supported_versions \[\[this document]]   |          CH |
-| certificate_authorities \[\[this document]]|      CH, CR |
-| oid_filters \[\[this document]]          |          CR |
-
-IANA \[SHALL update/has updated] this registry to include the values listed above
-that correspond to this document.
+   appear This column \[SHALL be/has been]
+   initially populated from the table in {{extensions}}
+   with any extension not listed there marked as "-" to indicate that
+   it is not used by TLS 1.3.
 
 In addition, this document defines a new registry to be maintained
 by IANA:
