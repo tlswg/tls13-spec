@@ -4267,62 +4267,55 @@ This document also uses a registry originally created in {{RFC4366}}. IANA has
 updated it to reference this document. The registry and its allocation policy
 is listed below:
 
-- TLS ExtensionType Registry: Values with the first byte in the range
-   0-254 (decimal) are assigned via Specification Required {{RFC5226}}.
-   Values with the first byte 255 (decimal) are reserved for Private
-   Use {{RFC5226}}. IANA \[SHALL update/has updated]
-   this registry to include the "key_share", "pre_shared_key", and
-   "early_data" extensions as defined in this document.
+-  IANA \[SHALL update/has updated] this registry to include the
+   "key_share", "pre_shared_key", "psk_key_exchange_modes",
+   "early_data", "cookie", "supported_versions",
+   "certificate_authorities", and "oid_filters" extensions with the
+   values defined in this document and the Recommended value of "Yes".
 
-   IANA \[shall update/has updated] this registry to add a
-   "Recommended" column. IANA \[shall/has] initially populated this
-   column with the values in the table below. This table has been generated
-   by marking Standards Track RFCs as "Yes" and all others as
-   "No".
-
-   IANA \[shall update/has updated] this registry to include a "TLS
+-  IANA \[SHALL update/has updated] this registry to include a "TLS
    1.3" column which lists the messages in which the extension may
    appear using the following notation: CH (ClientHello), SH (ServerHello),
    EE (EncryptedExtensions), CT (Certificate), CR (CertificateRequest), NST (NewSessionTicket)
-   and HRR (HelloRetryRequest). This column \[shall be/has been]
+   and HRR (HelloRetryRequest). This column \[SHALL be/has been]
    initially populated with the values in this document.
 
-| Extension                                | Recommended |   TLS 1.3   |
-|:-----------------------------------------|------------:|------------:|
-| server_name [RFC6066]                    |         Yes |      CH, EE |
-| max_fragment_length [RFC6066]            |         Yes |      CH, EE |
-| client_certificate_url [RFC6066]         |         Yes |      CH, EE |
-| trusted_ca_keys [RFC6066]                |         Yes |           - |
-| truncated_hmac [RFC6066]                 |         Yes |           - |
-| status_request [RFC6066]                 |         Yes |      CH, CT |
-| user_mapping [RFC4681]                   |         Yes |      CH, EE |
-| client_authz [RFC5878]                   |          No |           - |
-| server_authz [RFC5878]                   |          No |           - |
-| cert_type [RFC6091]                      |         Yes |      CH, EE |
-| supported_groups [RFC7919]               |         Yes |      CH, EE |
-| ec_point_formats [RFC4492]               |         Yes |           - |
-| srp [RFC5054]                            |          No |           - |
-| signature_algorithms [RFC5246]           |         Yes |      CH, CR |
-| use_srtp [RFC5764]                       |         Yes |      CH, EE |
-| heartbeat [RFC6520]                      |         Yes |      CH, EE |
-| application_layer_protocol_negotiation [RFC7301] | Yes |      CH, EE |
-| status_request_v2 [RFC6961]              |         Yes |           - |
-| signed_certificate_timestamp [RFC6962]   |          No |  CH, CR, CT |
-| client_certificate_type [RFC7250]        |         Yes |      CH, EE |
-| server_certificate_type [RFC7250]        |         Yes |      CH, CT |
-| padding [RFC7685]                        |         Yes |          CH |
-| encrypt_then_mac [RFC7366]               |         Yes |           - |
-| extended_master_secret [RFC7627]         |         Yes |           - |
-| SessionTicket TLS [RFC4507]              |         Yes |           - |
-| renegotiation_info [RFC5746]             |         Yes |           - |
-| key_share \[\[this document]]            |         Yes | CH, SH, HRR |
-| pre_shared_key \[\[this document]]       |         Yes |      CH, SH |
-| psk_key_exchange_modes \[\[this document]] |       Yes |          CH |
-| early_data \[\[this document]]           |         Yes | CH, EE, NST |
-| cookie \[\[this document]]               |         Yes |     CH, HRR |
-| supported_versions \[\[this document]]   |         Yes |          CH |
-| certificate_authorities \[\[this document]]|       Yes |      CH, CR |
-| oid_filters \[\[this document]]          |          No |          CR |
+| Extension                                |   TLS 1.3   |
+|:-----------------------------------------|------------:|
+| server_name [RFC6066]                    |      CH, EE |
+| max_fragment_length [RFC6066]            |      CH, EE |
+| client_certificate_url [RFC6066]         |      CH, EE |
+| trusted_ca_keys [RFC6066]                |           - |
+| truncated_hmac [RFC6066]                 |           - |
+| status_request [RFC6066]                 |      CH, CT |
+| user_mapping [RFC4681]                   |      CH, EE |
+| client_authz [RFC5878]                   |           - |
+| server_authz [RFC5878]                   |           - |
+| cert_type [RFC6091]                      |      CH, EE |
+| supported_groups [RFC7919]               |      CH, EE |
+| ec_point_formats [RFC4492]               |           - |
+| srp [RFC5054]                            |           - |
+| signature_algorithms [RFC5246]           |      CH, CR |
+| use_srtp [RFC5764]                       |      CH, EE |
+| heartbeat [RFC6520]                      |      CH, EE |
+| application_layer_protocol_negotiation [RFC7301]|      CH, EE |
+| status_request_v2 [RFC6961]              |           - |
+| signed_certificate_timestamp [RFC6962]   |  CH, CR, CT |
+| client_certificate_type [RFC7250]        |      CH, EE |
+| server_certificate_type [RFC7250]        |      CH, CT |
+| padding [RFC7685]                        |          CH |
+| encrypt_then_mac [RFC7366]               |           - |
+| extended_master_secret [RFC7627]         |           - |
+| SessionTicket TLS [RFC4507]              |           - |
+| renegotiation_info [RFC5746]             |           - |
+| key_share \[\[this document]]            | CH, SH, HRR |
+| pre_shared_key \[\[this document]]       |      CH, SH |
+| psk_key_exchange_modes \[\[this document]]          CH |
+| early_data \[\[this document]]           | CH, EE, NST |
+| cookie \[\[this document]]               |     CH, HRR |
+| supported_versions \[\[this document]]   |          CH |
+| certificate_authorities \[\[this document]]|      CH, CR |
+| oid_filters \[\[this document]]          |          CR |
 
 IANA \[SHALL update/has updated] this registry to include the values listed above
 that correspond to this document.
