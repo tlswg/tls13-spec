@@ -4304,7 +4304,7 @@ is listed below:
 
 -  IANA \[SHALL update/has updated] this registry to include a "TLS
    1.3" column which lists the messages in which the extension may
-   appear This column \[SHALL be/has been]
+   appear. This column \[SHALL be/has been]
    initially populated from the table in {{extensions}}
    with any extension not listed there marked as "-" to indicate that
    it is not used by TLS 1.3.
