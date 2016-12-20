@@ -3138,7 +3138,7 @@ server in response to client Certificate and CertificateVerify messages.
 %%% Updating Keys
 
        struct {} EndOfEarlyData;
-       
+
 The EndOfEarlyData message is sent by the client to indicate that all 0-RTT
 application_data messages have been transmitted (or none will
 be sent at all) and that the following records are protected
@@ -4386,76 +4386,78 @@ in [].
 ## Client
 
 ~~~~
-          +-----> START
-     Recv |        |
-    Hello |        | Send ClientHello
-    Retry |        v
-  Request +---- WAIT_SH            
-                   | Recv ServerHello
-                   V                 
-                WAIT_EE            
-                   | Recv EncryptedExtensions         
-          +--------+--------+          
-Using PSK |                 | Using Certificate             
-          |                 v
-          |            WAIT_CERT_CR
-          |        Recv |       | Recv CertificateRequest
-          | Certificate |       v
-          |             |    WAIT_CERT
-          |             |       | Recv Certificate
-          |             v       v
-          |              WAIT_CV
-          |                 | Recv CertificateVerify
-          +> WAIT_FINISHED <+
-                   | Recv Finished
-                   |
-                   | [Send EndOfEarlyData]
-                   | [Send Certificate [+ CertificateVerify]]
-                   | Send Finished
-                   v
-               CONNECTED
+                  +-----> START
+             Recv |        |
+            Hello |        | Send ClientHello
+            Retry |        v
+        +-> Request +---- WAIT_SH
+    Can |                    | Recv ServerHello
+   Send |                    V
+  Early |                 WAIT_EE
+   Data |                    | Recv EncryptedExtensions
+        |           +--------+--------+
+        |     Using |                 | Using Certificate
+        |       PSK |                 v
+        |           |            WAIT_CERT_CR
+        |           |        Recv |       | Recv CertificateRequest
+        |           | Certificate |       v
+        |           |             |    WAIT_CERT
+        |           |             |       | Recv Certificate
+        |           |             v       v
+        |           |              WAIT_CV
+        |           |                 | Recv CertificateVerify
+        |           +> WAIT_FINISHED <+
+        |                  | Recv Finished
+        |                  |
+        +->                | [Send EndOfEarlyData]
+                           | [Send Certificate [+ CertificateVerify]]
+                           | Send Finished
+ Can Send                  v
+ App Data -->          CONNECTED
+ After
+ Here
 ~~~~
 
 ## Server
 
 ~~~~
-          +----> START  
-     Send |        |
-    Hello |        | Recv ClientHello
-    Retry |        |
-  Request |        v
-          +--- RECVD_CH
-                   | Select parameters
-                   v
-                NEGOTIATED
-                   | Send ServerHello
-                   | Send EncryptedExtensions
-                   | [Send CertificateRequest]
-                   | [Send Certificate + CertificateVerify]
-                   | Send Finished
-          +--------+--------+
- No 0-RTT |                 | 0-RTT
-          |                 v
-          |             WAIT_EOED <---+
-          |        Recv |       |     | Recv
-          |        EOED |       |     | Application Data
-          |             |       +-----+
-          +> WAIT_FLT2 <+
-                   |   
-          +--------+--------+
-          |                 | Client
-          |                 | Auth
-          |                 v
-          |             WAIT_CERT
-       No |        Recv |       | Recv Certificate
-     Auth |       Empty |       v
-          | Certificate |    WAIT_CV
-          |             |       | Recv
-          |             |       | CertificateVerify
-          +-> WAIT_FINISHED <---+
-                   | Recv Finished
-                   v
-               CONNECTED
+                      +----> START
+                 Send |        |
+                Hello |        | Recv ClientHello
+                Retry |        |
+              Request |        v
+                      +--- RECVD_CH
+                               | Select parameters
+                               v
+                            NEGOTIATED
+                               | Send ServerHello
+                               | Send EncryptedExtensions
+                               | [Send CertificateRequest]
+Can Send                       | [Send Certificate + CertificateVerify]
+App Data -->                   | Send Finished
+After                 +--------+--------+
+Here            0-RTT |                 | 0-RTT
+                      |                 v
+                      |             WAIT_EOED <---+
+                      |        Recv |       |     | Recv
+                      |        EOED |       |     | Early Data
+                      |             |       +-----+
+                      +> WAIT_FLT2 <+
+                               |
+                      +--------+--------+
+                      |                 | Client
+                      |                 | Auth
+                      |                 v
+                      |             WAIT_CERT
+                   No |        Recv |       | Recv Certificate
+                 Auth |       Empty |       v
+                      | Certificate |    WAIT_CV
+                      |             |       | Recv
+                      |             |       | CertificateVerify
+                      +-> WAIT_FINISHED <---+
+                               | Recv Finished
+                               v
+                           CONNECTED
 ~~~~
 
 ## Cipher Suites
