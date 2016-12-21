@@ -4376,6 +4376,92 @@ currently deployed and properly configured TLS implementations.
 %%### Ticket Establishment
 %%### Updating Keys
 
+# State Machine
+
+This section provides a summary of the legal state transitions for the
+client and server handshakes.  State names (in all capitals, e.g.,
+START) have no formal meaning but are provided for ease of
+comprehension.  Messages which are sent only sometimes are indicated
+in [].
+
+## Client
+
+~~~~
+                           START  <---+
+                             |        |
+           Send ClientHello  |        | Recv HelloRetryRequest
+         /                   v        |
+        |                  WAIT_SH ---+ 
+        |                    |
+    Can |                    | Recv ServerHello
+   send |                    V
+  early |                 WAIT_EE
+   data |                    | Recv EncryptedExtensions
+        |           +--------+--------+
+        |     Using |                 | Using certificate
+        |       PSK |                 v
+        |           |            WAIT_CERT_CR
+        |           |        Recv |       | Recv CertificateRequest
+        |           | Certificate |       v
+        |           |             |    WAIT_CERT
+        |           |             |       | Recv Certificate
+        |           |             v       v
+        |           |              WAIT_CV
+        |           |                 | Recv CertificateVerify
+        |           +> WAIT_FINISHED <+
+        |                  | Recv Finished
+        \                  |
+                           | [Send EndOfEarlyData]
+                           | [Send Certificate [+ CertificateVerify]]
+                           | Send Finished
+ Can send                  v
+ app data -->          CONNECTED
+ after
+ here
+~~~~
+
+## Server
+
+~~~~
+                             START  <----+
+                               |         |
+              Recv ClientHello |         | Send HelloRetryRequest
+                               v         |
+                            RECVD_CH ----+
+                               |
+                               | Select parameters
+                               v
+                            NEGOTIATED
+                               | Send ServerHello
+                               | Send EncryptedExtensions
+                               | [Send CertificateRequest]
+Can send                       | [Send Certificate + CertificateVerify]
+app data -->                   | Send Finished
+after                 +--------+--------+
+here         No 0-RTT |                 | 0-RTT
+                      |                 v
+                      |             WAIT_EOED <---+
+                      |            Recv |   |     | Recv
+                      |  EndOfEarlyData |   |     | early data
+                      |                 |   +-----+
+                      +> WAIT_FLIGHT2 <-+
+                               |
+                      +--------+--------+
+              No auth |                 | Client auth
+                      |                 | 
+                      |                 v
+                      |             WAIT_CERT
+                      |        Recv |       | Recv Certificate
+                      |       empty |       v
+                      | Certificate |    WAIT_CV
+                      |             |       | Recv
+                      |             v       | CertificateVerify
+                      +-> WAIT_FINISHED <---+
+                               | Recv Finished
+                               v
+                           CONNECTED
+~~~~
+
 ## Cipher Suites
 
 A symmetric cipher suite defines the pair of the AEAD algorithm and hash
