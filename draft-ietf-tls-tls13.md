@@ -4443,7 +4443,7 @@ here         No 0-RTT |                 | 0-RTT
                       |            Recv |   |     | Recv
                       |  EndOfEarlyData |   |     | early data
                       |                 |   +-----+
-                      +> WAIT_FLT2 <----+
+                      +> WAIT_FLIGHT2 <-+
                                |
                       +--------+--------+
               No auth |                 | Client auth
