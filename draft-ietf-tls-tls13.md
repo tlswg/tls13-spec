@@ -4386,17 +4386,18 @@ in [].
 ## Client
 
 ~~~~
-                  +-----> START
-             Recv |        |
-            Hello |        | Send ClientHello
-            Retry |        v
-        +-> Request +---- WAIT_SH
+                           START  <---+
+                             |        |
+           Send ClientHello  |        | Recv HelloRetryRequest
+         /                   v        |
+        |                  WAIT_SH ---+ 
+        |                    |
     Can |                    | Recv ServerHello
-   Send |                    V
-  Early |                 WAIT_EE
-   Data |                    | Recv EncryptedExtensions
+   send |                    V
+  early |                 WAIT_EE
+   data |                    | Recv EncryptedExtensions
         |           +--------+--------+
-        |     Using |                 | Using Certificate
+        |     Using |                 | Using certificate
         |       PSK |                 v
         |           |            WAIT_CERT_CR
         |           |        Recv |       | Recv CertificateRequest
@@ -4408,52 +4409,52 @@ in [].
         |           |                 | Recv CertificateVerify
         |           +> WAIT_FINISHED <+
         |                  | Recv Finished
-        |                  |
-        +->                | [Send EndOfEarlyData]
+        \                  |
+                           | [Send EndOfEarlyData]
                            | [Send Certificate [+ CertificateVerify]]
                            | Send Finished
- Can Send                  v
- App Data -->          CONNECTED
- After
- Here
+ Can send                  v
+ app data -->          CONNECTED
+ after
+ here
 ~~~~
 
 ## Server
 
 ~~~~
-                      +----> START
-                 Send |        |
-                Hello |        | Recv ClientHello
-                Retry |        |
-              Request |        v
-                      +--- RECVD_CH
+                             START  <----+
+                               |         |
+              Recv ClientHello |         | Send HelloRetryRequest
+                               v         |
+                            RECVD_CH ----+
+                               |
                                | Select parameters
                                v
                             NEGOTIATED
                                | Send ServerHello
                                | Send EncryptedExtensions
                                | [Send CertificateRequest]
-Can Send                       | [Send Certificate + CertificateVerify]
-App Data -->                   | Send Finished
-After                 +--------+--------+
-Here            0-RTT |                 | 0-RTT
+Can send                       | [Send Certificate + CertificateVerify]
+app data -->                   | Send Finished
+after                 +--------+--------+
+here         No 0-RTT |                 | 0-RTT
                       |                 v
                       |             WAIT_EOED <---+
-                      |        Recv |       |     | Recv
-                      |        EOED |       |     | Early Data
-                      |             |       +-----+
-                      +> WAIT_FLT2 <+
+                      |            Recv |   |     | Recv
+                      |  EndOfEarlyData |   |     | early data
+                      |                 |   +-----+
+                      +> WAIT_FLT2 <----+
                                |
                       +--------+--------+
-                      |                 | Client
-                      |                 | Auth
+              No auth |                 | Client auth
+                      |                 | 
                       |                 v
                       |             WAIT_CERT
-                   No |        Recv |       | Recv Certificate
-                 Auth |       Empty |       v
+                      |        Recv |       | Recv Certificate
+                      |       empty |       v
                       | Certificate |    WAIT_CV
                       |             |       | Recv
-                      |             |       | CertificateVerify
+                      |             v       | CertificateVerify
                       +-> WAIT_FINISHED <---+
                                | Recv Finished
                                v
