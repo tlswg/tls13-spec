@@ -4345,37 +4345,6 @@ SignatureAlgorithm Registry, both originally created in {{RFC5246}}.  IANA
 
 --- back
 
-
-# Protocol Data Structures and Constant Values
-
-This section describes protocol types and constants. Values listed as
-_RESERVED were used in previous versions of TLS and are listed here
-for completeness. TLS 1.3 implementations MUST NOT send them but
-might receive them from older TLS implementations.
-
-%%## Record Layer
-%%## Alert Messages
-%%## Handshake Protocol
-%%### Key Exchange Messages
-%%#### Version Extension
-%%#### Cookie Extension
-%%#### Signature Algorithm Extension
-%%#### Supported Groups Extension
-
-Values within "obsolete_RESERVED" ranges were used in previous versions
-of TLS and MUST NOT be offered or negotiated by TLS 1.3 implementations.
-The obsolete curves have various known/theoretical weaknesses or have
-had very little usage, in some cases only due to unintentional
-server configuration issues. They are no longer considered appropriate
-for general use and should be assumed to be potentially unsafe. The set
-of curves specified here is sufficient for interoperability with all
-currently deployed and properly configured TLS implementations.
-
-%%### Server Parameters Messages
-%%### Authentication Messages
-%%### Ticket Establishment
-%%### Updating Keys
-
 # State Machine
 
 This section provides a summary of the legal state transitions for the
@@ -4461,6 +4430,37 @@ here         No 0-RTT |                 | 0-RTT
                                v
                            CONNECTED
 ~~~~
+
+# Protocol Data Structures and Constant Values
+
+This section describes protocol types and constants. Values listed as
+_RESERVED were used in previous versions of TLS and are listed here
+for completeness. TLS 1.3 implementations MUST NOT send them but
+might receive them from older TLS implementations.
+
+%%## Record Layer
+%%## Alert Messages
+%%## Handshake Protocol
+%%### Key Exchange Messages
+%%#### Version Extension
+%%#### Cookie Extension
+%%#### Signature Algorithm Extension
+%%#### Supported Groups Extension
+
+Values within "obsolete_RESERVED" ranges were used in previous versions
+of TLS and MUST NOT be offered or negotiated by TLS 1.3 implementations.
+The obsolete curves have various known/theoretical weaknesses or have
+had very little usage, in some cases only due to unintentional
+server configuration issues. They are no longer considered appropriate
+for general use and should be assumed to be potentially unsafe. The set
+of curves specified here is sufficient for interoperability with all
+currently deployed and properly configured TLS implementations.
+
+%%### Server Parameters Messages
+%%### Authentication Messages
+%%### Ticket Establishment
+%%### Updating Keys
+
 
 ## Cipher Suites
 
