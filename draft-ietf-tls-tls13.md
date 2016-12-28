@@ -3105,6 +3105,10 @@ CertificateVerify. All SHA-1 signature algorithms in this specification are
 defined solely for use in legacy certificates, and are not valid for
 CertificateVerify signatures.
 
+The receiver of a CertificateVerify MUST verify the signature. If the 
+verification fails, the connection MUST be terminated with an 
+"illegal_parameter" alert.
+
 Note: When used with non-certificate-based handshakes (e.g., PSK), the
 client's signature does not cover the server's certificate directly.
 When the PSK was established through a NewSessionTicket, the client's
@@ -3123,7 +3127,10 @@ block. It is essential for providing authentication of the handshake
 and of the computed keys.
 
 Recipients of Finished messages MUST verify that the contents are
-correct. Once a side has sent its Finished message and received and
+correct. If the verification fails, the connection MUST be terminated
+with an "illegal_parameter" alert. 
+
+Once a side has sent its Finished message and received and
 validated the Finished message from its peer, it may begin to send and
 receive application data over the connection.
 Early data may be sent prior to the receipt of the peer's Finished
