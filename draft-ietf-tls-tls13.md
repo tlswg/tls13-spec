@@ -3152,12 +3152,9 @@ Structure of this message:
 The verify_data value is computed as follows:
 
        verify_data =
-           HMAC(finished_key, Hash(
-                                   Handshake Context +
+           HMAC(finished_key, Hash(Handshake Context +
                                    Certificate* +
-                                   CertificateVerify*
-                              )
-           )
+                                   CertificateVerify*))
 
        * Only included if present.
 
