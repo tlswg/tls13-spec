@@ -4356,12 +4356,10 @@ in [].
 ## Client
 
 ~~~~
-                           START  <---+
-                             |        |
-           Send ClientHello  |        | Recv HelloRetryRequest
+                           START <----+
+            Send ClientHello |        | Recv HelloRetryRequest
          /                   v        |
         |                  WAIT_SH ---+ 
-        |                    |
     Can |                    | Recv ServerHello
    send |                    V
   early |                 WAIT_EE
@@ -4392,12 +4390,10 @@ in [].
 ## Server
 
 ~~~~
-                             START  <----+
-                               |         |
+                             START <-----+
               Recv ClientHello |         | Send HelloRetryRequest
                                v         |
                             RECVD_CH ----+
-                               |
                                | Select parameters
                                v
                             NEGOTIATED
