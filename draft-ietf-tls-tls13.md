@@ -3991,7 +3991,7 @@ present version of TLS 1.3, secrets are added in the following order:
 
 - PSK (a pre-shared key established externally or a resumption_master_secret
   value from a previous connection)
-- (EC)DHE shared secret
+- (EC)DHE shared secret ({{ecdhe-shared-secret-calculation}})
 
 This produces a full key derivation schedule shown in the diagram below.
 In this diagram, the following formatting conventions apply:
@@ -4145,10 +4145,12 @@ All the traffic keying material is recomputed whenever the
 underlying Secret changes (e.g., when changing from the handshake to
 application data keys or upon a key update).
 
+## (EC)DHE Shared Secret Calculation {#ecdhe-shared-secret-calculation}
 
-###  Diffie-Hellman
+###  Finite Field Diffie-Hellman
 
-A conventional Diffie-Hellman computation is performed. The negotiated key (Z)
+For finite field groups, a conventional Diffie-Hellman computation is performed.
+The negotiated key (Z)
 is converted to byte string by encoding in big-endian, padded with zeros up to
 the size of the prime. This byte string is used as the shared secret, and is
 used in the key schedule as specified above.
@@ -4185,7 +4187,7 @@ ECDH functions are used as follows:
 
 For X25519 and X448, see {{RFC7748}}.
 
-### Exporters
+## Exporters
 
 {{!RFC5705}} defines keying material exporters for TLS in terms of the TLS
 pseudorandom function (PRF). This document replaces the PRF with HKDF, thus
@@ -4588,7 +4590,7 @@ Cryptographic details:
   doesn't have additional data after the hash value? {{FI06}}
 
 -  When using Diffie-Hellman key exchange, do you correctly preserve
-  leading zero bytes in the negotiated key (see {{diffie-hellman}})?
+  leading zero bytes in the negotiated key (see {{finite-field-diffie-hellman}})?
 
 -  Does your TLS client check that the Diffie-Hellman parameters sent
   by the server are acceptable, (see {{ffdhe-param}})?
