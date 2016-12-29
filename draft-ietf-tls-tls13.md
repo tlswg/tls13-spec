@@ -1456,10 +1456,7 @@ If the server does not select a PSK, then the first three of these
 options are entirely orthogonal: the server independently selects a
 cipher suite, an (EC)DHE group and key share for key establishment,
 and a signature algorithm/certificate pair to authenticate itself to
-the client. If there is overlap in the "supported_groups" extension
-but the client did not offer a compatible "key_share" extension,
-then the server will respond with a HelloRetryRequest ({{hello-retry-request}}) message.
-If there is no overlap in "supported_groups" then the server MUST
+the client. If there is no overlap in "supported_groups" then the server MUST
 abort the handshake.
 
 If the server selects a PSK, then it MUST also select a key
@@ -1469,7 +1466,12 @@ that if the PSK can be used without (EC)DHE then non-overlap in the
 "supported_groups" parameters need not be fatal, as it is in the
 non-PSK case discussed in the previous paragraph.
 
-The server indicates its selected parameters in the ServerHello as
+If the server selects an (EC)DHE group and the client did not offer a
+compatible "key_share" extension in the initial ClientHello, the server MUST
+respond with a HelloRetryRequest ({{hello-retry-request}}) message.
+
+If the server successfully selects parameters and does not require a
+HelloRetryRequest, it indicates the selected parameters in the ServerHello as
 follows:
 
 - If PSK is being used, then the server will send a
@@ -4573,6 +4575,11 @@ TLS protocol issues:
 - Do you properly ignore unrecognized cipher suites ({{client-hello}}),
   hello extensions ({{extensions}}), named groups ({{negotiated-groups}}),
   and signature algorithms ({{signature-algorithms}})?
+
+- As a server, do you send a HelloRetryRequest to clients which
+  support a compatible (EC)DHE group but do not predict it in the
+  "key_share" extension? As a client, do you correctly handle a
+  HelloRetryRequest from the server?
 
 Cryptographic details:
 
