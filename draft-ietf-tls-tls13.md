@@ -124,12 +124,6 @@ informative:
        date: 2005-11
        seriesinfo:
          ANSI: ANS X9.62-2005
-  FI06:
-       title: "Bleichenbacher's RSA signature forgery based on implementation error"
-       author:
-         - name: Hal Finney
-       date: 2006-08-27
-       target: https://www.ietf.org/mail-archive/web/openpgp/current/msg00999.html
 
   GCM:
        title: "Recommendation for Block Cipher Modes of Operation: Galois/Counter Mode (GCM) and GMAC"
@@ -4583,10 +4577,6 @@ TLS protocol issues:
 Cryptographic details:
 
 -  What countermeasures do you use to prevent timing attacks {{TIMING}}?
-
-- When verifying RSA signatures, do you accept both NULL and missing parameters?
-  Do you verify that the RSA padding
-  doesn't have additional data after the hash value? {{FI06}}
 
 -  When using Diffie-Hellman key exchange, do you correctly preserve
   leading zero bytes in the negotiated key (see {{finite-field-diffie-hellman}})?
