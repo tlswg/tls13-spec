@@ -343,6 +343,31 @@ informative:
         ins: M. Bellare
       seriesinfo: ASIACRYPT2000
       date: 2000-10
+  RECORD:
+      title: "Implementing and Proving the TLS 1.3 Record Layer"
+      author:
+      -
+        ins: K. Bhargavan
+      -
+        ins: A. Delignat-Lavaud
+      -
+        ins: C. Fournet
+      -
+        ins: M. Kohlweiss
+      -
+        ins: J. Pan
+      -
+        ins: J. Protzenko
+      -
+        ins: A. Rastogi
+      -
+        ins: N. Swamy
+      -
+        ins: S. Zanella-Beguelin
+      -
+        ins: J.K. Zinzindohoue
+      date: 2016-12
+      target: http://eprint.iacr.org/2016/1178
 
 --- abstract
 
@@ -4356,7 +4381,7 @@ in [].
                            START <----+
             Send ClientHello |        | Recv HelloRetryRequest
          /                   v        |
-        |                  WAIT_SH ---+ 
+        |                  WAIT_SH ---+
     Can |                    | Recv ServerHello
    send |                    V
   early |                 WAIT_EE
@@ -4410,7 +4435,7 @@ here         No 0-RTT |                 | 0-RTT
                                |
                       +--------+--------+
               No auth |                 | Client auth
-                      |                 | 
+                      |                 |
                       |                 v
                       |             WAIT_CERT
                       |        Recv |       | Recv Certificate
@@ -4979,8 +5004,8 @@ future confidentiality and integrity.  Systems which want backward secrecy need
 to do a fresh handshake and establish a new session key with an (EC)DHE
 exchange.
 
-The reader should refer to the following references for analysis of the
-TLS record layer. \[TODO]
+The reader should refer to {{RECORD}} for analysis of the
+TLS record layer.
 
 # Working Group Information
 
