@@ -1074,9 +1074,8 @@ via PSK, it SHOULD also supply a "key_share" extension to the server to
 allow the server to decline resumption and fall back
 to a full handshake, if needed. The server responds with a "pre_shared_key"
 extension to negotiate use of PSK key establishment and can (as shown here)
-to negotiate use of PSK key establishment and can (as shown here)
-respond with a "key_share" extension to do (EC)DHE key
-establishment, thus providing forward secrecy.
+respond with a "key_share" extension to do (EC)DHE key establishment, thus
+providing forward secrecy.
 
 When PSKs are provisioned out of band, the PSK identity and the KDF
 to be used with the PSK MUST also be provisioned.
@@ -1095,7 +1094,7 @@ additional information MUST be provisioned to both parties:
   * The Application-Layer Protocol Negotiation (ALPN) protocol, if any is to be used
   * The Server Name Indication (SNI), if any is to be used
 
-As shown in {{tls-0-rtt}}, the Zero-RTT data is just added to the 1-RTT
+As shown in {{tls-0-rtt}}, the 0-RTT data is just added to the 1-RTT
 handshake in the first flight. The rest of the handshake uses the same messages
 as with a 1-RTT handshake with PSK resumption.
 
@@ -1268,7 +1267,7 @@ can be assigned any unique value, in any order.
 
        enum { e1(v1), e2(v2), ... , en(vn) [[, (n)]] } Te;
 
-Future extension or additions to the protocol may define new values.
+Future extensions or additions to the protocol may define new values.
 Implementations need to be able to parse and ignore unknown values unless the
 definition of the field states otherwise.
 
@@ -1684,7 +1683,7 @@ extensions
   which are required to establish the cryptographic context. Currently
   the only such extensions are "key_share" and "pre_shared_key".
   All current TLS 1.3 ServerHello messages will contain one of these
-  two extensions.
+  two extensions, or both when using a PSK with (EC)DHE key establishment.
 {:br }
 
 TLS 1.3 has a downgrade protection mechanism embedded in the server's
