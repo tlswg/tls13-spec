@@ -3095,13 +3095,14 @@ the concatenation of:
 
 This structure is intended to prevent an attack on previous versions
 of TLS in which the ServerKeyExchange format meant that
-attackers could obtain a signature of a message with a chosen, 32-byte
-prefix. The initial 64 byte pad clears that prefix.
+attackers could obtain a signature of a message with a chosen 32-byte
+prefix (ClientHello.random). The initial 64 byte pad clears that prefix.
 
 The context string for a server signature is
 "TLS 1.3, server CertificateVerify"
 and for a client signature is "TLS 1.3, client
-CertificateVerify".
+CertificateVerify". It is used to provide separation between signatures
+made in different context, avoiding potential cross-protocol attacks.
 
 For example, if Hash(Handshake Context + Certificate) was 32 bytes of
 01 (this length would make sense for SHA-256), the input to the final
