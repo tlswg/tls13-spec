@@ -3102,7 +3102,7 @@ The context string for a server signature is
 "TLS 1.3, server CertificateVerify"
 and for a client signature is "TLS 1.3, client
 CertificateVerify". It is used to provide separation between signatures
-made in different context, avoiding potential cross-protocol attacks.
+made in different contexts, helping against potential cross-protocol attacks.
 
 For example, if Hash(Handshake Context + Certificate) was 32 bytes of
 01 (this length would make sense for SHA-256), the input to the final
