@@ -42,7 +42,7 @@ normative:
   RFC7539:
   RFC7748:
   RFC7919:
-  I-D.irtf-cfrg-eddsa:
+  RFC8032:
 
   AES:
        title: Specification for the Advanced Encryption Standard (AES)
@@ -2059,7 +2059,7 @@ RSASSA-PSS algorithms
 
 EdDSA algorithms
 : Indicates a signature algorithm using EdDSA as defined in
-  {{I-D.irtf-cfrg-eddsa}} or its successors. Note that these correspond to the
+  {{RFC8032}} or its successors. Note that these correspond to the
   "PureEdDSA" algorithms and not the "prehash" variants.
 {:br }
 
