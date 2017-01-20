@@ -4311,7 +4311,7 @@ and their allocation policies are below:
   IANA \[SHALL add/has added] the cipher suites listed in {{cipher-suites}} to
   the registry. The "Value" and "Description" columns are taken from the table.
   The "DTLS-OK" and "Recommended" columns are both marked as "Yes" for each new
-  cipher suite. \[\[This assumes {{?I-D.sandj-tls-iana-registry-updates}} has been
+  cipher suite. \[\[This assumes {{?I-D.ietf-tls-iana-registry-updates}} has been
   applied.]]
 
 -  TLS ContentType Registry: Future values are allocated via
