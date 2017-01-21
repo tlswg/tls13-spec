@@ -3084,7 +3084,8 @@ The digital signature is then computed over the concatenation of:
 This structure is intended to prevent an attack on previous versions
 of TLS in which the ServerKeyExchange format meant that
 attackers could obtain a signature of a message with a chosen 32-byte
-prefix (ClientHello.random). The initial 64 byte pad clears that prefix.
+prefix (ClientHello.random). The initial 64 byte pad clears that prefix
+along with the server-controlled ServerHello.random.
 
 The context string for a server signature is
 "TLS 1.3, server CertificateVerify"
