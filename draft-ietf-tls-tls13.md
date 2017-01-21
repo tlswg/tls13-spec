@@ -3068,19 +3068,13 @@ Structure of this message:
 
 The algorithm field specifies the signature algorithm used (see
 {{signature-algorithms}} for the definition of this field). The
-signature is a digital signature using that algorithm that covers the
-hash output described in {{authentication-messages}} namely:
+signature is a digital signature using that algorithm. The content 
+to be signed is the hash output as described in 
+{{authentication-messages}} namely:
 
        Hash(Handshake Context + Certificate)
 
-In TLS 1.3, the digital signature process takes as input:
-
-- A signing key
-- A context string
-- The actual content to be signed
-
-The digital signature is then computed using the signing key over
-the concatenation of:
+The digital signature is then computed over the concatenation of:
 
 - A string that consists of octet 32 (0x20) repeated 64 times
 - The context string
@@ -3098,8 +3092,8 @@ and for a client signature is "TLS 1.3, client
 CertificateVerify".
 
 For example, if Hash(Handshake Context + Certificate) was 32 bytes of
-01 (this length would make sense for SHA-256), the input to the final
-signing process for a server CertificateVerify would be:
+01 (this length would make sense for SHA-256), the content covered by 
+the digital signature for a server CertificateVerify would be:
 
        2020202020202020202020202020202020202020202020202020202020202020
        2020202020202020202020202020202020202020202020202020202020202020
@@ -3108,7 +3102,15 @@ signing process for a server CertificateVerify would be:
        00
        0101010101010101010101010101010101010101010101010101010101010101
 
-If sent by a server, the signature algorithm MUST be one offered in the
+On the sender side the process for computing the signature field of the 
+CertificateVerify message takes as input:
+
+- The content covered by the digital signature
+- The private signing key corresponding to the certificate sent in the 
+  previous message
+
+If the CertificateVerify message is sent by a server, the signature 
+algorithm MUST be one offered in the
 client's "signature_algorithms" extension unless no valid certificate chain can be
 produced without unsupported algorithms (see {{signature-algorithms}}).
 
@@ -3123,6 +3125,17 @@ appear in "signature_algorithms". SHA-1 MUST NOT be used in any signatures in
 CertificateVerify. All SHA-1 signature algorithms in this specification are
 defined solely for use in legacy certificates, and are not valid for
 CertificateVerify signatures.
+
+The receiver of a CertificateVerify MUST verify the signature field. The
+verification process takes as input:
+
+- The content covered by the digital signature
+- The public key received with the previous Certificate message
+- The digital signature received in the signature field of the
+  CertificateVerify message
+
+If the verification fails, the connection MUST be terminated with an
+"illegal_parameter" alert.
 
 Note: When used with non-certificate-based handshakes (e.g., PSK), the
 client's signature does not cover the server's certificate directly.
@@ -3142,7 +3155,10 @@ block. It is essential for providing authentication of the handshake
 and of the computed keys.
 
 Recipients of Finished messages MUST verify that the contents are
-correct. Once a side has sent its Finished message and received and
+correct. If the verification fails, the connection MUST be terminated
+with an "illegal_parameter" alert. 
+
+Once a side has sent its Finished message and received and
 validated the Finished message from its peer, it may begin to send and
 receive application data over the connection.
 Early data may be sent prior to the receipt of the peer's Finished
