@@ -1647,10 +1647,9 @@ or HelloRetryRequest message.
 
 ### Server Hello {#server-hello}
 
-The server will send this message in response to a ClientHello message when
-it was able to find an acceptable set of algorithms and the client's
-"key_share" extension was acceptable. If it is not able to find an acceptable
-set of parameters, the server will respond with a "handshake_failure" fatal alert.
+The server will send this message in response to a ClientHello message if it is
+able to find an acceptable set of parameters and the ClientHello contains
+sufficient information to proceed with the handshake.
 
 Structure of this message:
 
@@ -1731,13 +1730,9 @@ interoperability failure.
 
 ###  Hello Retry Request
 
-Servers send this message in response to a ClientHello
-message if they were able to find an acceptable set of algorithms and
-groups that are mutually supported, but
-the client's ClientHello did not contain sufficient information to
-proceed with the handshake.
-If a server cannot successfully select algorithms and groups, it MUST abort
-the handshake with a "handshake_failure" alert.
+The server will send this message in response to a ClientHello message if it is
+able to find an acceptable set of parameters but the ClientHello does not
+contain sufficient information to proceed with the handshake.
 
 Structure of this message:
 
