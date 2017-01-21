@@ -3130,12 +3130,13 @@ The receiver of a CertificateVerify MUST verify the signature field. The
 verification process takes as input:
 
 - The content covered by the digital signature
-- The public key received with the previous Certificate message
+- The public key contained in the end-entity certificate found in the
+  associated Certificate message.
 - The digital signature received in the signature field of the
   CertificateVerify message
 
-If the verification fails, the connection MUST be terminated with an
-"illegal_parameter" alert.
+If the verification fails, the receiver MUST terminate the handshake
+with a "decrypt_error" alert.
 
 Note: When used with non-certificate-based handshakes (e.g., PSK), the
 client's signature does not cover the server's certificate directly.
@@ -3155,8 +3156,8 @@ block. It is essential for providing authentication of the handshake
 and of the computed keys.
 
 Recipients of Finished messages MUST verify that the contents are
-correct. If the verification fails, the connection MUST be terminated
-with an "illegal_parameter" alert. 
+correct and if incorrect MUST terminate the connection
+with a "decrypt_error" alert.
 
 Once a side has sent its Finished message and received and
 validated the Finished message from its peer, it may begin to send and
