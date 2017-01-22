@@ -1775,12 +1775,13 @@ Structure of this message:
 
        struct {
            ProtocolVersion server_version;
+           CipherSuite cipher_suite;
            Extension extensions<2..2^16-1>;
        } HelloRetryRequest;
 
 {:br }
 
-The server_version and extensions fields have the
+The version, cipher_suite, and extensions fields have the
 same meanings as their corresponding values in the ServerHello.
 The server SHOULD send only the extensions necessary for the client to
 generate a correct ClientHello pair. As with ServerHello, a
@@ -1805,6 +1806,18 @@ this specification are:
 
 - key_share (see {{key-share}})
 
+In addition, in its updated ClientHello, the client SHOULD NOT offer
+any pre-shared keys associated with a hash other than that of the selected
+cipher suite. This allows the client to avoid having to compute partial
+hash transcripts for multiple hashes in the second ClientHello.
+A client which receives a cipher suite that was not offered MUST abort the handshake.
+Servers MUST ensure that they negotiate the same cipher suite when
+receiving a conformant updated ClientHello (if the server selects the
+cipher suite first, then this will happen automatically). Upon
+receiving the ServerHello, clients MUST
+check that the cipher suite supplied in the ServerHello is the same
+as that in the HelloRetryRequest and otherwise abort the handshake
+with an "illegal_parameter" alert.
 
 ##  Extensions
 
@@ -2319,8 +2332,8 @@ Servers MUST NOT send a KeyShareEntry for any group not
 indicated in the "supported_groups" extension and
 MUST NOT send a KeyShareEntry when using the "psk_ke" PskKeyExchangeMode.
 If a HelloRetryRequest was received by the client, the client MUST verify that the
-selected NamedGroup matches one that the client sent in its supported_groups
-extension and MUST abort the handshake with an "illegal_parameter" alert otherwise.
+selected NamedGroup in the ServerHello is the same as that in the HelloRetryRequest. If this check
+fails, the client MUST abort the handshake with an "illegal_parameter" alert.
 
 ####  Diffie-Hellman Parameters {#ffdhe-param}
 
