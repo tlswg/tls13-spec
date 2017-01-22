@@ -5225,6 +5225,10 @@ Archives of the list can be found at:
   University of California, San Diego \\
   btackmann@eng.ucsd.edu
 
+* Tim Taubert \\
+  Mozilla \\
+  ttaubert@mozilla.com
+
 * Martin Thomson \\
   Mozilla \\
   mt@mozilla.com
@@ -5251,6 +5255,3 @@ Archives of the list can be found at:
   Internet Initiative Japan Inc. \\
   kazu@iij.ad.jp
 
-* Tim Taubert \\
-  Mozilla \\
-  ttaubert@mozilla.com
