@@ -5102,6 +5102,10 @@ Archives of the list can be found at:
   Cloudflare Inc. \\
   alessandro@cloudflare.com
 
+* Jens Guballa \\
+  ETAS \\
+  jens.guballa@etas.com
+
 * Vipul Gupta (co-author of [RFC4492]) \\
   Sun Microsystems Laboratories \\
   vipul.gupta@sun.com
