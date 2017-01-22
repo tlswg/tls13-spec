@@ -4056,6 +4056,9 @@ In this diagram, the following formatting conventions apply:
                  +-----> Derive-Secret(., "early exporter master secret",
                  |                     ClientHello)
                  |                     = early_exporter_secret
+                 |
+           Derive-Secret(., "derived early secret", "")
+                 |
                  v
 (EC)DHE -> HKDF-Extract
                  |
@@ -4069,6 +4072,8 @@ In this diagram, the following formatting conventions apply:
                  +-----> Derive-Secret(., "server handshake traffic secret",
                  |                     ClientHello...ServerHello)
                  |                     = server_handshake_traffic_secret
+                 |
+           Derive-Secret(., "derived handshake secret", "")
                  |
                  v
       0 -> HKDF-Extract
