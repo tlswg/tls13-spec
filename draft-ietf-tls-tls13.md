@@ -1450,6 +1450,7 @@ processed and transmitted as specified by the current active connection state.
            client_key_exchange_RESERVED(16),
            finished(20),
            key_update(24),
+           message_hash(254),
            (255)
        } HandshakeType;
 
@@ -1986,8 +1987,8 @@ Cookies serve two primary purposes:
 
 - Allowing the server to offload state to the client, thus allowing it to send
   a HelloRetryRequest without storing any state. The server does this by
-  storing the serialized hash state in the cookie (protected
-  with some suitable integrity algorithm).
+  storing the hash of the ClientHello in the HelloRetryRequest cookie
+  (protected with some suitable integrity algorithm).
 
 When sending a HelloRetryRequest, the server MAY provide a "cookie" extension to the
 client (this is an exception to the usual rule that the only extensions that
@@ -2621,7 +2622,7 @@ The PSK binder value forms a binding between a PSK and the current
 handshake, as well as between the handshake in which the PSK was
 generated (if via a NewSessionTicket message) and the handshake where
 it was used.  Each entry in the binders list is computed as an HMAC
-over the portion of the ClientHello (including the handshake header)
+over a transcript hash (see {{the-transcript-hash}}) containing a partial ClientHello
 up to and including the PreSharedKeyExtension.identities field. That
 is, it includes all of the ClientHello but not the binders list
 itself. The length fields for the message (including the overall
@@ -2639,12 +2640,14 @@ and HelloRetryRequest are included in the transcript along with the
 new ClientHello.  For instance, if the client sends ClientHello1, its
 binder will be computed over:
 
-       ClientHello1[truncated]
+       Transcript-Hash(ClientHello1[truncated])
 
 If the server responds with HelloRetryRequest, and the client then sends
 ClientHello2, its binder will be computed over:
 
-       ClientHello1 + HelloRetryRequest + ClientHello2[truncated]
+       Transcript-Hash(ClientHello1,
+                       HelloRetryRequest,
+                       ClientHello2[truncated])
 
 The full ClientHello is included in all other handshake hash computations.
 
@@ -2855,7 +2858,8 @@ The computations for the Authentication messages all uniformly
 take the following inputs:
 
 - The certificate and signing key to be used.
-- A Handshake Context based on the transcript of the handshake messages
+- A Handshake Context consisting of the set of messages to be
+  included in the transcript hash.
 - A base key to be used to compute a MAC key.
 
 Based on these inputs, the messages then contain:
@@ -2866,19 +2870,13 @@ supporting certificates in the chain. Note that certificate-based
 client authentication is not available in the 0-RTT case.
 
 CertificateVerify
-: A signature over the value Hash(Handshake Context + Certificate)
+: A signature over the value Transcript-Hash(Handshake Context, Certificate)
 
 Finished
-: A MAC over the value Hash(Handshake Context + Certificate + CertificateVerify)
+: A MAC over the value Transcript-Hash(Handshake Context, Certificate, CertificateVerify)
 using a MAC key derived from the base key.
 {:br}
 
-Because the CertificateVerify signs the Handshake Context +
-Certificate and the Finished MACs the Handshake Context + Certificate
-+ CertificateVerify, this is mostly equivalent to keeping a running hash
-of the handshake messages (exactly so in the pure 1-RTT cases). Note,
-however, that subsequent post-handshake authentications do not include
-each other, just the messages through the end of the main handshake.
 
 The following table defines the Handshake Context and MAC Base Key
 for each scenario:
@@ -2889,9 +2887,37 @@ for each scenario:
 | Client | ClientHello ... ServerFinished     | client_handshake_traffic_secret |
 | Post-Handshake | ClientHello ... ClientFinished + CertificateRequest | client_traffic_secret_N |
 
-In all cases, the handshake context is formed by concatenating the
-indicated handshake messages, including the handshake message type
-and length fields, but not including record layer headers.
+
+### The Transcript Hash
+
+Many of the cryptographic computations in TLS make use of a transcript
+hash. This value is computed by hashing the concatenation of the
+hashes of each included handshake message, including the handshake
+message header including the handshake message type and length fields,
+but not including record layer headers. I.e., 
+
+     Transcript-Hash(M1, M2, ... MN) = Hash(M1 || M2 ... MN)
+
+As an exception to this general rule, when the server responds to a
+ClientHello with a HelloRetryRequest, the value of ClientHello1 is
+replaced with a special synthetic handshake message of handshake
+type "message_hash" containing Hash(ClientHello1). I.e.,
+
+     Transcript-Hash(ClientHello1, HelloRetryRequest, ... MN) =
+         Hash(254 ||                 // Handshake Type
+              00 00 Hash.length ||   // Handshake message length
+              Hash(ClientHello1) ||  // Hash of ClientHello1
+              HelloRetryRequest ... MN)
+
+The reason for this construction is to allow the server to do a
+stateless HelloRetryRequest by storing just the hash of ClientHello1
+in the cookie, rather than requiring it to export the entire intermediate
+hash state (see {{cookie}}).
+
+In general, implementations can implement the transcript by keeping a
+running transcript hash value based on the negotiated hash. Note,
+however, that subsequent post-handshake authentications do not include
+each other, just the messages through the end of the main handshake.
 
 ###  Certificate
 
@@ -3111,7 +3137,7 @@ signature is a digital signature using that algorithm. The content
 to be signed is the hash output as described in
 {{authentication-messages}} namely:
 
-       Hash(Handshake Context + Certificate)
+       Transcript-Hash(Handshake Context, Certificate)
 
 The digital signature is then computed over the concatenation of:
 
@@ -3132,8 +3158,8 @@ and for a client signature is "TLS 1.3, client
 CertificateVerify". It is used to provide separation between signatures
 made in different contexts, helping against potential cross-protocol attacks.
 
-For example, if Hash(Handshake Context + Certificate) was 32 bytes of
-01 (this length would make sense for SHA-256), the content covered by
+For example, if the transcript hash was 32 bytes of
+01 (this length would make sense for SHA-256), the content covered by 
 the digital signature for a server CertificateVerify would be:
 
        2020202020202020202020202020202020202020202020202020202020202020
@@ -3227,9 +3253,9 @@ Structure of this message:
 The verify_data value is computed as follows:
 
        verify_data =
-           HMAC(finished_key, Hash(Handshake Context +
-                                   Certificate* +
-                                   CertificateVerify*))
+           HMAC(finished_key,
+                Transcript-Hash(Handshake Context,
+                                Certificate*, CertificateVerify*))
 
        * Only included if present.
 
@@ -4045,7 +4071,7 @@ defined below:
 
     Derive-Secret(Secret, Label, Messages) =
          HKDF-Expand-Label(Secret, Label,
-                           Hash(Messages), Hash.length)
+                           Transcript-Hash(Messages), Hash.length)
 ~~~~
 
 The Hash function and the HKDF hash are the cipher suite hash algorithm.
