@@ -2702,7 +2702,7 @@ Structure of this message:
        } EncryptedExtensions;
 
 extensions
-: A list of extensions. For more information, see the table in {{iana-considerations}}.
+: A list of extensions. For more information, see the table in {{extensions}}.
 {:br }
 
 ###  Certificate Request
@@ -4183,10 +4183,9 @@ application data keys or upon a key update).
 ###  Finite Field Diffie-Hellman
 
 For finite field groups, a conventional Diffie-Hellman computation is performed.
-The negotiated key (Z)
-is converted to byte string by encoding in big-endian, padded with zeros up to
-the size of the prime. This byte string is used as the shared secret, and is
-used in the key schedule as specified above.
+The negotiated key (Z) is converted to a byte string by encoding in big-endian,
+padded with zeros up to the size of the prime. This byte string is used as the
+shared secret, and is used in the key schedule as specified above.
 
 Note that this construction differs from previous versions of TLS which remove
 leading zeros.
@@ -4214,9 +4213,9 @@ ECDH functions are used as follows:
   result of applying the ECDH function to the secret key of appropriate length
   (into scalar input) and the standard public basepoint (into u-coordinate point
   input).
-* The ECDH shared secret is the result of applying ECDH function to the secret
-  key (into scalar input) and the peer's public key (into u-coordinate point
-  input). The output is used raw, with no processing.
+* The ECDH shared secret is the result of applying the ECDH function to the
+  secret key (into scalar input) and the peer's public key (into u-coordinate
+  point input). The output is used raw, with no processing.
 
 For X25519 and X448, see {{RFC7748}}.
 
@@ -5247,3 +5246,7 @@ Archives of the list can be found at:
 * Kazu Yamamoto \\
   Internet Initiative Japan Inc. \\
   kazu@iij.ad.jp
+
+* Tim Taubert \\
+  Mozilla \\
+  ttaubert@mozilla.com
