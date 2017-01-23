@@ -251,6 +251,17 @@ informative:
          ins: H. Krawczyk
        seriesinfo: Proceedings of Eurocrypt 2001
        date: 2001
+  CCG16:
+       title: "On Post-Compromise Security"
+       author:
+       -
+         ins: K. Cohn-Gordon
+       -
+         ins: C. Cremers
+       -
+         ins: L. Garratt
+       seriesinfo: IEEE Computer Security Foundations Symposium
+       date: 2015
   BBFKZG16:
        title: "Downgrade Resilience in Key-Exchange Protocols"
        author:
@@ -279,6 +290,19 @@ informative:
          ins: M. Wiener
        seriesinfo: Designs, Codes and Cryptography
        date: 1992
+  HGFS15:
+       title: "Prying Open Pandora's Box: KCI Attacks against TLS"
+       author:
+       -
+         ins: C. Hlauschek
+       -
+         ins: M. Gruber
+       -
+         ins: F. Fankhauser
+       -
+         ins: C. Schanes
+       seriesinfo: Proceedings of USENIX Workshop on Offensive Technologies
+       date: 2015
   SIGMA:
        title: "SIGMA: the 'SIGn-and-MAc' approach to authenticated Diffie-Hellman and its use in the IKE protocols"
        author:
@@ -4866,12 +4890,19 @@ Downgrade protection.
 should be the same as if the peers had been communicating in the
 absence of an attack (See {{BBFKZG16}}; defns 8 and 9}).
 
-Forward secret
+Forward secret with respect to long-term keys
 : If the long-term keying material (in this case the signature keys in certificate-based
 authentication modes or the external/resumption PSK in PSK with (EC)DHE modes) are compromised after
 the handshake is complete, this does not compromise the security of the
 session key (See {{DOW92}}).  The forward secrecy property is not satisfied
 when PSK is used in the "psk_ke" PskKeyExchangeMode.
+
+Key Compromise Impersonation (KCI) resistance
+: In a mutually-authenticated connection with certificates, peer authentication
+should hold even if the local long-term secret was compromised before the
+establishment of the connection (See {{HGFS15}}). For example, if a client's
+signature key is compromised, it should not be possible to impersonate
+arbitrary servers to that client.
 
 Protection of endpoint identities.
 : The server's identity (certificate) should be protected against passive
@@ -4949,6 +4980,12 @@ server is not able to guarantee full uniqueness of the handshake
 state. See {{early-data-indication}} for one mechanism to limit
 the exposure to replay.
 
+KCI resistance describes the security guarantees that a party may still have
+after its long-term secret has been compromised. TLS does not provide security
+for data communicated after the peer's long-term secret (signature key or
+external PSK) is compromised. It therefore does not provide post-compromise
+security {{CCG16}}, sometimes also referred to as backwards or future security.
+
 The reader should refer to the following references for analysis of the
 TLS handshake {{CHSV16}} {{FGSW16}} {{LXZFH16}}.
 
@@ -5010,11 +5047,12 @@ pseudorandom function (PRF).  In addition, as long as this function is truly
 one way, it is not possible to compute traffic keys from prior to a key change
 (forward secrecy).
 
-TLS does not provide security for data which is sent after a traffic secret is
-compromised (backward secrecy). Compromise of a traffic secret also compromises
-future confidentiality and integrity.  Systems which want backward secrecy need
-to do a fresh handshake and establish a new session key with an (EC)DHE
-exchange.
+TLS does not provide security for data which is communicated after a traffic
+secret is compromised i.e., post-compromise security/future secrecy/backward
+secrecy with respect to the traffic secret. Indeed, an attacker who learns a
+traffic secret can compute all future traffic secrets.  Systems which want such
+guarantees need to do a fresh handshake and establish a new session key with an
+(EC)DHE exchange.
 
 The reader should refer to {{RECORD}} for analysis of the
 TLS record layer.
