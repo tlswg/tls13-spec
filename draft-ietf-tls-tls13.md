@@ -1814,15 +1814,16 @@ A number of TLS messages contain tag-length-value encoded extensions structures.
        struct {
            ExtensionType extension_type;
            select (Extension.extension_type) {
-               case supported_groups:      NamedGroupList;
-               case signature_algorithms:  SignatureSchemeList;
-               case key_share:             KeyShare;
-               case pre_shared_key:        PreSharedKeyExtension;
-               case early_data:            EarlyDataIndication;
-               case supported_versions:    SupportedVersions;
-               case cookie:                Cookie;
-               case psk_key_exchange_modes: PskKeyExchangeModes;
-               case ticket_early_data_info: TicketEarlyDataInfo;
+               case supported_groups:        NamedGroupList;
+               case signature_algorithms:    SignatureSchemeList;
+               case key_share:               KeyShare;
+               case pre_shared_key:          PreSharedKeyExtension;
+               case early_data:              EarlyDataIndication;
+               case supported_versions:      SupportedVersions;
+               case cookie:                  Cookie;
+               case psk_key_exchange_modes:  PskKeyExchangeModes;
+               case oid_filters:             OIDFilterExtension;
+               case certificate_authorities: CertificateAuthoritiesExtension;
            };
        } Extension;
 
