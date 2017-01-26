@@ -2522,7 +2522,7 @@ identity
 obfuscated_ticket_age
 : For each ticket, the time since the client learned about the server
   configuration that it is using, in milliseconds.  This value is
-  added modulo 2^32 to with the "ticket_age_add" value that was
+  added modulo 2^32 to the "ticket_age_add" value that was
   included with the ticket, see {{NewSessionTicket}}.  This addition
   prevents passive observers from correlating sessions unless tickets
   are reused.  Note: because ticket lifetimes are restricted to a
