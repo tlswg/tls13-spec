@@ -2294,7 +2294,8 @@ The opaque value contains the
 Diffie-Hellman public value (Y = g^X mod p) for the specified group
 (see {{RFC7919}} for group definitions)
 encoded as a big-endian integer, padded with zeros to the size of p in
-bytes.
+bytes. The values of g and p are predefined, and are specified in {{RFC7919}}
+Appendix A.
 
 Note: For a given Diffie-Hellman group, the padding results in all public keys
 having the same length.
