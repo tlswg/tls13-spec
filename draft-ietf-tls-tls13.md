@@ -1627,6 +1627,7 @@ extensions
   defined in {{extensions}}.  In TLS 1.3, use
   of certain extensions is mandatory, as functionality is moved into
   extensions to preserve ClientHello compatibility with previous versions of TLS.
+  Servers MUST ignore unrecognized extensions.
 {:br }
 
 In the event that a client requests additional functionality using
@@ -2733,6 +2734,7 @@ extensions
 : An optional set of extensions describing the parameters of the
   certificate being requested. The "signature_algorithms"
   extension MUST be specified.
+  Clients MUST ignore unrecognized extensions.
 {:br}
 
 In prior versions of TLS, the CertificateRequest message
