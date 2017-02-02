@@ -1508,7 +1508,7 @@ follows:
 
 -  If PSK and (EC)DH are being used together, then the server will:
 
-    --  sends a "pre_shared_key" extension to indicate the selected key;
+    --  send a "pre_shared_key" extension to indicate the selected key;
 
     --  provide a "key_share" extension; and
 
