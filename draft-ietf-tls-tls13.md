@@ -3785,7 +3785,8 @@ with both modes. Future specifications MUST NOT provide an empty context and no
 context with the same label and SHOULD provide a context, possibly empty, in
 all exporter computations.
 
-
+Requirements for the format of exporter labels are defined in section 4
+of {{RFC5705}}.
 
 #  Compliance Requirements
 
