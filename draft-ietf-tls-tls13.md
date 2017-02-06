@@ -4246,6 +4246,9 @@ specifications MUST NOT define a use of exporters that permit both an empty
 context and no context with the same label. New uses of exporters SHOULD provide
 a context in all exporter computations, though the value could be empty.
 
+Requirements for the format of exporter labels are defined in section 4
+of {{RFC5705}}.
+
 #  Compliance Requirements
 
 ##  Mandatory-to-Implement Cipher Suites
