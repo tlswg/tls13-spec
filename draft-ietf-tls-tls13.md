@@ -1368,7 +1368,8 @@ For example:
        } V2;
 
        struct {
-           select (VariantTag) { /* value of selector is implicit */
+           VariantTag type;
+           select (VariantRecord.type) {
                case apple:  V1;  /* VariantBody, tag = apple */
                case orange: V2;  /* VariantBody, tag = orange */
            } variant_body;       /* optional label on variant */
