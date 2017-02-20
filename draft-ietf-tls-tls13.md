@@ -1332,18 +1332,13 @@ Fields and variables may be assigned a fixed value using "=", as in:
 
 ##  Variants
 
-Defined structures may have variants based on some knowledge that is available
-within the environment. The selector must be an enumerated type that defines
-the possible variants the structure defines. There must be a case arm for every
-element of the enumeration declared in the select. Case arms have limited
-fall-through: if two case arms follow in immediate succession with no fields in
-between, then they both contain the same fields. Thus, in the example below,
-"orange" and "banana" both contain V2. Note that this piece of syntax was added
-in TLS 1.2 {{RFC5246}}. Each case arm can have one or more fields.
-
-The body of the variant structure may be given a label for reference. The
-mechanism by which the variant is selected at runtime is not prescribed by the
-presentation language.
+Defined structures may have variants based on some knowledge that is
+available within the environment. The selector must be an enumerated
+type that defines the possible variants the structure defines. There
+must be a case arm for every element of the enumeration declared in
+the select. The body of the variant structure may be given a label
+for reference. The mechanism by which the variant is selected at
+runtime is not prescribed by the presentation language.
 
        struct {
            T1 f1;
@@ -1352,9 +1347,7 @@ presentation language.
            Tn fn;
            select (E) {
                case e1: Te1;
-               case e2: Te21;
-                        Te22;
-               case e3: case e4: Te3;
+               case e2: Te2;
                ....
                case en: Ten;
            } [[fv]];
@@ -1362,7 +1355,7 @@ presentation language.
 
 For example:
 
-       enum { apple(0), orange(1), banana(2) } VariantTag;
+       enum { apple, orange } VariantTag;
 
        struct {
            uint16 number;
@@ -1375,12 +1368,9 @@ For example:
        } V2;
 
        struct {
-           select (VariantTag) {
-               case apple:
-                 V1;   /* VariantBody, tag = apple */
-               case orange:
-               case banana:
-                 V2;   /* VariantBody, tag = orange or banana */
+           select (VariantTag) { /* value of selector is implicit */
+               case apple:  V1;  /* VariantBody, tag = apple */
+               case orange: V2;  /* VariantBody, tag = orange */
            } variant_body;       /* optional label on variant */
        } VariantRecord;
 
