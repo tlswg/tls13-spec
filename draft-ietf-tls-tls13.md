@@ -224,6 +224,21 @@ informative:
          ins: T. van der Merwe
        -
          ins: S. Scott
+  CHHSV17:
+       title: "Awkward Handshake: Possible mismatch of client/server view on client authentication in post-handshake mode in Revision 18"
+       date: 2017
+       target: https://www.ietf.org/mail-archive/web/tls/current/msg22382.html
+       author:
+       -
+         ins: C. Cremers
+       -
+         ins: M. Horvat
+       -
+         ins: J. Hoyland
+       -
+         ins: T. van der Merwe
+       -
+         ins: S. Scott
   SLOTH:
        title: "Transcript Collision Attacks: Breaking Authentication in TLS, IKE, and SSH"
        author:
@@ -4942,6 +4957,13 @@ authenticates before the client, the client can ensure that it only
 reveals its identity to an authenticated server. Note that implementations
 must use the provided record padding mechanism during the handshake
 to avoid leaking information about the identities due to length.
+
+A client that has sent authentication data to a server, either in the
+main handshake or in post-handshake authentication, cannot be sure if
+the server afterwards considers the client to be authenticated or not.
+If the client needs to determine if the server considers the connection
+to be unilaterally or mutually authenticated, this has to be provisioned
+by the application layer. See {{CHHSV17}} for details.
 
 The 0-RTT mode of operation generally provides the same security
 properties as 1-RTT data, with the two exceptions that the 0-RTT
