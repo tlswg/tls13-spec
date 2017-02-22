@@ -1850,7 +1850,7 @@ appears it MUST abort the handshake with an "illegal_parameter" alert.
 | server_name [RFC6066]                    |      CH, EE |
 | max_fragment_length [RFC6066]            |      CH, EE |
 | client_certificate_url [RFC6066]         |      CH, EE |
-| status_request [RFC6066]                 |      CH, CT |
+| status_request [RFC6066]                 |  CH, CR, CT |
 | user_mapping [RFC4681]                   |      CH, EE |
 | cert_type [RFC6091]                      |      CH, EE |
 | supported_groups [RFC7919]               |      CH, EE |
@@ -2959,6 +2959,11 @@ certificate. Specifically:
 The body of the "status_request" or "status_request_v2" extension
 from the server MUST be a CertificateStatus structure as defined
 in {{RFC6066}} and {{RFC6961}} respectively.
+
+A server may also request that a client present OCSP response with its
+certificate. In this case, the body of the "status_request" extension
+from the client MUST be a CertificateStatus structure as defined in
+{{RFC6066}}.
 
 Similarly, {{!RFC6962}} provides a mechanism for a server to send a
 Signed Certificate Timestamp (SCT) as an extension in the ServerHello.
@@ -5236,6 +5241,10 @@ Archives of the list can be found at:
   jar@netscape.com
 
 * Michael Sabin
+
+* Rich Salz \\
+  Akamai \\
+  rsalz@akamai.com
 
 * Dan Simon \\
   Microsoft, Inc. \\
