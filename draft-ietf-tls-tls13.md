@@ -1370,8 +1370,8 @@ For example:
        struct {
            VariantTag type;
            select (VariantRecord.type) {
-               case apple:  V1;  /* VariantBody, tag = apple */
-               case orange: V2;  /* VariantBody, tag = orange */
+               case apple:  V1;
+               case orange: V2;
            } variant_body;       /* optional label on variant */
        } VariantRecord;
 
