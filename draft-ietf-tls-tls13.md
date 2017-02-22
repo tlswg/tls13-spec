@@ -2956,14 +2956,15 @@ extension and the OCSP information is carried in a CertificateStatus
 message. In TLS 1.3, the server's OCSP information is carried in
 an extension in the CertificateEntry containing the associated
 certificate. Specifically:
-The body of the "status_request" or "status_request_v2" extension
+The body of the "status_request" extension
 from the server MUST be a CertificateStatus structure as defined
-in {{RFC6066}} and {{RFC6961}} respectively.
+in {{RFC6066}}.
 
 A server may also request that a client present OCSP response with its
-certificate. In this case, the body of the "status_request" extension
-from the client MUST be a CertificateStatus structure as defined in
-{{RFC6066}}.
+certificate by sending a "status_request" extension in its CertificateRequest
+message. If the client opts to send an OCSP response, the body of its
+"status_request" extension MUST be a CertificateStatus structure as
+defined in {{RFC6066}}.
 
 Similarly, {{!RFC6962}} provides a mechanism for a server to send a
 Signed Certificate Timestamp (SCT) as an extension in the ServerHello.
