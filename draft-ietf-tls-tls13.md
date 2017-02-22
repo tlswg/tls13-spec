@@ -1334,9 +1334,8 @@ Fields and variables may be assigned a fixed value using "=", as in:
 
 Defined structures may have variants based on some knowledge that is
 available within the environment. The selector must be an enumerated
-type that defines the possible variants the structure defines. There
-must be a case arm for every element of the enumeration declared in
-the select. The body of the variant structure may be given a label
+type that defines the possible variants the structure defines.
+The body of the variant structure may be given a label
 for reference. The mechanism by which the variant is selected at
 runtime is not prescribed by the presentation language.
 
