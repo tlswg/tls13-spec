@@ -5009,7 +5009,7 @@ Length concealment.
 : Given a record with a given external length, the attacker should not be able
 to determine the amount of the record that is content versus padding.
 
-Forward security after key change.
+Backward security after key change.
 : If the traffic key update mechanism described in {{key-update}} has been
 used and the previous generation key is deleted, an attacker who compromises
 the endpoint should not be able to decrypt traffic encrypted with the old key.
@@ -5038,11 +5038,11 @@ allow keys to be used for a larger number of encryptions than without
 re-keying. This relies on the security of the HKDF-Expand-Label function as a
 pseudorandom function (PRF).  In addition, as long as this function is truly
 one way, it is not possible to compute traffic keys from prior to a key change
-(forward secrecy).
+(backward secrecy).
 
 TLS does not provide security for data which is sent after a traffic secret is
-compromised (backward secrecy). Compromise of a traffic secret also compromises
-future confidentiality and integrity.  Systems which want backward secrecy need
+compromised (forward secrecy). Compromise of a traffic secret also compromises
+future confidentiality and integrity.  Systems which want forward secrecy need
 to do a fresh handshake and establish a new session key with an (EC)DHE
 exchange.
 
