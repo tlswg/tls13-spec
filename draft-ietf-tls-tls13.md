@@ -5101,6 +5101,10 @@ Archives of the list can be found at:
   Skygate Technology Ltd \\
   pc@skygate.co.uk
 
+* Cas Cremers \\
+  University of Oxford \\
+  cas.cremers@cs.ox.ac.uk
+
 * Antoine Delignat-Lavaud (co-author of [RFC7627]) \\
   INRIA \\
   antoine.delignat-lavaud@inria.fr
@@ -5150,6 +5154,13 @@ Archives of the list can be found at:
 * David Hopwood \\
   Independent Consultant \\
   david.hopwood@blueyonder.co.uk
+
+* Marko Horvat \\
+  MPI-SWS \\
+  mhorvat@mpi-sws.org
+
+* Jonathan Hoyland \\
+  Royal Holloway, University of London
 
 * Subodh Iyengar \\
   Facebook \\
@@ -5247,6 +5258,10 @@ Archives of the list can be found at:
   Akamai \\
   rsalz@akamai.com
 
+* Sam Scott \\
+  Royal Holloway, University of London \\
+  me@samjs.co.uk
+
 * Dan Simon \\
   Microsoft, Inc. \\
   dansimon@microsoft.com
@@ -5270,6 +5285,10 @@ Archives of the list can be found at:
 * Filippo Valsorda \\
   Cloudflare Inc. \\
   filippo@cloudflare.com
+
+* Thyla van der Merwe \\
+  Royal Holloway, University of London \\
+  tjvdmerwe@gmail.com
 
 * Tom Weinstein
 
