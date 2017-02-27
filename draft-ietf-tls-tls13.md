@@ -1371,7 +1371,7 @@ For example:
            select (VariantRecord.type) {
                case apple:  V1;
                case orange: V2;
-           } variant_body;       /* optional label on variant */
+           };
        } VariantRecord;
 
 
