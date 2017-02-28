@@ -3091,8 +3091,8 @@ Structure of this message:
 
 The algorithm field specifies the signature algorithm used (see
 {{signature-algorithms}} for the definition of this field). The
-signature is a digital signature using that algorithm. The content 
-to be signed is the hash output as described in 
+signature is a digital signature using that algorithm. The content
+to be signed is the hash output as described in
 {{authentication-messages}} namely:
 
        Hash(Handshake Context + Certificate)
@@ -3117,7 +3117,7 @@ CertificateVerify". It is used to provide separation between signatures
 made in different contexts, helping against potential cross-protocol attacks.
 
 For example, if Hash(Handshake Context + Certificate) was 32 bytes of
-01 (this length would make sense for SHA-256), the content covered by 
+01 (this length would make sense for SHA-256), the content covered by
 the digital signature for a server CertificateVerify would be:
 
        2020202020202020202020202020202020202020202020202020202020202020
@@ -3127,14 +3127,14 @@ the digital signature for a server CertificateVerify would be:
        00
        0101010101010101010101010101010101010101010101010101010101010101
 
-On the sender side the process for computing the signature field of the 
+On the sender side the process for computing the signature field of the
 CertificateVerify message takes as input:
 
 - The content covered by the digital signature
-- The private signing key corresponding to the certificate sent in the 
+- The private signing key corresponding to the certificate sent in the
   previous message
 
-If the CertificateVerify message is sent by a server, the signature 
+If the CertificateVerify message is sent by a server, the signature
 algorithm MUST be one offered in the
 client's "signature_algorithms" extension unless no valid certificate chain can be
 produced without unsupported algorithms (see {{signature-algorithms}}).
@@ -4267,6 +4267,8 @@ specifications MUST NOT define a use of exporters that permit both an empty
 context and no context with the same label. New uses of exporters SHOULD provide
 a context in all exporter computations, though the value could be empty.
 
+Requirements for the format of exporter labels are defined in section 4
+of {{RFC5705}}.
 
 #  Compliance Requirements
 
@@ -5307,4 +5309,3 @@ Archives of the list can be found at:
 * Kazu Yamamoto \\
   Internet Initiative Japan Inc. \\
   kazu@iij.ad.jp
-
