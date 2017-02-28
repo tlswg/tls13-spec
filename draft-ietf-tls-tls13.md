@@ -2372,7 +2372,7 @@ a "psk_key_exchange_modes" extension, servers MUST abort the handshake.
 Servers MUST NOT select a key exchange mode that is not listed by the
 client. This extension also restricts the modes for use with PSK resumption;
 servers SHOULD NOT send NewSessionTicket with tickets that are not
-compatible with the advertised modes; however if a server does so, the impact
+compatible with the advertised modes; however, if a server does so, the impact
 will just be that the client's attempts at resumption fail.
 
 The server MUST NOT send a "psk_key_exchange_modes" extension.
@@ -2934,7 +2934,7 @@ extensions:
 {:br }
 
 Note: Prior to TLS 1.3, "certificate_list" ordering required each certificate
-to certify the one immediately preceding it,
+to certify the one immediately preceding it;
 however, some implementations allowed some flexibility. Servers sometimes send
 both a current and deprecated intermediate for transitional purposes, and others
 are simply configured incorrectly, but these cases can nonetheless be validated
@@ -4760,7 +4760,7 @@ specification properly and might abort connections upon encountering
 TLS extensions or versions which they are not aware of. Interoperability
 with buggy servers is a complex topic beyond the scope of this document.
 Multiple connection attempts may be required in order to negotiate
-a backwards compatible connection, however, this practice is vulnerable
+a backwards compatible connection; however, this practice is vulnerable
 to downgrade attacks and is NOT RECOMMENDED.
 
 
@@ -4779,7 +4779,7 @@ with a "protocol_version" alert.
 
 Note that earlier versions of TLS did not clearly specify the record layer
 version number value in all cases (TLSPlaintext.legacy_record_version). Servers
-will receive various TLS 1.x versions in this field, however its value
+will receive various TLS 1.x versions in this field, but its value
 MUST always be ignored.
 
 
