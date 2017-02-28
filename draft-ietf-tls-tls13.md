@@ -4537,7 +4537,7 @@ New cipher suite values are assigned by IANA as described in
 # Implementation Notes
 
 The TLS protocol cannot prevent many common security mistakes. This section
-provides several recommendations to assist implementors. Also
+provides several recommendations to assist implementors.
 {{I-D.ietf-tls-tls13-vectors}} provides test vectors for TLS 1.3 handshakes.
 
 ## API considerations for 0-RTT
