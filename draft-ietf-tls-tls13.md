@@ -3541,7 +3541,7 @@ by an encrypted body, which itself contains a type and optional padding.
        } TLSCiphertext;
 
 content
-: The byte encoding of a handshake or an alert message, or the the raw bytes of
+: The byte encoding of a handshake or an alert message, or the raw bytes of
 the application's data to send.
 
 type
