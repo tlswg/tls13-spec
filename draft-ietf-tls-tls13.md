@@ -5171,6 +5171,10 @@ Archives of the list can be found at:
   Independent \\
   ilariliusvaara@welho.com
 
+* Atul Luykx \\
+  K.U. Leuven \\
+  atul.luykx@kuleuven.be
+
 * Carl Mehner \\
   USAA \\
   carl.mehner@usaa.com
@@ -5194,6 +5198,10 @@ Archives of the list can be found at:
 * Kazuho Oku \\
   DeNA Co., Ltd. \\
   kazuhooku@gmail.com
+
+* Kenny Paterson \\
+  Royal Holloway, University of London \\
+  kenny.paterson@rhul.ac.uk
 
 * Alfredo Pironti (co-author of [RFC7627]) \\
   INRIA \\
