@@ -3307,7 +3307,7 @@ ticket_lifetime
 
 
 ticket_age_add
-: A randomly generated 32-bit value that is used to obscure the age of
+: A securely generated, random 32-bit value that is used to obscure the age of
   the ticket that the client includes in the "pre_shared_key" extension.
   The client-side ticket age is added to this value modulo 2^32 to
   obtain the value that is transmitted by the client.
