@@ -849,7 +849,7 @@ secret keying material. Once the handshake is complete, the peers
 use the established keys to protect application layer traffic.
 
 A failure of the handshake or other protocol error triggers the
-termination of the connection, optionally preceded by an alert message
+termination of the connection, optionally preceded by an Alert message
 ({{alert-protocol}}).
 
 TLS supports three basic key exchange modes:
@@ -2311,7 +2311,7 @@ the opaque key_exchange field of a KeyShareEntry in a KeyShare structure.
 The opaque value contains the
 Diffie-Hellman public value (Y = g^X mod p) for the specified group
 (see {{RFC7919}} for group definitions)
-encoded as a big-endian integer, padded with zeros to the size of p in
+encoded as a big-endian integer and padded with zeros to the size of p in
 bytes.
 
 Note: For a given Diffie-Hellman group, the padding results in all public keys
@@ -2347,9 +2347,9 @@ infinity (O), (2) verify that for Y = (x, y) both integers are in the correct
 interval, (3) ensure that (x, y) is a correct solution to the elliptic curve equation.
 For these curves, implementers MAY optionally verify membership in the correct subgroup.
 
-For x25519 and x448, the contents of the public value are the byte string inputs and outputs of the
-corresponding functions defined in {{RFC7748}}, 32 bytes for x25519 and 56
-bytes for x448. Peers SHOULD use the approach specified in {{RFC7748}} to calculate
+For X25519 and X448, the contents of the public value are the byte string inputs and outputs of the
+corresponding functions defined in {{RFC7748}}, 32 bytes for X25519 and 56
+bytes for X448. Peers SHOULD use the approach specified in {{RFC7748}} to calculate
 the Diffie-Hellman shared secret, and MUST
 check whether the computed Diffie-Hellman shared secret is the all-zero value and abort if so, as described
 in Section 6 of {{RFC7748}}. If implementers
@@ -3053,7 +3053,7 @@ authentication, or abort the handshake with a "certificate_required" alert. Also
 aspect of the certificate chain was unacceptable (e.g., it was not signed by a
 known, trusted CA), the server MAY at its discretion either continue the
 handshake (considering the client unauthenticated) or abort the handshake
-with a "bad_certificate" alert.
+with an appropriate alert (see {{error-alerts}}).
 
 Any endpoint receiving any certificate signed using any signature algorithm
 using an MD5 hash MUST abort the handshake with a "bad_certificate" alert.
@@ -3419,7 +3419,7 @@ the data into manageable blocks, protects the records, and transmits
 the result. Received data is verified and decrypted, reassembled, and
 then delivered to higher-level clients.
 
-TLS records are typed, which allows multiple higher level protocols to
+TLS records are typed, which allows multiple higher-level protocols to
 be multiplexed over the same record layer. This document specifies
 three content types: handshake, application data, and alert.
 Implementations MUST NOT send record types not defined in this
@@ -3495,7 +3495,7 @@ legacy_record_version
 
 length
 : The length (in bytes) of the following TLSPlaintext.fragment. The
-  length MUST NOT exceed 2^14. An endpoint that receives a record
+  length MUST NOT exceed 2^14 bytes. An endpoint that receives a record
   that exceeds this length MUST terminate the connection with a
   "record_overflow" alert.
 
@@ -3505,7 +3505,7 @@ fragment
   specified by the type field.
 {:br }
 
-This document describes TLS Version 1.3, which uses the version 0x0304.
+This document describes TLS 1.3, which uses the version 0x0304.
 This version value is historical, deriving from the use of 0x0301
 for TLS 1.0 and 0x0300 for SSL 3.0. In order to maximize backwards
 compatibility, the record layer version identifies as simply TLS 1.0.
@@ -3520,10 +3520,10 @@ described in the following section.
 ## Record Payload Protection
 
 The record protection functions translate a TLSPlaintext structure into a
-TLSCiphertext. The deprotection functions reverse the process. In TLS 1.3
+TLSCiphertext. The deprotection functions reverse the process. In TLS 1.3,
 as opposed to previous versions of TLS, all ciphers are modeled as
 "Authenticated Encryption with Additional Data" (AEAD) {{RFC5116}}.
-AEAD functions provide a unified encryption and authentication
+AEAD functions provide an unified encryption and authentication
 operation which turns plaintext into authenticated ciphertext and
 back again. Each encrypted record consists of a plaintext header followed
 by an encrypted body, which itself contains a type and optional padding.
@@ -3544,7 +3544,7 @@ by an encrypted body, which itself contains a type and optional padding.
        } TLSCiphertext;
 
 content
-: The byte encoding of a handshake or an alert message, or the raw bytes of
+: The byte encoding of a handshake or an Alert message, or the raw bytes of
 the application's data to send.
 
 type
@@ -3577,12 +3577,12 @@ length
 : The length (in bytes) of the following TLSCiphertext.encrypted_record, which
   is the sum of the lengths of the content and the padding, plus one
   for the inner content type, plus any expansion added by the AEAD algorithm.
-  The length MUST NOT exceed 2^14 + 256.
+  The length MUST NOT exceed 2^14 + 256 bytes.
   An endpoint that receives a record that exceeds this length MUST
   terminate the connection with a "record_overflow" alert.
 
 encrypted_record
-: The AEAD encrypted form of the serialized TLSInnerPlaintext structure.
+: The AEAD-encrypted form of the serialized TLSInnerPlaintext structure.
 {:br }
 
 
@@ -3639,7 +3639,7 @@ MUST use sequence number 0.
 
 Because the size of sequence numbers is 64-bit, they should not
 wrap. If a TLS implementation would need to
-wrap a sequence number, it MUST either rekey ({{key-update}}) or
+wrap a sequence number, it MUST either re-key ({{key-update}}) or
 terminate the connection.
 
 Each AEAD algorithm will specify a range of possible lengths for the
@@ -3690,7 +3690,7 @@ content type of the message.
 This padding scheme was selected because it allows padding of any encrypted
 TLS record by an arbitrary size (from zero up to TLS record size
 limits) without introducing new content types.  The design also
-enforces all-zero padding octets, which allows for quick detection of
+enforces all-zero padding octets, which allow for quick detection of
 padding errors.
 
 Implementations MUST limit their scanning to the cleartext returned
@@ -3705,7 +3705,7 @@ Selecting a padding policy that suggests when and how much to pad is a
 complex topic, and is beyond the scope of this specification. If the
 application layer protocol atop TLS has its own padding, it may be
 preferable to pad application_data TLS records within the application
-layer.  Padding for encrypted handshake and alert TLS records must
+layer.  Padding for encrypted Handshake and Alert TLS records must
 still be handled at the TLS layer, though.  Later documents may define
 padding selection algorithms, or define a padding policy request
 mechanism through TLS extensions or some other means.
@@ -3716,7 +3716,7 @@ There are cryptographic limits on the amount of plaintext which can be
 safely encrypted under a given set of keys.  {{AEAD-LIMITS}} provides
 an analysis of these limits under the assumption that the underlying
 primitive (AES or ChaCha20) has no weaknesses. Implementations SHOULD
-do a key update {{key-update}} prior to reaching these limits.
+do a key update as described in {{key-update}} prior to reaching these limits.
 
 For AES-GCM, up to 2^24.5 full-size records (about 24 million)
 may be encrypted on a
@@ -3728,7 +3728,7 @@ safety limit is reached.
 #  Alert Protocol
 
 One of the content types supported by the TLS record layer is the
-alert type.  Like other messages, alert messages are encrypted as
+Alert type.  Like other messages, Alert messages are encrypted as
 specified by the current connection state.
 
 Alert messages convey a description of the alert and a legacy field
@@ -3739,7 +3739,7 @@ Some alerts are sent to
 indicate orderly closure of the connection or the end of
 early data (see {{closure-alerts}}).
 Upon receiving such an alert, the TLS implementation SHOULD
-indicate end-of-data to the application and, if appropriate for
+indicate end-of-data to the application, and, if appropriate for
 the alert type, send a closure alert in response.
 
 Error alerts indicate abortive closure of the
@@ -3821,7 +3821,7 @@ user_canceled
 {:br }
 
 Either party MAY initiate a close by sending a "close_notify" alert. Any data
-received after a closure alert is ignored. If a transport-level close is
+received after a closure alert MUST be ignored. If a transport-level close is
 received prior to a "close_notify", the receiver cannot know that all the
 data that was sent has been received.
 
@@ -3829,12 +3829,12 @@ Each party MUST send a "close_notify" alert before closing the write side
 of the connection, unless some other fatal alert has been transmitted. The
 other party MUST respond with a "close_notify" alert of its own and close down
 the connection immediately, discarding any pending writes. The initiator of the
-close need not wait for the responding "close_notify" alert before closing the
+close MUST NOT wait for the responding "close_notify" alert before closing the
 read side of the connection.
 
 If the application protocol using TLS provides that any data may be carried
 over the underlying transport after the TLS connection is closed, the TLS
-implementation must receive the responding "close_notify" alert before indicating
+implementation MUST receive the responding "close_notify" alert before indicating
 to the application layer that the TLS connection has ended. If the application
 protocol will not transfer any additional data, but will only close the
 underlying transport connection, then the implementation MAY choose to close
@@ -3849,8 +3849,8 @@ before destroying the transport.
 
 Error handling in the TLS Handshake Protocol is very simple. When an
 error is detected, the detecting party sends a message to its
-peer. Upon transmission or receipt of a fatal alert message, both
-parties immediately close the connection.
+peer. Upon transmission or receipt of a fatal Alert message, both
+parties MUST immediately close the connection.
 
 Whenever an implementation encounters a fatal error condition, it
 SHOULD send an appropriate fatal alert and MUST close the connection
@@ -3890,7 +3890,7 @@ record_overflow
   in the network.
 
 handshake_failure
-: Reception of a "handshake_failure" alert message indicates that the
+: Reception of a "handshake_failure" Alert message indicates that the
   sender was unable to negotiate an acceptable set of security
   parameters given the options available.
 
@@ -3941,7 +3941,7 @@ decrypt_error
 
 protocol_version
 : The protocol version the peer has attempted to negotiate is
-  recognized but not supported. (see {{backward-compatibility}})
+  recognized but not supported. See {{backward-compatibility}}.
 
 insufficient_security
 : Returned instead of "handshake_failure" when a negotiation has
@@ -3950,43 +3950,43 @@ insufficient_security
 
 internal_error
 : An internal error unrelated to the peer or the correctness of the
-  protocol (such as a memory allocation failure) makes it impossible
+  protocol (such as a memory allocation failure) which makes it impossible
   to continue.
 
 inappropriate_fallback
 : Sent by a server in response to an invalid connection retry attempt
-  from a client {{!RFC7507}}.
+  from a client (see {{!RFC7507}}).
 
 missing_extension
-: Sent by endpoints that receive a hello message not containing an
+: Sent by endpoints that receive a Hello message not containing an
   extension that is mandatory to send for the offered TLS version
   or other negotiated parameters.
 
 unsupported_extension
-: Sent by endpoints receiving any hello message containing an extension
-  known to be prohibited for inclusion in the given hello message, including
+: Sent by endpoints receiving any Hello message containing an extension
+  known to be prohibited for inclusion in the given Hello message, including
   any extensions in a ServerHello or Certificate not first offered in the
   corresponding ClientHello.
 
 certificate_unobtainable
 : Sent by servers when unable to obtain a certificate from a URL
   provided by the client via the "client_certificate_url" extension
-  {{RFC6066}}.
+  (see {{RFC6066}}).
 
 unrecognized_name
 : Sent by servers when no server exists identified by the name
   provided by the client via the "server_name" extension
-  {{RFC6066}}.
+  (see {{RFC6066}}).
 
 bad_certificate_status_response
 : Sent by clients when an invalid or unacceptable OCSP response is
   provided by the server via the "status_request" extension
-  {{RFC6066}}.
+  (see {{RFC6066}}).
 
 bad_certificate_hash_value
 : Sent by servers when a retrieved object does not have the correct hash
   provided by the client via the "client_certificate_url" extension
-  {{RFC6066}}.
+  (see {{RFC6066}}).
 
 unknown_psk_identity
 : Sent by servers when PSK key establishment is desired but no
@@ -4010,7 +4010,7 @@ and the handshake transcript. Note that because the handshake
 transcript includes the random values in the Hello messages,
 any given handshake will have different traffic secrets, even
 if the same input secrets are used, as is the case when
-the same PSK is used for multiple connections
+the same PSK is used for multiple connections.
 
 ## Key Schedule
 
@@ -4032,7 +4032,7 @@ defined below:
 
     Derive-Secret(Secret, Label, Messages) =
          HKDF-Expand-Label(Secret, Label,
-                           Hash(Messages), Hash.Length)
+                           Hash(Messages), Hash.length)
 ~~~~
 
 The Hash function and the HKDF hash are the cipher suite hash algorithm.
@@ -4209,7 +4209,7 @@ application data keys or upon a key update).
 ###  Finite Field Diffie-Hellman
 
 For finite field groups, a conventional Diffie-Hellman computation is performed.
-The negotiated key (Z) is converted to a byte string by encoding in big-endian,
+The negotiated key (Z) is converted to a byte string by encoding in big-endian and
 padded with zeros up to the size of the prime. This byte string is used as the
 shared secret, and is used in the key schedule as specified above.
 
@@ -4241,7 +4241,7 @@ ECDH functions are used as follows:
   input).
 * The ECDH shared secret is the result of applying the ECDH function to the
   secret key (into scalar input) and the peer's public key (into u-coordinate
-  point input). The output is used raw, with no processing.
+  point input). The output is used rawly, with no processing.
 
 For X25519 and X448, see {{RFC7748}}.
 
@@ -4280,7 +4280,7 @@ of {{RFC5705}}.
 In the absence of an application profile standard specifying otherwise, a
 TLS-compliant application MUST implement the TLS_AES_128_GCM_SHA256
 cipher suite and SHOULD implement the TLS_AES_256_GCM_SHA384 and
-TLS_CHACHA20_POLY1305_SHA256 cipher suites. (see {{cipher-suites}})
+TLS_CHACHA20_POLY1305_SHA256 cipher suites. See {{cipher-suites}}.
 
 A TLS-compliant application MUST support digital signatures with
 rsa_pkcs1_sha256 (for certificates), rsa_pss_sha256 (for
@@ -4305,7 +4305,7 @@ applicable features:
 
   * "supported_versions" is REQUIRED for all ClientHello messages.
   * "signature_algorithms" is REQUIRED for certificate authentication.
-  * "supported_groups" and "key_share" are REQUIRED for DHE or ECDHE key exchange.
+  * "supported_groups" and "key_share" are REQUIRED for DHE and ECDHE key exchange.
   * "pre_shared_key" is REQUIRED for PSK key agreement.
 
 A client is considered to be attempting to negotiate using this
@@ -4346,9 +4346,7 @@ and their allocation policies are below:
 - TLS Cipher Suite Registry: Values with the first byte in the range
   0-254 (decimal) are assigned via Specification Required {{RFC5226}}.
   Values with the first byte 255 (decimal) are reserved for Private
-  Use {{RFC5226}}.
-
-  IANA \[SHALL add/has added] the cipher suites listed in {{cipher-suites}} to
+  Use {{RFC5226}}. IANA \[SHALL add/has added] the cipher suites listed in {{cipher-suites}} to
   the registry. The "Value" and "Description" columns are taken from the table.
   The "DTLS-OK" and "Recommended" columns are both marked as "Yes" for each new
   cipher suite. \[\[This assumes {{?I-D.ietf-tls-iana-registry-updates}} has been
@@ -4638,7 +4636,7 @@ TLS protocol issues:
   a malformed plaintext of all-zeros?
 
 - Do you properly ignore unrecognized cipher suites ({{client-hello}}),
-  hello extensions ({{extensions}}), named groups ({{negotiated-groups}}),
+  Hello extensions ({{extensions}}), named groups ({{negotiated-groups}}),
   and signature algorithms ({{signature-algorithms}})?
 
 - As a server, do you send a HelloRetryRequest to clients which
@@ -4730,7 +4728,7 @@ records thereafter.
 For maximum compatibility with previously non-standard behavior and misconfigured
 deployments, all implementations SHOULD support validation of certification paths
 based on the expectations in this document, even when handling prior TLS versions'
-handshakes. (see {{server-certificate-selection}})
+handshakes. See {{server-certificate-selection}}.
 
 TLS 1.2 and prior supported an "Extended Master Secret" {{RFC7627}} extension
 which digested large parts of the handshake transcript into the master secret.
