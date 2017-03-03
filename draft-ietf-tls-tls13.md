@@ -3104,7 +3104,7 @@ The digital signature is then computed over the concatenation of:
 
 - A string that consists of octet 32 (0x20) repeated 64 times
 - The context string
-- A single 0-byte which serves as the separator
+- A single 0 byte which serves as the separator
 - The content to be signed
 
 This structure is intended to prevent an attack on previous versions
