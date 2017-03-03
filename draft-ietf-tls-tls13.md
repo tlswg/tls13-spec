@@ -2316,8 +2316,7 @@ Note: For a given Diffie-Hellman group, the padding results in all public keys
 having the same length.
 
 Peers SHOULD validate each other's public key Y by ensuring that 1 < Y
-< p-1. This check ensures that the remote peer is properly behaved and
-isn't forcing the local system into a small subgroup.
+< p-1. This check ensures that the remote peer is properly behaved.
 
 
 #### ECDHE Parameters {#ecdhe-param}
