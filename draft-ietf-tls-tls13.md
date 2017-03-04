@@ -475,9 +475,9 @@ receiver: An endpoint that is receiving records.
 
 sender: An endpoint that is transmitting records.
 
-session: An association between a client and a server resulting from a handshake.
-
 server: The endpoint which did not initiate the TLS connection.
+
+session: An association between a client and a server resulting from a handshake.
 
 
 ##  Major Differences from TLS 1.2
