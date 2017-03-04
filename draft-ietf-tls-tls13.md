@@ -1369,7 +1369,7 @@ runtime is not prescribed by the presentation language.
 
 For example:
 
-       enum { apple, orange } VariantTag;
+       enum { apple(0), orange(1) } VariantTag;
 
        struct {
            uint16 number;
