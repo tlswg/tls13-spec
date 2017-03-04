@@ -2326,7 +2326,7 @@ the opaque key_exchange field of a KeyShareEntry in a KeyShare structure.
 The opaque value contains the
 Diffie-Hellman public value (Y = g^X mod p) for the specified group
 (see {{RFC7919}} for group definitions)
-encoded as a big-endian integer, padded with zeros to the size of p in
+encoded as a big-endian integer and padded with zeros to the size of p in
 bytes.
 
 Note: For a given Diffie-Hellman group, the padding results in all public keys
@@ -4219,7 +4219,7 @@ application data keys or upon a key update).
 ###  Finite Field Diffie-Hellman
 
 For finite field groups, a conventional Diffie-Hellman computation is performed.
-The negotiated key (Z) is converted to a byte string by encoding in big-endian,
+The negotiated key (Z) is converted to a byte string by encoding in big-endian and
 padded with zeros up to the size of the prime. This byte string is used as the
 shared secret, and is used in the key schedule as specified above.
 
