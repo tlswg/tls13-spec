@@ -3647,7 +3647,7 @@ algorithm where N_MAX is less than 8 bytes MUST NOT be used with TLS.
 The per-record nonce for the AEAD construction is formed as follows:
 
   1. The 64-bit record sequence number is encoded in network byte order
-     and padded to the left with zeroes to iv_length.
+     and padded to the left with zeros to iv_length.
 
   2. The padded sequence number is XORed with the static client_write_iv
      or server_write_iv, depending on the role.
