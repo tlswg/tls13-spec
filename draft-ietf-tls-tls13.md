@@ -3639,7 +3639,7 @@ MUST use sequence number 0.
 
 Because the size of sequence numbers is 64-bit, they should not
 wrap. If a TLS implementation would need to
-wrap a sequence number, it MUST either rekey ({{key-update}}) or
+wrap a sequence number, it MUST either re-key ({{key-update}}) or
 terminate the connection.
 
 Each AEAD algorithm will specify a range of possible lengths for the
