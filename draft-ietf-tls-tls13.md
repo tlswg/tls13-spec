@@ -3531,7 +3531,7 @@ described in the following section.
 ## Record Payload Protection
 
 The record protection functions translate a TLSPlaintext structure into a
-TLSCiphertext. The deprotection functions reverse the process. In TLS 1.3
+TLSCiphertext. The deprotection functions reverse the process. In TLS 1.3,
 as opposed to previous versions of TLS, all ciphers are modeled as
 "Authenticated Encryption with Additional Data" (AEAD) {{RFC5116}}.
 AEAD functions provide a unified encryption and authentication
@@ -3750,7 +3750,7 @@ Some alerts are sent to
 indicate orderly closure of the connection or the end of
 early data (see {{closure-alerts}}).
 Upon receiving such an alert, the TLS implementation SHOULD
-indicate end-of-data to the application and, if appropriate for
+indicate end-of-data to the application, and if appropriate for
 the alert type, send a closure alert in response.
 
 Error alerts indicate abortive closure of the
