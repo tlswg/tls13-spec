@@ -4042,7 +4042,7 @@ defined below:
 
     Derive-Secret(Secret, Label, Messages) =
          HKDF-Expand-Label(Secret, Label,
-                           Hash(Messages), Hash.Length)
+                           Hash(Messages), Hash.length)
 ~~~~
 
 The Hash function and the HKDF hash are the cipher suite hash algorithm.
