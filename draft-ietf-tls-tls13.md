@@ -1591,7 +1591,7 @@ attempt to negotiate TLS 1.3 if a "supported_version" extension
 is present.
 
 legacy_version
-: In previous versions of TLS, this field was used for version negotiation
+: In versions of TLS before TLS 1.3, this field was used for version negotiation
   and represented the highest version number supported by the client.
   Experience has shown that many servers do not properly implement
   version negotiation, leading to "version intolerance" in which
@@ -3224,7 +3224,7 @@ As noted above, the HMAC input can generally be implemented by a running
 hash, i.e., just the handshake hash at this point.
 
 In previous versions of TLS, the verify_data was always 12 octets long. In
-the current version of TLS, it is the size of the HMAC output for the
+TLS 1.3, it is the size of the HMAC output for the
 Hash used for the handshake.
 
 Note: Alerts and any other record types are not handshake messages
@@ -3504,7 +3504,7 @@ fragment
   specified by the type field.
 {:br }
 
-This document describes TLS Version 1.3, which uses the version 0x0304.
+This document describes TLS 1.3, which uses the version 0x0304.
 This version value is historical, deriving from the use of 0x0301
 for TLS 1.0 and 0x0300 for SSL 3.0. In order to maximize backwards
 compatibility, the record layer version identifies as simply TLS 1.0.
