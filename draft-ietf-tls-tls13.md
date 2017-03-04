@@ -849,7 +849,7 @@ secret keying material. Once the handshake is complete, the peers
 use the established keys to protect application layer traffic.
 
 A failure of the handshake or other protocol error triggers the
-termination of the connection, optionally preceded by an alert message
+termination of the connection, optionally preceded by an Alert message
 ({{alert-protocol}}).
 
 TLS supports three basic key exchange modes:
@@ -3193,8 +3193,8 @@ receive application data over the connection.
 Early data may be sent prior to the receipt of the peer's Finished
 message, per {{early-data-indication}}.
 
-The key used to compute the finished message is computed from the
-Base key defined in {{authentication-messages}} using HKDF (see
+The key used to compute the Finished message is computed from the
+Base Key defined in {{authentication-messages}} using HKDF (see
 {{key-schedule}}). Specifically:
 
 ~~~
@@ -3281,8 +3281,8 @@ connection, as described in Section 3 of {{RFC6066}}.
 Note: Although the resumption master secret depends on the client's second
 flight, servers which do not request client authentication MAY compute
 the remainder of the transcript independently and then send a
-NewSessionTicket immediately upon sending its Finished rather than
-waiting for the client Finished.  This might be appropriate in cases
+NewSessionTicket immediately upon sending the Finished message rather than
+waiting for the client's Finished message.  This might be appropriate in cases
 where the client is expected to open multiple TLS connections in
 parallel and would benefit from the reduced overhead of a resumption
 handshake, for example.
@@ -3544,7 +3544,7 @@ by an encrypted body, which itself contains a type and optional padding.
        } TLSCiphertext;
 
 content
-: The byte encoding of a handshake or an alert message, or the raw bytes of
+: The byte encoding of a handshake or an Alert message, or the raw bytes of
 the application's data to send.
 
 type
@@ -3705,7 +3705,7 @@ Selecting a padding policy that suggests when and how much to pad is a
 complex topic, and is beyond the scope of this specification. If the
 application layer protocol atop TLS has its own padding, it may be
 preferable to pad application_data TLS records within the application
-layer.  Padding for encrypted handshake and alert TLS records must
+layer.  Padding for encrypted Handshake and Alert TLS records must
 still be handled at the TLS layer, though.  Later documents may define
 padding selection algorithms, or define a padding policy request
 mechanism through TLS extensions or some other means.
@@ -3728,7 +3728,7 @@ safety limit is reached.
 #  Alert Protocol
 
 One of the content types supported by the TLS record layer is the
-alert type.  Like other messages, alert messages are encrypted as
+Alert type.  Like other messages, Alert messages are encrypted as
 specified by the current connection state.
 
 Alert messages convey a description of the alert and a legacy field
@@ -3849,7 +3849,7 @@ before destroying the transport.
 
 Error handling in the TLS Handshake Protocol is very simple. When an
 error is detected, the detecting party sends a message to its
-peer. Upon transmission or receipt of a fatal alert message, both
+peer. Upon transmission or receipt of a fatal Alert message, both
 parties immediately close the connection.
 
 Whenever an implementation encounters a fatal error condition, it
@@ -3890,7 +3890,7 @@ record_overflow
   in the network.
 
 handshake_failure
-: Reception of a "handshake_failure" alert message indicates that the
+: Reception of a "handshake_failure" Alert message indicates that the
   sender was unable to negotiate an acceptable set of security
   parameters given the options available.
 
@@ -3958,13 +3958,13 @@ inappropriate_fallback
   from a client (see {{!RFC7507}}).
 
 missing_extension
-: Sent by endpoints that receive a hello message not containing an
+: Sent by endpoints that receive a Hello message not containing an
   extension that is mandatory to send for the offered TLS version
   or other negotiated parameters.
 
 unsupported_extension
-: Sent by endpoints receiving any hello message containing an extension
-  known to be prohibited for inclusion in the given hello message, including
+: Sent by endpoints receiving any Hello message containing an extension
+  known to be prohibited for inclusion in the given Hello message, including
   any extensions in a ServerHello or Certificate not first offered in the
   corresponding ClientHello.
 
@@ -4636,7 +4636,7 @@ TLS protocol issues:
   a malformed plaintext of all-zeros?
 
 - Do you properly ignore unrecognized cipher suites ({{client-hello}}),
-  hello extensions ({{extensions}}), named groups ({{negotiated-groups}}),
+  Hello extensions ({{extensions}}), named groups ({{negotiated-groups}}),
   and signature algorithms ({{signature-algorithms}})?
 
 - As a server, do you send a HelloRetryRequest to clients which
