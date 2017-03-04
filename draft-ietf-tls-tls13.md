@@ -3052,7 +3052,8 @@ the server MAY at its discretion either continue the handshake without client
 authentication, or abort the handshake with a "certificate_required" alert. Also, if some
 aspect of the certificate chain was unacceptable (e.g., it was not signed by a
 known, trusted CA), the server MAY at its discretion either continue the
-handshake (considering the client unauthenticated) or abort the handshake.
+handshake (considering the client unauthenticated) or abort the handshake
+with an appropriate alert (see {{error-alerts}}).
 
 Any endpoint receiving any certificate signed using any signature algorithm
 using an MD5 hash MUST abort the handshake with a "bad_certificate" alert.
