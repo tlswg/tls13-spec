@@ -1176,7 +1176,7 @@ requested. Implementations SHOULD provide special functions for 0-RTT data to en
 that an application is always aware that it is sending or receiving
 data that might be replayed.
 
-The same warnings apply to any use of the early exporter secret.
+The same warnings apply to any use of the early_exporter_secret.
 
 The remainder of this document provides a detailed description of TLS.
 
@@ -1762,7 +1762,7 @@ Structure of this message:
 
 {:br }
 
-The version and extensions fields have the
+The server_version and extensions fields have the
 same meanings as their corresponding values in the ServerHello.
 The server SHOULD send only the extensions necessary for the client to
 generate a correct ClientHello pair. As with ServerHello, a
@@ -3022,7 +3022,7 @@ The following rules apply to certificates sent by the client:
 - The certificate type MUST be X.509v3 {{RFC5280}}, unless explicitly negotiated
   otherwise (e.g., {{RFC5081}}).
 
-- If the certificate_authorities list in the certificate request
+- If the certificate_authorities list in the CertificateRequest
   message was non-empty, at least one of the certificates in the certificate
   chain SHOULD be issued by one of the listed CAs.
 
@@ -3031,7 +3031,7 @@ The following rules apply to certificates sent by the client:
   relaxes the constraints on certificate-signing algorithms found in
   prior versions of TLS.
 
-- If the certificate_extensions list in the certificate request message
+- If the certificate_extensions list in the CertificateRequest message
   was non-empty, the end-entity certificate MUST match the extension OIDs
   recognized by the client, as described in {{certificate-request}}.
 
@@ -4609,7 +4609,7 @@ TLS protocol issues:
   multiple TLS records (see {{record-layer}})? Including corner cases
   like a ClientHello that is split to several small fragments? Do
   you fragment handshake messages that exceed the maximum fragment
-  size? In particular, the certificate and certificate request
+  size? In particular, the Certificate and CertificateRequest
   handshake messages can be large enough to require fragmentation.
 
 -  Do you ignore the TLS record layer version number in all unencrypted TLS
