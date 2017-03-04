@@ -3078,7 +3078,7 @@ and also provides integrity for the handshake up
 to this point. Servers MUST send this message when
 authenticating via a certificate.
 Clients MUST send this
-message whenever authenticating via a Certificate (i.e., when
+message whenever authenticating via a certificate (i.e., when
 the Certificate message is non-empty). When sent, this message MUST appear immediately
 after the Certificate message and immediately prior to the Finished
 message.
