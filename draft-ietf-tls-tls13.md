@@ -1318,7 +1318,7 @@ One may optionally specify a value without its associated tag to force the
 width definition without defining a superfluous element.
 
 In the following example, Taste will consume two bytes in the data stream but
-can only assume the values 1, 2, or 4 in current version of protocol.
+can only assume the values 1, 2, or 4 in the current version of the protocol.
 
        enum { sweet(1), sour(2), bitter(4), (32000) } Taste;
 
@@ -2650,7 +2650,7 @@ The full ClientHello is included in all other handshake hash computations.
 
 Clients are permitted to "stream" 0-RTT data until they
 receive the server's Finished, only then sending the EndOfEarlyData
-message. In order to avoid deadlock, when accepting "early_data",
+message. In order to avoid deadlocks, when accepting "early_data",
 servers MUST process the client's ClientHello and then immediately
 send the ServerHello, rather than waiting for the client's
 EndOfEarlyData message.
