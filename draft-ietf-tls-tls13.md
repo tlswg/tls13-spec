@@ -1734,7 +1734,7 @@ set the last eight bytes of their Random value to the bytes:
       44 4F 57 4E 47 52 44 00
 
 TLS 1.3 clients receiving a TLS 1.2 or below ServerHello MUST check
-that the last eight octets are not equal to either of these values.
+that the last eight bytes are not equal to either of these values.
 TLS 1.2 clients SHOULD also check that the last eight bytes are not
 equal to the second value if the ServerHello indicates TLS 1.1 or
 below.  If a match is found, the client MUST abort the handshake
