@@ -1251,7 +1251,7 @@ the protocol does not interpret, while Data is three consecutive Datum,
 consuming a total of nine bytes.
 
        opaque Datum[3];      /* three uninterpreted bytes */
-       Datum Data[9];        /* 3 consecutive 3 byte vectors */
+       Datum Data[9];        /* 3 consecutive 3-byte vectors */
 
 Variable-length vectors are defined by specifying a subrange of legal lengths,
 inclusively, using the notation \<floor..ceiling\>. When these are encoded, the
@@ -3121,7 +3121,7 @@ The digital signature is then computed over the concatenation of:
 This structure is intended to prevent an attack on previous versions
 of TLS in which the ServerKeyExchange format meant that
 attackers could obtain a signature of a message with a chosen 32-byte
-prefix (ClientHello.random). The initial 64 byte pad clears that prefix
+prefix (ClientHello.random). The initial 64-byte pad clears that prefix
 along with the server-controlled ServerHello.random.
 
 The context string for a server signature is
