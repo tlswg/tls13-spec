@@ -1219,7 +1219,7 @@ A vector (single-dimensioned array) is a stream of homogeneous data elements.
 The size of the vector may be specified at documentation time or left
 unspecified until runtime. In either case, the length declares the number of
 bytes, not the number of elements, in the vector. The syntax for specifying a
-new type, T', that is a fixed- length vector of type T is
+new type, T', that is a fixed-length vector of type T is
 
        T T'[n];
 
