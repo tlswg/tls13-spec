@@ -2341,12 +2341,7 @@ For these curves, implementers do not need to verify membership in the correct s
 
 For x25519 and x448, the contents of the public value are the byte string inputs and outputs of the
 corresponding functions defined in {{RFC7748}}, 32 bytes for x25519 and 56
-bytes for x448. Peers SHOULD use the approach specified in {{RFC7748}} to calculate
-the Diffie-Hellman shared secret, and MUST
-check whether the computed Diffie-Hellman shared secret is the all-zero value and abort if so, as described
-in Section 6 of {{RFC7748}}. If implementers
-use an alternative implementation of these elliptic curves, they should perform
-the additional checks specified in Section 7 of {{RFC7748}}.
+bytes for x448.
 
 Note: Versions of TLS prior to 1.3 permitted point format negotiation;
 TLS 1.3 removes this feature in favor of a single point format
@@ -4233,7 +4228,12 @@ ECDH functions are used as follows:
   secret key (into scalar input) and the peer's public key (into u-coordinate
   point input). The output is used raw, with no processing.
 
-For X25519 and X448, see {{RFC7748}}.
+For X25519 and X448, use the approach specified in {{RFC7748}} to calculate the
+Diffie-Hellman shared secret. Implementations MUST check whether the computed
+Diffie-Hellman shared secret is the all-zero value and abort if so, as
+described in Section 6 of {{RFC7748}}. If implementers use an alternative
+implementation of these elliptic curves, they should perform the additional
+checks specified in Section 7 of {{RFC7748}}.
 
 ## Exporters
 
