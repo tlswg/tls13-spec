@@ -4228,12 +4228,13 @@ ECDH functions are used as follows:
   secret key (into scalar input) and the peer's public key (into u-coordinate
   point input). The output is used raw, with no processing.
 
-For X25519 and X448, use the approach specified in {{RFC7748}} to calculate the
-Diffie-Hellman shared secret. Implementations MUST check whether the computed
-Diffie-Hellman shared secret is the all-zero value and abort if so, as
-described in Section 6 of {{RFC7748}}. If implementers use an alternative
-implementation of these elliptic curves, they should perform the additional
-checks specified in Section 7 of {{RFC7748}}.
+For X25519 and X448, implementations SHOULD use the approach specified
+in {{RFC7748}} to calculate the Diffie-Hellman shared
+secret. Implementations MUST check whether the computed Diffie-Hellman
+shared secret is the all-zero value and abort if so, as described in
+Section 6 of {{RFC7748}}. If implementers use an alternative
+implementation of these elliptic curves, they should perform the
+additional checks specified in Section 7 of {{RFC7748}}.
 
 ## Exporters
 
