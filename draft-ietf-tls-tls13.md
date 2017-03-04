@@ -894,7 +894,7 @@ Auth | {CertificateVerify*}
                  derived from a [sender]_handshake_traffic_secret.
 
               [] Indicates messages protected using keys
-                 derived from traffic_secret_N
+                 derived from traffic_secret_N.
 ~~~
 {: #tls-full title="Message flow for full TLS Handshake"}
 
@@ -1145,7 +1145,7 @@ as with a 1-RTT handshake with PSK resumption.
                   derived from a [sender]_handshake_traffic_secret.
 
                [] Indicates messages protected using keys
-                  derived from traffic_secret_N
+                  derived from traffic_secret_N.
 ~~~
 {: #tls-0-rtt title="Message flow for a zero round trip handshake"}
 
@@ -1166,7 +1166,7 @@ with TLS client authentication or inside the application layer
 protocol. However, 0-RTT data cannot be duplicated within a connection (i.e., the server
 will not process the same data twice for the same connection) and
 an attacker will not be able to make 0-RTT data appear to be
-1-RTT data (because it is protected with different keys.)
+1-RTT data (because it is protected with different keys).
 
 Protocols MUST NOT use 0-RTT data without a profile that defines its
 use. That profile needs to identify which messages or interactions are
@@ -2841,7 +2841,7 @@ The computations for the Authentication messages all uniformly
 take the following inputs:
 
 - The certificate and signing key to be used.
-- A Handshake Context based on the transcript of the handshake messages
+- A Handshake Context based on the transcript of the handshake messages.
 - A base key to be used to compute a MAC key.
 
 Based on these inputs, the messages then contain:
@@ -2852,7 +2852,7 @@ supporting certificates in the chain. Note that certificate-based
 client authentication is not available in the 0-RTT case.
 
 CertificateVerify
-: A signature over the value Hash(Handshake Context + Certificate)
+: A signature over the value Hash(Handshake Context + Certificate).
 
 Finished
 : A MAC over the value Hash(Handshake Context + Certificate + CertificateVerify)
@@ -3158,7 +3158,7 @@ verification process takes as input:
 
 - The content covered by the digital signature
 - The public key contained in the end-entity certificate found in the
-  associated Certificate message.
+  associated Certificate message
 - The digital signature received in the signature field of the
   CertificateVerify message
 
@@ -3940,7 +3940,7 @@ decrypt_error
 
 protocol_version
 : The protocol version the peer has attempted to negotiate is
-  recognized but not supported. (see {{backward-compatibility}})
+  recognized but not supported. See {{backward-compatibility}}.
 
 insufficient_security
 : Returned instead of "handshake_failure" when a negotiation has
@@ -4009,7 +4009,7 @@ and the handshake transcript. Note that because the handshake
 transcript includes the random values in the Hello messages,
 any given handshake will have different traffic secrets, even
 if the same input secrets are used, as is the case when
-the same PSK is used for multiple connections
+the same PSK is used for multiple connections.
 
 ## Key Schedule
 
@@ -4227,10 +4227,10 @@ as output by FE2OSP, the Field Element to Octet String Conversion
 Primitive, has constant length for any given field; leading zeros
 found in this octet string MUST NOT be truncated.
 
-(Note that this use of the identity KDF is a technicality.  The
+Note that this use of the identity KDF is a technicality.  The
 complete picture is that ECDH is employed with a non-trivial KDF
 because TLS does not directly use this secret for anything
-other than for computing other secrets.)
+other than for computing other secrets.
 
 ECDH functions are used as follows:
 
@@ -4279,7 +4279,7 @@ of {{RFC5705}}.
 In the absence of an application profile standard specifying otherwise, a
 TLS-compliant application MUST implement the TLS_AES_128_GCM_SHA256
 cipher suite and SHOULD implement the TLS_AES_256_GCM_SHA384 and
-TLS_CHACHA20_POLY1305_SHA256 cipher suites. (see {{cipher-suites}})
+TLS_CHACHA20_POLY1305_SHA256 cipher suites. See {{cipher-suites}}.
 
 A TLS-compliant application MUST support digital signatures with
 rsa_pkcs1_sha256 (for certificates), rsa_pss_sha256 (for
@@ -4345,9 +4345,7 @@ and their allocation policies are below:
 - TLS Cipher Suite Registry: Values with the first byte in the range
   0-254 (decimal) are assigned via Specification Required {{RFC5226}}.
   Values with the first byte 255 (decimal) are reserved for Private
-  Use {{RFC5226}}.
-
-  IANA \[SHALL add/has added] the cipher suites listed in {{cipher-suites}} to
+  Use {{RFC5226}}. IANA \[SHALL add/has added] the cipher suites listed in {{cipher-suites}} to
   the registry. The "Value" and "Description" columns are taken from the table.
   The "DTLS-OK" and "Recommended" columns are both marked as "Yes" for each new
   cipher suite. \[\[This assumes {{?I-D.ietf-tls-iana-registry-updates}} has been
@@ -4729,7 +4727,7 @@ records thereafter.
 For maximum compatibility with previously non-standard behavior and misconfigured
 deployments, all implementations SHOULD support validation of certification paths
 based on the expectations in this document, even when handling prior TLS versions'
-handshakes. (see {{server-certificate-selection}})
+handshakes. See {{server-certificate-selection}}.
 
 TLS 1.2 and prior supported an "Extended Master Secret" {{RFC7627}} extension
 which digested large parts of the handshake transcript into the master secret.
@@ -4870,11 +4868,11 @@ the protocol consumers' needs.
 Establishing the same session key.
 : The handshake needs to output the same session key on both sides of the
 handshake, provided that it completes successfully on each endpoint
-(See {{CK01}}; defn 1, part 1).
+(see {{CK01}}; defn 1, part 1).
 
 Secrecy of the session key.
 : The shared session key should be known only to the communicating
-parties, not to the attacker (See {{CK01}}; defn 1, part 2).  Note that
+parties, not to the attacker (see {{CK01}}; defn 1, part 2).  Note that
 in a unilaterally authenticated connection, the attacker can establish
 its own session keys with the server, but those session keys are
 distinct from those established by the client.
@@ -4891,13 +4889,13 @@ keys.
 Downgrade protection.
 : The cryptographic parameters should be the same on both sides and
 should be the same as if the peers had been communicating in the
-absence of an attack (See {{BBFKZG16}}; defns 8 and 9}).
+absence of an attack (see {{BBFKZG16}}; defns 8 and 9}).
 
 Forward secret
 : If the long-term keying material (in this case the signature keys in certificate-based
 authentication modes or the external/resumption PSK in PSK with (EC)DHE modes) are compromised after
 the handshake is complete, this does not compromise the security of the
-session key (See {{DOW92}}).  The forward secrecy property is not satisfied
+session key (see {{DOW92}}).  The forward secrecy property is not satisfied
 when PSK is used in the "psk_ke" PskKeyExchangeMode.
 
 Protection of endpoint identities.
