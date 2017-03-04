@@ -109,6 +109,7 @@ informative:
   RFC7568:
   RFC7627:
   RFC7685:
+  I-D.ietf-tls-tls13-vectors:
 
   DSS:
        title: "Digital Signature Standard, version 4"
@@ -4556,6 +4557,7 @@ New cipher suite values are assigned by IANA as described in
 
 The TLS protocol cannot prevent many common security mistakes. This section
 provides several recommendations to assist implementors.
+{{I-D.ietf-tls-tls13-vectors}} provides test vectors for TLS 1.3 handshakes.
 
 ## API considerations for 0-RTT
 
