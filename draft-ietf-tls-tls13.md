@@ -1160,7 +1160,7 @@ keys derived using the offered PSK.
 Unless the server takes special measures outside those provided by TLS,
 the server has no guarantee that the same
 0-RTT data was not transmitted on multiple 0-RTT connections
-(See {{replay-time}} for more details).
+(see {{replay-time}} for more details).
 This is especially relevant if the data is authenticated either
 with TLS client authentication or inside the application layer
 protocol. However, 0-RTT data cannot be duplicated within a connection (i.e., the server
@@ -3742,7 +3742,7 @@ indicate end-of-data to the application and, if appropriate for
 the alert type, send a closure alert in response.
 
 Error alerts indicate abortive closure of the
-connection (See {{error-alerts}}). Upon receiving an error alert,
+connection (see {{error-alerts}}). Upon receiving an error alert,
 the TLS implementation SHOULD indicate an error to the application and
 MUST NOT allow any further data to be sent or received on the
 connection.  Servers and clients MUST forget keys and secrets
@@ -3954,7 +3954,7 @@ internal_error
 
 inappropriate_fallback
 : Sent by a server in response to an invalid connection retry attempt
-  from a client {{!RFC7507}}.
+  from a client (see {{!RFC7507}}).
 
 missing_extension
 : Sent by endpoints that receive a hello message not containing an
@@ -3970,22 +3970,22 @@ unsupported_extension
 certificate_unobtainable
 : Sent by servers when unable to obtain a certificate from a URL
   provided by the client via the "client_certificate_url" extension
-  {{RFC6066}}.
+  (see {{RFC6066}}).
 
 unrecognized_name
 : Sent by servers when no server exists identified by the name
   provided by the client via the "server_name" extension
-  {{RFC6066}}.
+  (see {{RFC6066}}).
 
 bad_certificate_status_response
 : Sent by clients when an invalid or unacceptable OCSP response is
   provided by the server via the "status_request" extension
-  {{RFC6066}}.
+  (see {{RFC6066}}).
 
 bad_certificate_hash_value
 : Sent by servers when a retrieved object does not have the correct hash
   provided by the client via the "client_certificate_url" extension
-  {{RFC6066}}.
+  (see {{RFC6066}}).
 
 unknown_psk_identity
 : Sent by servers when PSK key establishment is desired but no
