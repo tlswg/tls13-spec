@@ -3419,7 +3419,7 @@ the data into manageable blocks, protects the records, and transmits
 the result. Received data is verified and decrypted, reassembled, and
 then delivered to higher-level clients.
 
-TLS records are typed, which allows multiple higher level protocols to
+TLS records are typed, which allows multiple higher-level protocols to
 be multiplexed over the same record layer. This document specifies
 three content types: handshake, application data, and alert.
 Implementations MUST NOT send record types not defined in this
@@ -3582,7 +3582,7 @@ length
   terminate the connection with a "record_overflow" alert.
 
 encrypted_record
-: The AEAD encrypted form of the serialized TLSInnerPlaintext structure.
+: The AEAD-encrypted form of the serialized TLSInnerPlaintext structure.
 {:br }
 
 
