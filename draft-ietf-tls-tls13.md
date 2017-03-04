@@ -2760,14 +2760,14 @@ extension MUST only be sent in the CertificateRequest message.
 
 %%% Server Parameters Messages
 
-      struct {
-          opaque certificate_extension_oid<1..2^8-1>;
-          opaque certificate_extension_values<0..2^16-1>;
-      } OIDFilter;
+       struct {
+           opaque certificate_extension_oid<1..2^8-1>;
+           opaque certificate_extension_values<0..2^16-1>;
+       } OIDFilter;
 
-      struct {
-          OIDFilter filters<0..2^16-1>;
-      } OIDFilterExtension;
+       struct {
+           OIDFilter filters<0..2^16-1>;
+       } OIDFilterExtension;
 
 
 filters
