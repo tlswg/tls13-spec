@@ -5182,6 +5182,10 @@ Archives of the list can be found at:
 
 * Phil Karlton (co-author of SSL 3.0)
 
+* Leon Klingele \\
+  Independent \\
+  mail@leonklingele.de
+
 * Paul Kocher (co-author of SSL 3.0) \\
   Cryptography Research \\
   paul@cryptography.com
