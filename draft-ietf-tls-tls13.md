@@ -1298,7 +1298,7 @@ One may optionally specify a value without its associated tag to force the
 width definition without defining a superfluous element.
 
 In the following example, Taste will consume two bytes in the data stream but
-can only assume the values 1, 2, or 4 in current version of protocol.
+can only assume the values 1, 2, or 4 in current versions of the protocol.
 
        enum { sweet(1), sour(2), bitter(4), (32000) } Taste;
 
@@ -2473,7 +2473,7 @@ connection during which the ticket was established.
 
 Future extensions MUST define their interaction with 0-RTT.
 
-If any of these checks fail, the server MUST NOT respond
+If any of these checks fails, the server MUST NOT respond
 with the extension and must discard all the remaining first
 flight data (thus falling back to 1-RTT). If the client attempts
 a 0-RTT handshake but the server rejects it, the server will generally
@@ -2638,7 +2638,7 @@ The full ClientHello is included in all other handshake hash computations.
 
 Clients are permitted to "stream" 0-RTT data until they
 receive the server's Finished, only then sending the EndOfEarlyData
-message. In order to avoid deadlock, when accepting "early_data",
+message. In order to avoid deadlocks, when accepting "early_data",
 servers MUST process the client's ClientHello and then immediately
 send the ServerHello, rather than waiting for the client's
 EndOfEarlyData message.
@@ -3689,7 +3689,7 @@ content type of the message.
 This padding scheme was selected because it allows padding of any encrypted
 TLS record by an arbitrary size (from zero up to TLS record size
 limits) without introducing new content types.  The design also
-enforces all-zero padding octets, which allows for quick detection of
+enforces all-zero padding octets, which allow for quick detection of
 padding errors.
 
 Implementations MUST limit their scanning to the cleartext returned
