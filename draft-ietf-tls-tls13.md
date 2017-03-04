@@ -4241,7 +4241,7 @@ ECDH functions are used as follows:
   input).
 * The ECDH shared secret is the result of applying the ECDH function to the
   secret key (into scalar input) and the peer's public key (into u-coordinate
-  point input). The output is used raw, with no processing.
+  point input). The output is used rawly, with no processing.
 
 For X25519 and X448, see {{RFC7748}}.
 
