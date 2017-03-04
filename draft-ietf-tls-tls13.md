@@ -1706,7 +1706,7 @@ random value. TLS 1.3 servers which negotiate TLS 1.2 or below in
 response to a ClientHello MUST set the last eight bytes of their
 Random value specially.
 
-If negotiating TLS 1.2, servers MUST set the last eight bytes of their
+If negotiating TLS 1.2, TLS 1.3 servers MUST set the last eight bytes of their
 Random value to the bytes:
 
       44 4F 57 4E 47 52 44 01
