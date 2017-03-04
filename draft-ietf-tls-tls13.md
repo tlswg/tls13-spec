@@ -467,6 +467,8 @@ endpoint: Either the client or server of the connection.
 
 handshake: An initial negotiation between client and server that establishes the parameters of their subsequent interactions.
 
+party: An endpoint.
+
 peer: An endpoint. When discussing a particular endpoint, "peer" refers to the endpoint that is not the primary subject of discussion.
 
 receiver: An endpoint that is receiving records.
