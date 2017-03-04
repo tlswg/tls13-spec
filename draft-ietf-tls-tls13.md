@@ -3243,7 +3243,7 @@ Note: Alerts and any other record types are not handshake messages
 and are not included in the hash computations.
 
 Any records following a 1-RTT Finished message MUST be encrypted under the
-appropriate application traffic key {{updating-traffic-keys}}.
+appropriate application traffic key as described in {{updating-traffic-keys}}.
 In particular, this includes any alerts sent by the
 server in response to client Certificate and CertificateVerify messages.
 
@@ -3727,7 +3727,7 @@ There are cryptographic limits on the amount of plaintext which can be
 safely encrypted under a given set of keys.  {{AEAD-LIMITS}} provides
 an analysis of these limits under the assumption that the underlying
 primitive (AES or ChaCha20) has no weaknesses. Implementations SHOULD
-do a key update {{key-update}} prior to reaching these limits.
+do a key update as described in {{key-update}} prior to reaching these limits.
 
 For AES-GCM, up to 2^24.5 full-size records (about 24 million)
 may be encrypted on a
