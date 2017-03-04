@@ -3495,7 +3495,7 @@ legacy_record_version
 
 length
 : The length (in bytes) of the following TLSPlaintext.fragment. The
-  length MUST NOT exceed 2^14. An endpoint that receives a record
+  length MUST NOT exceed 2^14 bytes. An endpoint that receives a record
   that exceeds this length MUST terminate the connection with a
   "record_overflow" alert.
 
@@ -3577,7 +3577,7 @@ length
 : The length (in bytes) of the following TLSCiphertext.encrypted_record, which
   is the sum of the lengths of the content and the padding, plus one
   for the inner content type, plus any expansion added by the AEAD algorithm.
-  The length MUST NOT exceed 2^14 + 256.
+  The length MUST NOT exceed 2^14 + 256 bytes.
   An endpoint that receives a record that exceeds this length MUST
   terminate the connection with a "record_overflow" alert.
 
