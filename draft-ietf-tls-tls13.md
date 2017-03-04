@@ -2415,10 +2415,6 @@ The "extension_data" field of this extension contains an
            select (Handshake.msg_type) {
                case new_session_ticket:
                   uint32 max_early_data_size;
-
-               case client_hello:
-               case encrypted_extensions:
-                  // empty
            };
        } EarlyDataIndication;
 
