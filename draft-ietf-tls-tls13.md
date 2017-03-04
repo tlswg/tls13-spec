@@ -2621,7 +2621,7 @@ generated (if via a NewSessionTicket message) and the handshake where
 it was used.  Each entry in the binders list is computed as an HMAC
 over the portion of the ClientHello (including the handshake header)
 up to and including the PreSharedKeyExtension.identities field. That
-is, it includes all of the ClientHello but not the binder list
+is, it includes all of the ClientHello but not the binders list
 itself. The length fields for the message (including the overall
 length, the length of the extensions block, and the length of the
 "pre_shared_key" extension) are all set as if binders of the correct
