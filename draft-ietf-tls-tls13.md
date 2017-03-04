@@ -4305,7 +4305,7 @@ applicable features:
 
   * "supported_versions" is REQUIRED for all ClientHello messages.
   * "signature_algorithms" is REQUIRED for certificate authentication.
-  * "supported_groups" and "key_share" are REQUIRED for DHE or ECDHE key exchange.
+  * "supported_groups" and "key_share" are REQUIRED for DHE and ECDHE key exchange.
   * "pre_shared_key" is REQUIRED for PSK key agreement.
 
 A client is considered to be attempting to negotiate using this
