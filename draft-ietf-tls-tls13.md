@@ -3860,7 +3860,7 @@ before destroying the transport.
 Error handling in the TLS Handshake Protocol is very simple. When an
 error is detected, the detecting party sends a message to its
 peer. Upon transmission or receipt of a fatal alert message, both
-parties immediately close the connection.
+parties MUST immediately close the connection.
 
 Whenever an implementation encounters a fatal error condition, it
 SHOULD send an appropriate fatal alert and MUST close the connection
