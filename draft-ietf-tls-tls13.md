@@ -3844,7 +3844,7 @@ read side of the connection.
 
 If the application protocol using TLS provides that any data may be carried
 over the underlying transport after the TLS connection is closed, the TLS
-implementation must receive the responding "close_notify" alert before indicating
+implementation MUST receive the responding "close_notify" alert before indicating
 to the application layer that the TLS connection has ended. If the application
 protocol will not transfer any additional data, but will only close the
 underlying transport connection, then the implementation MAY choose to close
