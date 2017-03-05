@@ -2351,7 +2351,7 @@ bytes for x448. Peers SHOULD use the approach specified in {{RFC7748}} to calcul
 the Diffie-Hellman shared secret, and MUST
 check whether the computed Diffie-Hellman shared secret is the all-zero value and abort if so, as described
 in Section 6 of {{RFC7748}}. If implementers
-use an alternative implementation of these elliptic curves, they should perform
+use an alternative implementation of these elliptic curves, they SHOULD perform
 the additional checks specified in Section 7 of {{RFC7748}}.
 
 Note: Versions of TLS prior to 1.3 permitted point format negotiation;
