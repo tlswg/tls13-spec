@@ -1825,10 +1825,10 @@ Extensions are generally structured in a request/response fashion, though
 some extensions are just indications with no corresponding response. The client
 sends its extension requests in the ClientHello message and the server sends
 its extension responses in the ServerHello, EncryptedExtensions
-and HelloRetryRequest messages. The server sends extension requests,
-in the CertificateRequest message which can be responded to with
-the client's Certificate message. The server can also send unsolicited
-extensions in the NewSessionTicket, though the client does not respond
+and HelloRetryRequest messages. The server sends extension requests
+in the CertificateRequest message which a client MAY respond to with
+a Certificate message. The server MAY also send unsolicited
+extensions in the NewSessionTicket, though the client MUST NOT respond
 directly to these.
 
 Implementations MUST NOT send extension responses
