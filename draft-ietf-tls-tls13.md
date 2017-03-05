@@ -2443,7 +2443,7 @@ will be sent to indicate the key change. This message will be encrypted
 with the 0-RTT traffic keys.
 
 A server which receives an "early_data" extension
-can behave in one of three ways:
+MUST behave in one of three ways:
 
 - Ignore the extension and return a regular 1-RTT response.  The server then
   ignores early data using trial decryption until it is able to receive the
