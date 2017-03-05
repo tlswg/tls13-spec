@@ -2960,7 +2960,7 @@ The body of the "status_request" extension
 from the server MUST be a CertificateStatus structure as defined
 in {{RFC6066}}.
 
-A server may also request that a client present OCSP response with its
+A server MAY request that a client present an OCSP response with its
 certificate by sending a "status_request" extension in its CertificateRequest
 message. If the client opts to send an OCSP response, the body of its
 "status_request" extension MUST be a CertificateStatus structure as
