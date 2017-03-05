@@ -3826,7 +3826,7 @@ Each party MUST send a "close_notify" alert before closing the write side
 of the connection, unless some other fatal alert has been transmitted. The
 other party MUST respond with a "close_notify" alert of its own and close down
 the connection immediately, discarding any pending writes. The initiator of the
-close need not wait for the responding "close_notify" alert before closing the
+close MUST NOT wait for the responding "close_notify" alert before closing the
 read side of the connection.
 
 If the application protocol using TLS provides that any data may be carried
