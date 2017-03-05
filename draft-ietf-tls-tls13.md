@@ -2340,7 +2340,7 @@ curve.
 For the curves secp256r1, secp384r1 and secp521r1, the appropriate
 validation procedures are defined in Section 4.3.7 of {{X962}}
 and alternatively in Section 5.6.2.6  of {{KEYAGREEMENT}}.
-This process consists of three steps: (1) verify that Y is not the point at
+This process MUST consist of these three steps: (1) verify that Y is not the point at
 infinity (O), (2) verify that for Y = (x, y) both integers are in the correct
 interval, (3) ensure that (x, y) is a correct solution to the elliptic curve equation.
 For these curves, implementers do not need to verify membership in the correct subgroup.
