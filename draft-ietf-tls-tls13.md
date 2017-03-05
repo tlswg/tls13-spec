@@ -3400,7 +3400,7 @@ the forward secrecy of data sent before the sender changed keys.
 
 If implementations independently send their own KeyUpdates with
 request_update set to "update_requested", and they cross in flight, then each side
-will also send a response, with the result that each side increments
+MUST also send a response, with the result that each side increments
 by two generations.
 
 Both sender and receiver MUST encrypt their KeyUpdate
