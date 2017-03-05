@@ -4258,7 +4258,7 @@ in {{RFC7748}} to calculate the Diffie-Hellman shared
 secret. Implementations MUST check whether the computed Diffie-Hellman
 shared secret is the all-zero value and abort if so, as described in
 Section 6 of {{RFC7748}}. If implementers use an alternative
-implementation of these elliptic curves, they should perform the
+implementation of these elliptic curves, they SHOULD perform the
 additional checks specified in Section 7 of {{RFC7748}}.
 
 ## Exporters
