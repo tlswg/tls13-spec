@@ -2723,8 +2723,8 @@ extensions
 
 ###  Certificate Request
 
-A server which is authenticating with a certificate can optionally
-request a certificate from the client. This message, if sent, will
+A server which is authenticating with a certificate MAY optionally
+request a certificate from the client. This message, if sent, MUST
 follow EncryptedExtensions.
 
 Structure of this message:
