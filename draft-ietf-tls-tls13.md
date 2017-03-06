@@ -487,6 +487,8 @@ client: The endpoint initiating the TLS connection.
 
 connection: A transport-layer connection between two endpoints.
 
+context: A collection of parameters generated in a handshake (including secrets and negotiated options).
+
 endpoint: Either the client or server of the connection.
 
 handshake: An initial negotiation between client and server that establishes the parameters of their subsequent interactions.
@@ -496,8 +498,6 @@ peer: An endpoint. When discussing a particular endpoint, "peer" refers to the e
 receiver: An endpoint that is receiving records.
 
 sender: An endpoint that is transmitting records.
-
-session: An association between a client and a server resulting from a handshake.
 
 server: The endpoint which did not initiate the TLS connection.
 
@@ -863,7 +863,7 @@ referenced sections for more details.
 
 # Protocol Overview
 
-The cryptographic parameters of the session state are produced by the
+The cryptographic parameters of the connection state are produced by the
 TLS handshake protocol, which a TLS client and server use when first
 communicating to agree on a protocol version, select cryptographic
 algorithms, optionally authenticate each other, and establish shared
@@ -1050,7 +1050,7 @@ described in the following sections.
 ## Resumption and Pre-Shared Key (PSK) {#resumption-and-psk}
 
 Although TLS PSKs can be established out of band,
-PSKs can also be established in a previous session and
+PSKs can also be generated from a previous context and
 then reused ("session resumption"). Once a handshake has completed, the server can
 send the client a PSK identity that corresponds to a key derived from
 the initial handshake (see {{NewSessionTicket}}). The client
@@ -1427,9 +1427,9 @@ or an invalid enum) MUST terminate the connection with an "illegal_parameter" al
 # Handshake Protocol
 
 The handshake protocol is used to negotiate the secure attributes
-of a session. Handshake messages are supplied to the TLS record layer, where
+of a connection. Handshake messages are supplied to the TLS record layer, where
 they are encapsulated within one or more TLSPlaintext or TLSCiphertext structures, which are
-processed and transmitted as specified by the current active session state.
+processed and transmitted as specified by the current active connection state.
 
 %%% Handshake Protocol
 
@@ -1620,7 +1620,7 @@ random
   See {{implementation-notes}} for additional information.
 
 legacy_session_id
-: Versions of TLS before TLS 1.3 supported a session resumption
+: Versions of TLS before TLS 1.3 supported a "session resumption"
   feature which has been merged with Pre-Shared Keys in this version
   (see {{resumption-and-psk}}).
   This field MUST be ignored by a server negotiating TLS 1.3 and
@@ -1693,7 +1693,7 @@ Structure of this message:
        } ServerHello;
 
 version
-: This field contains the version of TLS negotiated for this session.  Servers
+: This field contains the version of TLS negotiated for this connection.  Servers
   MUST select a version from the list in ClientHello.supported_versions extension.
   A client which receives a version that was not offered MUST abort the handshake.
   For this version of the specification, the version is 0x0304.  (See
@@ -2553,7 +2553,7 @@ obfuscated_ticket_age
   configuration that it is using, in milliseconds.  This value is
   added modulo 2^32 to the "ticket_age_add" value that was
   included with the ticket, see {{NewSessionTicket}}.  This addition
-  prevents passive observers from correlating sessions unless tickets
+  prevents passive observers from correlating connections unless tickets
   are reused.  Note: because ticket lifetimes are restricted to a
   week, 32 bits is enough to represent any plausible age, even in
   milliseconds. For identities established externally an obfuscated_ticket_age of
@@ -2615,8 +2615,8 @@ that it is the last extension and otherwise fail the handshake with an
 #### PSK Binder
 
 The PSK binder value forms a binding between a PSK and the current
-handshake, as well as between the session where the PSK was
-established (if via a NewSessionTicket message) and the session where
+handshake, as well as between the context from which the PSK was
+generated (if via a NewSessionTicket message) and the connection where
 it was used.  Each entry in the binders list is computed as an HMAC
 over the portion of the ClientHello (including the handshake header)
 up to and including the PreSharedKeyExtension.identities field. That
@@ -2662,7 +2662,7 @@ replay protection for data sent by the client in the first flight.
 The "obfuscated_ticket_age" parameter in the client's
 "pre_shared_key" extension SHOULD be used by
 servers to limit the time over which the first flight might be
-replayed.  A server can store the time at which it sends a session
+replayed.  A server can store the time at which it sends a
 ticket to the client, or encode the time in the ticket.  Then, each
 time it receives an "pre_shared_key" extension, it can subtract the base value and
 check to see if the value used by the client matches its expectations.
@@ -2808,7 +2808,7 @@ filters
   certificate extension OIDs. If the client ignored some of the
   required certificate extension OIDs and supplied a certificate
   that does not satisfy the request, the server MAY at its discretion
-  either continue the session without client authentication, or
+  either continue the connection without client authentication, or
   abort the handshake with an "unsupported_certificate" alert.
 
   PKIX RFCs define a variety of certificate extension OIDs and their
@@ -3312,7 +3312,7 @@ ticket_lifetime
   network byte order from the time of ticket issuance.
   Servers MUST NOT use any value more than 604800 seconds (7 days).
   The value of zero indicates that the ticket should be discarded
-  immediately. Clients MUST NOT cache session tickets for longer than
+  immediately. Clients MUST NOT cache tickets for longer than
   7 days, regardless of the ticket_lifetime, and MAY delete the ticket
   earlier based on local policy. A server MAY treat a ticket as valid
   for a shorter period of time than what is stated in the
@@ -3758,7 +3758,7 @@ the TLS implementation SHOULD indicate an error to the application and
 MUST NOT allow any further data to be sent or received on the
 connection.  Servers and clients MUST forget keys and secrets
 associated with a failed connection. Stateful implementations of
-session tickets (as in many clients) SHOULD discard tickets associated
+tickets (as in many clients) SHOULD discard tickets associated
 with failed connections.
 
 All the alerts listed in {{error-alerts}} MUST be sent as fatal and
@@ -3815,7 +3815,7 @@ message. Unknown alert types MUST be treated as fatal.
 
 The client and the server must share knowledge that the connection is ending in
 order to avoid a truncation attack. Failure to properly close a connection does
-not prohibit a session from being resumed.
+not prohibit its resumption.
 
 close_notify
 : This alert notifies the recipient that the sender will not send
@@ -4688,13 +4688,13 @@ Cryptographic details:
 
 ## Client Tracking Prevention
 
-Clients SHOULD NOT reuse a session ticket for multiple connections. Reuse
-of a session ticket allows passive observers to correlate different connections.
-Servers that issue session tickets SHOULD offer at least as many session tickets
+Clients SHOULD NOT reuse a ticket for multiple connections. Reuse
+of a ticket allows passive observers to correlate different connections.
+Servers that issue tickets SHOULD offer at least as many tickets
 as the number of connections that a client might use; for example, a web browser
 using HTTP/1.1 {{RFC7230}} might open six connections to a server. Servers SHOULD
-issue new session tickets with every connection. This ensures that clients are
-always able to use a new session ticket when creating a new connection.
+issue new tickets with every connection. This ensures that clients are
+always able to use a new ticket when creating a new connection.
 
 
 ## Unauthenticated Operation
@@ -4765,7 +4765,7 @@ ClientHello.legacy_version but with the correct version in the
 "supported_versions" extension. If the server does not support TLS 1.3 it
 will respond with a ServerHello containing an older version number. If the
 client agrees to use this version, the negotiation will proceed as appropriate
-for the negotiated protocol. A client resuming a session SHOULD initiate the
+for the negotiated protocol. A client using a ticket for resumption SHOULD initiate the
 connection using the version that was previously negotiated.
 
 Note that 0-RTT data is not compatible with older servers and SHOULD NOT
@@ -4875,7 +4875,7 @@ is intended to provide both one-way authenticated (server-only) and
 mutually authenticated (client and server) functionality. At the completion
 of the handshake, each side outputs its view of the following values:
 
-- A "session key" (the master secret) from which can be derived a set of working keys.
+- A master secret, from which can be derived a set of working keys.
 - A set of cryptographic parameters (algorithms, etc.)
 - The identities of the communicating parties.
 
@@ -4885,16 +4885,16 @@ handshake should provide the properties listed below. Note that
 these properties are not necessarily independent, but reflect
 the protocol consumers' needs.
 
-Establishing the same session key.
-: The handshake needs to output the same session key on both sides of the
+Establishing the same master secret.
+: The handshake needs to output the same master secret on both sides of the
 handshake, provided that it completes successfully on each endpoint
 (See {{CK01}}; defn 1, part 1).
 
-Secrecy of the session key.
-: The shared session key should be known only to the communicating
+Secrecy of the master secret.
+: The shared master secret should be known only to the communicating
 parties, not to the attacker (See {{CK01}}; defn 1, part 2).  Note that
 in a unilaterally authenticated connection, the attacker can establish
-its own session keys with the server, but those session keys are
+its own master secrets with the server, but those master secrets are
 distinct from those established by the client.
 
 Peer Authentication.
@@ -4902,9 +4902,9 @@ Peer Authentication.
 identity. If the client is authenticated, the server's view of the
 peer identity should match the client's identity.
 
-Uniqueness of the session key:
-: Any two distinct handshakes should produce distinct, unrelated session
-keys.
+Uniqueness of the master secret:
+: Any two distinct handshakes should produce distinct, unrelated master
+secrets.
 
 Downgrade protection.
 : The cryptographic parameters should be the same on both sides and
@@ -4915,7 +4915,7 @@ Forward secret with respect to long-term keys
 : If the long-term keying material (in this case the signature keys in certificate-based
 authentication modes or the external/resumption PSK in PSK with (EC)DHE modes) are compromised after
 the handshake is complete, this does not compromise the security of the
-session key (See {{DOW92}}).  The forward secrecy property is not satisfied
+master secret (See {{DOW92}}).  The forward secrecy property is not satisfied
 when PSK is used in the "psk_ke" PskKeyExchangeMode.
 
 Key Compromise Impersonation (KCI) resistance
@@ -4942,17 +4942,17 @@ exchange protocol. If fresh (EC)DHE keys are used for each connection,
 then the output keys are forward secret.
 
 The external PSK and resumption PSK bootstrap from a long-term shared
-secret into a unique per-connection short-term session key. This
+secret into a unique per-connection short-term master secret. This
 secret may have been established in a previous handshake. If
-PSK with (EC)DHE key establishment is used, this session key will also be forward
+PSK with (EC)DHE key establishment is used, this master secret will also be forward
 secret. The resumption PSK has been designed so that the
 resumption master secret computed by connection N and needed to form
 connection N+1 is separate from the traffic keys used by connection N,
 thus providing forward secrecy between the connections.
 
 The PSK binder value forms a binding between a PSK
-and the current handshake, as well as between the session where the
-PSK was established and the session where it was used. This binding
+and the current handshake, as well as between the context where the
+PSK was established and the connection where it is used. This binding
 transitively includes the original handshake transcript, because that
 transcript is digested into the values which produce the Resumption
 Master Secret. This requires that both the KDF used to produce the
@@ -4965,10 +4965,10 @@ Note: The binder does not cover the binder values from other
 PSKs, though they are included in the Finished MAC.
 
 If an exporter is used, then it produces values which are unique
-and secret (because they are generated from a unique session key).
+and secret (because they are generated from a unique master secret).
 Exporters computed with different labels and contexts are computationally
 independent, so it is not feasible to compute one from another or
-the session secret from the exported value. Note: exporters can
+the master secret from the exported value. Note: exporters can
 produce arbitrary-length values. If exporters are to be
 used as channel bindings, the exported value MUST be large
 enough to provide collision resistance. The exporters provided in
@@ -5020,8 +5020,8 @@ TLS handshake {{CHSV16}} {{FGSW16}} {{LXZFH16}}.
 
 ## Record Layer {#security-record-layer}
 
-The record layer depends on the handshake producing a strong session
-key which can be used to derive bidirectional traffic keys and nonces.
+The record layer depends on the handshake producing a strong master
+secret which can be used to derive bidirectional traffic keys and nonces.
 Assuming that is true, and the keys are used for no more data than
 indicated in {{limits-on-key-usage}} then the record layer should provide the following
 guarantees:
