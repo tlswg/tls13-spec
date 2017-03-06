@@ -4269,7 +4269,8 @@ requiring a new construction. The exporter interface remains the same.
 
 The exporter value is computed as:
 
-    HKDF-Expand-Label(Secret, label, Hash(context_value), key_length)
+    HKDF-Expand-Label(Derive-Secret(Secret, label, ""),
+                      "exporter", Hash(context_value)))
 
 Where Secret is either the early_exporter_secret or the exporter_secret.
 Implementations MUST use the exporter_secret unless explicitly specified by the
