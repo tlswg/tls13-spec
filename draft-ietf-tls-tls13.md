@@ -2625,9 +2625,10 @@ facilitates implementation as described below). Servers MUST check
 that it is the last extension and otherwise fail the handshake with an
 "illegal_parameter" alert.
 
-When the syntax of this extension is correct but the server cannot
-verify at least one binder because of some configuration or state
-changes, the server SHOULD fall back to a full 1-RTT handshake if a
+If a server fails to retrieve a PSK value from identity values
+(because of some configuration or state changes, for instance), the
+server cannot resume the previous session nor verify the binders. In
+this case, the server SHOULD fall back to a full 1-RTT handshake if a
 "key_share" extension is supplied.
 
 #### PSK Binder
