@@ -863,7 +863,7 @@ referenced sections for more details.
 
 # Protocol Overview
 
-The cryptographic parameters of the session state are produced by the
+The cryptographic parameters of the connection state are produced by the
 TLS handshake protocol, which a TLS client and server use when first
 communicating to agree on a protocol version, select cryptographic
 algorithms, optionally authenticate each other, and establish shared
@@ -1427,9 +1427,9 @@ or an invalid enum) MUST terminate the connection with an "illegal_parameter" al
 # Handshake Protocol
 
 The handshake protocol is used to negotiate the secure attributes
-of a session. Handshake messages are supplied to the TLS record layer, where
+of a connection. Handshake messages are supplied to the TLS record layer, where
 they are encapsulated within one or more TLSPlaintext or TLSCiphertext structures, which are
-processed and transmitted as specified by the current active session state.
+processed and transmitted as specified by the current active connection state.
 
 %%% Handshake Protocol
 
@@ -1620,7 +1620,7 @@ random
   See {{implementation-notes}} for additional information.
 
 legacy_session_id
-: Versions of TLS before TLS 1.3 supported a session resumption
+: Versions of TLS before TLS 1.3 supported a "session resumption"
   feature which has been merged with Pre-Shared Keys in this version
   (see {{resumption-and-psk}}).
   This field MUST be ignored by a server negotiating TLS 1.3 and
@@ -1693,7 +1693,7 @@ Structure of this message:
        } ServerHello;
 
 version
-: This field contains the version of TLS negotiated for this session.  Servers
+: This field contains the version of TLS negotiated for this connection.  Servers
   MUST select a version from the list in ClientHello.supported_versions extension.
   A client which receives a version that was not offered MUST abort the handshake.
   For this version of the specification, the version is 0x0304.  (See
@@ -2553,7 +2553,7 @@ obfuscated_ticket_age
   configuration that it is using, in milliseconds.  This value is
   added modulo 2^32 to the "ticket_age_add" value that was
   included with the ticket, see {{NewSessionTicket}}.  This addition
-  prevents passive observers from correlating sessions unless tickets
+  prevents passive observers from correlating connections unless tickets
   are reused.  Note: because ticket lifetimes are restricted to a
   week, 32 bits is enough to represent any plausible age, even in
   milliseconds. For identities established externally an obfuscated_ticket_age of
@@ -2665,7 +2665,7 @@ replay protection for data sent by the client in the first flight.
 The "obfuscated_ticket_age" parameter in the client's
 "pre_shared_key" extension SHOULD be used by
 servers to limit the time over which the first flight might be
-replayed.  A server can store the time at which it sends a session
+replayed.  A server can store the time at which it sends a
 ticket to the client, or encode the time in the ticket.  Then, each
 time it receives an "pre_shared_key" extension, it can subtract the base value and
 check to see if the value used by the client matches its expectations.
@@ -2811,7 +2811,7 @@ filters
   certificate extension OIDs. If the client ignored some of the
   required certificate extension OIDs and supplied a certificate
   that does not satisfy the request, the server MAY at its discretion
-  either continue the session without client authentication, or
+  either continue the connection without client authentication, or
   abort the handshake with an "unsupported_certificate" alert.
 
   PKIX RFCs define a variety of certificate extension OIDs and their
@@ -3315,7 +3315,7 @@ ticket_lifetime
   network byte order from the time of ticket issuance.
   Servers MUST NOT use any value more than 604800 seconds (7 days).
   The value of zero indicates that the ticket should be discarded
-  immediately. Clients MUST NOT cache session tickets for longer than
+  immediately. Clients MUST NOT cache tickets for longer than
   7 days, regardless of the ticket_lifetime, and MAY delete the ticket
   earlier based on local policy. A server MAY treat a ticket as valid
   for a shorter period of time than what is stated in the
@@ -3761,7 +3761,7 @@ the TLS implementation SHOULD indicate an error to the application and
 MUST NOT allow any further data to be sent or received on the
 connection.  Servers and clients MUST forget keys and secrets
 associated with a failed connection. Stateful implementations of
-session tickets (as in many clients) SHOULD discard tickets associated
+tickets (as in many clients) SHOULD discard tickets associated
 with failed connections.
 
 All the alerts listed in {{error-alerts}} MUST be sent as fatal and
@@ -4692,13 +4692,13 @@ Cryptographic details:
 
 ## Client Tracking Prevention
 
-Clients SHOULD NOT reuse a session ticket for multiple connections. Reuse
-of a session ticket allows passive observers to correlate different connections.
-Servers that issue session tickets SHOULD offer at least as many session tickets
+Clients SHOULD NOT reuse a ticket for multiple connections. Reuse
+of a ticket allows passive observers to correlate different connections.
+Servers that issue tickets SHOULD offer at least as many tickets
 as the number of connections that a client might use; for example, a web browser
 using HTTP/1.1 {{RFC7230}} might open six connections to a server. Servers SHOULD
-issue new session tickets with every connection. This ensures that clients are
-always able to use a new session ticket when creating a new connection.
+issue new tickets with every connection. This ensures that clients are
+always able to use a new ticket when creating a new connection.
 
 
 ## Unauthenticated Operation
@@ -4769,7 +4769,7 @@ ClientHello.legacy_version but with the correct version in the
 "supported_versions" extension. If the server does not support TLS 1.3 it
 will respond with a ServerHello containing an older version number. If the
 client agrees to use this version, the negotiation will proceed as appropriate
-for the negotiated protocol. A client resuming a session SHOULD initiate the
+for the negotiated protocol. A client using a ticket for resumption SHOULD initiate the
 connection using the version that was previously negotiated.
 
 Note that 0-RTT data is not compatible with older servers and SHOULD NOT
