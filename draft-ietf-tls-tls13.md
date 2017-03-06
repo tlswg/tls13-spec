@@ -2585,14 +2585,21 @@ Implementor's note: the most straightforward way to implement the
 PSK/cipher suite matching requirements is to negotiate the cipher
 suite first and then exclude any incompatible PSKs.
 
-Prior to accepting PSK key establishment, the server MUST validate the
-corresponding binder value (see {{psk-binder}} below). If this value is
+When a server can recover a PSK value from identity values, it MUST
+validate the corresponding binder value (see {{psk-binder}} below).
+If this value is
 not present or does not validate, the server MUST abort the handshake.
 Servers SHOULD NOT attempt to validate multiple binders; rather they
 SHOULD select a single PSK and validate solely the binder that
 corresponds to that PSK. In order to accept PSK key establishment, the
 server sends a "pre_shared_key" extension indicating the selected
 identity.
+
+If a server fails to retrieve a PSK value from identity values
+(because of some configuration or state changes, for instance), the
+server cannot resume the previous session nor verify the binders. In
+this case, the server SHOULD fall back to a full 1-RTT handshake if a
+"key_share" extension is supplied.
 
 Clients MUST verify that the server's selected_identity is within the
 range supplied by the client, that the server selected a cipher suite
@@ -2611,12 +2618,6 @@ This extension MUST be the last extension in the ClientHello (this
 facilitates implementation as described below). Servers MUST check
 that it is the last extension and otherwise fail the handshake with an
 "illegal_parameter" alert.
-
-If a server fails to retrieve a PSK value from identity values
-(because of some configuration or state changes, for instance), the
-server cannot resume the previous session nor verify the binders. In
-this case, the server SHOULD fall back to a full 1-RTT handshake if a
-"key_share" extension is supplied.
 
 #### PSK Binder
 
