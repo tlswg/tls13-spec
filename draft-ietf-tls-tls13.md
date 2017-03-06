@@ -3723,18 +3723,18 @@ mechanism through TLS extensions or some other means.
 
 ## Limits on Key Usage
 
-There are cryptographic limits on the amount of plaintext which can be
-safely encrypted under a given set of keys.  {{AEAD-LIMITS}} provides
-an analysis of these limits under the assumption that the underlying
-primitive (AES or ChaCha20) has no weaknesses. Implementations SHOULD
-do a key update {{key-update}} prior to reaching these limits.
+To use AES-GCM to provide authenticity of authenticated data, content of the plaintext and information leakage [0] protection for the plaintext safely, the limit of total ciphertext under a single key is ( (TLSCipherText.length / 16) / ceiling (TLSCipherText.length / 16) ) times 2^48 128-bit blocks.
 
-For AES-GCM, up to 2^24.5 full-size records (about 24 million)
-may be encrypted on a
-given connection while keeping a safety margin of approximately
-2^-57 for Authenticated Encryption (AE) security. For
-ChaCha20/Poly1305, the record sequence number would wrap before the
-safety limit is reached.
+When the data limit is reached, the chance of having a collision among 128-bit blocks of the ciphertext is below 2^(-32) which is negligible.
+
+Since the block size of AES is 128 bits, there will be collisions among different sets of ciphertext from multiple sessions using GCM (or any other modes of AES) when the total amount of the ciphertext of all considered sessions is more than 2^64 128-bit blocks. This fact does not seem to create a practical security weakness of using AES GCM.
+
+For ChaCha20/Poly1305, the record sequence number would wrap before the safety limit is reached. See [AEAD-LIMITS] for further analysis.
+
+NOTE: Information leakage in the context of TLS is a chosen-plaintext distinguishing attack where the attacker provides 2 128-bit plaintext blocks to a GCM encryption engine, after seeing one encrypted block for one of the 2 plaintext blocks, the attacker knows which plaintext block was encrypted. Or, it means that there is a collision among 128-bit blocks of the ciphertext.
+
+* The text above uses blocks instead of bytes or records of ciphertext.
+* The partial block situation is taken into account.
 
 #  Alert Protocol
 
