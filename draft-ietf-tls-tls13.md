@@ -497,8 +497,6 @@ receiver: An endpoint that is receiving records.
 
 sender: An endpoint that is transmitting records.
 
-session: An association between a client and a server resulting from a handshake.
-
 server: The endpoint which did not initiate the TLS connection.
 
 
@@ -1050,7 +1048,7 @@ described in the following sections.
 ## Resumption and Pre-Shared Key (PSK) {#resumption-and-psk}
 
 Although TLS PSKs can be established out of band,
-PSKs can also be established in a previous session and
+PSKs can also be established in a previous connection and
 then reused ("session resumption"). Once a handshake has completed, the server can
 send the client a PSK identity that corresponds to a key derived from
 the initial handshake (see {{NewSessionTicket}}). The client
@@ -2618,8 +2616,8 @@ that it is the last extension and otherwise fail the handshake with an
 #### PSK Binder
 
 The PSK binder value forms a binding between a PSK and the current
-handshake, as well as between the session where the PSK was
-established (if via a NewSessionTicket message) and the session where
+handshake, as well as between the handshake in which the PSK was
+generated (if via a NewSessionTicket message) and the handshake where
 it was used.  Each entry in the binders list is computed as an HMAC
 over the portion of the ClientHello (including the handshake header)
 up to and including the PreSharedKeyExtension.identities field. That
@@ -3817,8 +3815,7 @@ message. Unknown alert types MUST be treated as fatal.
 ##  Closure Alerts
 
 The client and the server must share knowledge that the connection is ending in
-order to avoid a truncation attack. Failure to properly close a connection does
-not prohibit a session from being resumed.
+order to avoid a truncation attack.
 
 close_notify
 : This alert notifies the recipient that the sender will not send
