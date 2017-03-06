@@ -2559,7 +2559,10 @@ PSK (if any) and cipher suites.
 
 Implementor's note: the most straightforward way to implement the
 PSK/cipher suite matching requirements is to negotiate the cipher
-suite first and then exclude any incompatible PSKs.
+suite first and then exclude any incompatible PSKs. Any unknown PSKs
+(e.g., they are not in the PSK database or are encrypted with an
+unknown key) SHOULD simply be ignored. If no acceptable PSKs are
+found, the server SHOULD perform a non-PSK handshake if possible.
 
 Prior to accepting PSK key establishment, the server MUST validate the
 corresponding binder value (see {{psk-binder}} below). If this value is
