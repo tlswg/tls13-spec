@@ -4056,14 +4056,11 @@ In this diagram, the following formatting conventions apply:
                  +-----> Derive-Secret(., "early exporter master secret",
                  |                     ClientHello)
                  |                     = early_exporter_secret
-                 |
-           Derive-Secret(., "derived early secret", "")
+                 v
+           Derive-Secret(., "derived secret", "")
                  |
                  v
-(EC)DHE -> HKDF-Extract
-                 |
-                 v
-         Handshake Secret
+(EC)DHE -> HKDF-Extract = Handshake Secret
                  |
                  +-----> Derive-Secret(., "client handshake traffic secret",
                  |                     ClientHello...ServerHello)
@@ -4073,13 +4070,10 @@ In this diagram, the following formatting conventions apply:
                  |                     ClientHello...ServerHello)
                  |                     = server_handshake_traffic_secret
                  |
-           Derive-Secret(., "derived handshake secret", "")
+           Derive-Secret(., "derived secret", "")
                  |
                  v
-      0 -> HKDF-Extract
-                 |
-                 v
-            Master Secret
+      0 -> HKDF-Extract = Master Secret
                  |
                  +-----> Derive-Secret(., "client application traffic secret",
                  |                     ClientHello...Server Finished)
