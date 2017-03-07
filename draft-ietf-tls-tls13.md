@@ -4878,7 +4878,8 @@ is intended to provide both one-way authenticated (server-only) and
 mutually authenticated (client and server) functionality. At the completion
 of the handshake, each side outputs its view of the following values:
 
-- A "session key" (the master secret) from which can be derived a set of working keys.
+- A "session key" (collectively the various secrets derived from
+  the master secret) from which can be derived a set of working keys.
 - A set of cryptographic parameters (algorithms, etc.)
 - The identities of the communicating parties.
 
