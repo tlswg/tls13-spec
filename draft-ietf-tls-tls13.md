@@ -483,6 +483,8 @@ draft-19
 
 - Change end_of_early_data to be a handshake message (*).
 
+- Add pre-extract Derive-Secret stages to key schedule (*).
+
 - Remove spurious requirement to implement "pre_shared_key".
 
 - Clarify location of "early_data" from server (it goes in EE,
