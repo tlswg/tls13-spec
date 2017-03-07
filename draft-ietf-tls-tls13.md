@@ -520,6 +520,8 @@ draft-19
 
 - Change end_of_early_data to be a handshake message (*).
 
+- Add pre-extract Derive-Secret stages to key schedule (*).
+
 - Remove spurious requirement to implement "pre_shared_key".
 
 - Clarify location of "early_data" from server (it goes in EE,
@@ -4094,10 +4096,10 @@ In this diagram, the following formatting conventions apply:
                  |                     ClientHello)
                  |                     = early_exporter_secret
                  v
-(EC)DHE -> HKDF-Extract
+           Derive-Secret(., "derived secret", "")
                  |
                  v
-         Handshake Secret
+(EC)DHE -> HKDF-Extract = Handshake Secret
                  |
                  +-----> Derive-Secret(., "client handshake traffic secret",
                  |                     ClientHello...ServerHello)
@@ -4107,11 +4109,10 @@ In this diagram, the following formatting conventions apply:
                  |                     ClientHello...ServerHello)
                  |                     = server_handshake_traffic_secret
                  |
-                 v
-      0 -> HKDF-Extract
+           Derive-Secret(., "derived secret", "")
                  |
                  v
-            Master Secret
+      0 -> HKDF-Extract = Master Secret
                  |
                  +-----> Derive-Secret(., "client application traffic secret",
                  |                     ClientHello...Server Finished)
