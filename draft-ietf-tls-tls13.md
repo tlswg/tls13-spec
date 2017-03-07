@@ -4878,8 +4878,8 @@ is intended to provide both one-way authenticated (server-only) and
 mutually authenticated (client and server) functionality. At the completion
 of the handshake, each side outputs its view of the following values:
 
-- A set of "session keys" (collectively the various secrets derived from
-  the master secret) from which can be derived a set of working keys.
+- A set of "session keys" (the various secrets derived from the master secret)
+  from which can be derived a set of working keys.
 - A set of cryptographic parameters (algorithms, etc.)
 - The identities of the communicating parties.
 
@@ -4908,7 +4908,8 @@ peer identity should match the client's identity.
 
 Uniqueness of the session keys:
 : Any two distinct handshakes should produce distinct, unrelated session
-keys.
+keys. Individual session keys produced by a handshake should also be distinct
+and unrelated.
 
 Downgrade protection.
 : The cryptographic parameters should be the same on both sides and
