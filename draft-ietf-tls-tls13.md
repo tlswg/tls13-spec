@@ -3347,7 +3347,8 @@ The sole extension currently defined for NewSessionTicket is
 
 max_early_data_size
 : The maximum amount of 0-RTT data that the client is allowed to send when using
-  this ticket, in bytes. Only Application Data payload is counted. A server
+  this ticket, in bytes. Only Application Data payload (i.e., plaintext but
+  not padding or the inner content type byte) is counted. A server
   receiving more than max_early_data_size bytes of 0-RTT data
   SHOULD terminate the connection with an "unexpected_message" alert.
 {:br }
