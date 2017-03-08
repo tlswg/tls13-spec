@@ -4875,8 +4875,8 @@ is intended to provide both one-way authenticated (server-only) and
 mutually authenticated (client and server) functionality. At the completion
 of the handshake, each side outputs its view of the following values:
 
-- A "session key" (collectively the various secrets derived from
-  the master secret) from which can be derived a set of working keys.
+- A set of "session keys" (the various secrets derived from the master secret)
+  from which can be derived a set of working keys.
 - A set of cryptographic parameters (algorithms, etc.)
 - The identities of the communicating parties.
 
@@ -4886,13 +4886,13 @@ handshake should provide the properties listed below. Note that
 these properties are not necessarily independent, but reflect
 the protocol consumers' needs.
 
-Establishing the same session key.
-: The handshake needs to output the same session key on both sides of the
-handshake, provided that it completes successfully on each endpoint
+Establishing the same session keys.
+: The handshake needs to output the same set of session keys on both sides of
+the handshake, provided that it completes successfully on each endpoint
 (See {{CK01}}; defn 1, part 1).
 
-Secrecy of the session key.
-: The shared session key should be known only to the communicating
+Secrecy of the session keys.
+: The shared session keys should be known only to the communicating
 parties, not to the attacker (See {{CK01}}; defn 1, part 2).  Note that
 in a unilaterally authenticated connection, the attacker can establish
 its own session keys with the server, but those session keys are
@@ -4903,9 +4903,10 @@ Peer Authentication.
 identity. If the client is authenticated, the server's view of the
 peer identity should match the client's identity.
 
-Uniqueness of the session key:
+Uniqueness of the session keys:
 : Any two distinct handshakes should produce distinct, unrelated session
-keys.
+keys. Individual session keys produced by a handshake should also be distinct
+and unrelated.
 
 Downgrade protection.
 : The cryptographic parameters should be the same on both sides and
@@ -4943,9 +4944,9 @@ exchange protocol. If fresh (EC)DHE keys are used for each connection,
 then the output keys are forward secret.
 
 The external PSK and resumption PSK bootstrap from a long-term shared
-secret into a unique per-connection short-term session key. This
+secret into a unique per-connection set of short-term session keys. This
 secret may have been established in a previous handshake. If
-PSK with (EC)DHE key establishment is used, this session key will also be forward
+PSK with (EC)DHE key establishment is used, these session keys will also be forward
 secret. The resumption PSK has been designed so that the
 resumption master secret computed by connection N and needed to form
 connection N+1 is separate from the traffic keys used by connection N,
@@ -5021,8 +5022,8 @@ TLS handshake {{CHSV16}} {{FGSW16}} {{LXZFH16}}.
 
 ## Record Layer {#security-record-layer}
 
-The record layer depends on the handshake producing a strong session
-key which can be used to derive bidirectional traffic keys and nonces.
+The record layer depends on the handshake producing strong traffic secrets
+which can be used to derive bidirectional encryption keys and nonces.
 Assuming that is true, and the keys are used for no more data than
 indicated in {{limits-on-key-usage}} then the record layer should provide the following
 guarantees:
