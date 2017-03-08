@@ -3321,7 +3321,6 @@ ticket_lifetime
   for a shorter period of time than what is stated in the
   ticket_lifetime.
 
-
 ticket_age_add
 : A securely generated, random 32-bit value that is used to obscure the age of
   the ticket that the client includes in the "pre_shared_key" extension.
@@ -3333,7 +3332,6 @@ ticket
 The ticket itself is an opaque label. It MAY either be a database
 lookup key or a self-encrypted and self-authenticated value. Section
 4 of {{RFC5077}} describes a recommended ticket construction mechanism.
-
 
 extensions
 : A set of extension values for the ticket. The "Extension"
@@ -3352,6 +3350,15 @@ max_early_data_size
   receiving more than max_early_data_size bytes of 0-RTT data
   SHOULD terminate the connection with an "unexpected_message" alert.
 {:br }
+
+Note that in principle it is possible to continue issuing new tickets
+which continue to indefinitely extend the lifetime of the keying
+material originally derived from an initial non-PSK handshake (which
+was most likely tied to the peer's certificate). It is RECOMMENDED
+that implementations place limits on the total lifetime of such keying
+material; these limits should take into account the lifetime of the
+peer's certificate, the likelihood of intervening revocation,
+and the time since the peer's online CertificateVerify signature.
 
 ### Post-Handshake Authentication
 
