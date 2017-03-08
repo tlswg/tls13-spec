@@ -3460,7 +3460,8 @@ that:
   records, there MUST NOT be any other records between them.
 
 - Handshake messages MUST NOT span key changes. Because
-  the ServerHello, Finished, and KeyUpdate messages signal a key change,
+  the ClientHello, EndOfEarlyData, ServerHello, Finished, and KeyUpdate messages
+  can arrive immediately prior to a key change,
   upon receiving these messages a receiver MUST verify that the end
   of these messages aligns with a record boundary; if not, then it MUST
   terminate the connection with an "unexpected_message" alert.
