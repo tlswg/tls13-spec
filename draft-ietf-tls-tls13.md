@@ -4080,7 +4080,6 @@ In this diagram, the following formatting conventions apply:
                  v
    PSK ->  HKDF-Extract = Early Secret
                  |
-                 v
                  +-----> Derive-Secret(.,
                  |                     "external psk binder key" |
                  |                     "resumption psk binder key",
@@ -4100,7 +4099,6 @@ In this diagram, the following formatting conventions apply:
                  v
 (EC)DHE -> HKDF-Extract = Handshake Secret
                  |
-                 v
                  +-----> Derive-Secret(., "client handshake traffic secret",
                  |                     ClientHello...ServerHello)
                  |                     = client_handshake_traffic_secret
@@ -4114,7 +4112,6 @@ In this diagram, the following formatting conventions apply:
                  v
       0 -> HKDF-Extract = Master Secret
                  |
-	             v
                  +-----> Derive-Secret(., "client application traffic secret",
                  |                     ClientHello...Server Finished)
                  |                     = client_traffic_secret_0
