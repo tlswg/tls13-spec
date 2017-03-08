@@ -4070,8 +4070,8 @@ In this diagram, the following formatting conventions apply:
 
 - HKDF-Extract is drawn as taking the Salt argument from the top and the IKM argument
   from the left.
-- Derive-Secret's Secret argument is indicated by the arrow coming in
-  from the left. For instance, the Early Secret is the Secret for
+- Derive-Secret's Secret argument is indicated by the incoming
+  arrow. For instance, the Early Secret is the Secret for
   generating the client_early_traffic_secret.
 
 ~~~~
