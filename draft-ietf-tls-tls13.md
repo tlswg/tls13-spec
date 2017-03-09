@@ -1528,15 +1528,21 @@ If the server successfully selects parameters and does not require a
 HelloRetryRequest, it indicates the selected parameters in the ServerHello as
 follows:
 
-- If PSK is being used, then the server will send a
-"pre_shared_key" extension indicating the selected key.
-- If PSK is not being used, then (EC)DHE and certificate-based
-authentication are always used.
-- When (EC)DHE is in use, the server will also provide a
-"key_share" extension.
-- When authenticating via a certificate (i.e., when a PSK is not
-in use), the server will send the Certificate ({{certificate}}) and
-CertificateVerify ({{certificate-verify}}) messages.
+- If PSK is not being used, then (EC)DHE and certificate-based authentication are always used, and the server will:
+
+    --  provide a "key_share" extension; and
+
+    --  send the Certificate (Section 4.4.1) and CertificateVerify (Section 4.4.2) messages.
+
+- If PSK (without DH or ECDH) is being used, then the server sends a "pre_shared_key" extension to indicate the selected key.
+
+-  If PSK and (EC)DH are being used together, then the server will:
+
+    --  send a "pre_shared_key" extension to indicate the selected key;
+
+    --  provide a "key_share" extension; and
+
+    --  send the Certificate (Section 4.4.1) and CertificateVerify (Section 4.4.2) messages.
 
 If the server is unable to negotiate a supported set of parameters
 (i.e., there is no overlap between the client and server parameters),
