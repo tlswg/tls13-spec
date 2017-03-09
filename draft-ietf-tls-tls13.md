@@ -2650,6 +2650,9 @@ ClientHello2, its binder will be computed over:
                        ClientHello2[truncated])
 
 The full ClientHello is included in all other handshake hash computations.
+Note that in the first flight, ClientHello1[truncated] is hashed directly,
+but in the second flight, it is hashed and then reinjected as a
+"handshake_hash" message, as described in {{the-transcript-hash}}.
 
 #### Processing Order
 
@@ -2891,9 +2894,9 @@ for each scenario:
 ### The Transcript Hash
 
 Many of the cryptographic computations in TLS make use of a transcript
-hash. This value is computed by hashing the concatenation of the
-hashes of each included handshake message, including the handshake
-message header including the handshake message type and length fields,
+hash. This value is computed by hashing the concatenation of
+each included handshake message, including the handshake
+message header carrying the handshake message type and length fields,
 but not including record layer headers. I.e., 
 
      Transcript-Hash(M1, M2, ... MN) = Hash(M1 || M2 ... MN)
@@ -2904,7 +2907,7 @@ replaced with a special synthetic handshake message of handshake
 type "message_hash" containing Hash(ClientHello1). I.e.,
 
      Transcript-Hash(ClientHello1, HelloRetryRequest, ... MN) =
-         Hash(254 ||                 // Handshake Type
+         Hash(message_hash ||                 // Handshake Type
               00 00 Hash.length ||   // Handshake message length
               Hash(ClientHello1) ||  // Hash of ClientHello1
               HelloRetryRequest ... MN)
@@ -3159,7 +3162,7 @@ CertificateVerify". It is used to provide separation between signatures
 made in different contexts, helping against potential cross-protocol attacks.
 
 For example, if the transcript hash was 32 bytes of
-01 (this length would make sense for SHA-256), the content covered by 
+01 (this length would make sense for SHA-256), the content covered by
 the digital signature for a server CertificateVerify would be:
 
        2020202020202020202020202020202020202020202020202020202020202020
@@ -4407,7 +4410,7 @@ and their allocation policies are below:
   Standards Action {{RFC5226}}. IANA \[SHALL update/has updated] this registry
   to rename item 4 from "NewSessionTicket" to "new_session_ticket"
   and to add the "hello_retry_request", "encrypted_extensions",
-  "end_of_early_data", and "key_update" values.
+  "end_of_early_data", "key_update", and "handshake_hash" values.
 
 This document also uses a registry originally created in {{RFC4366}}. IANA has
 updated it to reference this document. The registry and its allocation policy
