@@ -1572,8 +1572,11 @@ ClientHello (without modification) except:
 - Including a "cookie" extension if one was provided in the
   HelloRetryRequest.
 
-- Updating the "obfuscated_ticket_age" and PSK binder values if the
-  "pre_shared_key" extension was present.
+- Updating the "pre_shared_key" extension if present by 
+  recomputing the "obfuscated_ticket_age" and binder values
+  and (optionally) removing
+  any PSKs which are incompatible with the server's indicated
+  cipher suite.
 
 Because TLS 1.3 forbids renegotiation, if a server receives a
 ClientHello at any other time, it MUST terminate the connection.
