@@ -534,6 +534,9 @@ draft-19
 
 - Require peer public key validation
 
+- Add state machine diagram.
+
+
 draft-18
 
 - Remove unnecessary resumption_psk which is the only thing expanded from
