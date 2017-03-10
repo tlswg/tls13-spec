@@ -1534,9 +1534,11 @@ follows:
 authentication are always used.
 - When (EC)DHE is in use, the server will also provide a
 "key_share" extension.
-- When authenticating via a certificate (i.e., when a PSK is not
-in use), the server will send the Certificate ({{certificate}}) and
-CertificateVerify ({{certificate-verify}}) messages.
+- When authenticating via a certificate the server will send the Certificate ({{certificate}}) and
+CertificateVerify ({{certificate-verify}}) messages. In TLS 1.3
+as defined by this document, either a PSK or a certificate
+is always used, but not both. Future documents may define how to use them
+together.
 
 If the server is unable to negotiate a supported set of parameters
 (i.e., there is no overlap between the client and server parameters),
