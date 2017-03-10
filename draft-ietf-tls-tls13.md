@@ -507,7 +507,12 @@ server: The endpoint which did not initiate the TLS connection.
 
 draft-19
 
-- Hash context_value input to Exporters (*).
+- Hash context_value input to Exporters (*)
+
+- Add an additional Derive-Secret stage to Exporters (*).
+
+- Hash ClientHello1 in the transcript when HRR is used. This
+  reduces the state that needs to be carried in cookies. (*)
 
 - Restructure CertificateRequest to have the selectors
   in extensions. This also allowed defining a "certificate_authorities"
@@ -526,6 +531,8 @@ draft-19
 
 - Clarify location of "early_data" from server (it goes in EE,
   as indicated by the table in S 10).
+
+- Require peer public key validation
 
 draft-18
 
