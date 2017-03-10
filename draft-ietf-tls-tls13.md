@@ -1807,17 +1807,18 @@ this specification are:
 - key_share (see {{key-share}})
 
 In addition, in its updated ClientHello, the client SHOULD NOT offer
-any pre-shared keys associated with a hash other than that of the selected
-cipher suite. This allows the client to avoid having to compute partial
-hash transcripts for multiple hashes in the second ClientHello.
-A client which receives a cipher suite that was not offered MUST abort the handshake.
-Servers MUST ensure that they negotiate the same cipher suite when
-receiving a conformant updated ClientHello (if the server selects the
-cipher suite first, then this will happen automatically). Upon
-receiving the ServerHello, clients MUST
-check that the cipher suite supplied in the ServerHello is the same
-as that in the HelloRetryRequest and otherwise abort the handshake
-with an "illegal_parameter" alert.
+any pre-shared keys associated with a hash other than that of the
+selected cipher suite. This allows the client to avoid having to
+compute partial hash transcripts for multiple hashes in the second
+ClientHello.  A client which receives a cipher suite that was not
+offered MUST abort the handshake.  Servers MUST ensure that they
+negotiate the same cipher suite when receiving a conformant updated
+ClientHello (if the server selects the cipher suite as the first step
+in the negotiation, then this will happen automatically). Upon
+receiving the ServerHello, clients MUST check that the cipher suite
+supplied in the ServerHello is the same as that in the
+HelloRetryRequest and otherwise abort the handshake with an
+"illegal_parameter" alert.
 
 ##  Extensions
 
