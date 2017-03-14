@@ -1575,7 +1575,7 @@ ClientHello (without modification) except:
 - Including a "cookie" extension if one was provided in the
   HelloRetryRequest.
 
-- Updating the "pre_shared_key" extension if present by 
+- Updating the "pre_shared_key" extension if present by
   recomputing the "obfuscated_ticket_age" and binder values
   and (optionally) removing
   any PSKs which are incompatible with the server's indicated
@@ -2926,7 +2926,7 @@ Many of the cryptographic computations in TLS make use of a transcript
 hash. This value is computed by hashing the concatenation of
 each included handshake message, including the handshake
 message header carrying the handshake message type and length fields,
-but not including record layer headers. I.e., 
+but not including record layer headers. I.e.,
 
      Transcript-Hash(M1, M2, ... MN) = Hash(M1 || M2 ... MN)
 
@@ -3778,8 +3778,11 @@ from the AEAD decryption.  If a receiving implementation does not find
 a non-zero octet in the cleartext, it MUST terminate the
 connection with an "unexpected_message" alert.
 
-The presence of padding does not change the overall record size
-limitations -- the full fragment plaintext may not exceed 2^14 octets.
+The presence of padding does not change the overall record size limitations
+- the full fragment plaintext MUST not exceed 2^14 octets. If the maximum
+fragment length is reduced, such as by the max_fragment_length extension
+from [RFC6066], then the reduced limit applies to the full plaintext,
+including the padding.
 
 Selecting a padding policy that suggests when and how much to pad is a
 complex topic, and is beyond the scope of this specification. If the
