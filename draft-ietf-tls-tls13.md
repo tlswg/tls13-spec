@@ -2461,7 +2461,7 @@ The "extension_data" field of this extension contains an
            };
        } EarlyDataIndication;
 
-See {{ticket-establishment}} for the use of the max_early_data_size field.
+See {{NewSessionTicket}} for the use of the max_early_data_size field.
 
 For PSKs provisioned via NewSessionTicket, a server MUST validate that
 the ticket age for the selected PSK identity (computed by subtracting
