@@ -2158,7 +2158,7 @@ willing to negotiate TLS 1.2 MUST behave in accordance with the requirements of
   TLS 1.2 is negotiated. In TLS 1.2, RSASSA-PSS is used with RSA cipher suites.
 
 
-#### Certificate Authorities
+### Certificate Authorities
 
 The "certificate_authorities" extension is used to indicate the
 certificate authorities which an endpoint supports and which SHOULD
