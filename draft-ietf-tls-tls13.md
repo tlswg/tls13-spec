@@ -3313,9 +3313,10 @@ server in response to client Certificate and CertificateVerify messages.
 
        struct {} EndOfEarlyData;
 
-The EndOfEarlyData message is sent by the client to indicate that all 0-RTT
-application_data messages have been transmitted (or none will
-be sent at all) and that the following records are protected
+If the server sent an "early_data" extension, the client MUST send an
+EndOfEarlyData after receiving the server Finished. This indicates that all
+0-RTT application_data messages, if any, have been transmitted and
+that the following records are protected
 under handshake traffic keys. Servers MUST NOT send this
 message and clients receiving it MUST terminate the connection
 with an "unexpected_message" alert. This message is encrypted
