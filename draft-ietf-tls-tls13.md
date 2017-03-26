@@ -4,7 +4,7 @@ abbrev: TLS
 docname: draft-ietf-tls-tls13-latest
 category: std
 updates: 4492, 5705, 6066, 6961
-obsoletes: 5077, 5246, 5746
+obsoletes: 5077, 5246
 
 ipr: pre5378Trust200902
 area: General
@@ -94,7 +94,6 @@ informative:
   RFC5081:
   RFC5116:
   RFC5246:
-  RFC5746:
   RFC5764:
   RFC5878:
   RFC5929:
