@@ -2915,7 +2915,7 @@ for each scenario:
 | Mode | Handshake Context | Base Key |
 |------|-------------------|----------|
 | Server | ClientHello ... later of EncryptedExtensions/CertificateRequest | server_handshake_traffic_secret |
-| Client | ClientHello ... ServerFinished     | client_handshake_traffic_secret |
+| Client | ClientHello ... later of ServerFinished/EndOfEarlyData | client_handshake_traffic_secret |
 | Post-Handshake | ClientHello ... ClientFinished + CertificateRequest | client_traffic_secret_N |
 
 
@@ -2944,6 +2944,14 @@ The reason for this construction is to allow the server to do a
 stateless HelloRetryRequest by storing just the hash of ClientHello1
 in the cookie, rather than requiring it to export the entire intermediate
 hash state (see {{cookie}}).
+
+For concreteness, the transcript hash is always taken from the
+following sequence of handshake messages, starting at the first
+ClientHello and including only those messages that were sent:
+ClientHello, HelloRetryRequest, ClientHello, ServerHello,
+EncryptedExtensions, Server CertificateRequest, Server Certificate,
+Server CertificateVerify, Server Finished, EndOfEarlyData, Client
+Certificate, Client CertificateVerify, Client Finished.
 
 In general, implementations can implement the transcript by keeping a
 running transcript hash value based on the negotiated hash. Note,
@@ -4207,13 +4215,6 @@ calls to Derive-Secret may take different Messages arguments,
 even with the same secret. In a 0-RTT exchange, Derive-Secret is
 called with four distinct transcripts; in a 1-RTT-only exchange
 with three distinct transcripts.
-
-The complete transcript passed to Derive-Secret is always taken from the
-following sequence of handshake messages, starting at the first ClientHello and
-including only those messages that were sent: ClientHello, HelloRetryRequest,
-ClientHello, ServerHello, EncryptedExtensions, Server CertificateRequest, Server
-Certificate, Server CertificateVerify, Server Finished, EndOfEarlyData, Client
-Certificate, Client CertificateVerify, Client Finished.
 
 If a given secret is not available, then the 0-value consisting of
 a string of Hash.length zero bytes is used.  Note that this does not mean skipping
