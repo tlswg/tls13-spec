@@ -3888,7 +3888,7 @@ message. Unknown alert types MUST be treated as fatal.
        } AlertDescription;
 
        struct {
-           AlertLevel level;
+           AlertLevel legacy_level;
            AlertDescription description;
        } Alert;
 
