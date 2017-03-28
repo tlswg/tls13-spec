@@ -5392,6 +5392,10 @@ Archives of the list can be found at:
   Microsoft, Inc. \\
   dansimon@microsoft.com
 
+* Brian Sniffen \\
+  Akamai Technologies \\
+  ietf@bts.evenmere.org
+
 * Nick Sullivan \\
   Cloudflare Inc. \\
   nick@cloudflare.com
