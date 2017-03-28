@@ -572,7 +572,7 @@ draft-17
 
 - Explicitly allow non-offered extensions in NewSessionTicket
 
-- Explicitly allow predicting ClientFinished for NST
+- Explicitly allow predicting Client Finished for NST
 
 - Clarify conditions for allowing 0-RTT with PSK
 
@@ -2915,8 +2915,8 @@ for each scenario:
 | Mode | Handshake Context | Base Key |
 |------|-------------------|----------|
 | Server | ClientHello ... later of EncryptedExtensions/CertificateRequest | server_handshake_traffic_secret |
-| Client | ClientHello ... later of ServerFinished/EndOfEarlyData | client_handshake_traffic_secret |
-| Post-Handshake | ClientHello ... ClientFinished + CertificateRequest | client_traffic_secret_N |
+| Client | ClientHello ... later of Server Finished/EndOfEarlyData | client_handshake_traffic_secret |
+| Post-Handshake | ClientHello ... Client Finished + CertificateRequest | client_traffic_secret_N |
 
 
 ### The Transcript Hash
@@ -3321,7 +3321,7 @@ server in response to client Certificate and CertificateVerify messages.
        struct {} EndOfEarlyData;
 
 If the server sent an "early_data" extension, the client MUST send an
-EndOfEarlyData after receiving the server Finished. This indicates that all
+EndOfEarlyData after receiving the Server Finished. This indicates that all
 0-RTT application_data messages, if any, have been transmitted and
 that the following records are protected
 under handshake traffic keys. Servers MUST NOT send this
@@ -3337,7 +3337,7 @@ appropriate application traffic key.
 
 ### New Session Ticket Message {#NewSessionTicket}
 
-At any time after the server has received the client Finished message, it MAY send
+At any time after the server has received the Client Finished message, it MAY send
 a NewSessionTicket message. This message creates a pre-shared key
 (PSK) binding between the ticket value and the resumption master secret.
 
@@ -3361,7 +3361,7 @@ Note: Although the resumption master secret depends on the client's second
 flight, servers which do not request client authentication MAY compute
 the remainder of the transcript independently and then send a
 NewSessionTicket immediately upon sending its Finished rather than
-waiting for the client Finished.  This might be appropriate in cases
+waiting for the Client Finished.  This might be appropriate in cases
 where the client is expected to open multiple TLS connections in
 parallel and would benefit from the reduced overhead of a resumption
 handshake, for example.
