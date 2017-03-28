@@ -5249,6 +5249,10 @@ Archives of the list can be found at:
   Cloudflare Inc. \\
   alessandro@cloudflare.com
 
+* Daniel Kahn Gillmor \\
+  ACLU \\
+  dkg@fifthhorseman.net
+
 * Jens Guballa \\
   ETAS \\
   jens.guballa@etas.com
@@ -5283,10 +5287,6 @@ Archives of the list can be found at:
 * Benjamin Kaduk \\
   Akamai \\
   kaduk@mit.edu
-
-* Daniel Kahn Gillmor \\
-  ACLU \\
-  dkg@fifthhorseman.net
 
 * Hubert Kario \\
   Red Hat Inc. \\
