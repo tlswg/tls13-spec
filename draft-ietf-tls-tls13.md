@@ -2198,7 +2198,7 @@ purpose {{RFC6066}}, but is more complicated, is not used in TLS 1.3
 offering prior versions of TLS).
 
 
-### Post-Handshake Client Authentication (#post_handshake_auth}
+### Post-Handshake Client Authentication {#post_handshake_auth}
 
 The "post_handshake_auth" extension is used to indicate that a client is willing
 to perform post-handshake authentication {{post-handshake-authentication}}.
@@ -3122,8 +3122,8 @@ The following rules apply to certificates sent by the client:
 - The certificate type MUST be X.509v3 {{RFC5280}}, unless explicitly negotiated
   otherwise (e.g., {{RFC5081}}).
 
-- If the certificate_authorities list in the CertificateRequest
-  message was non-empty, at least one of the certificates in the certificate
+- If the "certificate_authorities" extension in the CertificateRequest
+  message was present, at least one of the certificates in the certificate
   chain SHOULD be issued by one of the listed CAs.
 
 - The certificates MUST be signed using an acceptable signature
