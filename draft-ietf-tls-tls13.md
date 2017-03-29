@@ -5338,6 +5338,10 @@ Archives of the list can be found at:
   Google \\
   bodo@openssl.org
 
+* Kyle Nekritz \\
+  Facebook \\
+  knekritz@fb.com
+
 * Erik Nygren \\
   Akamai Technologies \\
   erik+ietf@nygren.org
