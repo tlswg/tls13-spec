@@ -5379,8 +5379,8 @@ Archives of the list can be found at:
   krose@krose.org
 
 * Jim Roskind \\
-  Netscape Communications \\
-  jar@netscape.com
+  Amazon \\
+  jroskind@amazon.com
 
 * Michael Sabin
 
