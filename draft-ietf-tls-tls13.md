@@ -1605,19 +1605,6 @@ Structure of this message:
            Extension extensions<8..2^16-1>;
        } ClientHello;
 
-All versions of TLS allow extensions to optionally follow the
-compression_methods field as an extensions field.  TLS 1.3
-ClientHellos will contain at least two extensions,
-"supported_versions" and either "key_share" or "pre_shared_key".  The
-presence of extensions can be detected by determining whether there
-are bytes following the compression_methods at the end of the
-ClientHello. Note that this method of detecting optional data differs
-from the normal TLS method of having a variable-length field, but it
-is used for compatibility with TLS before extensions were defined.
-TLS 1.3 servers will need to perform this check first and only
-attempt to negotiate TLS 1.3 if a "supported_version" extension
-is present.
-
 legacy_version
 : In previous versions of TLS, this field was used for version negotiation
   and represented the highest version number supported by the client.
@@ -1675,17 +1662,28 @@ extensions
   Servers MUST ignore unrecognized extensions.
 {:br }
 
-In the event that a client requests additional functionality using
-extensions, and this functionality is not supplied by the server, the
-client MAY abort the handshake. Note that TLS 1.3 ClientHello messages
-always contain extensions (minimally they must contain
-"supported_versions" or they will be interpreted as TLS 1.2 ClientHello
-messages). TLS 1.3 servers might receive ClientHello messages from versions
-of TLS prior to 1.3 that do not contain extensions.
+All versions of TLS allow extensions to optionally follow the
+compression_methods field as an extensions field. TLS 1.3 ClientHello
+messages always contain extensions (minimally, "supported_versions" or
+they will be interpreted as TLS 1.2 ClientHello messages), however
+TLS 1.3 servers might receive ClientHello messages without an
+extensions field from prior versions of TLS.
+The presence of extensions can be detected by determining whether there
+are bytes following the compression_methods field at the end of the
+ClientHello. Note that this method of detecting optional data differs
+from the normal TLS method of having a variable-length field, but it
+is used for compatibility with TLS before extensions were defined.
+TLS 1.3 servers will need to perform this check first and only
+attempt to negotiate TLS 1.3 if a "supported_version" extension
+is present.
 If negotiating a version of TLS prior to 1.3, a server MUST check that
 the message either contains no data after legacy_compression_methods
 or that it contains a valid extensions block with no data following.
 If not, then it MUST abort the handshake with a "decode_error" alert.
+
+In the event that a client requests additional functionality using
+extensions, and this functionality is not supplied by the server, the
+client MAY abort the handshake.
 
 After sending the ClientHello message, the client waits for a ServerHello
 or HelloRetryRequest message.
