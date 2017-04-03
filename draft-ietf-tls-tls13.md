@@ -3432,6 +3432,8 @@ message. The client SHOULD respond with the appropriate Authentication
 messages. If the client chooses to authenticate, it MUST send
 Certificate, CertificateVerify, and Finished. If it declines, it
 MUST send a Certificate message containing no certificates followed by Finished.
+All of the client's messages for a given response
+MUST appear consecutively on the wire with no intervening messages of other types.
 
 Note: Because client authentication may require prompting the user,
 servers MUST be prepared for some delay, including receiving an
