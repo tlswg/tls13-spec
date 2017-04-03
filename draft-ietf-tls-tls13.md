@@ -572,7 +572,7 @@ draft-17
 
 - Explicitly allow non-offered extensions in NewSessionTicket
 
-- Explicitly allow predicting ClientFinished for NST
+- Explicitly allow predicting client Finished for NST
 
 - Clarify conditions for allowing 0-RTT with PSK
 
@@ -2915,8 +2915,8 @@ for each scenario:
 | Mode | Handshake Context | Base Key |
 |------|-------------------|----------|
 | Server | ClientHello ... later of EncryptedExtensions/CertificateRequest | server_handshake_traffic_secret |
-| Client | ClientHello ... later of ServerFinished/EndOfEarlyData | client_handshake_traffic_secret |
-| Post-Handshake | ClientHello ... ClientFinished + CertificateRequest | client_traffic_secret_N |
+| Client | ClientHello ... later of server Finished/EndOfEarlyData | client_handshake_traffic_secret |
+| Post-Handshake | ClientHello ... client Finished + CertificateRequest | client_traffic_secret_N |
 
 
 ### The Transcript Hash
@@ -2950,8 +2950,8 @@ following sequence of handshake messages, starting at the first
 ClientHello and including only those messages that were sent:
 ClientHello, HelloRetryRequest, ClientHello, ServerHello,
 EncryptedExtensions, Server CertificateRequest, Server Certificate,
-Server CertificateVerify, Server Finished, EndOfEarlyData, Client
-Certificate, Client CertificateVerify, Client Finished.
+Server CertificateVerify, server Finished, EndOfEarlyData, Client
+Certificate, Client CertificateVerify, client Finished.
 
 In general, implementations can implement the transcript by keeping a
 running transcript hash value based on the negotiated hash. Note,
@@ -4190,19 +4190,19 @@ In this diagram, the following formatting conventions apply:
       0 -> HKDF-Extract = Master Secret
                  |
                  +-----> Derive-Secret(., "client application traffic secret",
-                 |                     ClientHello...Server Finished)
+                 |                     ClientHello...server Finished)
                  |                     = client_traffic_secret_0
                  |
                  +-----> Derive-Secret(., "server application traffic secret",
-                 |                     ClientHello...Server Finished)
+                 |                     ClientHello...server Finished)
                  |                     = server_traffic_secret_0
                  |
                  +-----> Derive-Secret(., "exporter master secret",
-                 |                     ClientHello...Server Finished)
+                 |                     ClientHello...server Finished)
                  |                     = exporter_secret
                  |
                  +-----> Derive-Secret(., "resumption master secret",
-                                       ClientHello...Client Finished)
+                                       ClientHello...client Finished)
                                        = resumption_master_secret
 ~~~~
 
