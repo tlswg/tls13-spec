@@ -3532,12 +3532,12 @@ that:
   types. That is, if a handshake message is split over two or more
   records, there MUST NOT be any other records between them.
 
-- Handshake messages MUST NOT span key changes. Because
-  the ClientHello, EndOfEarlyData, ServerHello, Finished, and KeyUpdate messages
-  can arrive immediately prior to a key change,
-  upon receiving these messages a receiver MUST verify that the end
-  of these messages aligns with a record boundary; if not, then it MUST
-  terminate the connection with an "unexpected_message" alert.
+- Handshake messages MUST NOT span key changes. Implementations MUST verify that
+  all messages immediately preceding a key change align with a record boundary;
+  if not, then they MUST terminate the connection with an "unexpected_message"
+  alert. Because the ClientHello, EndOfEarlyData, ServerHello, Finished, and
+  KeyUpdate messages can immediately precede a key change, implementations MUST
+  send these messages in alignment with a record boundary.
 
 Implementations MUST NOT send zero-length fragments of Handshake
 types, even if those fragments contain padding.
