@@ -1840,7 +1840,18 @@ A number of TLS messages contain tag-length-value encoded extensions structures.
 
        struct {
            ExtensionType extension_type;
-           opaque extension_data<0..2^16-1>;
+           select (Extension.extension_type) {
+               case supported_groups:        NamedGroupList;
+               case signature_algorithms:    SignatureSchemeList;
+               case key_share:               KeyShare;
+               case pre_shared_key:          PreSharedKeyExtension;
+               case early_data:              EarlyDataIndication;
+               case supported_versions:      SupportedVersions;
+               case cookie:                  Cookie;
+               case psk_key_exchange_modes:  PskKeyExchangeModes;
+               case oid_filters:             OIDFilterExtension;
+               case certificate_authorities: CertificateAuthoritiesExtension;
+           };
        } Extension;
 
        enum {
@@ -2556,7 +2567,9 @@ The "extension_data" field of this extension contains a
            uint32 obfuscated_ticket_age;
        } PskIdentity;
 
-       opaque PskBinderEntry<32..255>;
+       struct {
+           opaque binder<32..255>;
+       } PskBinderEntry;
 
        struct {
            select (Handshake.msg_type) {
@@ -2641,6 +2654,12 @@ This extension MUST be the last extension in the ClientHello (this
 facilitates implementation as described below). Servers MUST check
 that it is the last extension and otherwise fail the handshake with an
 "illegal_parameter" alert.
+
+If a server fails to retrieve a PSK value from identity values
+(because of some configuration or state changes, for instance), the
+server cannot resume the previous session nor verify the binders. In
+this case, the server SHOULD fall back to a full 1-RTT handshake if a
+"key_share" extension is supplied.
 
 #### PSK Binder
 
@@ -3569,7 +3588,11 @@ useful as a traffic analysis countermeasure.
            ContentType type;
            ProtocolVersion legacy_record_version;
            uint16 length;
-           opaque fragment[TLSPlaintext.length];
+           select (TLSInnerPlaintext.type) {
+               case alert: Alert;
+               case handshake: Handshake;
+               case application_data: opaque fragment[TLSPlaintext.length];
+           };
        } TLSPlaintext;
 
 type
