@@ -5251,6 +5251,10 @@ Archives of the list can be found at:
   ACLU \\
   dkg@fifthhorseman.net
 
+* Matthew Green \\
+  Johns Hopkins University \\
+  mgreen@cs.jhu.edu
+
 * Jens Guballa \\
   ETAS \\
   jens.guballa@etas.com
