@@ -3825,13 +3825,10 @@ specified by the current connection state.
 Alert messages convey a description of the alert and a legacy field
 that conveyed the severity of the message in previous versions of
 TLS.  In TLS 1.3, the severity is implicit in the type of alert
-being sent, and can safely be ignored.
-Some alerts are sent to
-indicate orderly closure of the connection or the end of
-early data (see {{closure-alerts}}).
+being sent, and can safely be ignored. The "close_notify" alert
+is used to indicate orderly closure of the connection.
 Upon receiving such an alert, the TLS implementation SHOULD
-indicate end-of-data to the application, and if appropriate for
-the alert type, send a closure alert in response.
+indicate end-of-data to the application.
 
 Error alerts indicate abortive closure of the
 connection (see {{error-alerts}}). Upon receiving an error alert,
