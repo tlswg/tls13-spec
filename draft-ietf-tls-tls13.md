@@ -1159,6 +1159,7 @@ as with a 1-RTT handshake with PSK resumption.
                                                     + pre_shared_key
                                                         + key_share*
                                                {EncryptedExtensions}
+                                                       + early_data*
                                                           {Finished}
                                  <--------       [Application Data*]
          (EndOfEarlyData)
