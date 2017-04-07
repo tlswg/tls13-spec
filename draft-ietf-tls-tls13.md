@@ -865,6 +865,10 @@ TLS 1.2:
 
 * RSASSA-PSS signature schemes are defined in {{signature-algorithms}}.
 
+* The "supported_versions" ClientHello extension can be used for negotiating
+  the version of TLS to use, in preference to the legacy_version field of
+  the ClientHello.
+
 An implementation of TLS 1.3 that also supports TLS 1.2 might need to include
 changes to support these changes even when TLS 1.3 is not in use.  See the
 referenced sections for more details.
@@ -1858,8 +1862,21 @@ A number of TLS messages contain tag-length-value encoded extensions structures.
        } Extension;
 
        enum {
+           server_name(0),
+           max_fragment_length(1),
+           client_certificate_url(2),
+           status_request(5),
+           user_mapping(6),
+           cert_type(9),
            supported_groups(10),
            signature_algorithms(13),
+           use_srtp(14),
+           heartbeat(15),
+           application_layer_protocol_negotiation(16),
+           signed_certificate_timestamp(18),
+           client_certificate_type(19),
+           server_certificate_type(20)
+           padding(21),
            key_share(40),
            pre_shared_key(41),
            early_data(42),
@@ -1935,7 +1952,8 @@ When multiple extensions of different types are present, the
 extensions MAY appear in any order, with the exception of
 "pre_shared_key" {{pre-shared-key-extension}} which MUST be
 the last extension in the ClientHello.
-There MUST NOT be more than one extension of the same type.
+There MUST NOT be more than one extension of the same type in a given
+protcol structure's list of extensions.
 
 In TLS 1.3, unlike TLS 1.2, extensions are renegotiated with each
 handshake even when in resumption-PSK mode. However, 0-RTT parameters are
@@ -1983,15 +2001,20 @@ be present as well).
 If this extension is not present, servers which are compliant with
 this specification MUST negotiate TLS 1.2 or prior as specified in
 {{RFC5246}}, even if ClientHello.legacy_version is 0x0304 or later.
+Servers MAY abort the handshake upon receiving a ClientHello with
+legacy_version 0x0304 or later.
 
 If this extension is present, servers MUST ignore the
 ClientHello.legacy_version value and MUST use only the
 "supported_versions" extension to determine client
 preferences. Servers MUST only select a version of TLS present in that
-extension and MUST ignore any unknown versions. Note that this
+extension and MUST ignore any unknown versions that are present in that
+extension. Note that this
 mechanism makes it possible to negotiate a version prior to TLS 1.2 if
 one side supports a sparse range. Implementations of TLS 1.3 which choose
 to support prior versions of TLS SHOULD support TLS 1.2.
+Servers should be prepared to receive ClientHellos that include this
+extension but do not include 0x0304 in the list of versions.
 
 The server MUST NOT send the "supported_versions" extension. The
 server's selected version is contained in the ServerHello.version field as
@@ -2026,14 +2049,15 @@ Cookies serve two primary purposes:
   transports (see {{?RFC6347}} for an example of this).
 
 - Allowing the server to offload state to the client, thus allowing it to send
-  a HelloRetryRequest without storing any state. The server does this by
+  a HelloRetryRequest without storing any state. The server can do this by
   storing the hash of the ClientHello in the HelloRetryRequest cookie
   (protected with some suitable integrity algorithm).
 
 When sending a HelloRetryRequest, the server MAY provide a "cookie" extension to the
 client (this is an exception to the usual rule that the only extensions that
 may be sent are those that appear in the ClientHello). When sending the
-new ClientHello, the client MUST echo the value of the extension.
+new ClientHello, the client MUST copy the contents of the extension received in
+the HelloRetryRequest into a cookie extension in the new ClientHello.
 Clients MUST NOT use cookies in subsequent connections.
 
 
