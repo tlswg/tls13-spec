@@ -2534,12 +2534,10 @@ fresh.
 0-RTT messages sent in the first flight have the same (encrypted) content types
 as their corresponding messages sent in other flights (handshake and
 application_data) but are protected under
-different keys.  After receiving the server's Finished message,
-an EndOfEarlyData message
+different keys.  After receiving the server's Finished message, if the
+server has accepted early data, an EndOfEarlyData message
 will be sent to indicate the key change. This message will be encrypted
-with the 0-RTT traffic keys, so the server will be unable to decrypt it
-if the server rejected early data because it did not have tne necessary
-cryptographic key material.
+with the 0-RTT traffic keys.
 
 A server which receives an "early_data" extension
 MUST behave in one of three ways:
