@@ -1067,7 +1067,7 @@ Although TLS PSKs can be established out of band,
 PSKs can also be established in a previous connection and
 then reused ("session resumption"). Once a handshake has completed, the server can
 send the client a PSK identity that corresponds to a key derived from
-the initial handshake (see {{NewSessionTicket}}). The client
+the initial handshake (see {{NSTMessage}}). The client
 can then use that PSK identity in future handshakes to negotiate use
 of the PSK. If the server accepts it, then the security context of the
 new connection is tied to the original connection and the key derived
@@ -2500,7 +2500,7 @@ The "extension_data" field of this extension contains an
            };
        } EarlyDataIndication;
 
-See {{NewSessionTicket}} for the use of the max_early_data_size field.
+See {{NSTMessage}} for the use of the max_early_data_size field.
 
 For PSKs provisioned via NewSessionTicket, a server MUST validate that
 the ticket age for the selected PSK identity (computed by subtracting
@@ -2626,7 +2626,7 @@ obfuscated_ticket_age
 : For each ticket, the time since the client learned about the server
   configuration that it is using, in milliseconds.  This value is
   added modulo 2^32 to the "ticket_age_add" value that was
-  included with the ticket, see {{NewSessionTicket}}.  This addition
+  included with the ticket, see {{NSTMessage}}.  This addition
   prevents passive observers from correlating connections unless tickets
   are reused.  Note: because ticket lifetimes are restricted to a
   week, 32 bits is enough to represent any plausible age, even in
@@ -2650,7 +2650,7 @@ selected_identity
 {: br}
 
 Each PSK is associated with a single Hash algorithm. For PSKs established
-via the ticket mechanism ({{NewSessionTicket}}), this is the Hash used for
+via the ticket mechanism ({{NSTMessage}}), this is the Hash used for
 the KDF on the connection where the ticket was established.
 For externally established PSKs, the Hash algorithm MUST be set when the
 PSK is established. The server must ensure that it selects a compatible
@@ -3387,7 +3387,7 @@ TLS also allows other messages to be sent after the main handshake.
 These messages use a handshake content type and are encrypted under the
 appropriate application traffic key.
 
-### New Session Ticket Message {#NewSessionTicket}
+### New Session Ticket Message {#NSTMessage}
 
 At any time after the server has received the client Finished message, it MAY send
 a NewSessionTicket message. This message creates a pre-shared key
