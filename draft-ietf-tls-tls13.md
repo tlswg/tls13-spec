@@ -2517,8 +2517,8 @@ SHOULD NOT take any other action that assumes that this ClientHello is
 fresh.
 
 0-RTT messages sent in the first flight have the same (encrypted) content types
-as their corresponding messages sent in other flights (handshake,
-application_data, and alert respectively) but are protected under
+as their corresponding messages sent in other flights (handshake and
+application_data) but are protected under
 different keys.  After receiving the server's Finished message, if the
 server has accepted early data, an EndOfEarlyData message
 will be sent to indicate the key change. This message will be encrypted
