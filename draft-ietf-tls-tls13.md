@@ -2502,6 +2502,11 @@ The "extension_data" field of this extension contains an
 
 See {{NSTMessage}} for the use of the max_early_data_size field.
 
+The parameters for the 0-RTT data (symmetric cipher suite, ALPN
+protocol, etc.) are the same as those which were negotiated in the connection
+which established the PSK. The PSK used to encrypt the early data
+MUST be the first PSK listed in the client's "pre_shared_key" extension.
+
 For PSKs provisioned via NewSessionTicket, a server MUST validate that
 the ticket age for the selected PSK identity (computed by subtracting
 ticket_age_add from PskIdentity.obfuscated_ticket_age modulo 2^32)
@@ -2510,11 +2515,6 @@ time since the ticket was issued (see {{replay-time}}).  If it is not,
 the server SHOULD proceed with the handshake but reject 0-RTT, and
 SHOULD NOT take any other action that assumes that this ClientHello is
 fresh.
-
-The parameters for the 0-RTT data (symmetric cipher suite, ALPN
-protocol, etc.) are the same as those which were negotiated in the connection
-which established the PSK. The PSK used to encrypt the early data
-MUST be the first PSK listed in the client's "pre_shared_key" extension.
 
 0-RTT messages sent in the first flight have the same (encrypted) content types
 as their corresponding messages sent in other flights (handshake,
