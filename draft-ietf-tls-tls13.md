@@ -903,6 +903,7 @@ TLS supports three basic key exchange modes:
 
 Key  ^ ClientHello
 Exch | + key_share*
+     | + signature_algorithms*
      | + psk_key_exchange_modes*
      v + pre_shared_key*         -------->
                                                        ServerHello  ^ Key
