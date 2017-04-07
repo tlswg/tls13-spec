@@ -3185,7 +3185,8 @@ aspect of the certificate chain was unacceptable (e.g., it was not signed by a
 known, trusted CA), the server MAY at its discretion either continue the
 handshake (considering the client unauthenticated) or abort the handshake.
 
-Any endpoint receiving any certificate signed using any signature algorithm
+Any endpoint receiving any certificate that must be validated and is
+signed using any signature algorithm
 using an MD5 hash MUST abort the handshake with a "bad_certificate" alert.
 SHA-1 is deprecated and it is RECOMMENDED that
 any endpoint receiving any certificate signed using any signature algorithm
