@@ -4762,7 +4762,8 @@ unsatisfactory, {{RFC4086}} provides guidance on the generation of random values
 ## Certificates and Authentication
 
 Implementations are responsible for verifying the integrity of certificates and
-should generally support certificate revocation messages. Certificates should
+should generally support certificate revocation messages. Absent a specific
+indication from an application profile, Certificates should
 always be verified to ensure proper signing by a trusted Certificate Authority
 (CA). The selection and addition of trust anchors should be done very carefully.
 Users should be able to view information about the certificate and trust anchor.
