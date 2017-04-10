@@ -504,6 +504,11 @@ server: The endpoint which did not initiate the TLS connection.
 (*) indicates changes to the wire protocol which may require implementations
     to update.
 
+draft-20
+
+- Add "post_handshake_auth" extension to negotiate post-handshake authentication
+  (*).
+
 draft-19
 
 - Hash context_value input to Exporters (*)
@@ -1854,6 +1859,7 @@ A number of TLS messages contain tag-length-value encoded extensions structures.
            psk_key_exchange_modes(45),
            certificate_authorities(47),
            oid_filters(48),
+           post_handshake_auth(49),
            (65535)
        } ExtensionType;
 
@@ -1916,6 +1922,7 @@ appears it MUST abort the handshake with an "illegal_parameter" alert.
 | supported_versions \[\[this document]]   |          CH |
 | certificate_authorities \[\[this document]]|      CH, CR |
 | oid_filters \[\[this document]]          |          CR |
+| post_handshake_auth \[\[this document]]  |          CH |
 
 When multiple extensions of different types are present, the
 extensions MAY appear in any order, with the exception of
@@ -2187,6 +2194,17 @@ The "trusted_ca_keys" extension, which serves a similar
 purpose {{RFC6066}}, but is more complicated, is not used in TLS 1.3
 (although it may appear in ClientHello messages from clients which are
 offering prior versions of TLS).
+
+
+### Post-Handshake Client Authentication {#post_handshake_auth}
+
+The "post_handshake_auth" extension is used to indicate that a client is willing
+to perform post-handshake authentication {{post-handshake-authentication}}. Servers
+MUST not send a post-handshake CertificateRequest to clients which do not
+offer this extension.
+
+The "extension_data" field of the "post_handshake_auth" extension is zero
+length.
 
 ### Negotiated Groups
 
@@ -3099,8 +3117,8 @@ The following rules apply to certificates sent by the client:
 - The certificate type MUST be X.509v3 {{RFC5280}}, unless explicitly negotiated
   otherwise (e.g., {{RFC5081}}).
 
-- If the certificate_authorities list in the CertificateRequest
-  message was non-empty, at least one of the certificates in the certificate
+- If the "certificate_authorities" extension in the CertificateRequest
+  message was present, at least one of the certificates in the certificate
   chain SHOULD be issued by one of the listed CAs.
 
 - The certificates MUST be signed using an acceptable signature
@@ -3427,23 +3445,27 @@ and the time since the peer's online CertificateVerify signature.
 
 ### Post-Handshake Authentication
 
-The server is permitted to request client authentication at any time
-after the handshake has completed by sending a CertificateRequest
-message. The client SHOULD respond with the appropriate Authentication
-messages. If the client chooses to authenticate, it MUST send
-Certificate, CertificateVerify, and Finished. If it declines, it
-MUST send a Certificate message containing no certificates followed by Finished.
+When the client has sent the "post_handshake_auth" extension (see
+{{post_handshake_auth}}), a server MAY request client authentication at any time
+after the handshake has completed by sending a CertificateRequest message. The
+client MUST respond with the appropriate Authentication messages (see
+{{authentication-messages}}). If the client chooses to authenticate, it MUST
+send Certificate, CertificateVerify, and Finished. If it declines, it MUST send
+a Certificate message containing no certificates followed by Finished.
 All of the client's messages for a given response
 MUST appear consecutively on the wire with no intervening messages of other types.
 
-Note: Because client authentication may require prompting the user,
-servers MUST be prepared for some delay, including receiving an
-arbitrary number of other messages between sending the
-CertificateRequest and receiving a response. In addition, clients which receive multiple
-CertificateRequests in close succession MAY respond to them in a
-different order than they were received (the
-certificate_request_context value allows the server to disambiguate
-the responses).
+A client that receives a CertificateRequest message without having sent
+the "post_handshake_auth" extension MUST send an "unexpected_message" fatal
+alert.
+
+Note: Because client authentication could involve prompting the user, servers
+MUST be prepared for some delay, including receiving an arbitrary number of
+other messages between sending the CertificateRequest and receiving a
+response. In addition, clients which receive multiple CertificateRequests in
+close succession MAY respond to them in a different order than they were
+received (the certificate_request_context value allows the server to
+disambiguate the responses).
 
 
 ### Key and IV Update {#key-update}
