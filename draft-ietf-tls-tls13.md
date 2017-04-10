@@ -3612,7 +3612,7 @@ useful as a traffic analysis countermeasure.
 %%% Record Layer
 
        enum {
-           invalid_RESERVED(0),
+           invalid(0),
            change_cipher_spec_RESERVED(20),
            alert(21),
            handshake(22),
