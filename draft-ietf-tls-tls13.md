@@ -2971,8 +2971,6 @@ Structure of this message:
 
 %%% Authentication Messages
 
-       opaque ASN1Cert<1..2^24-1>;
-
        struct {
            select(certificate_type){
                case RawPublicKey:
@@ -2980,7 +2978,7 @@ Structure of this message:
                  opaque ASN1_subjectPublicKeyInfo<1..2^24-1>;
 
                case X.509:
-                 ASN1Cert cert_data;
+                 opaque cert_data<1..2^24-1>;
            }
            Extension extensions<0..2^16-1>;
        } CertificateEntry;
