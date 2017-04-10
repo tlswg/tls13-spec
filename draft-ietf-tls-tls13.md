@@ -3446,7 +3446,7 @@ and the time since the peer's online CertificateVerify signature.
 ### Post-Handshake Authentication
 
 When the client has sent the "post_handshake_auth" extension (see
-{{post_handshake_auth}}), a server can request client authentication at any time
+{{post_handshake_auth}}), a server MAY request client authentication at any time
 after the handshake has completed by sending a CertificateRequest message. The
 client MUST respond with the appropriate Authentication messages (see
 {{authentication-messages}}). If the client chooses to authenticate, it MUST
