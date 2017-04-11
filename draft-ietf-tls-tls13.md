@@ -91,7 +91,6 @@ informative:
   RFC4681:
   RFC5054:
   RFC5077:
-  RFC5081:
   RFC5116:
   RFC5246:
   RFC5764:
@@ -2665,7 +2664,8 @@ Each PSK is associated with a single Hash algorithm. For PSKs established
 via the ticket mechanism ({{NSTMessage}}), this is the Hash used for
 the KDF on the connection where the ticket was established.
 For externally established PSKs, the Hash algorithm MUST be set when the
-PSK is established. The server must ensure that it selects a compatible
+PSK is established, or default to SHA-256 if no such algorithm
+is defined. The server must ensure that it selects a compatible
 PSK (if any) and cipher suite.
 
 Implementor's note: the most straightforward way to implement the
@@ -3138,7 +3138,7 @@ CertificateEntry.
 The following rules apply to the certificates sent by the server:
 
 - The certificate type MUST be X.509v3 {{RFC5280}}, unless explicitly negotiated
-  otherwise (e.g., {{RFC5081}}).
+  otherwise (e.g., {{RFC7250}}).
 
 - The server's end-entity certificate's public key (and associated
   restrictions) MUST be compatible with the selected authentication
@@ -3180,7 +3180,7 @@ layer endpoint, local configuration and preferences).
 The following rules apply to certificates sent by the client:
 
 - The certificate type MUST be X.509v3 {{RFC5280}}, unless explicitly negotiated
-  otherwise (e.g., {{RFC5081}}).
+  otherwise (e.g., {{RFC7250}}).
 
 - If the "certificate_authorities" extension in the CertificateRequest
   message was present, at least one of the certificates in the certificate
@@ -4425,10 +4425,12 @@ The exporter value is computed as:
     HKDF-Expand-Label(Derive-Secret(Secret, label, ""),
                       "exporter", Hash(context_value), key_length)
 
-Where Secret is either the early_exporter_secret or the exporter_secret.
-Implementations MUST use the exporter_secret unless explicitly specified by the
-application.  A separate interface for the early exporter is RECOMMENDED,
-especially on a server where a single interface can make the early exporter
+Where Secret is either the early_exporter_secret or the
+exporter_secret.  Implementations MUST use the exporter_secret unless
+explicitly specified by the application. The early_exporter_secret is
+define for use in settings where an exporter is needed for 0-RTT data.
+A separate interface for the early exporter is RECOMMENDED, especially
+on a server where a single interface can make the early exporter
 inaccessible.
 
 If no context is provided, the context_value is zero-length. Consequently,
@@ -5152,6 +5154,8 @@ authenticates before the client, the client can ensure that it only
 reveals its identity to an authenticated server. Note that implementations
 must use the provided record padding mechanism during the handshake
 to avoid leaking information about the identities due to length.
+The client's proposed PSK identities are not encrypted, nor is the
+one that the server selects.
 
 A client that has sent authentication data to a server, either during the
 handshake or in post-handshake authentication, cannot be sure if
