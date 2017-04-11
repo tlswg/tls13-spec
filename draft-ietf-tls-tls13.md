@@ -1901,10 +1901,7 @@ appears it MUST abort the handshake with an "illegal_parameter" alert.
 |:-----------------------------------------|------------:|
 | server_name [RFC6066]                    |      CH, EE |
 | max_fragment_length [RFC6066]            |      CH, EE |
-| client_certificate_url [RFC6066]         |      CH, EE |
 | status_request [RFC6066]                 |  CH, CR, CT |
-| user_mapping [RFC4681]                   |      CH, EE |
-| cert_type [RFC6091]                      |      CH, EE |
 | supported_groups [RFC7919]               |      CH, EE |
 | signature_algorithms [RFC5246]           |      CH, CR |
 | use_srtp [RFC5764]                       |      CH, EE |
@@ -2992,10 +2989,15 @@ Structure of this message:
 
 %%% Authentication Messages
 
-       opaque ASN1Cert<1..2^24-1>;
-
        struct {
-           ASN1Cert cert_data;
+           select(certificate_type){
+               case RawPublicKey:
+                 // From RFC 7250 ASN.1_subjectPublicKeyInfo
+                 opaque ASN1_subjectPublicKeyInfo<1..2^24-1>;
+
+               case X.509:
+                 opaque cert_data<1..2^24-1>;
+           }
            Extension extensions<0..2^16-1>;
        } CertificateEntry;
 
@@ -3011,13 +3013,7 @@ certificate_request_context
 
 certificate_list
 : This is a sequence (chain) of CertificateEntry structures, each
-  containing a single certificate and set of extensions. The sender's
-  certificate MUST come in the first CertificateEntry in the list.
-  Each following certificate SHOULD directly certify one preceding it.
-  Because certificate validation requires that trust anchors be distributed
-  independently, a certificate that specifies a
-  trust anchor MAY be omitted from the chain, provided that
-  supported peers are known to possess any omitted certificates.
+  containing a single certificate and set of extensions.
 
 extensions:
 : A set of extension values for the CertificateEntry. The "Extension"
@@ -3030,6 +3026,17 @@ extensions:
   in the first CertificateEntry.
 {:br }
 
+If the corresponding certificate type extension
+("server_certificate_type" or "client_certificate_type") was not used
+or the X.509 certificate type was negotiated, then each
+CertificateEntry contains an X.509 certificate. The sender's
+certificate MUST come in the first CertificateEntry in the list.  Each
+following certificate SHOULD directly certify one preceding it.
+Because certificate validation requires that trust anchors be
+distributed independently, a certificate that specifies a trust anchor
+MAY be omitted from the chain, provided that supported peers are known
+to possess any omitted certificates.
+
 Note: Prior to TLS 1.3, "certificate_list" ordering required each certificate
 to certify the one immediately preceding it;
 however, some implementations allowed some flexibility. Servers sometimes send
@@ -3038,6 +3045,11 @@ are simply configured incorrectly, but these cases can nonetheless be validated
 properly. For maximum compatibility, all implementations SHOULD be prepared to
 handle potentially extraneous certificates and arbitrary orderings from any TLS
 version, with the exception of the end-entity certificate which MUST be first.
+
+If the RawPublicKey certificate type was negotiated, then the
+certificate_list MUST contain no more than one CertificateEntry, which
+contains an ASN1_subjectPublicKeyInfo value as defined in {{RFC7250}},
+Section 3.
 
 The server's certificate_list MUST always be non-empty. A client will
 send an empty certificate_list if it does not have an appropriate
@@ -4808,7 +4820,6 @@ If no such mechanism is used, then the connection has no protection
 against active man-in-the-middle attack; applications MUST NOT use TLS
 in such a way absent explicit configuration or a specific application
 profile.
-
 
 # Backward Compatibility
 
