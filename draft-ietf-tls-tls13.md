@@ -1140,7 +1140,7 @@ via a previous handshake), TLS 1.3 allows clients to send data on the
 first flight ("early data"). The client uses the PSK to authenticate
 the server and to encrypt the early data.
 
-When clients use a PSK obtained externally to send early data then the following
+When clients use a PSK obtained externally to send early data, then the following
 additional information MUST be provisioned to both parties:
 
   * The cipher suite for use with this PSK
@@ -1172,8 +1172,8 @@ as with a 1-RTT handshake with PSK resumption.
 
          [Application Data]      <------->        [Application Data]
 
-              +  Indicates noteworthy extensions sent in the
-                 previously noted message.
+               +  Indicates noteworthy extensions sent in the
+                  previously noted message.
 
                *  Indicates optional or situation-dependent
                   messages/extensions that are not always sent.
@@ -1491,8 +1491,8 @@ processed and transmitted as specified by the current active connection state.
        } Handshake;
 
 Protocol messages MUST be sent in the order defined in
-{{the-transcript-hash}} (and
-shown in the diagrams in {{protocol-overview}}).
+{{the-transcript-hash}} and
+shown in the diagrams in {{protocol-overview}}.
 A peer which receives a handshake message in an unexpected order
 MUST abort the handshake with an "unexpected_message" alert.
 However, unneeded handshake messages are omitted.
@@ -1663,7 +1663,7 @@ legacy_compression_methods
   servers might receive TLS 1.2 or prior ClientHellos which contain
   other compression methods and MUST follow the procedures for
   the appropriate prior version of TLS.  TLS 1.3 ClientHellos are identified
-  as having the legacy_verison of 0x0303 and a supported_versions extension
+  as having a legacy_verison of 0x0303 and a supported_versions extension
   present with 0x0304 as the highest version indicated therein.
 
 extensions
@@ -1699,9 +1699,9 @@ extensions, and this functionality is not supplied by the server, the
 client MAY abort the handshake.
 
 After sending the ClientHello message, the client waits for a ServerHello
-or HelloRetryRequest message.  (The client may transmit early application data
+or HelloRetryRequest message.  The client may transmit early application data
 {{zero-rtt-data}} while waiting for the next handshake message, if early data
-is in use.)
+is in use.
 
 ### Server Hello {#server-hello}
 
@@ -2344,9 +2344,9 @@ client_shares
   Each KeyShareEntry value MUST correspond to a group offered in the
   "supported_groups" extension and MUST appear in the same order.  However, the
   values MAY be a non-contiguous subset of the "supported_groups" extension and
-  MAY omit the most preferred groups, as could happen if the most preferred groups
-  are new and unlikely to be supported in enough places to make pregenerating
-  key shares for them efficient.
+  MAY omit the most preferred groups. Such a situation could arise if the most
+  preferred groups are new and unlikely to be supported in enough places to
+  make pregenerating key shares for them efficient.
 
 selected_group
 : The mutually supported group the server intends to negotiate and
@@ -2800,7 +2800,7 @@ ServerHello message. This is the first message that is encrypted
 under keys derived from the server_handshake_traffic_secret.
 
 The EncryptedExtensions message contains extensions
-that could be protected, i.e., any which are not needed to
+that can be protected, i.e., any which are not needed to
 establish the cryptographic context, but which are not
 associated with individual certificates. The client
 MUST check EncryptedExtensions for the presence of any forbidden
