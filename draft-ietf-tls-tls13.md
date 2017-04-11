@@ -4485,9 +4485,9 @@ and their allocation policies are below:
   and to add the "hello_retry_request", "encrypted_extensions",
   "end_of_early_data", "key_update", and "handshake_hash" values.
 
-This document also uses a registry originally created in {{RFC4366}}. IANA has
-updated it to reference this document. The registry and its allocation policy
-is listed below:
+This document also uses the TLS ExtensionType Registry originally created in
+{{RFC4366}}. IANA has updated it to reference this document. The registry and
+its allocation policy is listed below:
 
 -  IANA \[SHALL update/has updated] this registry to include the
    "key_share", "pre_shared_key", "psk_key_exchange_modes",
