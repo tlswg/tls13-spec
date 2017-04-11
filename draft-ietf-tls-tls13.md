@@ -1596,8 +1596,9 @@ ClientHello (without modification) except:
   any PSKs which are incompatible with the server's indicated
   cipher suite.
 
-Because TLS 1.3 forbids renegotiation, if a server receives a
-ClientHello at any other time, it MUST terminate the connection.
+Because TLS 1.3 forbids renegotiation, if a server has negotiated TLS
+1.3 and receives a ClientHello at any other time, it MUST terminate
+the connection.
 
 If a server established a TLS connection with a previous version of TLS
 and receives a TLS 1.3 ClientHello in a renegotiation, it MUST retain the
@@ -1668,7 +1669,7 @@ legacy_compression_methods
   servers might receive TLS 1.2 or prior ClientHellos which contain
   other compression methods and MUST follow the procedures for
   the appropriate prior version of TLS.  TLS 1.3 ClientHellos are identified
-  as having a legacy_verison of 0x0303 and a supported_versions extension
+  as having a legacy_version of 0x0303 and a supported_versions extension
   present with 0x0304 as the highest version indicated therein.
 
 extensions
@@ -1954,7 +1955,7 @@ extensions MAY appear in any order, with the exception of
 "pre_shared_key" {{pre-shared-key-extension}} which MUST be
 the last extension in the ClientHello.
 There MUST NOT be more than one extension of the same type in a given
-message's list of extensions.
+extension block.
 
 In TLS 1.3, unlike TLS 1.2, extensions are renegotiated with each
 handshake even when in resumption-PSK mode. However, 0-RTT parameters are
@@ -4870,8 +4871,7 @@ Either technique used alone is vulnerable to man-in-the-middle attacks
 and therefore unsafe for general use. However, it is also possible to
 bind such connections to an external authentication mechanism via
 out-of-band validation of the server's public key, trust on first
-use, or channel bindings {{RFC5929}}. \[\[NOTE: TLS 1.3 needs a new
-channel binding definition that has not yet been defined.]]
+use, or channel bindings {{RFC5929}}. 
 If no such mechanism is used, then the connection has no protection
 against active man-in-the-middle attack; applications MUST NOT use TLS
 in such a way absent explicit configuration or a specific application
