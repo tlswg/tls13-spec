@@ -1936,7 +1936,7 @@ appears it MUST abort the handshake with an "illegal_parameter" alert.
 | heartbeat [RFC6520]                      |      CH, EE |
 | application_layer_protocol_negotiation [RFC7301]|      CH, EE |
 | signed_certificate_timestamp [RFC6962]   |  CH, CR, CT |
-| client_certificate_type [RFC7250]        |      CH, EE |
+| client_certificate_type [RFC7250]        |      CR, CT |
 | server_certificate_type [RFC7250]        |      CH, CT |
 | padding [RFC7685]                        |          CH |
 | key_share \[\[this document]]            | CH, SH, HRR |
