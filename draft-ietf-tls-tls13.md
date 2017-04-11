@@ -3444,6 +3444,9 @@ max_early_data_size
   not padding or the inner content type byte) is counted. A server
   receiving more than max_early_data_size bytes of 0-RTT data
   SHOULD terminate the connection with an "unexpected_message" alert.
+  Note that servers that reject early data due to lack of cryptographic material
+  will be unable to differentiate padding from content, so clients SHOULD NOT
+  depend on being able to send large quantities of padding in early data records.
 {:br }
 
 Note that in principle it is possible to continue issuing new tickets
@@ -4764,6 +4767,11 @@ TLS protocol issues:
   support a compatible (EC)DHE group but do not predict it in the
   "key_share" extension? As a client, do you correctly handle a
   HelloRetryRequest from the server?
+
+- Are you prepared to handle encrypted records with zero-length content,
+  both in early data (as a server) and in regular application data, and
+  potentially arbitrary numbers in succession, to the exclusion of actual
+  application data?
 
 Cryptographic details:
 
