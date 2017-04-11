@@ -977,7 +977,7 @@ case both extensions will be supplied.
 The server then sends two messages to establish the Server Parameters:
 
 EncryptedExtensions:
-: responses to any extensions needed for the handshake that are not required to
+: responses to ClientHello extensions that are not required to
   determine the cryptographic parameters, other than those
   that are specific to individual certificates. \[{{encrypted-extensions}}]
 
@@ -1727,9 +1727,8 @@ Structure of this message:
 
 version
 : This field contains the version of TLS negotiated for this connection.  Servers
-  MUST select a version from the list in ClientHello's supported_versions extension
-  if that extension is present.  (Older clients may send a ClientHello without that
-  extension, in which case the legacy_version is used for version negotiation.)
+  MUST select a version from the list in ClientHello's supported_versions extension,
+  or otherwise negotiate TLS 1.2 or previous.
   A client that receives a version that was not offered MUST abort the handshake.
   For this version of the specification, the version is 0x0304.  (See
   {{backward-compatibility}} for details about backward compatibility.)
@@ -1870,10 +1869,7 @@ A number of TLS messages contain tag-length-value encoded extensions structures.
        enum {
            server_name(0),
            max_fragment_length(1),
-           client_certificate_url(2),
            status_request(5),
-           user_mapping(6),
-           cert_type(9),
            supported_groups(10),
            signature_algorithms(13),
            use_srtp(14),
@@ -1958,7 +1954,7 @@ extensions MAY appear in any order, with the exception of
 "pre_shared_key" {{pre-shared-key-extension}} which MUST be
 the last extension in the ClientHello.
 There MUST NOT be more than one extension of the same type in a given
-protcol structure's list of extensions.
+message's list of extensions.
 
 In TLS 1.3, unlike TLS 1.2, extensions are renegotiated with each
 handshake even when in resumption-PSK mode. However, 0-RTT parameters are
@@ -2062,7 +2058,7 @@ When sending a HelloRetryRequest, the server MAY provide a "cookie" extension to
 client (this is an exception to the usual rule that the only extensions that
 may be sent are those that appear in the ClientHello). When sending the
 new ClientHello, the client MUST copy the contents of the extension received in
-the HelloRetryRequest into a cookie extension in the new ClientHello.
+the HelloRetryRequest into a "cookie" extension in the new ClientHello.
 Clients MUST NOT use cookies in subsequent connections.
 
 
@@ -2559,7 +2555,7 @@ MUST behave in one of three ways:
   process the early data. It is not possible for the server
   to accept only a subset of the early data messages.
   Even though the server sends a message accepting early data, the actual early
-  data itself is already in flight by the time the server generates this message.
+  data itself may already be in flight by the time the server generates this message.
 
 In order to accept early data, the server MUST have accepted a
 PSK cipher suite and selected the first key offered in the
@@ -2578,9 +2574,9 @@ flight data using one of the first two mechanisms listed above
 (thus falling back to 1-RTT or 2-RTT). If the client attempts
 a 0-RTT handshake but the server rejects it, the server will generally
 not have the 0-RTT record protection keys and must instead
-use trial decryption to pick up the rest of the handshake or force
-a full re-handshake with a HelloRetryRequest (at the cost of another round
-trip).
+use trial decryption (either with the 1-RTT handshake keys or
+by looking for a cleartext ClientHello in the case of HelloRetryRequest) to
+find the first non-0RTT message.
 
 If the server chooses to accept the "early_data" extension,
 then it MUST comply with the same error handling requirements
@@ -2765,7 +2761,8 @@ ticket to the client, or encode the time in the ticket.  Then, each
 time it receives an "pre_shared_key" extension, it can un-obfuscate the
 ticket age and compare it to the difference between the current time and
 the ticket creation time,
-to see if the value for the time elapsed sent by the client matches its expectations.
+to see if the value for the time elapsed sent by the client is
+consistent with the time since the ticket was issued.
 
 The ticket age (the value with "ticket_age_add" subtracted) provided by the
 client will be shorter than the
@@ -3013,9 +3010,9 @@ For concreteness, the transcript hash is always taken from the
 following sequence of handshake messages, starting at the first
 ClientHello and including only those messages that were sent:
 ClientHello, HelloRetryRequest, ClientHello, ServerHello,
-EncryptedExtensions, Server CertificateRequest, Server Certificate,
-Server CertificateVerify, Server Finished, EndOfEarlyData, Client
-Certificate, Client CertificateVerify, Client Finished.
+EncryptedExtensions, server CertificateRequest, server Certificate,
+server CertificateVerify, server Finished, EndOfEarlyData, client
+Certificate, client CertificateVerify, client Finished.
 
 In general, implementations can implement the transcript by keeping a
 running transcript hash value based on the negotiated hash. Note,
@@ -3103,6 +3100,8 @@ certificate_list MUST contain no more than one CertificateEntry, which
 contains an ASN1_subjectPublicKeyInfo value as defined in {{RFC7250}},
 Section 3.
 
+The OpenPGP certificate type {{RFC6091}} MUST NOT be used with TLS 1.3.
+
 The server's certificate_list MUST always be non-empty. A client will
 send an empty certificate_list if it does not have an appropriate
 certificate to send in response to the server's authentication
@@ -3125,8 +3124,7 @@ A server MAY request that a client present an OCSP response with its
 certificate by sending an empty "status_request" extension in its
 CertificateRequest message. If the client opts to send an OCSP response, the
 body of its "status_request" extension MUST be a CertificateStatus structure as
-defined in {{RFC6066}}.  The client MAY decline to send an OCSP response by
-omitting the status_request extension.
+defined in {{RFC6066}}.
 
 Similarly, {{!RFC6962}} provides a mechanism for a server to send a
 Signed Certificate Timestamp (SCT) as an extension in the ServerHello
@@ -3254,7 +3252,7 @@ Structure of this message:
 
 The algorithm field specifies the signature algorithm used (see
 {{signature-algorithms}} for the definition of this field). The
-signature is a digital signature using that algorithm. The protocol
+signature is a digital signature using that algorithm. The 
 content that is covered under the signature is the hash output as described in
 {{authentication-messages}}, namely:
 
@@ -3500,8 +3498,8 @@ max_early_data_size
   SHOULD terminate the connection with an "unexpected_message" alert.
 {:br }
 
-Note that in principle it is possible to continue reusing and issuing new tickets
-on the resumed connections so as to indefinitely extend the lifetime of the keying
+Note that in principle it is possible to continue issuing new tickets
+which indefinitely extend the lifetime of the keying
 material originally derived from an initial non-PSK handshake (which
 was most likely tied to the peer's certificate). It is RECOMMENDED
 that implementations place limits on the total lifetime of such keying
@@ -4664,7 +4662,7 @@ here         No 0-RTT |                 | 0-RTT
 # Protocol Data Structures and Constant Values
 
 This section describes protocol types and constants. Values listed as
-_RESERVED were allocated for previous versions of TLS and are listed here
+_RESERVED were used in previous versions of TLS and are listed here
 for completeness. TLS 1.3 implementations MUST NOT send them but
 might receive them from older TLS implementations.
 
@@ -4677,7 +4675,7 @@ might receive them from older TLS implementations.
 %%#### Signature Algorithm Extension
 %%#### Supported Groups Extension
 
-Values within "obsolete_RESERVED" ranges are allocated to previous versions
+Values within "obsolete_RESERVED" ranges are used in previous versions
 of TLS and MUST NOT be offered or negotiated by TLS 1.3 implementations.
 The obsolete curves have various known/theoretical weaknesses or have
 had very little usage, in some cases only due to unintentional
@@ -4811,9 +4809,12 @@ TLS protocol issues:
   past the start of the cleartext in the event that the peer has sent
   a malformed plaintext of all-zeros?
 
-- Do you properly ignore unrecognized cipher suites ({{client-hello}}),
-  hello extensions ({{extensions}}), named groups ({{negotiated-groups}}),
-  and signature algorithms ({{signature-algorithms}}) in the ClientHello?
+- Do you properly ignore unrecognized cipher suites
+  ({{client-hello}}), hello extensions ({{extensions}}), named groups
+  ({{negotiated-groups}}), key shares {{key-share}},
+  supported versions {{supported-versions}},
+  and signature algorithms ({{signature-algorithms}}) in the
+  ClientHello?
 
 - As a server, do you send a HelloRetryRequest to clients which
   support a compatible (EC)DHE group but do not predict it in the
