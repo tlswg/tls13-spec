@@ -2780,8 +2780,10 @@ replayed by checking:
        (server_recv_psk_time - server_create_nst_time) - ticket_age < RTT + delta
 
 "ticket_age" is calculated as discussed in {{age-lifetime}}.
-"RTT" is the round trip time between the client and the server.
-"delta" is a reasonable time to process handshake messages.
+"RTT" is a round trip time between the client and the server
+consumed by the NewSessionTicket message from the server to the client and
+the ClientHello message from the client to the server.
+"delta" is a reasonable margin time to process handshake messages, etc.
 
 For this purpose, a server SHOULD measure the round trip
 time prior to sending the NewSessionTicket message and account for
