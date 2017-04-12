@@ -2749,6 +2749,27 @@ servers MUST process the client's ClientHello and then immediately
 send the ServerHello, rather than waiting for the client's
 EndOfEarlyData message.
 
+#### Age and Lifetime
+
+When a client create a NewSessionTicket message, the ticket_age is
+calculated as follows:
+
+       ticket_age = client_create_psk_time - client_recv_nst_time
+
+If "ticket_age < ticket_lifetime * 1000" is satisfied, the client can
+use the ticket. obfuscated_ticket_age is calculated as follows:
+
+       obfuscated_ticket_age = ticket_age_add - ticket_age
+
+When the server receives the NewSessionTicket message, ticket_age
+can be recovered as follows:
+
+       ticket_age = obfuscated_ticket_age + ticket_age_add
+
+The server MUST check "ticket_age < ticket_lifetime * 1000" where
+ticket_lifetime is retrieved from a local ticket database or decoded
+from the ticket.
+
 #### Replay Properties {#replay-time}
 
 As noted in {{zero-rtt-data}}, TLS provides a limited mechanism for
