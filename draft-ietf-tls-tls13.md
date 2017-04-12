@@ -2749,7 +2749,7 @@ servers MUST process the client's ClientHello and then immediately
 send the ServerHello, rather than waiting for the client's
 EndOfEarlyData message.
 
-#### Age and Lifetime
+#### Age and Lifetime {#age-lifetime}
 
 When a client create a NewSessionTicket message, the ticket_age is
 calculated as follows:
@@ -2774,34 +2774,18 @@ from the ticket.
 
 As noted in {{zero-rtt-data}}, TLS provides a limited mechanism for
 replay protection for data sent by the client in the first flight.
+The server SHOULD limit the time over which the first flight might be
+replayed by checking:
 
-The "obfuscated_ticket_age" parameter in the client's
-"pre_shared_key" extension SHOULD be used by
-servers to limit the time over which the first flight might be
-replayed.  A server can store the time at which it sends a
-ticket to the client, or encode the time in the ticket.  Then, each
-time it receives an "pre_shared_key" extension, it can un-obfuscate the
-ticket age and compare it to the difference between the current time and
-the ticket creation time,
-to see if the value for the time elapsed sent by the client is
-consistent with the time since the ticket was issued.
+       (server_recv_psk_time - server_create_nst_time) - ticket_age < RTT + delta
 
-The ticket age (the value with "ticket_age_add" subtracted) provided by the
-client will be shorter than the
-actual time elapsed on the server by a single round trip time.  This
-difference is comprised of the delay in sending the NewSessionTicket
-message to the client, plus the time taken to send the ClientHello to
-the server.  For this reason, a server SHOULD measure the round trip
+"ticket_age" is calculated as discussed in {{age-lifetime}}.
+"RTT" is the round trip time between the client and the server.
+"delta" is a reasonable time to process handshake messages.
+
+For this purpose, a server SHOULD measure the round trip
 time prior to sending the NewSessionTicket message and account for
 that in the value it saves.
-
-To properly validate the ticket age, a server needs to save at least two items:
-
-- The time that the server generated the session ticket and the estimated round
-  trip time can be added together to form a baseline time.
-- The "ticket_age_add" parameter from the NewSessionTicket is needed to recover
-  the ticket age from the "obfuscated_ticket_age" parameter.
-
 There are several potential sources of error that make an exact
 measurement of time difficult.  Variations in client and server clock rates
 are likely to be minimal, though potentially with gross time corrections.  Network
