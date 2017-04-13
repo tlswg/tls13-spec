@@ -2751,24 +2751,39 @@ EndOfEarlyData message.
 
 #### Age and Lifetime {#age-lifetime}
 
-When a client create a NewSessionTicket message, the ticket_age is
+When a client create a "pre_shared_key" extension, the ticket age is
 calculated as follows:
 
        ticket_age = client_create_psk_time - client_recv_nst_time
 
-If "ticket_age < ticket_lifetime * 1000" is satisfied, the client can
-use the ticket. obfuscated_ticket_age is calculated as follows:
+"client_create_psk_time" is the time when the "pre_shared_key"
+extension is created (i.e., now). "client_recv_nst_time" is the time
+when the client received the NewSessionTicket message. To use the
+ticket, the client MUST check that the ticket is not expired:
 
-       obfuscated_ticket_age = ticket_age_add - ticket_age
+       ticket_age < ticket_lifetime * 1000
 
-When the server receives the NewSessionTicket message, ticket_age
-can be recovered as follows:
+1000 is multiplied becase "ticket_age" and "ticket_lifetime"
+are in millisecond and second, respectively.
 
-       ticket_age = obfuscated_ticket_age + ticket_age_add
+"obfuscated_ticket_age" in the "pre_shared_key" extension is
+calculated as follows:
 
-The server MUST check "ticket_age < ticket_lifetime * 1000" where
-ticket_lifetime is retrieved from a local ticket database or decoded
-from the ticket.
+       obfuscated_ticket_age = (ticket_age_add - ticket_age) % 2^32
+
+"%" here indicates modular arithmetic.
+
+When the server receives the "pre_shared_key" extension in the
+ClientHello message, the ticket age can be recovered as follows:
+
+       ticket_age = (obfuscated_ticket_age + ticket_age_add) % 2^32
+
+The server MUST check that the ticket is not expired:
+
+       ticket_age < ticket_lifetime * 1000
+
+Note that "ticket_age_add" and "ticket_lifetime" is retrieved from a
+local ticket database or decoded from the ticket.
 
 #### Replay Properties {#replay-time}
 
