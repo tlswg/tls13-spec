@@ -2794,6 +2794,9 @@ replayed by checking:
 
        (server_recv_psk_time - server_create_nst_time) - ticket_age < RTT + delta
 
+"server_recv_psk_time" is the time when the server received the
+"pre_shared_key" extension. "server_create_nst_time" is the time when
+the server created the NewSessionTicket message.
 "ticket_age" is calculated as discussed in {{age-lifetime}}.
 "RTT" is a round trip time between the client and the server
 consumed by the NewSessionTicket message from the server to the client and
