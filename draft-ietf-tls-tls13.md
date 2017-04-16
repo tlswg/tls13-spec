@@ -3307,17 +3307,6 @@ verification process takes as input:
 If the verification fails, the receiver MUST terminate the handshake
 with a "decrypt_error" alert.
 
-Note: When used with non-certificate-based handshakes (e.g., PSK), the
-client's signature does not cover the server's certificate directly.
-When the PSK was established through a NewSessionTicket, the client's
-signature transitively covers the server's certificate through
-the PSK binder. {{PSK-FINISHED}}
-describes a concrete attack on constructions that do not bind to
-the server's certificate. It is unsafe to use certificate-based client
-authentication when the client might potentially share the same
-PSK/key-id pair with two different endpoints and implementations
-MUST NOT combine external PSKs with certificate-based authentication.
-
 ###  Finished
 
 The Finished message is the final message in the authentication
@@ -5110,6 +5099,19 @@ at least 256 bits.  Any future replacement of these functions MUST
 also provide collision resistance.
 Note: The binder does not cover the binder values from other
 PSKs, though they are included in the Finished MAC.
+
+Note: TLS does not currently permit the server to send a certificate_request
+message with non-certificate-based handshakes (e.g., PSK).
+If this restriction were to be relaxed in future, the
+client's signature would not cover the server's certificate directly.
+However, if the PSK was established through a NewSessionTicket, the client's
+signature would transitively cover the server's certificate through
+the PSK binder. {{PSK-FINISHED}}
+describes a concrete attack on constructions that do not bind to
+the server's certificate. It is unsafe to use certificate-based client
+authentication when the client might potentially share the same
+PSK/key-id pair with two different endpoints and implementations
+MUST NOT combine external PSKs with certificate-based authentication.
 
 If an exporter is used, then it produces values which are unique
 and secret (because they are generated from a unique session key).
