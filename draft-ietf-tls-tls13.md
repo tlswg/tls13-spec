@@ -83,18 +83,14 @@ normative:
 
 informative:
   RFC4086:
-  RFC4279:
   RFC4346:
   RFC4366:
   RFC4492:
-  RFC4507:
   RFC4681:
-  RFC5054:
   RFC5077:
   RFC5116:
   RFC5246:
   RFC5764:
-  RFC5878:
   RFC5929:
   RFC6176:
   RFC6091:
@@ -102,7 +98,6 @@ informative:
   RFC7301:
   RFC7230:
   RFC7250:
-  RFC7366:
   RFC7465:
   RFC7568:
   RFC7627:
@@ -122,7 +117,6 @@ informative:
        date: 2005-11
        seriesinfo:
          ANSI: ANS X9.62-2005
-
   GCM:
        title: "Recommendation for Block Cipher Modes of Operation: Galois/Counter Mode (GCM) and GMAC"
        date: 2007-11
@@ -130,7 +124,6 @@ informative:
          ins: M. Dworkin
        seriesinfo:
          NIST: Special Publication 800-38D
-
   KEYAGREEMENT:
        title: "Recommendation for Pair-Wise Key Establishment Schemes Using Discrete Logarithm Cryptography"
        author:
@@ -145,17 +138,6 @@ informative:
        date: 2013-05
        seriesinfo:
          NIST: Special Publication 800-38D
-
-  PKCS6:
-       title: "PKCS #6: RSA Extended Certificate Syntax Standard, version 1.5"
-       author:
-         org: RSA Laboratories
-       date: 1993-11
-  PKCS7:
-       title: "PKCS #7: RSA Cryptographic Message Syntax Standard, version 1.5"
-       author:
-         org: RSA Laboratories
-       date: 1993-11
   RSA:
        title: "A Method for Obtaining Digital Signatures and Public-Key Cryptosystems"
        author:
