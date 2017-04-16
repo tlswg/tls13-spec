@@ -847,8 +847,9 @@ draft-02
 
 ##  Major Differences from TLS 1.2
 
-The following list of changes is by no means exhaustive. It is meant to 
-be used as an executive summary of what's changed.
+The following is a list of the major functional differences between
+TLS 1.2 and TLS 1.3. It is not intended to be exhaustive and there
+are may minor differences.
 
 - The list of supported ciphersuites has been pruned of all algorithms that
   are considered legacy. Those that remain are all Authenticated Encryption
@@ -856,17 +857,21 @@ be used as an executive summary of what's changed.
 
 - A Zero-RTT mode was added, saving a round-trip at connection setup.
 
-- More encrypted handshake messages, including Certificate.
+- All handshake messages after the ServerHello are now encrypted.
   
-- Significant changes to the handshake records and state machine; removal of CCS.
+- The handshake state machine has been significantly restructured to
+  be more consistent and to remove superfluous messages such as
+  ChangeCipherSpec.
   
 - ECC is now in the base spec.
 
 - Other cryptographic improvements including the removal of compression and
   custom DHE groups, a revision of key derivation which now uses HKDF,
-  change of RSA padding to PSS, and removal of DSA.
+  changing the RSA padding to use PSS, and the removal of DSA.
 
-- Version negotiation has been simplified.
+- The TLS 1.2 version negotiation mechanism has been deprecated in favor
+  of a version list in an extension. This increases compatibility with
+  servers which incorrectly implemented version negotiation.
 
 
 ## Updates Affecting TLS 1.2
