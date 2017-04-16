@@ -1849,18 +1849,37 @@ A number of TLS messages contain tag-length-value encoded extensions structures.
        } Extension;
 
        enum {
+           /* RFC 6066 */
            server_name(0),
            max_fragment_length(1),
            status_request(5),
+
+           /* RFC 4492, RFC 7919 */
            supported_groups(10),
+
+           /* RFC 5246 */
            signature_algorithms(13),
+
+           /* RFC 5764 */
            use_srtp(14),
+
+           /* RFC 6520 */
            heartbeat(15),
+
+           /* RFC 7301 */
            application_layer_protocol_negotiation(16),
+
+           /* RFC 6962 */
            signed_certificate_timestamp(18),
+
+           /* RFC 7250 */
            client_certificate_type(19),
            server_certificate_type(20)
+
+           /* RFC 7685 */
            padding(21),
+
+           /* [[this document]] */
            key_share(40),
            pre_shared_key(41),
            early_data(42),
