@@ -480,7 +480,10 @@ sender: An endpoint that is transmitting records.
 server: The endpoint which did not initiate the TLS connection.
 
 
-##  Major Differences from TLS 1.2
+##  Change Log
+
+RFC EDITOR PLEASE DELETE THIS SECTION.
+
 
 (*) indicates changes to the wire protocol which may require implementations
     to update.
@@ -840,6 +843,30 @@ draft-02
 -  Remove support for static RSA and DH key exchange.
 
 -  Remove support for non-AEAD ciphers.
+
+
+##  Major Differences from TLS 1.2
+
+The following list of changes is by no means exhaustive. It is meant to 
+be used as an executive summary of what's changed.
+
+- The list of supported ciphersuites has been pruned of all algorithms that
+  are considered legacy. Those that remain are all Authenticated Encryption
+  with Associated Data (AEAD) and all offer Perfect Forward Secrecy (PFS).
+
+- A Zero-RTT mode was added, saving a round-trip at connection setup.
+
+- More encrypted handshake messages, including Certificate.
+  
+- Significant changes to the handshake records and state machine; removal of CCS.
+  
+- ECC is now in the base spec.
+
+- Other cryptographic improvements including the removal of compression and
+  custom DHE groups, a revision of key derivation which now uses HKDF,
+  change of RSA padding to PSS, and removal of DSA.
+
+- Version negotiation has been simplified.
 
 
 ## Updates Affecting TLS 1.2
