@@ -2801,7 +2801,7 @@ subtracting the ticket's "ticket_age_add value" from the
 "obfuscated_ticket_age" parameter in the client's "pre_shared_key"
 extension. The server can independently determine its view of the
 age of the ticket by subtracting the the time the ticket was issued
-from the curren time. If the client and server clocks were running
+from the current time. If the client and server clocks were running
 at the same rate, the client's view of would be shorter than the
 actual time elapsed on the server by a single round trip time.  This
 difference is comprised of the delay in sending the NewSessionTicket
@@ -2821,9 +2821,11 @@ rates are likely to be minimal, though potentially with gross time
 corrections.  Network propagation delays are the most likely causes of
 a mismatch in legitimate values for elapsed time.  Both the
 NewSessionTicket and ClientHello messages might be retransmitted and
-therefore delayed, which might be hidden by TCP. Thus, an
+therefore delayed, which might be hidden by TCP.  For browser clients
+on the Internet, this implies that an
 an allowance on the order of ten seconds to account for errors in clocks and
-variations in measurements is advisable. Outside this range, the
+variations in measurements is advisable; other deployment scenarios
+may have different needs. Outside the selected range, the
 server SHOULD reject early data and fall back to a full 1-RTT
 handshake. Clock skew distributions are not
 symmetric, so the optimal tradeoff may involve an asymmetric range
