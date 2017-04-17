@@ -2688,7 +2688,7 @@ tickets which have ages greater than the "ticket_lifetime" value which
 was provided with the ticket. The "obfuscated_ticket_age" field of
 each PskIdentity contains an obfuscated version of the ticket age
 formed by taking the age in milliseconds and adding the "ticket_age_add"
-value that was included with the ticket, see {{NSTMessage}} module 2^32.
+value that was included with the ticket, see {{NSTMessage}} modulo 2^32.
 This addition prevents passive observers from correlating connections
 unless tickets are reused. Note that the "ticket_lifetime" field in
 the NewSessionTicket message is in seconds but the "obfuscated_ticket_age"
