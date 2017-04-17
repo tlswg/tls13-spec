@@ -855,7 +855,8 @@ are may minor differences.
   are considered legacy. Those that remain are all Authenticated Encryption
   with Associated Data (AEAD) and all offer Perfect Forward Secrecy (PFS).
 
-- A Zero-RTT mode was added, saving a round-trip at connection setup.
+- A Zero-RTT mode was added, saving a round-trip at connection setup for
+  some application data, at the cost of certain security properties.
 
 - All handshake messages after the ServerHello are now encrypted.
   
