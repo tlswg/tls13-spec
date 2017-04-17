@@ -5350,7 +5350,7 @@ client's certificate - but does not say when the client acquired the
 knowledge of the traffic key (it could have had it at the time of the
 original handshake or could have learned it at a later point). The
 implication of this fact is that this mechanism does not provide
-cryptographic attestion for any data exchanged prior to the
+cryptographic attestation for any data exchanged prior to the
 post-handshake authentication.
 
 ### 0-RTT
