@@ -5281,7 +5281,7 @@ client's certificate - but does not say when the client acquired the
 knowledge of the traffic key (it could have had it at the time of the
 original handshake or could have learned it at a later point). The
 implication of this fact is that this mechanism does not provide
-cryptographic attestion for any data exchanged prior to the
+cryptographic attestation for any data exchanged prior to the
 post-handshake authentication.
 
 ### 0-RTT
@@ -5306,7 +5306,7 @@ secret has been compromised.
 ### External References
 
 The reader should refer to the following references for analysis of the
-TLS handshake {{CHSV16}} {{CHSV16-2}} {DFGS16}} {{DFGS16}} {{Kraw16}} {{KW16}} {{FGSW16}} {{LXZFH16}}.
+TLS handshake: {{CHSV16}} {{CHSV16-2}} {DFGS16}} {{DFGS16}} {{Kraw16}} {{KW16}} {{FGSW16}} {{LXZFH16}}.
 
 ## Record Layer {#security-record-layer}
 
@@ -5378,7 +5378,7 @@ guarantees need to do a fresh handshake and establish a new connection with an
 ### External References
 
 The reader should refer to the following references for analysis of the TLS record layer:
-{{RECORD}}, {{RECORD-ASC}}, {{MULTI-USER}}.
+{{RECORD}} {{RECORD-ASC}} {{MULTI-USER}}.
 
 
 # Working Group Information
