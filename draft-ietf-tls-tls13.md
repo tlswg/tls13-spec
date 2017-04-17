@@ -386,7 +386,107 @@ informative:
       -
         ins: J.K. Zinzindohoue
       date: 2016-12
-      target: http://eprint.iacr.org/2016/1178
+      target: https://eprint.iacr.org/2016/1178
+
+  RECORD-ASC:
+      title: "Augmented Secure Channels and the Goal of the TLS 1.3 Record Layer"
+      author:
+      -
+        ins: C. Badertscher
+      -
+        ins: C. Matt
+      -
+        ins: U. Maurer
+      -
+        ins: B. Tackmann
+      seriesinfo: ProvSec 2015
+      date: 2015-09
+      target: https://eprint.iacr.org/2015/394
+
+  MULTI-USER:
+      title: "The Multi-User Security of Authenticated Encryption: AES-GCM in TLS 1.3"
+      author:
+      -
+        ins: M. Bellare
+      -
+        ins: B. Tackmann
+      seriesInfo: Proceedings of CRYPTO 2016
+      date: 2016
+      target: https://eprint.iacr.org/2016/564
+      
+  CHSV16-2:
+       title: "Automated Analysis and Verification of TLS 1.3: 0-RTT, Resumption and Delayed Authentication"
+       date: 2016
+       seriesinfo: Proceedings of IEEE Symposium on Security and Privacy (Oakland) 2016
+       target: http://ieeexplore.ieee.org/document/7546518/
+       author:
+       -
+         ins: C. Cremers
+       -
+         ins: M. Horvat
+       -
+         ins: T. van der Merwe
+       -
+         ins: S. Scott
+
+  Kraw16:
+       title: "A Unilateral-to-Mutual Authentication Compiler for Key Exchange (with Applications to Client Authentication in TLS 1.3"
+       date: 2016
+       seriesinfo: Proceedings of ACM CCS 2016
+       target: https://eprint.iacr.org/2016/711
+       author:
+       -
+         ins: H. Krawczyk
+
+  KW16:
+       title: "The OPTLS Protocol and TLS 1.3"
+       date: 2016
+       seriesinfo: Proceedings of Euro S&quot;P 2016
+       target: https://eprint.iacr.org/2015/978
+       author:
+       -
+         ins: H. Krawczyk
+       -
+         ins: H. Wee
+
+  DFGS15:
+       title: "A Cryptographic Analysis of the TLS 1.3 draft-10 Full and Pre-shared Key Handshake Protocol"
+       date: 2015
+       seriesinfo: Proceedings of ACM CCS 2015
+       target: https://eprint.iacr.org/2015/914
+       author:
+       -
+         ins: B. Dowling
+       -
+         ins: M. Fischlin
+       -
+         ins: F. Guenther
+       -
+         ins: D. Stebila
+
+  DFGS16:
+       title: "A Cryptographic Analysis of the TLS 1.3 draft-10 Full and Pre-shared Key Handshake Protocol"
+       date: 2016
+       seriesinfo: TRON 2016
+       target: https://eprint.iacr.org/2016/081
+       author:
+       -
+         ins: B. Dowling
+       -
+         ins: M. Fischlin
+       -
+         ins: F. Guenther
+       -
+         ins: D. Stebila
+
+  Kraw10:
+       title: "Cryptographic Extraction and Key Derivation: The HKDF Scheme"
+       date: 2010
+       seriesinfo: Proceedings of CRYPTO 2010
+       target: https://eprint.iacr.org/2010/264
+       author:
+       -
+         ins: H. Krawczyk
 
 --- abstract
 
@@ -5194,12 +5294,49 @@ to avoid leaking information about the identities due to length.
 The client's proposed PSK identities are not encrypted, nor is the
 one that the server selects.
 
+### Key Derivation and HKDF
+
+Key derivation in TLS 1.3 uses the HKDF function defined in [RFC 5869] and
+its two components, HKDF-Extract and HKDF-Expand. The full rationale for the HKDF
+construction can be found in [Kraw10] and the rationale for the way it is used 
+in TLS 1.3 in [KW16].  Throughout this document, each
+application of HKDF-Extract is followed by one or more invocations of
+HKDF-Expand. This ordering should always be followed (including in future
+revisions of this document), in particular, one SHOULD NOT use an output of
+HKDF-Extract as an input to another application of HKDF-Extract without an
+HKDF-Expand in between, Consecutive applications of HKDF-Expand are allowed as
+long as these are differentiated via the key and/or the labels.
+
+Note that HKDF-Expand implements a pseudorandom function (PRF) with both inputs and
+outputs of variable length. In some of the uses of HKDF in this document
+(e.g., for generating exporters and the resumption_master_secret), it is necessary
+that the application of HKDF-Expand be collision-resistant, namely, it should
+be infeasible to find two different inputs to HKDF-Expand that output the same
+value. This requires the underlying hash function to be collision resistant
+and the output length from HKDF-Expand to be of size at least 256 bits (or as
+much as needed for the hash function to prevent finding collisions). 
+
+
+### Client Authentication
+
 A client that has sent authentication data to a server, either during the
 handshake or in post-handshake authentication, cannot be sure if
 the server afterwards considers the client to be authenticated or not.
 If the client needs to determine if the server considers the connection
 to be unilaterally or mutually authenticated, this has to be provisioned
 by the application layer. See {{CHHSV17}} for details.
+
+In addition, the analysis of post-handshake authentication from
+[Kraw16] shows that this mechanism serves as a proof of possession of
+the traffic key by the authenticating client - as identified by the
+client's certificate - but does not say when the client acquired the
+knowledge of the traffic key (it could have had it at the time of the
+original handshake or could have learned it at a later point). The
+implication of this fact is that this mechanism does not provide
+cryptographic attestation for any data exchanged prior to the
+post-handshake authentication.
+
+### 0-RTT
 
 The 0-RTT mode of operation generally provides the same security
 properties as 1-RTT data, with the two exceptions that the 0-RTT
@@ -5209,6 +5346,8 @@ server is not able to guarantee full uniqueness of the handshake
 state. See {{early-data-indication}} for one mechanism to limit
 the exposure to replay.
 
+### Post-Compromise Security
+
 TLS does not provide security for handshakes which take place after the peer's
 long-term secret (signature key or external PSK) is compromised. It therefore
 does not provide post-compromise security {{CCG16}}, sometimes also referred to
@@ -5216,8 +5355,10 @@ as backwards or future security. This is in contrast to KCI resistance, which
 describes the security guarantees that a party has after its own long-term
 secret has been compromised.
 
+### External References
+
 The reader should refer to the following references for analysis of the
-TLS handshake {{CHSV16}} {{FGSW16}} {{LXZFH16}}.
+TLS handshake: {{CHSV16}} {{CHSV16-2}} {DFGS16}} {{DFGS16}} {{Kraw16}} {{KW16}} {{FGSW16}} {{LXZFH16}}.
 
 ## Record Layer {#security-record-layer}
 
@@ -5285,8 +5426,12 @@ compute all future traffic secrets on that connection.  Systems which want such
 guarantees need to do a fresh handshake and establish a new connection with an
 (EC)DHE exchange.
 
-The reader should refer to {{RECORD}} for analysis of the
-TLS record layer.
+
+### External References
+
+The reader should refer to the following references for analysis of the TLS record layer:
+{{RECORD}} {{RECORD-ASC}} {{MULTI-USER}}.
+
 
 # Working Group Information
 
