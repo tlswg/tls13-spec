@@ -29,6 +29,11 @@ author:
        name: Eric Rescorla
        organization: RTFM, Inc.
        email: ekr@rtfm.com
+   -
+       ins: R. Barnes
+       name: Richard Barnes
+       organization: This is a demo, Inc.
+       email: rlb@ipv.sx
 
 normative:
   RFC2104:
