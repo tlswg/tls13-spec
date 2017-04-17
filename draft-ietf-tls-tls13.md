@@ -2648,15 +2648,11 @@ identity
   established externally.
 
 obfuscated_ticket_age
-: For each ticket, the time since the client learned about the server
-  configuration that it is using, in milliseconds.  This value is
-  added modulo 2^32 to the "ticket_age_add" value that was
-  included with the ticket, see {{NSTMessage}}.  This addition
-  prevents passive observers from correlating connections unless tickets
-  are reused.  Note: because ticket lifetimes are restricted to a
-  week, 32 bits is enough to represent any plausible age, even in
-  milliseconds. For identities established externally an obfuscated_ticket_age of
-  0 SHOULD be used, and servers MUST ignore the value.
+: An obfuscated version of the age of the key.
+{{ticket-age}} describes how to form this value 
+for identities established via the NewSessionTicket message.
+For identities established externally an obfuscated_ticket_age of 0
+SHOULD be used, and servers MUST ignore the value.
 
 identities
 : A list of the identities that the client is willing
@@ -2716,6 +2712,22 @@ facilitates implementation as described below). Servers MUST check
 that it is the last extension and otherwise fail the handshake with an
 "illegal_parameter" alert.
 
+#### Ticket Age
+
+The client's view of the age of a ticket is the time since the receipt
+of the NewSessionTicket message. Clients MUST NOT attempt to use
+tickets which have ages greater than the "ticket_lifetime" value which
+was provided with the ticket. The "obfuscated_ticket_age" field of
+each PskIdentity contains an obfuscated version of the ticket age
+formed by taking the age in milliseconds and adding the "ticket_age_add"
+value that was included with the ticket, see {{NSTMessage}} modulo 2^32.
+This addition prevents passive observers from correlating connections
+unless tickets are reused. Note that the "ticket_lifetime" field in
+the NewSessionTicket message is in seconds but the "obfuscated_ticket_age"
+is in milliseconds. Because ticket lifetimes are
+restricted to a week, 32 bits is enough to represent any plausible
+age, even in milliseconds. 
+  
 #### PSK Binder
 
 The PSK binder value forms a binding between a PSK and the current
@@ -2767,50 +2779,55 @@ EndOfEarlyData message.
 
 As noted in {{zero-rtt-data}}, TLS provides a limited mechanism for
 replay protection for data sent by the client in the first flight.
+This mechanism is intended to ensure that attackers cannot replay
+ClientHello messages at a time substantially after the original
+ClientHello was sent.
 
-The "obfuscated_ticket_age" parameter in the client's
-"pre_shared_key" extension SHOULD be used by
-servers to limit the time over which the first flight might be
-replayed.  A server can store the time at which it sends a
-ticket to the client, or encode the time in the ticket.  Then, each
-time it receives an "pre_shared_key" extension, it can un-obfuscate the
-ticket age and compare it to the difference between the current time and
-the ticket creation time,
-to see if the value for the time elapsed sent by the client is
-consistent with the time since the ticket was issued.
+To properly validate the ticket age, a server needs to store
+the following values, either locally or by encoding them in
+the ticket:
 
-The ticket age (the value with "ticket_age_add" subtracted) provided by the
-client will be shorter than the
+- The time that the server generated the session ticket.
+- The estimated round trip time between the client and server;
+  this can be estimated by measuring the time between sending
+  the Finished message and receiving the first message in the
+  client's second flight, or potentially using information
+  from the operating system.
+- The "ticket_age_add" parameter from the NewSessionTicket message in
+  which the ticket was established.
+
+The server can determine the client's view of the age of the ticket by
+subtracting the ticket's "ticket_age_add value" from the
+"obfuscated_ticket_age" parameter in the client's "pre_shared_key"
+extension. The server can independently determine its view of the
+age of the ticket by subtracting the the time the ticket was issued
+from the curren time. If the client and server clocks were running
+at the same rate, the client's view of would be shorter than the
 actual time elapsed on the server by a single round trip time.  This
 difference is comprised of the delay in sending the NewSessionTicket
 message to the client, plus the time taken to send the ClientHello to
-the server.  For this reason, a server SHOULD measure the round trip
-time prior to sending the NewSessionTicket message and account for
-that in the value it saves.
+the server.
 
-To properly validate the ticket age, a server needs to save at least two items:
+The mismatch between the client's and server's views of age is thus
+given by:
 
-- The time that the server generated the session ticket and the estimated round
-  trip time can be added together to form a baseline time.
-- The "ticket_age_add" parameter from the NewSessionTicket is needed to recover
-  the ticket age from the "obfuscated_ticket_age" parameter.
+~~~~
+    mismatch = (client's view + RTT estimate) - (server's view)
+~~~~
 
 There are several potential sources of error that make an exact
-measurement of time difficult.  Variations in client and server clock rates
-are likely to be minimal, though potentially with gross time corrections.  Network
-propagation delays are the most likely causes of a mismatch in legitimate
-values for elapsed time.  Both the NewSessionTicket and ClientHello
-messages might be retransmitted and therefore delayed, which might be
-hidden by TCP.
-
-A small allowance for errors in clocks and variations in measurements
-is advisable.  However, any allowance also increases the opportunity
-for replay.  In this case, it is better to reject early data and fall back
-to a full 1-RTT handshake than to risk greater exposure to replay attacks.
-In common network topologies for browser clients, small allowances on the
-order of ten seconds are reasonable.  Clock skew distributions are not
-symmetric, so the optimal tradeoff may involve an asymmetric replay window.
-
+measurement of time difficult. Variations in client and server clock
+rates are likely to be minimal, though potentially with gross time
+corrections.  Network propagation delays are the most likely causes of
+a mismatch in legitimate values for elapsed time.  Both the
+NewSessionTicket and ClientHello messages might be retransmitted and
+therefore delayed, which might be hidden by TCP. Thus, an
+an allowance on the order of ten seconds to account for errors in clocks and
+variations in measurements is advisable. Outside this range, the
+server SHOULD reject early data and fall back to a full 1-RTT
+handshake. Clock skew distributions are not
+symmetric, so the optimal tradeoff may involve an asymmetric range
+of permissible mismatch values.
 
 ## Server Parameters
 
