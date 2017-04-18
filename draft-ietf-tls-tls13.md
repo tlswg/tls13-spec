@@ -948,7 +948,7 @@ Auth | {CertificateVerify*}
                  derived from a [sender]_handshake_traffic_secret.
 
               [] Indicates messages protected using keys
-                 derived from traffic_secret_N
+                 derived from [sender]_application_traffic_secret_N
 ~~~
 {: #tls-full title="Message flow for full TLS Handshake"}
 
@@ -1203,7 +1203,7 @@ as with a 1-RTT handshake with PSK resumption.
                   derived from a [sender]_handshake_traffic_secret.
 
                [] Indicates messages protected using keys
-                  derived from traffic_secret_N
+                  derived from [sender]_application_traffic_secret_N
 ~~~
 {: #tls-0-rtt title="Message flow for a zero round trip handshake"}
 
@@ -4364,9 +4364,9 @@ this section then re-deriving the traffic keys as described in
 The next-generation traffic_secret is computed as:
 
 ~~~~
-    traffic_secret_N+1 = HKDF-Expand-Label(
-                             traffic_secret_N,
-                             "application traffic secret", "", Hash.length)
+    application_traffic_secret_N+1 =
+        HKDF-Expand-Label(application_traffic_secret_N,
+                          "application traffic secret", "", Hash.length)
 ~~~~
 
 Once client/server_application_traffic_secret_N+1 and its associated traffic keys have been computed,
