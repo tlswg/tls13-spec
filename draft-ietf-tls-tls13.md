@@ -5548,6 +5548,10 @@ Archives of the list can be found at:
   ETAS \\
   jens.guballa@etas.com
 
+* Felix Guenther \\
+  TU Darmstadt \\
+  mail@felixguenther.info
+
 * Vipul Gupta (co-author of [RFC4492]) \\
   Sun Microsystems Laboratories \\
   vipul.gupta@sun.com
