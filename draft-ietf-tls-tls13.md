@@ -317,6 +317,7 @@ informative:
        -
          ins: T. van der Merwe
        seriesinfo: Proceedings of IEEE Symposium on Security and Privacy (Oakland) 2016
+       target: http://ieeexplore.ieee.org/document/7546518/
        date: 2016
   FGSW16:
        title: "Key Confirmation in Key Exchange: A Formal Treatment and Implications for TLS 1.3"
@@ -330,6 +331,7 @@ informative:
        -
          ins: B. Warinschi
        seriesinfo: Proceedings of IEEE Symposium on Security and Privacy (Oakland) 2016
+       target: http://ieeexplore.ieee.org/document/7546517/
        date: 2016
   LXZFH16:
        title: "Multiple Handshakes Security of TLS 1.3 Candidates"
@@ -345,6 +347,7 @@ informative:
        -
          ins: H. Hu
        seriesinfo: Proceedings of IEEE Symposium on Security and Privacy (Oakland) 2016
+       target: http://ieeexplore.ieee.org/document/7546519/
        date: 2016
   FW15:
        title: "Factoring RSA Keys With TLS Perfect Forward Secrecy"
@@ -385,8 +388,96 @@ informative:
         ins: S. Zanella-Beguelin
       -
         ins: J.K. Zinzindohoue
+      seriesinfo: Proceedings of IEEE Symposium on Security and Privacy (Oakland) 2017
       date: 2016-12
-      target: http://eprint.iacr.org/2016/1178
+      target: https://eprint.iacr.org/2016/1178
+
+  RECORD-ASC:
+      title: "Augmented Secure Channels and the Goal of the TLS 1.3 Record Layer"
+      author:
+      -
+        ins: C. Badertscher
+      -
+        ins: C. Matt
+      -
+        ins: U. Maurer
+      -
+        ins: B. Tackmann
+      seriesinfo: ProvSec 2015
+      date: 2015-09
+      target: https://eprint.iacr.org/2015/394
+
+  MULTI-USER:
+      title: "The Multi-User Security of Authenticated Encryption: AES-GCM in TLS 1.3"
+      author:
+      -
+        ins: M. Bellare
+      -
+        ins: B. Tackmann
+      seriesInfo: Proceedings of CRYPTO 2016
+      date: 2016
+      target: https://eprint.iacr.org/2016/564
+
+  Kraw16:
+       title: "A Unilateral-to-Mutual Authentication Compiler for Key Exchange (with Applications to Client Authentication in TLS 1.3"
+       date: 2016
+       seriesinfo: Proceedings of ACM CCS 2016
+       target: https://eprint.iacr.org/2016/711
+       author:
+       -
+         ins: H. Krawczyk
+
+  KW16:
+       title: "The OPTLS Protocol and TLS 1.3"
+       date: 2016
+       seriesinfo: Proceedings of Euro S&quot;P 2016
+       target: https://eprint.iacr.org/2015/978
+       author:
+       -
+         ins: H. Krawczyk
+       -
+         ins: H. Wee
+
+  DFGS15:
+       title: "A Cryptographic Analysis of the TLS 1.3 draft-10 Full and Pre-shared Key Handshake Protocol"
+       date: 2015
+       seriesinfo: Proceedings of ACM CCS 2015
+       target: https://eprint.iacr.org/2015/914
+       author:
+       -
+         ins: B. Dowling
+       -
+         ins: M. Fischlin
+       -
+         ins: F. Guenther
+       -
+         ins: D. Stebila
+
+  DFGS16:
+       title: "A Cryptographic Analysis of the TLS 1.3 draft-10 Full and Pre-shared Key Handshake Protocol"
+       date: 2016
+       seriesinfo: TRON 2016
+       target: https://eprint.iacr.org/2016/081
+       author:
+       -
+         ins: B. Dowling
+       -
+         ins: M. Fischlin
+       -
+         ins: F. Guenther
+       -
+         ins: D. Stebila
+
+  FG17:
+       title: "Replay Attacks on Zero Round-Trip Time: The Case of the TLS 1.3 Handshake Candidates"
+       date: 2017
+       seriesinfo: Proceedings of Euro S&quot;P 2017
+       target: https://eprint.iacr.org/2017/082
+       author:
+       -
+         ins: M. Fischlin
+       -
+         ins: F. Guenther
 
 --- abstract
 
@@ -5217,7 +5308,8 @@ describes the security guarantees that a party has after its own long-term
 secret has been compromised.
 
 The reader should refer to the following references for analysis of the
-TLS handshake {{CHSV16}} {{FGSW16}} {{LXZFH16}}.
+TLS handshake: {{DFGS15}} {{CHSV16}} {{DFGS16}} {{KW16}} {{Kraw16}} {{FGSW16}}
+{{LXZFH16}} {{FG17}}.
 
 ## Record Layer {#security-record-layer}
 
@@ -5285,8 +5377,9 @@ compute all future traffic secrets on that connection.  Systems which want such
 guarantees need to do a fresh handshake and establish a new connection with an
 (EC)DHE exchange.
 
-The reader should refer to {{RECORD}} for analysis of the
-TLS record layer.
+The reader should refer to the following references for analysis of the TLS record layer:
+{{RECORD}} {{RECORD-ASC}} {{MULTI-USER}}.
+
 
 # Working Group Information
 
