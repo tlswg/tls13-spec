@@ -414,7 +414,7 @@ informative:
         ins: M. Bellare
       -
         ins: B. Tackmann
-      seriesInfo: Proceedings of CRYPTO 2016
+      seriesinfo: Proceedings of CRYPTO 2016
       date: 2016
       target: https://eprint.iacr.org/2016/564
 
