@@ -2542,20 +2542,26 @@ isn't forcing the local system into a small subgroup.
 ECDHE parameters for both clients and servers are encoded in the
 the opaque key_exchange field of a KeyShareEntry in a KeyShare structure.
 
-For secp256r1, secp384r1 and secp521r1, the contents are the byte string
-representation of an elliptic curve public value following the conversion
-routine in Section 4.3.6 of ANSI X9.62 {{X962}}.
+For secp256r1, secp384r1 and secp521r1, the contents are the serialized
+value of the following struct:
 
-Although X9.62 supports multiple point formats, any given curve
-MUST specify only a single point format. All curves currently
-specified in this document MUST only be used with the uncompressed
-point format (the format for all ECDH functions is considered
-uncompressed). Peers MUST validate each other's public value Y by ensuring
-that the point is a valid point on the elliptic
-curve.
+       struct {
+           uint8                legacy_form = 4;
+           opaque               X[coordinate_length];
+           opaque               Y[coordinate_length];
+        } UncompressedPointRepresentation;
 
-For the curves secp256r1, secp384r1 and secp521r1, the appropriate
-validation procedures are defined in Section 4.3.7 of {{X962}}
+X and Y respectively are the binary representations of the X and Y
+values in network byte order.  There are no internal length markers,
+so each number representation occupies as many octets as implied by
+the curve parameters.  For P-256 this means that each of X and Y use
+32 octets, padded on the left by zeros if necessary.  For P-384 they
+take 48 octets each, and for P-521 they take 66 octets each.
+
+For the curves secp256r1, secp384r1 and secp521r1,
+peers MUST validate each other's public value Y by ensuring
+that the point is a valid point on the elliptic curve.
+The appropriate validation procedures are defined in Section 4.3.7 of {{X962}}
 and alternatively in Section 5.6.2.6  of {{KEYAGREEMENT}}.
 This process consists of three steps: (1) verify that Y is not the point at
 infinity (O), (2) verify that for Y = (x, y) both integers are in the correct
