@@ -5378,7 +5378,7 @@ guarantees need to do a fresh handshake and establish a new connection with an
 (EC)DHE exchange.
 
 The reader should refer to the following references for analysis of the TLS record layer:
-{{RECORD}} {{RECORD-ASC}} {{MULTI-USER}}.
+{{RECORD-ASC}} {{MULTI-USER}} {{RECORD}}.
 
 
 # Working Group Information
