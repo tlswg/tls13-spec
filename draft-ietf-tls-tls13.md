@@ -3023,7 +3023,10 @@ expressed by sending the "certificate_authorities" extension
 (see {{certificate-authorities}}).
 
 Servers which are authenticating with a PSK MUST NOT send the
-CertificateRequest message.
+CertificateRequest message in the main handshake, though they
+MAY send it in post-handshake authentication (see {{post-handshake-authentication}})
+provided that the client has sent the "post_handshake_auth"
+extension (see {{post-handshake-auth}}).
 
 
 #### OID Filters
@@ -5267,7 +5270,7 @@ Note: The binder does not cover the binder values from other
 PSKs, though they are included in the Finished MAC.
 
 Note: TLS does not currently permit the server to send a certificate_request
-message with non-certificate-based handshakes (e.g., PSK).
+message in non-certificate-based handshakes (e.g., PSK).
 If this restriction were to be relaxed in future, the
 client's signature would not cover the server's certificate directly.
 However, if the PSK was established through a NewSessionTicket, the client's
@@ -5276,8 +5279,9 @@ the PSK binder. {{PSK-FINISHED}}
 describes a concrete attack on constructions that do not bind to
 the server's certificate. It is unsafe to use certificate-based client
 authentication when the client might potentially share the same
-PSK/key-id pair with two different endpoints. Implementations
-MUST NOT combine external PSKs with certificate-based authentication.
+PSK/key-id pair with two different endpoints. Implementations MUST NOT combine
+external PSKs with certificate-based authentication of either the
+client or the server.
 
 If an exporter is used, then it produces values which are unique
 and secret (because they are generated from a unique session key).
