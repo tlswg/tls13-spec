@@ -5204,10 +5204,7 @@ transitively includes the original handshake transcript, because that
 transcript is digested into the values which produce the Resumption
 Master Secret. This requires that both the KDF used to produce the
 resumption master secret and the MAC used to compute the binder be collision
-resistant. These are properties of HKDF and HMAC respectively when
-used with collision resistant hash functions and producing output of
-at least 256 bits.  Any future replacement of these functions MUST
-also provide collision resistance.
+resistant. See {{key-derivation-and-hkdf}} for more on this.
 Note: The binder does not cover the binder values from other
 PSKs, though they are included in the Finished MAC.
 
@@ -5267,22 +5264,18 @@ much as needed for the hash function to prevent finding collisions).
 
 ### Client Authentication
 
-A client that has sent authentication data to a server, either during the
-handshake or in post-handshake authentication, cannot be sure if
+A client that has sent authentication data to a server, either during
+the handshake or in post-handshake authentication, cannot be sure if
 the server afterwards considers the client to be authenticated or not.
-If the client needs to determine if the server considers the connection
-to be unilaterally or mutually authenticated, this has to be provisioned
-by the application layer. See {{CHHSV17}} for details.
-
+If the client needs to determine if the server considers the
+connection to be unilaterally or mutually authenticated, this has to
+be provisioned by the application layer. See {{CHHSV17}} for details.
 In addition, the analysis of post-handshake authentication from
-[Kraw16] shows that this mechanism serves as a proof of possession of
-the traffic key by the authenticating client - as identified by the
-client's certificate - but does not say when the client acquired the
-knowledge of the traffic key (it could have had it at the time of the
-original handshake or could have learned it at a later point). The
-implication of this fact is that this mechanism does not provide
-cryptographic attestation for any data exchanged prior to the
-post-handshake authentication.
+[Kraw16] shows that the client identified by the certificate sent in
+the post-handshake phase possesses the traffic key. This party is
+therefore the client that participated in the original handshake or
+one to whom the original client delegated the traffic key (assuming
+that the traffic key has not been compromised).
 
 ### 0-RTT
 
