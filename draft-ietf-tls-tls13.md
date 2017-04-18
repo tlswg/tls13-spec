@@ -2941,7 +2941,7 @@ a mismatch in legitimate values for elapsed time.  Both the
 NewSessionTicket and ClientHello messages might be retransmitted and
 therefore delayed, which might be hidden by TCP.  For browser clients
 on the Internet, this implies that an
-an allowance on the order of ten seconds to account for errors in clocks and
+allowance on the order of ten seconds to account for errors in clocks and
 variations in measurements is advisable; other deployment scenarios
 may have different needs. Outside the selected range, the
 server SHOULD reject early data and fall back to a full 1-RTT
