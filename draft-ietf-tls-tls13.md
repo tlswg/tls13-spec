@@ -4361,7 +4361,7 @@ client_/server_application_traffic_secret_N as described in
 this section then re-deriving the traffic keys as described in
 {{traffic-key-calculation}}.
 
-The next-generation traffic_secret is computed as:
+The next-generation application_traffic_secret is computed as:
 
 ~~~~
     application_traffic_secret_N+1 =
