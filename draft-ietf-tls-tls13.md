@@ -1060,7 +1060,7 @@ Auth | {CertificateVerify*}
                  derived from a [sender]_handshake_traffic_secret.
 
               [] Indicates messages protected using keys
-                 derived from traffic_secret_N
+                 derived from [sender]_application_traffic_secret_N
 ~~~
 {: #tls-full title="Message flow for full TLS Handshake"}
 
@@ -1315,7 +1315,7 @@ as with a 1-RTT handshake with PSK resumption.
                   derived from a [sender]_handshake_traffic_secret.
 
                [] Indicates messages protected using keys
-                  derived from traffic_secret_N
+                  derived from [sender]_application_traffic_secret_N
 ~~~
 {: #tls-0-rtt title="Message flow for a zero round trip handshake"}
 
@@ -1346,7 +1346,7 @@ requested. Implementations SHOULD provide special functions for 0-RTT data to en
 that an application is always aware that it is sending or receiving
 data that might be replayed.
 
-The same warnings apply to any use of the early_exporter_secret.
+The same warnings apply to any use of the early_exporter_master_secret.
 
 The remainder of this document provides a detailed description of TLS.
 
@@ -3129,7 +3129,7 @@ for each scenario:
 |------|-------------------|----------|
 | Server | ClientHello ... later of EncryptedExtensions/CertificateRequest | server_handshake_traffic_secret |
 | Client | ClientHello ... later of server Finished/EndOfEarlyData | client_handshake_traffic_secret |
-| Post-Handshake | ClientHello ... client Finished + CertificateRequest | client_traffic_secret_N |
+| Post-Handshake | ClientHello ... client Finished + CertificateRequest | client_application_traffic_secret_N |
 
 
 ### The Transcript Hash
@@ -4396,7 +4396,7 @@ In this diagram, the following formatting conventions apply:
                  |
                  +-----> Derive-Secret(., "early exporter master secret",
                  |                     ClientHello)
-                 |                     = early_exporter_secret
+                 |                     = early_exporter_master_secret
                  v
            Derive-Secret(., "derived secret", "")
                  |
@@ -4418,15 +4418,15 @@ In this diagram, the following formatting conventions apply:
                  |
                  +-----> Derive-Secret(., "client application traffic secret",
                  |                     ClientHello...server Finished)
-                 |                     = client_traffic_secret_0
+                 |                     = client_application_traffic_secret_0
                  |
                  +-----> Derive-Secret(., "server application traffic secret",
                  |                     ClientHello...server Finished)
-                 |                     = server_traffic_secret_0
+                 |                     = server_application_traffic_secret_0
                  |
                  +-----> Derive-Secret(., "exporter master secret",
                  |                     ClientHello...server Finished)
-                 |                     = exporter_secret
+                 |                     = exporter_master_secret
                  |
                  +-----> Derive-Secret(., "resumption master secret",
                                        ClientHello...client Finished)
@@ -4465,21 +4465,21 @@ compute the early secret corresponding to the zero PSK.
 Once the handshake is complete, it is possible for either side to
 update its sending traffic keys using the KeyUpdate handshake message
 defined in {{key-update}}.  The next generation of traffic keys is computed by
-generating client_/server_traffic_secret_N+1 from
-client_/server_traffic_secret_N as described in
+generating client_/server_application_traffic_secret_N+1 from
+client_/server_application_traffic_secret_N as described in
 this section then re-deriving the traffic keys as described in
 {{traffic-key-calculation}}.
 
-The next-generation traffic_secret is computed as:
+The next-generation application_traffic_secret is computed as:
 
 ~~~~
-    traffic_secret_N+1 = HKDF-Expand-Label(
-                             traffic_secret_N,
-                             "application traffic secret", "", Hash.length)
+    application_traffic_secret_N+1 =
+        HKDF-Expand-Label(application_traffic_secret_N,
+                          "application traffic secret", "", Hash.length)
 ~~~~
 
-Once client/server_traffic_secret_N+1 and its associated traffic keys have been computed,
-implementations SHOULD delete client_/server_traffic_secret_N and its associated traffic
+Once client/server_application_traffic_secret_N+1 and its associated traffic keys have been computed,
+implementations SHOULD delete client_/server_application_traffic_secret_N and its associated traffic
 keys.
 
 ## Traffic Key Calculation
@@ -4504,7 +4504,7 @@ is shown in the table below.
 |:------------|--------|
 | 0-RTT Application | client_early_traffic_secret |
 | Handshake         | \[sender]_handshake_traffic_secret |
-| Application Data  | \[sender]_traffic_secret_N |
+| Application Data  | \[sender]_application_traffic_secret_N |
 
 All the traffic keying material is recomputed whenever the
 underlying Secret changes (e.g., when changing from the handshake to
@@ -4568,9 +4568,9 @@ The exporter value is computed as:
     HKDF-Expand-Label(Derive-Secret(Secret, label, ""),
                       "exporter", Hash(context_value), key_length)
 
-Where Secret is either the early_exporter_secret or the
-exporter_secret.  Implementations MUST use the exporter_secret unless
-explicitly specified by the application. The early_exporter_secret is
+Where Secret is either the early_exporter_master_secret or the
+exporter_master_secret.  Implementations MUST use the exporter_master_secret unless
+explicitly specified by the application. The early_exporter_master_secret is
 define for use in settings where an exporter is needed for 0-RTT data.
 A separate interface for the early exporter is RECOMMENDED, especially
 on a server where a single interface can make the early exporter
