@@ -365,7 +365,7 @@ informative:
         ins: M. Bellare
       seriesinfo: ASIACRYPT2000
       date: 2000-10
-  RECORD:
+  BDFKPPRSZZ16:
       title: "Implementing and Proving the TLS 1.3 Record Layer"
       author:
       -
@@ -392,7 +392,7 @@ informative:
       date: 2016-12
       target: https://eprint.iacr.org/2016/1178
 
-  RECORD-ASC:
+  BMMT15:
       title: "Augmented Secure Channels and the Goal of the TLS 1.3 Record Layer"
       author:
       -
@@ -407,7 +407,7 @@ informative:
       date: 2015-09
       target: https://eprint.iacr.org/2015/394
 
-  MULTI-USER:
+  BT16:
       title: "The Multi-User Security of Authenticated Encryption: AES-GCM in TLS 1.3"
       author:
       -
@@ -478,6 +478,18 @@ informative:
          ins: M. Fischlin
        -
          ins: F. Guenther
+
+  BBK17:
+       title: "Verified Models and Reference Implementations for the TLS 1.3 Standard Candidate"
+       date: 2017
+       seriesinfo: Proceedings of IEEE Symposium on Security and Privacy (Oakland) 2017
+       author:
+       -
+         ins: K. Bhargavan
+       -
+         ins: B. Blanchet
+       -
+         ins: N. Kobeissi
 
 --- abstract
 
@@ -5309,7 +5321,7 @@ secret has been compromised.
 
 The reader should refer to the following references for analysis of the
 TLS handshake: {{DFGS15}} {{CHSV16}} {{DFGS16}} {{KW16}} {{Kraw16}} {{FGSW16}}
-{{LXZFH16}} {{FG17}}.
+{{LXZFH16}} {{FG17}} {{BBK17}}.
 
 ## Record Layer {#security-record-layer}
 
@@ -5378,7 +5390,7 @@ guarantees need to do a fresh handshake and establish a new connection with an
 (EC)DHE exchange.
 
 The reader should refer to the following references for analysis of the TLS record layer:
-{{RECORD-ASC}} {{MULTI-USER}} {{RECORD}}.
+{{BMMT15}} {{BT16}} {{BDFKPPRSZZ16}} {{BBK17}}.
 
 
 # Working Group Information
