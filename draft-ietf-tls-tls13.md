@@ -2409,13 +2409,11 @@ the opaque key_exchange field of a KeyShareEntry in a KeyShare structure.
 For secp256r1, secp384r1 and secp521r1, the contents are the serialized
 value of the following struct:
 
-~~~~
        struct {
            uint8                legacy_form = 4;
            opaque               X[coordinate_length];
            opaque               Y[coordinate_length];
         } UncompressedPointRepresentation;
-~~~~
 
 X and Y respectively are the binary representations of the X and Y
 values in network byte order.  There are no internal length markers,
