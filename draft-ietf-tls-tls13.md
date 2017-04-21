@@ -4699,8 +4699,8 @@ its allocation policy is listed below:
 -  IANA \[SHALL update/has updated] this registry to include the
    "key_share", "pre_shared_key", "psk_key_exchange_modes",
    "early_data", "cookie", "supported_versions",
-   "certificate_authorities", and "oid_filters" extensions with the
-   values defined in this document and the Recommended value of "Yes".
+   "certificate_authorities", "oid_filters", and "post_handshake_auth"
+   extensions with the values defined in this document and the Recommended value of "Yes".
 
 -  IANA \[SHALL update/has updated] this registry to include a "TLS
    1.3" column which lists the messages in which the extension may
