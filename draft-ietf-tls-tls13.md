@@ -504,7 +504,8 @@ informative:
 This document specifies version 1.3 of the Transport Layer Security
 (TLS) protocol.  TLS allows client/server applications to
 communicate over the Internet in a way that is designed to prevent eavesdropping,
-tampering, and message forgery.
+tampering, and message forgery, and reduce the information available to attackers
+via side channels.
 --- middle
 
 
@@ -534,8 +535,15 @@ provide the following properties:
 
 - Integrity: Data sent over the channel cannot be modified by attackers.
 
+- Side Channel Resistance: Mechanisms are provided to diminish the ability
+  of an attacker to use information derived from analyzing message flows
+  to infer information about message contents (e.g., timing information
+  and ciphertext sizes).
+
 These properties should be true even in the face of an attacker who has complete
-control of the network, as described in {{?RFC3552}}.
+control of the network, as described in {{?RFC3552}}.  Side-channel resistance
+is difficult in the face of such an attacker who can trickle data in octet by
+octet and observe any reaction from an endpoint.
 See {{security-analysis}} for a more complete statement of the relevant security
 properties.
 
@@ -5414,15 +5422,6 @@ the record sequence number ({{nonce}}), with the sequence
 number being maintained independently at both sides thus records which
 are delivered out of order result in AEAD deprotection failures.
 
-The plaintext protected by the AEAD function consists of content plus
-variable-length padding. Because the padding is also encrypted, the
-attacker cannot directly determine the length of the padding, but
-may be able to measure it indirectly by the use of timing channels
-exposed during record processing (i.e., seeing how long it takes to
-process a record). In general, it is not known how to remove this
-type of channel because even a constant time padding removal
-function will then feed the content into data-dependent functions.
-
 The re-keying technique in TLS 1.3 (see {{updating-traffic-keys}}) follows the
 construction of the serial generator in [REKEY], which shows that re-keying can
 allow keys to be used for a larger number of encryptions than without
@@ -5438,6 +5437,62 @@ to the traffic secret. Indeed, an attacker who learns a traffic secret can
 compute all future traffic secrets on that connection.  Systems which want such
 guarantees need to do a fresh handshake and establish a new connection with an
 (EC)DHE exchange.
+
+
+### Side Channels
+
+There is an abundance of potential side channels available to an attacker,
+to the extent that any attempt at comprehensive enumeration is doomed to
+failure.  Some side channels (e.g., power analysis, cache eviction, etc.)
+are only available to attackers physically colocated with a target, which are
+generally considered out of scope for TLS, which aims to defend against an
+insecure network.  Nonetheless, there remain several particularly dangerous
+side channels possible in network protocols, that have produced pratical
+attacks against protocols in the past, including:
+
+- Traffic fingerprinting, where the length and time series distribution
+  of encrypted packets are analyzed to infer information about what data
+  is being transmitted.  This is particularly easy to see when there is
+  a small set of possible messages to be distinguished, such as for a video
+  server hosting a fixed corpus of content, but still provides usable
+  information even in more complicated scenarios.
+
+- Timing attacks, where the amount of time taken to process a message
+  (and send a reply) depends on the plaintext contents of the decrypted
+  data.  TLS can only hope to protect against timing attacks related to
+  decrypted data processed by TLS; application data may also be subject
+  to such side channels.
+
+- Differential attacks, where an attacker presents several subtly different
+  messages to a target and uses differences in responses (i.e., error messages,
+  timing, or high-level behavior) to infer information about the decrypted
+  message(s).
+
+The plaintext protected by the AEAD function consists of content plus
+variable-length padding, to allow for the encrypted records sent over the
+network to take on almost arbitrary distributions and avoid fingerprinting.
+Robust fingerprinting avoidance will introduce delays in packet transmission
+and padding-only records, at the cost of degraded performance.
+Because the padding is encrypted alongside the actual content, an
+attacker cannot directly determine the length of the padding, but
+may be able to measure it indirectly by the use of timing channels
+exposed during record processing (i.e., seeing how long it takes to
+process a record). In general, it is not known how to remove this
+type of channel because even a constant time padding removal
+function will then feed the content into data-dependent functions.
+
+The TLS protocol itself has limited ability to effect resistance to timing
+attacks, which largely falls as a responsibility of implementations.
+Implementations should utilize constant-time algorithms whenever possible,
+though in general it is impossible to completely remove timing channels.
+
+Resistance to differential attacks is provided by the use of the
+"bad_record_mac" alert for all decryption errors.  The use of a uniform
+response to malformed/corrupted packets prevents the attacker from gaining
+piecewise insight into portions of the message.  Additional resistance
+is provided by terminating the connection on such errors; a new connection
+will have different cryptographic material, preventing attacks against
+the cryptographic primitives that require multiple trials.
 
 
 ### External References
