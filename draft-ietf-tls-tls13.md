@@ -964,27 +964,42 @@ are may minor differences.
 
 - The list of supported ciphersuites has been pruned of all algorithms that
   are considered legacy. Those that remain are all Authenticated Encryption
-  with Associated Data (AEAD) and all offer Perfect Forward Secrecy (PFS).
+  with Associated Data (AEAD). The ciphersuite concept has been changed to 
+  separate the authentication and key exchange mechanisms from the record 
+  protection algorithm (including secret key length) and a hash to be used 
+  with key derivation function. 
 
 - A Zero-RTT mode was added, saving a round-trip at connection setup for
   some application data, at the cost of certain security properties.
 
-- All handshake messages after the ServerHello are now encrypted.
+- All handshake messages after the ServerHello are now encrypted. The 
+  newly introduced EncryptedExtension message allows various extensions
+  previously sent in clear in the ServerHello to also experience 
+  confidentiality protection. 
+  
+- The key derivation functions have been re-designed. The new design allowed
+  easier analysis by cryptographers due to their improved key separation 
+  properties. The HMAC-based Extract-and-Expand Key Derivation Function (HKDF)
+  has been used as an underlying primitive. 
   
 - The handshake state machine has been significantly restructured to
   be more consistent and to remove superfluous messages such as
   ChangeCipherSpec.
   
-- ECC is now in the base spec.
+- ECC is now in the base spec and includes new signature algorithms, such as 
+  ed25519 and ed448. TLS 1.3 removed point format negotiation 
+  in favor of a single point format for each curve. 
 
 - Other cryptographic improvements including the removal of compression and
-  custom DHE groups, a revision of key derivation which now uses HKDF,
-  changing the RSA padding to use PSS, and the removal of DSA.
+  custom DHE groups, changing the RSA padding to use PSS, and the removal of DSA.
 
 - The TLS 1.2 version negotiation mechanism has been deprecated in favor
   of a version list in an extension. This increases compatibility with
   servers which incorrectly implemented version negotiation.
-
+  
+- Session resumption with and without server-side state as well as the 
+  PSK-based ciphersuites of earlier TLS versions have been replaced by a 
+  single new PSK exchange.
 
 ## Updates Affecting TLS 1.2
 
