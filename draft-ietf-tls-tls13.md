@@ -1890,8 +1890,9 @@ Random value to the bytes:
 
       44 4F 57 4E 47 52 44 01
 
-If negotiating TLS 1.1, TLS 1.3 servers MUST and TLS 1.2 servers SHOULD
-set the last eight bytes of their Random value to the bytes:
+If negotiating TLS 1.1 or below, TLS 1.3 servers MUST and TLS 1.2
+servers SHOULD set the last eight bytes of their Random value to the
+bytes:
 
       44 4F 57 4E 47 52 44 00
 
