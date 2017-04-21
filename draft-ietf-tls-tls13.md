@@ -3007,6 +3007,11 @@ certificate_request_context
   CertificateVerify messages). This field SHALL be zero length
   unless used for the post-handshake authentication exchanges
   described in {{post-handshake-authentication}}.
+  When requesting post-handshake authentication, the server SHOULD
+  make the context unpredictable to the client (e.g., by
+  randomly generating it) in order to prevent an attacker who
+  has temporary access to the client's private key from
+  pre-computing valid CertificateVerify messages.
 
 extensions
 : A set of extensions describing the parameters of the
