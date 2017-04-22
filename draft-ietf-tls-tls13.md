@@ -1282,10 +1282,9 @@ out-of-band provisioned pre-shared secret, a critical consideration is
 using sufficient entropy during the key generation, as discussed in
 [RFC4086]. Deriving a shared secret from a password or other
 low-entropy sources is not secure. A low-entropy secret, or password,
-is subject to dictionary attacks based on the PSK binder.  The
-specified PSK authentication is not a strong password-based
-authenticated key exchange even when used with Diffie-Hellman key
-establishment.
+is subject to dictionary attacks. The specified PSK authentication is
+not a strong password-based authenticated key exchange even when used
+with Diffie-Hellman key establishment.
 
 ## Zero-RTT Data
 
@@ -1584,6 +1583,16 @@ For example:
                case orange: V2;
            };
        } VariantRecord;
+
+
+## Decoding Errors
+
+TLS defines two generic alerts (see {{alert-protocol}}) to use upon failure to parse
+a message. Peers which receive a message which cannot be parsed according to the syntax
+(e.g., have a length extending beyond the message boundary or contain an out-of-range
+length) MUST terminate the connection with a "decode_error" alert. Peers which receive
+a message which is syntactically correct but semantically invalid (e.g., a DHE share of p - 1,
+or an invalid enum) MUST terminate the connection with an "illegal_parameter" alert.
 
 
 # Handshake Protocol
