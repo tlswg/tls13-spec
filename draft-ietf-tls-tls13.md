@@ -4418,16 +4418,16 @@ In this diagram, the following formatting conventions apply:
    PSK ->  HKDF-Extract = Early Secret
                  |
                  +-----> Derive-Secret(.,
-                 |                     "external psk binder key" |
-                 |                     "resumption psk binder key",
+                 |                     "ext binder" |
+                 |                     "res binder",
                  |                     "")
                  |                     = binder_key
                  |
-                 +-----> Derive-Secret(., "client early traffic secret",
+                 +-----> Derive-Secret(., "c e traffic",
                  |                     ClientHello)
                  |                     = client_early_traffic_secret
                  |
-                 +-----> Derive-Secret(., "early exporter master secret",
+                 +-----> Derive-Secret(., "e exp master",
                  |                     ClientHello)
                  |                     = early_exporter_master_secret
                  v
@@ -4436,11 +4436,11 @@ In this diagram, the following formatting conventions apply:
                  v
 (EC)DHE -> HKDF-Extract = Handshake Secret
                  |
-                 +-----> Derive-Secret(., "client handshake traffic secret",
+                 +-----> Derive-Secret(., "c hs traffic",
                  |                     ClientHello...ServerHello)
                  |                     = client_handshake_traffic_secret
                  |
-                 +-----> Derive-Secret(., "server handshake traffic secret",
+                 +-----> Derive-Secret(., "s hs traffic",
                  |                     ClientHello...ServerHello)
                  |                     = server_handshake_traffic_secret
                  v
@@ -4449,19 +4449,19 @@ In this diagram, the following formatting conventions apply:
                  v
       0 -> HKDF-Extract = Master Secret
                  |
-                 +-----> Derive-Secret(., "client application traffic secret",
+                 +-----> Derive-Secret(., "c ap traffic",
                  |                     ClientHello...server Finished)
                  |                     = client_application_traffic_secret_0
                  |
-                 +-----> Derive-Secret(., "server application traffic secret",
+                 +-----> Derive-Secret(., "s ap traffic",
                  |                     ClientHello...server Finished)
                  |                     = server_application_traffic_secret_0
                  |
-                 +-----> Derive-Secret(., "exporter master secret",
+                 +-----> Derive-Secret(., "exp master",
                  |                     ClientHello...server Finished)
                  |                     = exporter_master_secret
                  |
-                 +-----> Derive-Secret(., "resumption master secret",
+                 +-----> Derive-Secret(., "res master",
                                        ClientHello...client Finished)
                                        = resumption_master_secret
 ~~~~
@@ -4481,7 +4481,7 @@ a string of Hash.length zero bytes is used.  Note that this does not mean skippi
 rounds, so if PSK is not in use Early Secret will still be
 HKDF-Extract(0, 0). For the computation of the binder_secret, the label is "external
 psk binder key" for external PSKs (those provisioned outside of TLS)
-and "resumption psk binder key" for
+and "res binder" for
 resumption PSKs (those provisioned as the resumption master secret of
 a previous handshake). The different labels prevent the substitution of one
 type of PSK for the other.
@@ -4508,7 +4508,7 @@ The next-generation application_traffic_secret is computed as:
 ~~~~
     application_traffic_secret_N+1 =
         HKDF-Expand-Label(application_traffic_secret_N,
-                          "application traffic secret", "", Hash.length)
+                          "traffic upd", "", Hash.length)
 ~~~~
 
 Once client/server_application_traffic_secret_N+1 and its associated traffic keys have been computed,
