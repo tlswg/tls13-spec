@@ -4392,15 +4392,21 @@ and length fields, but not including record layer headers. Note that
 in some cases a zero-length HashValue (indicated by "") is passed to
 HKDF-Expand-Label.
 
+An extension may produce an InputSecret value for incorporation into the
+key derivation schedule.
 Given a set of n InputSecrets, the final "master secret" is computed
 by iteratively invoking HKDF-Extract with InputSecret_1, InputSecret_2,
 etc.  The initial secret is simply a string of Hash.length zero bytes.
-Concretely, for the
-present version of TLS 1.3, secrets are added in the following order:
+The ordering of InputSecrets from MTI extensions is specified by this
+document. The ordering of additional InputSecrets is given by the order
+of extensions in ClientHello.  Concretely, for the present version of
+TLS 1.3, secrets are added in the following order:
 
 - PSK (a pre-shared key established externally or a resumption_master_secret
   value from a previous connection)
 - (EC)DHE shared secret ({{ecdhe-shared-secret-calculation}})
+- Secrets from non-MTI extensions in the order in which the extensions are
+  provided in ClientHello.
 
 This produces a full key derivation schedule shown in the diagram below.
 In this diagram, the following formatting conventions apply:
