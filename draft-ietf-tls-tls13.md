@@ -4376,7 +4376,7 @@ defined below:
 
     struct {
         uint16 length = Length;
-        opaque label<10..255> = "TLS 1.3, " + Label;
+        opaque label<10..255> = "tls13 " + Label;
         opaque hash_value<0..255> = HashValue;
     } HkdfLabel;
 
@@ -4431,7 +4431,7 @@ In this diagram, the following formatting conventions apply:
                  |                     ClientHello)
                  |                     = early_exporter_master_secret
                  v
-           Derive-Secret(., "derived secret", "")
+           Derive-Secret(., "derived", "")
                  |
                  v
 (EC)DHE -> HKDF-Extract = Handshake Secret
@@ -4444,7 +4444,7 @@ In this diagram, the following formatting conventions apply:
                  |                     ClientHello...ServerHello)
                  |                     = server_handshake_traffic_secret
                  v
-           Derive-Secret(., "derived secret", "")
+           Derive-Secret(., "derived", "")
                  |
                  v
       0 -> HKDF-Extract = Master Secret
