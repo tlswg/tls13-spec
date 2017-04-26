@@ -3306,7 +3306,7 @@ an extension in the CertificateEntry containing the associated
 certificate. Specifically:
 The body of the "status_request" extension
 from the server MUST be a CertificateStatus structure as defined
-in {{RFC6066}}.
+in {{RFC6066}}, which is interpreted as defined in {{!RFC6960}}.
 
 A server MAY request that a client present an OCSP response with its
 certificate by sending an empty "status_request" extension in its
