@@ -1589,15 +1589,6 @@ For example:
        } VariantRecord;
 
 
-## Decoding Errors
-
-TLS defines two generic alerts (see {{alert-protocol}}) to use upon failure to parse
-a message. Peers which receive a message which cannot be parsed according to the syntax
-(e.g., have a length extending beyond the message boundary or contain an out-of-range
-length) MUST terminate the connection with a "decode_error" alert. Peers which receive
-a message which is syntactically correct but semantically invalid (e.g., a DHE share of p - 1,
-or an invalid enum) MUST terminate the connection with an "illegal_parameter" alert.
-
 
 # Handshake Protocol
 
@@ -4111,6 +4102,16 @@ with failed connections.
 All the alerts listed in {{error-alerts}} MUST be sent as fatal and
 MUST be treated as fatal regardless of the AlertLevel in the
 message. Unknown alert types MUST be treated as fatal.
+
+Note: TLS defines two generic alerts (see {{alert-protocol}}) to use
+upon failure to parse a message. Peers which receive a message which
+cannot be parsed according to the syntax (e.g., have a length
+extending beyond the message boundary or contain an out-of-range
+length) MUST terminate the connection with a "decode_error"
+alert. Peers which receive a message which is syntactically correct
+but semantically invalid (e.g., a DHE share of p - 1, or an invalid
+enum) MUST terminate the connection with an "illegal_parameter" alert.
+
 
 %%% Alert Messages
 
