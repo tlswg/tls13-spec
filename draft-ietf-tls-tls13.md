@@ -75,8 +75,8 @@ normative:
         title: "Recommendation for Block Cipher Modes of Operation: Galois/Counter Mode (GCM) and GMAC"
         date: 2007-11
         author:
-          ins: M. Dworkin
-       seriesinfo:
+          - ins: M. Dworkin
+        seriesinfo:
           NIST: Special Publication 800-38D
 
 informative:
