@@ -5466,15 +5466,6 @@ the record sequence number ({{nonce}}), with the sequence
 number being maintained independently at both sides thus records which
 are delivered out of order result in AEAD deprotection failures.
 
-The plaintext protected by the AEAD function consists of content plus
-variable-length padding. Because the padding is also encrypted, the
-attacker cannot directly determine the length of the padding, but
-may be able to measure it indirectly by the use of timing channels
-exposed during record processing (i.e., seeing how long it takes to
-process a record). In general, it is not known how to remove this
-type of channel because even a constant time padding removal
-function will then feed the content into data-dependent functions.
-
 The re-keying technique in TLS 1.3 (see {{updating-traffic-keys}}) follows the
 construction of the serial generator in [REKEY], which shows that re-keying can
 allow keys to be used for a larger number of encryptions than without
@@ -5491,11 +5482,71 @@ compute all future traffic secrets on that connection.  Systems which want such
 guarantees need to do a fresh handshake and establish a new connection with an
 (EC)DHE exchange.
 
-
 ### External References
 
 The reader should refer to the following references for analysis of the TLS record layer:
 {{BMMT15}} {{BT16}} {{BDFKPPRSZZ16}} {{BBK17}}.
+
+
+## Traffic Analysis
+
+TLS is susceptible to a variety of traffic analysis attacks based on
+observing the length and timing of encrypted packets
+{{?CLINIC=DOI.10.1007/978-3-319-08506-7_8}}
+{{?HCJ16=DOI.10.1186/s13635-016-0030-7}}.
+This is particularly easy when there is a small
+set of possible messages to be distinguished, such as for a video
+server hosting a fixed corpus of content, but still provides usable
+information even in more complicated scenarios.
+
+TLS does not provide any specific defenses against this form of attack
+but does include a padding mechanism for use by applications: The
+plaintext protected by the AEAD function consists of content plus
+variable-length padding, which allows the application to produce
+arbitrary length encrypted records as well as padding-only cover traffic to
+conceal the difference between periods of transmission and periods
+of silence. Because the
+padding is encrypted alongside the actual content, an attacker cannot
+directly determine the length of the padding, but may be able to
+measure it indirectly by the use of timing channels exposed during
+record processing (i.e., seeing how long it takes to process a
+record or trickling in records to see which ones elicit a response
+from the server). In general, it is not known how to remove all of
+these channels because even a constant time padding removal function will
+then feed the content into data-dependent functions.
+
+Note: Robust
+traffic analysis defences will likely lead to inferior performance
+due to delay in transmitting packets and increased traffic volume.
+
+
+## Side Channel Attacks
+
+
+In general, TLS does not have specific defenses against side-channel
+attacks (i.e., those which attack the communications via secondary
+channels such as timing) leaving those to the implementation of the relevant
+cryptographic primitives. However, certain features of TLS are
+designed to make it easier to write side-channel resistant code:
+
+- Unlike previous versions of TLS which used a composite
+MAC-then-encrypt structure, TLS 1.3 only uses AEAD algorithms,
+allowing implementations to use self-contained constant-time
+implementations of those primitives.
+
+- TLS uses a uniform "bad_record_mac" alert for all decryption
+errors, which is intended to prevent an attacker from gaining
+piecewise insight into portions of the message.  Additional resistance
+is provided by terminating the connection on such errors; a new
+connection will have different cryptographic material, preventing
+attacks against the cryptographic primitives that require multiple
+trials.
+
+Information leakage through side channels can occur at layers above
+TLS, in application protocols and the applications that use
+them. Resistance to side-channel attacks depends on applications and
+application protocols separately ensuring that confidential
+information is not inadvertently leaked.
 
 
 # Working Group Information
