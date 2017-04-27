@@ -4780,12 +4780,6 @@ by IANA:
   "Recommended": ecdsa_secp256r1_sha256, ecdsa_secp384r1_sha384,
   rsa_pss_sha256, rsa_pss_sha384, rsa_pss_sha512, ed25519.
 
-Finally, this document obsoletes the TLS HashAlgorithm Registry and the TLS
-SignatureAlgorithm Registry, both originally created in {{RFC5246}}.  IANA
-\[SHALL update/has updated] the TLS HashAlgorithm Registry to list values 7-223 as
-"Reserved" and the TLS SignatureAlgorithm Registry to list values 4-223 as
-"Reserved".
-
 --- back
 
 # State Machine
