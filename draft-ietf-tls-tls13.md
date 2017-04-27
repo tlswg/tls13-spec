@@ -5368,7 +5368,7 @@ one that the server selects.
 
 ### Key Derivation and HKDF
 
-Key derivation in TLS 1.3 uses the HKDF function defined in [RFC 5869] and
+Key derivation in TLS 1.3 uses the HKDF function defined in {{RFC5869}} and
 its two components, HKDF-Extract and HKDF-Expand. The full rationale for the HKDF
 construction can be found in [Kraw10] and the rationale for the way it is used
 in TLS 1.3 in [KW16].  Throughout this document, each
