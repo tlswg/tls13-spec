@@ -495,7 +495,7 @@ informative:
 This document specifies version 1.3 of the Transport Layer Security
 (TLS) protocol.  TLS allows client/server applications to
 communicate over the Internet in a way that is designed to prevent eavesdropping,
-tampering, and message forgery.  
+tampering, and message forgery.
 --- middle
 
 
@@ -557,13 +557,15 @@ compatible with previous versions, all versions of TLS incorporate a
 versioning mechanism which allows clients and servers to interoperably
 negotiate a common version if one is supported.
 
-This document supersedes and obsoletes previous versions of TLS including
-version 1.2 {{RFC5246}}.  It also obsoletes the TLS ticket mechanism defined in
- {{RFC5077}} and replaces it with the mechanism defined in {{resumption-and-psk}}. {{negotiated-groups}} updates {{RFC4492}}
-by modifying the protocol attributes used to negotiate Elliptic Curves.  Since TLS 1.3 changes the way keys are derived it
-updates {{RFC5705}} as described in {{exporters}}.  It also changes the how OCSP messages
-are carried and therefore updates {{RFC6066}} and {{RFC6961}} as described in
-section {{ocsp-and-sct}}.
+This document supersedes and obsoletes previous versions of TLS
+including version 1.2 {{RFC5246}}.  It also obsoletes the TLS ticket
+mechanism defined in {{RFC5077}} and replaces it with the mechanism
+defined in {{resumption-and-psk}}. {{negotiated-groups}} updates
+{{RFC4492}} by modifying the protocol attributes used to negotiate
+Elliptic Curves.  Because TLS 1.3 changes the way keys are derived it
+updates {{RFC5705}} as described in {{exporters}}.  It also changes
+how OCSP messages are carried and therefore updates {{RFC6066}}
+and obsoletes {{RFC6961}} as described in section {{ocsp-and-sct}}.
 
 ##  Conventions and Terminology
 
