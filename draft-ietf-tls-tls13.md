@@ -610,8 +610,8 @@ draft-20
 
 - Define how RFC 7250 works (*).
 
-- Re-enable post-handshake client authentication even when you do PSK
-  (this was just editor error).
+- Re-enable post-handshake client authentication even when you do PSK.
+  Previous prohibition was editor error.
 
 - Remove cert_type and user_mapping, which don't work on TLS 1.3 anyway.
 
@@ -976,9 +976,9 @@ draft-02
 
 The following is a list of the major functional differences between
 TLS 1.2 and TLS 1.3. It is not intended to be exhaustive and there
-are may minor differences.
+are many minor differences.
 
-- The list of supported ciphersuites has been pruned of all algorithms that
+- The list of supported symmetric algorithms has been pruned of all algorithms that
   are considered legacy. Those that remain all use Authenticated Encryption
   with Associated Data (AEAD) algorithms. The ciphersuite concept has been
   changed to separate the authentication and key exchange mechanisms from
@@ -993,10 +993,10 @@ are may minor differences.
   previously sent in clear in the ServerHello to also enjoy
   confidentiality protection.
 
-- The key derivation functions have been re-designed. The new design allowed
+- The key derivation functions have been re-designed. The new design allows
   easier analysis by cryptographers due to their improved key separation
   properties. The HMAC-based Extract-and-Expand Key Derivation Function (HKDF)
-  has been used as an underlying primitive.
+  is used as an underlying primitive.
 
 - The handshake state machine has been significantly restructured to
   be more consistent and to remove superfluous messages such as
@@ -1027,7 +1027,7 @@ TLS 1.2:
 
 * RSASSA-PSS signature schemes are defined in {{signature-algorithms}}.
 
-* The "supported_versions" ClientHello extension can be used for negotiating
+* The "supported_versions" ClientHello extension can be used to negotiate
   the version of TLS to use, in preference to the legacy_version field of
   the ClientHello.
 
@@ -1861,9 +1861,9 @@ extensions, and this functionality is not supplied by the server, the
 client MAY abort the handshake.
 
 After sending the ClientHello message, the client waits for a ServerHello
-or HelloRetryRequest message.  The client may transmit early application data
-{{zero-rtt-data}} while waiting for the next handshake message, if early data
-is in use.
+or HelloRetryRequest message. If early data
+is in use, the client may transmit early application data
+{{zero-rtt-data}} while waiting for the next handshake message.
 
 ### Server Hello {#server-hello}
 
@@ -2401,7 +2401,7 @@ offering prior versions of TLS).
 The "post_handshake_auth" extension is used to indicate that a client is willing
 to perform post-handshake authentication {{post-handshake-authentication}}. Servers
 MUST not send a post-handshake CertificateRequest to clients which do not
-offer this extension.
+offer this extension. Servers MUST NOT send this extension.
 
 The "extension_data" field of the "post_handshake_auth" extension is zero
 length.
@@ -4520,8 +4520,8 @@ with three distinct transcripts.
 If a given secret is not available, then the 0-value consisting of
 a string of Hash.length zero bytes is used.  Note that this does not mean skipping
 rounds, so if PSK is not in use Early Secret will still be
-HKDF-Extract(0, 0). For the computation of the binder_secret, the label is "external
-psk binder key" for external PSKs (those provisioned outside of TLS)
+HKDF-Extract(0, 0). For the computation of the binder_secret, the label is
+"ext binder" for external PSKs (those provisioned outside of TLS)
 and "res binder" for
 resumption PSKs (those provisioned as the resumption master secret of
 a previous handshake). The different labels prevent the substitution of one
@@ -5085,8 +5085,9 @@ Either technique used alone is vulnerable to man-in-the-middle attacks
 and therefore unsafe for general use. However, it is also possible to
 bind such connections to an external authentication mechanism via
 out-of-band validation of the server's public key, trust on first
-use, or channel bindings {{RFC5929}}.
-If no such mechanism is used, then the connection has no protection
+use, or a mechanism such as channel bindings (though the
+channel bindings described in {{RFC5929}} are not defined for
+TLS 1.3). If no such mechanism is used, then the connection has no protection
 against active man-in-the-middle attack; applications MUST NOT use TLS
 in such a way absent explicit configuration or a specific application
 profile.
@@ -5390,7 +5391,7 @@ application of HKDF-Extract is followed by one or more invocations of
 HKDF-Expand. This ordering should always be followed (including in future
 revisions of this document), in particular, one SHOULD NOT use an output of
 HKDF-Extract as an input to another application of HKDF-Extract without an
-HKDF-Expand in between, Consecutive applications of HKDF-Expand are allowed as
+HKDF-Expand in between. Consecutive applications of HKDF-Expand are allowed as
 long as these are differentiated via the key and/or the labels.
 
 Note that HKDF-Expand implements a pseudorandom function (PRF) with both inputs and
