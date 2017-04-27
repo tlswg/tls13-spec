@@ -563,7 +563,7 @@ mechanism defined in {{RFC5077}} and replaces it with the mechanism
 defined in {{resumption-and-psk}}. {{negotiated-groups}} updates
 {{RFC4492}} by modifying the protocol attributes used to negotiate
 Elliptic Curves.  Because TLS 1.3 changes the way keys are derived it
-updates {{RFC5705}} as described in {{exporters}}.  It also changes
+updates {{RFC5705}} as described in {{exporters}} it also changes
 how OCSP messages are carried and therefore updates {{RFC6066}}
 and obsoletes {{RFC6961}} as described in section {{ocsp-and-sct}}.
 
