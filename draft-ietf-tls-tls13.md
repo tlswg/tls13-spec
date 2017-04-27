@@ -2319,7 +2319,7 @@ EdDSA algorithms
 
 Legacy algorithms
 : Indicates algorithms which are being deprecated because they use
-  algorithms with known weaknesses, specifically SHA-1 which is
+  algorithms with known weaknesses, specifically SHA-1 which is used
   in this context with either with RSA using RSASSA-PKCS1-v1_5 or ECDSA.  These values
   refer solely to signatures which appear in certificates (see
   {{server-certificate-selection}}) and are not defined for use in
