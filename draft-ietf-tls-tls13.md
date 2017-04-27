@@ -4151,6 +4151,7 @@ enum) MUST terminate the connection with an "illegal_parameter" alert.
            bad_certificate_hash_value(114),
            unknown_psk_identity(115),
            certificate_required(116),
+           no_application_protocol(120),
            (255)
        } AlertDescription;
 
