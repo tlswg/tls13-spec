@@ -43,14 +43,6 @@ normative:
   RFC7748:
   RFC7919:
   RFC8032:
-
-  AES:
-       title: Specification for the Advanced Encryption Standard (AES)
-       date: 2001-11-26
-       author:
-         org: National Institute of Standards and Technology
-       seriesinfo:
-         NIST: FIPS 197
   SHS:
        title: Secure Hash Standard
        date: 2012-03
@@ -79,7 +71,13 @@ normative:
           - ins: M. Hellman
         date: 1977-06
         seriesinfo: IEEE Transactions on Information Theory, V.IT-22 n.6
-
+  GCM:
+        title: "Recommendation for Block Cipher Modes of Operation: Galois/Counter Mode (GCM) and GMAC"
+        date: 2007-11
+        author:
+          ins: M. Dworkin
+       seriesinfo:
+          NIST: Special Publication 800-38D
 
 informative:
   RFC4086:
@@ -117,13 +115,6 @@ informative:
        date: 2005-11
        seriesinfo:
          ANSI: ANS X9.62-2005
-  GCM:
-       title: "Recommendation for Block Cipher Modes of Operation: Galois/Counter Mode (GCM) and GMAC"
-       date: 2007-11
-       author:
-         ins: M. Dworkin
-       seriesinfo:
-         NIST: Special Publication 800-38D
   KEYAGREEMENT:
        title: "Recommendation for Pair-Wise Key Establishment Schemes Using Discrete Logarithm Cryptography"
        author:
@@ -4656,9 +4647,10 @@ of {{RFC5705}}.
 ##  Mandatory-to-Implement Cipher Suites
 
 In the absence of an application profile standard specifying otherwise, a
-TLS-compliant application MUST implement the TLS_AES_128_GCM_SHA256
-cipher suite and SHOULD implement the TLS_AES_256_GCM_SHA384 and
-TLS_CHACHA20_POLY1305_SHA256 cipher suites. (see {{cipher-suites}})
+TLS-compliant application MUST implement the TLS_AES_128_GCM_SHA256 [GCM]
+cipher suite and SHOULD implement the TLS_AES_256_GCM_SHA384 [GCM] and
+TLS_CHACHA20_POLY1305_SHA256 [RFC7539] cipher suites.  (see
+{{cipher-suites}})
 
 A TLS-compliant application MUST support digital signatures with
 rsa_pkcs1_sha256 (for certificates), rsa_pss_sha256 (for
