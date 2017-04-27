@@ -607,6 +607,18 @@ draft-20
 - Shorten labels for HKDF-Expand-Label so that we can fit within one
   compression block (*).
 
+- Define how RFC 7250 works (*).
+
+- Re-enable post-handshake client authentication even when you do PSK
+  (this was just editor error).
+  
+- Remove cert_type and user_mapping, which don't work on TLS 1.3 anyway.
+
+- Added the no_application_protocol alert from {{RFC7301}} to the list
+  of extensions.
+
+- Added discussion of traffic analysis and side channel attacks.
+
 draft-19
 
 - Hash context_value input to Exporters (*)
