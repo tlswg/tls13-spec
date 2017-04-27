@@ -2306,17 +2306,17 @@ EdDSA algorithms
 
 Legacy algorithms
 : Indicates algorithms which are being deprecated because they use
-  SHA-1 but are still permitted for backward compatibility,
-  specifically RSA using RSASSA-PKCS1-v1_5 and ECDSA.  These values
+  algorithms with known weaknesses, specifically SHA-1 when used
+  either with RSA using RSASSA-PKCS1-v1_5 or ECDSA.  These values
   refer solely to signatures which appear in certificates (see
   {{server-certificate-selection}}) and are not defined for use in
-  signed TLS handshake messages.  lients offering these values (e.g.,
-  for backwards compatibility) MUST list them as the lowest priority
-  (listed after all other algorithms in SignatureSchemeList).  TLS
-  1.3 servers MUST NOT offer a SHA-1 signed certificate unless no
-  valid certificate chain can be produced without it (see
-  {{server-certificate-selection}}).
-
+  signed TLS handshake messages. Endpoints SHOULD NOT these algorithms
+  but are permitted to do so solely for backward compatibility. Clients
+  offering these values (e.g., for backwards compatibility) MUST list
+  them as the lowest priority (listed after all other algorithms in
+  SignatureSchemeList). TLS 1.3 servers MUST NOT offer a SHA-1 signed
+  certificate unless no valid certificate chain can be produced
+  without it (see {{server-certificate-selection}}).
 {:br }
 
 
