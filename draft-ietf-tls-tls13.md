@@ -34,7 +34,6 @@ normative:
   RFC2104:
   RFC2119:
   RFC5226:
-  RFC3447:
   RFC5280:
   RFC5869:
   RFC6066:
@@ -43,6 +42,7 @@ normative:
   RFC7748:
   RFC7919:
   RFC8032:
+  RFC8017:
   SHS:
        title: Secure Hash Standard
        date: 2012-03
@@ -2279,7 +2279,7 @@ hash the input with a specified hash algorithm and then proceed as usual.
 The code point groups listed above have the following meanings:
 
 RSASSA-PKCS1-v1_5 algorithms
-: Indicates a signature algorithm using RSASSA-PKCS1-v1_5 {{RFC3447}}
+: Indicates a signature algorithm using RSASSA-PKCS1-v1_5 {{RFC8017}}
   with the corresponding hash algorithm as defined in {{SHS}}. These values
   refer solely to signatures which appear in certificates (see
   {{server-certificate-selection}}) and are not defined for use in signed
@@ -2292,7 +2292,7 @@ ECDSA algorithms
   represented as a DER-encoded {{X690}} ECDSA-Sig-Value structure.
 
 RSASSA-PSS algorithms
-: Indicates a signature algorithm using RSASSA-PSS {{RFC3447}} with mask
+: Indicates a signature algorithm using RSASSA-PSS {{RFC8017}} with mask
   generation function 1. The
   digest used in the mask generation function and the digest being signed are
   both the corresponding hash algorithm as defined in {{SHS}}. When used in
