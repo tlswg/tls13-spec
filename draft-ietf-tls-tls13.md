@@ -614,6 +614,10 @@ draft-20
   
 - Remove cert_type and user_mapping, which don't work on TLS 1.3 anyway.
 
+- Added the no_application_protocol alert from {{RFC7301}} to the list
+  of extensions.
+
+- Added discussion of traffic analysis and side channel attacks.
 
 draft-19
 
