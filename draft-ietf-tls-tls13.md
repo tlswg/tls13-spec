@@ -2225,7 +2225,6 @@ SignatureSchemeList value:
 
        enum {
            /* RSASSA-PKCS1-v1_5 algorithms */
-           rsa_pkcs1_sha1(0x0201),
            rsa_pkcs1_sha256(0x0401),
            rsa_pkcs1_sha384(0x0501),
            rsa_pkcs1_sha512(0x0601),
@@ -2245,17 +2244,18 @@ SignatureSchemeList value:
            ed448(0x0808),
 
            /* Legacy algorithms */
+           rsa_pkcs1_sha1(0x0201),
            ecdsa_sha1(0x0203),
 
            /* Reserved Code Points */
            obsolete_RESERVED(0x0000..0x0200),
-           obsolete_RESERVED(0x0202),
+           dsa_sha1_RESERVED(0x0202),
            obsolete_RESERVED(0x0204..0x0400),
-           obsolete_RESERVED(0x0402),
+           dsa_sha256_RESERVED(0x0402),
            obsolete_RESERVED(0x0404..0x0500),
-           obsolete_RESERVED(0x0502),
+           dsa_sha384_RESERVED(0x0502),
            obsolete_RESERVED(0x0504..0x0600),
-           obsolete_RESERVED(0x0602),
+           dsa_sha512_RESERVED(0x0602),
            obsolete_RESERVED(0x0604..0x06FF),
            private_use(0xFE00..0xFFFF),
            (0xFFFF)
@@ -2304,18 +2304,21 @@ EdDSA algorithms
   {{RFC8032}} or its successors. Note that these correspond to the
   "PureEdDSA" algorithms and not the "prehash" variants.
 
-ecdsa_sha1
-: Indicates a signature algorithm using ECDSA and SHA-1. This value refers
-  solely to signatures which appear in certificates and is not defined for use
-  in signed TLS handshake messages.
+Legacy algorithms
+: Indicates algorithms which are being deprecated because they use
+  SHA-1 but are still permitted for backward compatibility,
+  specifically RSA using RSASSA-PKCS1-v1_5 and ECDSA.  These values
+  refer solely to signatures which appear in certificates (see
+  {{server-certificate-selection}}) and are not defined for use in
+  signed TLS handshake messages.  lients offering these values (e.g.,
+  for backwards compatibility) MUST list them as the lowest priority
+  (listed after all other algorithms in SignatureSchemeList).  TLS
+  1.3 servers MUST NOT offer a SHA-1 signed certificate unless no
+  valid certificate chain can be produced without it (see
+  {{server-certificate-selection}}).
+
 {:br }
 
-rsa_pkcs1_sha1 and ecdsa_sha1 SHOULD NOT be offered. Clients
-offering these values (e.g., for backwards compatibility) MUST list them as the lowest
-priority (listed after all other algorithms in SignatureSchemeList).
-TLS 1.3 servers MUST NOT offer a SHA-1
-signed certificate unless no valid certificate chain can be produced without it
-(see {{server-certificate-selection}}).
 
 The signatures on certificates that are self-signed or certificates that are
 trust anchors are not validated since they begin a certification path (see
