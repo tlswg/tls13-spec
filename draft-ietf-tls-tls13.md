@@ -495,7 +495,7 @@ informative:
 This document specifies version 1.3 of the Transport Layer Security
 (TLS) protocol.  TLS allows client/server applications to
 communicate over the Internet in a way that is designed to prevent eavesdropping,
-tampering, and message forgery.
+tampering, and message forgery.  
 --- middle
 
 
@@ -557,6 +557,14 @@ compatible with previous versions, all versions of TLS incorporate a
 versioning mechanism which allows clients and servers to interoperably
 negotiate a common version if one is supported.
 
+This document supersedes and obsoletes previous versions of TLS including
+version 1.2 {{RFC5246}}.  It also obsoletes the TLS ticket mechanism defined in
+ {{RFC5077}} and replaces it with the mechanism defined in {{resumption-and-psk}}. {{negotiated-groups}} updates {{RFC4492}}
+by modifying the protocol attributes used to negotiate Elliptic Curves.  Since TLS 1.3 changes the way keys are derived it
+updates {{RFC5705}} as described in {{exporters}}.  It also changes the how OCSP messages
+are carried and therefore updates {{RFC6066}} and {{RFC6961}} as described in
+section {{ocsp-and-sct}}.
+
 ##  Conventions and Terminology
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
@@ -602,7 +610,7 @@ draft-20
 
 - Re-enable post-handshake client authentication even when you do PSK
   (this was just editor error).
-  
+
 - Remove cert_type and user_mapping, which don't work on TLS 1.3 anyway.
 
 - Added the no_application_protocol alert from {{RFC7301}} to the list
@@ -3292,7 +3300,7 @@ send an empty certificate_list if it does not have an appropriate
 certificate to send in response to the server's authentication
 request.
 
-#### OCSP Status and SCT Extensions
+#### OCSP Status and SCT Extensions {#ocsp-and-sct}
 
 {{RFC6066}} and {{!RFC6961}} provide extensions to negotiate the server
 sending OCSP responses to the client. In TLS 1.2 and below, the
@@ -4358,7 +4366,7 @@ unknown_psk_identity
 certificate_required
 : Sent by servers when a client certificate is desired but none was provided by
   the client.
-  
+
 no_application_protocol
 : Sent by servers when a client
   "application_layer_protocol_negotiation" extension advertises
