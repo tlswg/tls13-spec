@@ -5828,6 +5828,10 @@ Archives of the list can be found at:
   Mozilla \\
   mt@mozilla.com
 
+* Sean Turner \\
+  sn3rd \\
+  sean@sn3rd.com
+
 * Filippo Valsorda \\
   Cloudflare Inc. \\
   filippo@cloudflare.com
