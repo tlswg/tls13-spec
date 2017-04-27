@@ -4355,6 +4355,10 @@ unknown_psk_identity
 certificate_required
 : Sent by servers when a client certificate is desired but none was provided by
   the client.
+  
+no_application_protocol
+: Sent by servers when a client advertises protocols that the server does 
+  not support. 
 {:br }
 
 New Alert values are assigned by IANA as described in {{iana-considerations}}.
