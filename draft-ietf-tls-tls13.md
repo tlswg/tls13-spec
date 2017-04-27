@@ -499,36 +499,6 @@ informative:
        -
          ins: H. Krawczyk
 
-  MHJT14:
-       title: "I Know Why You Went to the Clinic: Risks and Realization of HTTPS Traffic Analysis"
-       date: 2014
-       seriesInfo: Privacy Enhancing Technologies. PETS 2014
-       target: http://link.springer.com/chapter/10.1007/978-3-319-08506-7_8
-       author:
-       -
-         ins: B. Miller
-       -
-         ins: L. Huang
-       -
-         ins: A. Joseph
-       -
-         ins: D. Tygar
-
-  HCJC16:
-       title: "HTTPS traffic analysis and client identification using passive SSL/TLS fingerprinting"
-       date: 2016
-       seriesInfo: EURASIP J. on Info. Security
-       target: http://link.springer.com/article/10.1186/s13635-016-0030-7
-       author:
-       -
-         ins: M. Husak
-       -
-         ins: M. Cermak
-       -
-         ins: T. Jirsik
-       -
-         ins: P. Celeda
-         
 --- abstract
 
 This document specifies version 1.3 of the Transport Layer Security
@@ -5515,8 +5485,10 @@ The reader should refer to the following references for analysis of the TLS reco
 ## Traffic Analysis
 
 TLS is susceptible to a variety of traffic analysis attacks based on
-observing the length and timing of encrypted packets {{MHJT14}}
-{{HCJC16}}.  This is particularly easy to see when there is a small
+observing the length and timing of encrypted packets
+{{?CLINIC=DOI.10.1007/978-3-319-08506-7_8}}
+{{?HCJ16=DOI.10.1186/s13635-016-0030-7}}.
+This is particularly easy when there is a small
 set of possible messages to be distinguished, such as for a video
 server hosting a fixed corpus of content, but still provides usable
 information even in more complicated scenarios.
