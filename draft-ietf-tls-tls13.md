@@ -611,7 +611,7 @@ draft-20
 - Define how RFC 7250 works (*).
 
 - Re-enable post-handshake client authentication even when you do PSK.
-  Previous prohibition was editor error.
+  The previous prohibition was editorial error.
 
 - Remove cert_type and user_mapping, which don't work on TLS 1.3 anyway.
 
