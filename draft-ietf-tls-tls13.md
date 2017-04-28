@@ -5801,6 +5801,10 @@ Archives of the list can be found at:
 
 * Michael Sabin
 
+* Joe Salowey \\
+  Tableau Software \\
+  jsalowey@gmail.com
+
 * Rich Salz \\
   Akamai \\
   rsalz@akamai.com
