@@ -2323,7 +2323,7 @@ Legacy algorithms
   in this context with either with RSA using RSASSA-PKCS1-v1_5 or ECDSA.  These values
   refer solely to signatures which appear in certificates (see
   {{server-certificate-selection}}) and are not defined for use in
-  signed TLS handshake messages. Endpoints SHOULD NOT these algorithms
+  signed TLS handshake messages. Endpoints SHOULD NOT negotiate these algorithms
   but are permitted to do so solely for backward compatibility. Clients
   offering these values MUST list
   them as the lowest priority (listed after all other algorithms in
