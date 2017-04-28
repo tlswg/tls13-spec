@@ -5803,7 +5803,7 @@ Archives of the list can be found at:
 
 * Joe Salowey \\
   Tableau Software \\
-  jsalowey@gmail.com
+  joe@salowey.net
 
 * Rich Salz \\
   Akamai \\
