@@ -2035,7 +2035,7 @@ A number of TLS messages contain tag-length-value encoded extensions structures.
            application_layer_protocol_negotiation(16), /* RFC 7301 */
            signed_certificate_timestamp(18),           /* RFC 6962 */
            client_certificate_type(19),                /* RFC 7250 */
-           server_certificate_type(20)                 /* RFC 7250 */
+           server_certificate_type(20),                /* RFC 7250 */
            padding(21),                                /* RFC 7685 */
            key_share(40),                              /* [[this document]] */
            pre_shared_key(41),                         /* [[this document]] */
@@ -3249,9 +3249,9 @@ Structure of this message:
                  // From RFC 7250 ASN.1_subjectPublicKeyInfo
                  opaque ASN1_subjectPublicKeyInfo<1..2^24-1>;
 
-               case X.509:
+               case X509:
                  opaque cert_data<1..2^24-1>;
-           }
+           };
            Extension extensions<0..2^16-1>;
        } CertificateEntry;
 
