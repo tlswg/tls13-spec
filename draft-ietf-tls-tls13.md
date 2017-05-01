@@ -38,6 +38,7 @@ normative:
   RFC5869:
   RFC6066:
   RFC6655:
+  RFC6960:
   RFC7539:
   RFC7748:
   RFC7919:
@@ -3331,9 +3332,15 @@ CertificateRequest message. If the client opts to send an OCSP response, the
 body of its "status_request" extension MUST be a CertificateStatus structure as
 defined in {{RFC6066}}.
 
-Similarly, {{!RFC6962}} provides a mechanism for a server to send a
-Signed Certificate Timestamp (SCT) as an extension in the ServerHello
-in TLS 1.2 and below.
+Note that the validity period of OCSP responses should be, as per 4.2.2.1
+of {{RFC6960}}, the {thisUpdate, nextUpdate} interval of the OCSP response
+values. For OCSP responses which do not set the nextUpdate field, the validity
+period for the purposes of TLS is set to be 15 days after the time set in the
+'thisUpdate' OCSP response field.
+
+Similarly with the OCSP response extension, {{!RFC6962}} provides a mechanism
+for a server to send a Signed Certificate Timestamp (SCT) as an extension in
+the ServerHello in TLS 1.2 and below.
 In TLS 1.3, the server's SCT information is carried in an extension in
 CertificateEntry.
 
