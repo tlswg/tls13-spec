@@ -3705,7 +3705,7 @@ max_early_data_size
   depend on being able to send large quantities of padding in early data records.
 {:br }
 
-The PSK associated with the ticket is computes as:
+The PSK associated with the ticket is computed as:
 
 ~~~~
     HKDF-Expand-Label(resumption_master_secret,
