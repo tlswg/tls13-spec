@@ -5726,7 +5726,7 @@ Archives of the list can be found at:
 
 * Hugo Krawczyk \\
   IBM \\
-  hugo@ee.technion.ac.il
+  hugokraw@us.ibm.com
 
 * Adam Langley (co-author of [RFC7627]) \\
   Google \\
