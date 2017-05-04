@@ -93,7 +93,6 @@ informative:
   RFC6176:
   RFC6091:
   RFC6520:
-  RFC7301:
   RFC7230:
   RFC7250:
   RFC7465:
@@ -615,7 +614,7 @@ draft-20
 
 - Remove cert_type and user_mapping, which don't work on TLS 1.3 anyway.
 
-- Added the no_application_protocol alert from {{RFC7301}} to the list
+- Added the no_application_protocol alert from {{!RFC7301}} to the list
   of extensions.
 
 - Added discussion of traffic analysis and side channel attacks.
