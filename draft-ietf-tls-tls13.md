@@ -1314,6 +1314,7 @@ the server and to encrypt the early data.
 When clients use a PSK obtained externally to send early data, then the following
 additional information MUST be provisioned to both parties:
 
+  * The TLS version number for use with this PSK
   * The cipher suite for use with this PSK
   * The Application-Layer Protocol Negotiation (ALPN) protocol, if any is to be used
   * The Server Name Indication (SNI), if any is to be used
