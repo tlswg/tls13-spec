@@ -4384,7 +4384,8 @@ certificate_required
 no_application_protocol
 : Sent by servers when a client
   "application_layer_protocol_negotiation" extension advertises
-  protocols that the server does not support.
+  protocols that the server does not support
+  (see {{RFC7301}}).
 {:br }
 
 New Alert values are assigned by IANA as described in {{iana-considerations}}.
