@@ -1292,7 +1292,8 @@ extension to negotiate use of PSK key establishment and can (as shown here)
 respond with a "key_share" extension to do (EC)DHE key establishment, thus
 providing forward secrecy.
 
-When PSKs are provisioned out of band, the PSK identity and the KDF to
+When PSKs are provisioned out of band, the PSK identity and the KDF hash
+algorithm to
 be used with the PSK MUST also be provisioned.  Note: When using an
 out-of-band provisioned pre-shared secret, a critical consideration is
 using sufficient entropy during the key generation, as discussed in
@@ -2834,8 +2835,8 @@ selected_identity
 {: br}
 
 Each PSK is associated with a single Hash algorithm. For PSKs established
-via the ticket mechanism ({{NSTMessage}}), this is the Hash used for
-the KDF on the connection where the ticket was established.
+via the ticket mechanism ({{NSTMessage}}), this is the KDF Hash algorithm
+on the connection where the ticket was established.
 For externally established PSKs, the Hash algorithm MUST be set when the
 PSK is established, or default to SHA-256 if no such algorithm
 is defined. The server must ensure that it selects a compatible
@@ -3627,7 +3628,7 @@ ticket no more than once, with more recent tickets being used
 first.
 
 Any ticket MUST only be resumed with a cipher suite that has the
-same KDF hash as that used to establish the original connection,
+same KDF hash algorithm as that used to establish the original connection,
 and only if the client provides the same SNI value as in the original
 connection, as described in Section 3 of {{RFC6066}}.
 
@@ -4421,7 +4422,8 @@ defined below:
                            Transcript-Hash(Messages), Hash.length)
 ~~~~
 
-The Hash function and the HKDF hash are the cipher suite hash algorithm.
+The Hash function used by Transcript-Hash and HKDF are the cipher suite hash
+algorithm.
 Hash.length is its output length in bytes. Messages are the concatenation of the
 indicated handshake messages, including the handshake message type
 and length fields, but not including record layer headers. Note that
