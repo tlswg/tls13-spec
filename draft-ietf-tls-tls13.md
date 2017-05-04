@@ -4422,7 +4422,7 @@ defined below:
                            Transcript-Hash(Messages), Hash.length)
 ~~~~
 
-The Hash function used by Transcript-Hash and HKDF are the cipher suite hash
+The Hash function used by Transcript-Hash and HKDF is the cipher suite hash
 algorithm.
 Hash.length is its output length in bytes. Messages are the concatenation of the
 indicated handshake messages, including the handshake message type
