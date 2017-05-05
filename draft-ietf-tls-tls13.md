@@ -5748,6 +5748,10 @@ Archives of the list can be found at:
   K.U. Leuven \\
   atul.luykx@kuleuven.be
 
+* Colm MacCarthaigh \\
+  Amazon Web Services \\
+  colm@allcosts.net
+
 * Carl Mehner \\
   USAA \\
   carl.mehner@usaa.com
