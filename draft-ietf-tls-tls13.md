@@ -4802,21 +4802,23 @@ by IANA:
 This section provides a summary of the legal state transitions for the
 client and server handshakes.  State names (in all capitals, e.g.,
 START) have no formal meaning but are provided for ease of
-comprehension.  Messages which are sent only sometimes are indicated
-in [].
+comprehension.  Actions which are taken only in certain circumstances are
+indicated in [].
 
 ## Client
 
 ~~~~
                            START <----+
             Send ClientHello |        | Recv HelloRetryRequest
-         /                   v        |
+   [Rekey out to early keys] |        | Send ClientHello
+         /                   v        | 
         |                  WAIT_SH ---+
-    Can |                    | Recv ServerHello
-   send |                    V
-  early |                 WAIT_EE
-   data |                    | Recv EncryptedExtensions
-        |           +--------+--------+
+        |                    | Recv ServerHello
+        |                    | Rekey in to handshake keys
+    Can |                    V
+   send |                 WAIT_EE
+  early |                    | Recv EncryptedExtensions
+   data |           +--------+--------+
         |     Using |                 | Using certificate
         |       PSK |                 v
         |           |            WAIT_CERT_CR
@@ -4829,14 +4831,14 @@ in [].
         |           |                 | Recv CertificateVerify
         |           +> WAIT_FINISHED <+
         |                  | Recv Finished
-        \                  |
+         \                 | Rekey in to application keys
+                           | Rekey out to handshake keys
                            | [Send EndOfEarlyData]
                            | [Send Certificate [+ CertificateVerify]]
-                           | Send Finished
- Can send                  v
- app data -->          CONNECTED
- after
- here
+ Can send                  | Send Finished
+ app data   -->            | Rekey out to application keys
+ after here                v
+                       CONNECTED
 ~~~~
 
 ## Server
@@ -4850,33 +4852,39 @@ in [].
                                v
                             NEGOTIATED
                                | Send ServerHello
+                               | [Rekey in to early keys]
+                               | Rekey out to handshake keys
                                | Send EncryptedExtensions
                                | [Send CertificateRequest]
-Can send                       | [Send Certificate + CertificateVerify]
-app data -->                   | Send Finished
-after                 +--------+--------+
-here         No 0-RTT |                 | 0-RTT
-                      |                 v
-                      |             WAIT_EOED <---+
-                      |            Recv |   |     | Recv
-                      |  EndOfEarlyData |   |     | early data
-                      |                 |   +-----+
-                      +> WAIT_FLIGHT2 <-+
-                               |
-                      +--------+--------+
-              No auth |                 | Client auth
-                      |                 |
-                      |                 v
-                      |             WAIT_CERT
-                      |        Recv |       | Recv Certificate
-                      |       empty |       v
-                      | Certificate |    WAIT_CV
-                      |             |       | Recv
-                      |             v       | CertificateVerify
-                      +-> WAIT_FINISHED <---+
-                               | Recv Finished
-                               v
-                           CONNECTED
+                               | [Send Certificate + CertificateVerify]
+Can send                       | Send Finished
+app data   -->                 | Rekey out to application keys
+after here                 +---+-------------+
+                           |                 |
+                  No 0-RTT |                 | 0-RTT
+Rekey in to handshake keys |                 | Rekey in to early keys
+[Read past decrypt errors] |                 v
+                           |             WAIT_EOED
+                           |                 | Recv EndOfEarlyData
+                           |                 | Rekey in to hs keys
+                           |                 |
+                           +> WAIT_FLIGHT2 <-+
+                                    |
+                           +--------+--------+
+                   No auth |                 | Client auth
+                           |                 |
+                           |                 v
+                           |             WAIT_CERT
+                           |        Recv |       | Recv Certificate
+                           |       empty |       v
+                           | Certificate |    WAIT_CV
+                           |             |       | Recv
+                           |             v       | CertificateVerify
+                           +-> WAIT_FINISHED <---+
+                                    | Recv Finished
+                                    | Rekey in to application keys
+                                    v
+                                CONNECTED
 ~~~~
 
 # Protocol Data Structures and Constant Values
