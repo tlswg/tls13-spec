@@ -4852,7 +4852,6 @@ indicated in [].
                                v
                             NEGOTIATED
                                | Send ServerHello
-                               | [Rekey in to early keys]
                                | Rekey out to handshake keys
                                | Send EncryptedExtensions
                                | [Send CertificateRequest]
@@ -4863,11 +4862,11 @@ after here                 +---+-------------+
                            |                 |
                   No 0-RTT |                 | 0-RTT
 Rekey in to handshake keys |                 | Rekey in to early keys
-[Read past decrypt errors] |                 v
+[Read past decrypt errors] |                 | Read early data
+                           |                 v
                            |             WAIT_EOED
                            |                 | Recv EndOfEarlyData
                            |                 | Rekey in to hs keys
-                           |                 |
                            +> WAIT_FLIGHT2 <-+
                                     |
                            +--------+--------+
