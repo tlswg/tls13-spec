@@ -4895,10 +4895,9 @@ here         No 0-RTT |                 | 0-RTT
    Recv NewSessionTicket |   |              v       V 
                 -- or -- |   |            WAIT_FINISHED
  Recv CertificateRequest |   |                  | Recv Finished
-        Send Certificate |   |                  v
-[Send CertificateVerify] |   |              CONNECTED
+        Send Certificate |   |                  |
+[Send CertificateVerify] |   |                  |
            Send Finished |   |                  |
-                         |   |                  |
                          +-->+<-----------------+
 ~~~~
 
