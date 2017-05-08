@@ -4810,7 +4810,7 @@ indicated in [].
 ~~~~
                            START <----+
             Send ClientHello |        | Recv HelloRetryRequest
-   [Rekey out to early keys] |        | Send ClientHello
+   [Rekey out to early keys] |        |
                              v        | 
          /                 WAIT_SH ---+
         |                    | Recv ServerHello
