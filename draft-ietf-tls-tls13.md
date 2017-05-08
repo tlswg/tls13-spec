@@ -4811,8 +4811,8 @@ indicated in [].
                            START <----+
             Send ClientHello |        | Recv HelloRetryRequest
    [Rekey out to early keys] |        | Send ClientHello
-         /                   v        | 
-        |                  WAIT_SH ---+
+                             v        | 
+         /                 WAIT_SH ---+
         |                    | Recv ServerHello
         |                    | Rekey in to handshake keys
     Can |                    V
@@ -4832,8 +4832,8 @@ indicated in [].
         |           +> WAIT_FINISHED <+
         |                  | Recv Finished
          \                 | Rekey in to application keys
-                           | Rekey out to handshake keys
                            | [Send EndOfEarlyData]
+                           | Rekey out to handshake keys
                            | [Send Certificate [+ CertificateVerify]]
  Can send                  | Send Finished
  app data   -->            | Rekey out to application keys
@@ -4866,7 +4866,8 @@ Rekey in to handshake keys |                 | Rekey in to early keys
                            |                 v
                            |             WAIT_EOED
                            |                 | Recv EndOfEarlyData
-                           |                 | Rekey in to hs keys
+                           |                 | Rekey in to 
+                           |                 | handshake keys
                            +> WAIT_FLIGHT2 <-+
                                     |
                            +--------+--------+
