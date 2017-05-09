@@ -5623,6 +5623,10 @@ Archives of the list can be found at:
   IBM \\
   canetti@watson.ibm.com
 
+* Matt Caswell \\
+  OpenSSL \\
+  matt@openssl.org
+
 * Pete Chown \\
   Skygate Technology Ltd \\
   pc@skygate.co.uk
