@@ -2942,7 +2942,7 @@ EndOfEarlyData message.
 Servers are permitted to buffer and postpone the processing of application
 data sent in 0-RTT until they receive client's Finished. Therefore, when
 using 0-RTT, clients MUST proceed the handshake to the point of sending
-their Finished messages even if there are no application data to be sent
+the Finished message even if there are no application data to be sent
 in 1-RTT.
 
 #### Replay Properties {#replay-time}
