@@ -2939,11 +2939,13 @@ servers MUST process the client's ClientHello and then immediately
 send the ServerHello, rather than waiting for the client's
 EndOfEarlyData message.
 
-Servers are permitted to buffer and postpone the processing of application
-data sent in 0-RTT until they receive client's Finished. Therefore, when
-using 0-RTT, clients MUST proceed the handshake to the point of sending
-the Finished message even if there are no application data to be sent
-in 1-RTT.
+When using 0-RTT, clients MUST send its Finished message in response to
+the handshake messages sent from the server, even if there is no
+application data to be sent in 1-RTT. Servers MAY accept 0-RTT data but
+can still decide to buffer and postpone the processing of the payload
+until the client sends Finished, which can be used as a confirmation
+that the data was not replayed. Using such strategy is beneficial when
+tolerance against replay attacks depend on the payload.
 
 #### Replay Properties {#replay-time}
 
