@@ -1017,6 +1017,9 @@ are many minor differences.
   PSK-based ciphersuites of earlier TLS versions have been replaced by a
   single new PSK exchange.
 
+- Updated references to point to the updated versions of RFCs, as
+  appropriate (e.g., RFC 5280 rather than RFC 3280).
+
 ## Updates Affecting TLS 1.2
 
 This document defines several changes that optionally affect implementations of
