@@ -488,6 +488,14 @@ informative:
        author:
        -
          ins: H. Krawczyk
+  Mac17:
+       title: "Security Review of TLS1.3 0-RTT"
+       date: 2017
+       target: https://github.com/tlswg/tls13-spec/issues/1001
+       author:
+       -
+         ins: C. MacCarthaigh
+
 
 --- abstract
 
@@ -598,6 +606,14 @@ RFC EDITOR PLEASE DELETE THIS SECTION.
 
 (*) indicates changes to the wire protocol which may require implementations
     to update.
+
+draft-21
+
+- Add a per-ticket nonce so that each ticket is associated with a
+  different PSK (*).
+
+- Add discussion of 0-RTT and replay. Recommend that implementations
+  implement some anti-replay mechanism.
 
 draft-20
 
@@ -1371,7 +1387,7 @@ keys derived using the offered PSK.
 Unless the server takes special measures outside those provided by TLS,
 the server has no guarantee that the same
 0-RTT data was not transmitted on multiple 0-RTT connections
-(see {{replay-time}} for more details).
+(see {{anti-replay}} and {{replay-0rtt}} for more details).
 This is especially relevant if the data is authenticated either
 with TLS client authentication or inside the application layer
 protocol. However, 0-RTT data cannot be duplicated within a connection (i.e., the server
@@ -1379,13 +1395,19 @@ will not process the same data twice for the same connection) and
 an attacker will not be able to make 0-RTT data appear to be
 1-RTT data (because it is protected with different keys.)
 
-Protocols MUST NOT use 0-RTT data without a profile that defines its
-use. That profile needs to identify which messages or interactions are
-safe to use with 0-RTT. In addition, to avoid accidental misuse,
-implementations SHOULD NOT enable 0-RTT unless specifically
-requested. Implementations SHOULD provide special functions for 0-RTT data to ensure
-that an application is always aware that it is sending or receiving
-data that might be replayed.
+
+Clients MUST NOT send messages in early data which are not safe to
+have replayed and which they would not be willing to retry across
+multiple 1-RTT connections. Nevertheless, servers have the
+responsibility to protect themselves against attacks employing 0-RTT
+data replication. Additionally, protocols MUST NOT use 0-RTT data
+without a profile that defines its use. That profile needs to identify
+which messages or interactions are safe to use with 0-RTT. In
+addition, to avoid accidental misuse, implementations SHOULD NOT
+enable 0-RTT unless specifically requested. Implementations SHOULD
+provide special functions for 0-RTT data to ensure that an application
+is always aware that it is sending or receiving data that might be
+replayed.
 
 The same warnings apply to any use of the early_exporter_master_secret.
 
@@ -2697,7 +2719,7 @@ For PSKs provisioned via NewSessionTicket, a server MUST validate that
 the ticket age for the selected PSK identity (computed by subtracting
 ticket_age_add from PskIdentity.obfuscated_ticket_age modulo 2^32)
 is within a small tolerance of the
-time since the ticket was issued (see {{replay-time}}).  If it is not,
+time since the ticket was issued (see {{anti-replay}}).  If it is not,
 the server SHOULD proceed with the handshake but reject 0-RTT, and
 SHOULD NOT take any other action that assumes that this ClientHello is
 fresh.
@@ -2938,62 +2960,6 @@ message. In order to avoid deadlocks, when accepting "early_data",
 servers MUST process the client's ClientHello and then immediately
 send the ServerHello, rather than waiting for the client's
 EndOfEarlyData message.
-
-#### Replay Properties {#replay-time}
-
-As noted in {{zero-rtt-data}}, TLS provides a limited mechanism for
-replay protection for data sent by the client in the first flight.
-This mechanism is intended to ensure that attackers cannot replay
-ClientHello messages at a time substantially after the original
-ClientHello was sent.
-
-To properly validate the ticket age, a server needs to store
-the following values, either locally or by encoding them in
-the ticket:
-
-- The time that the server generated the session ticket.
-- The estimated round trip time between the client and server;
-  this can be estimated by measuring the time between sending
-  the Finished message and receiving the first message in the
-  client's second flight, or potentially using information
-  from the operating system.
-- The "ticket_age_add" parameter from the NewSessionTicket message in
-  which the ticket was established.
-
-The server can determine the client's view of the age of the ticket by
-subtracting the ticket's "ticket_age_add value" from the
-"obfuscated_ticket_age" parameter in the client's "pre_shared_key"
-extension. The server can independently determine its view of the
-age of the ticket by subtracting the the time the ticket was issued
-from the current time. If the client and server clocks were running
-at the same rate, the client's view of would be shorter than the
-actual time elapsed on the server by a single round trip time.  This
-difference is comprised of the delay in sending the NewSessionTicket
-message to the client, plus the time taken to send the ClientHello to
-the server.
-
-The mismatch between the client's and server's views of age is thus
-given by:
-
-~~~~
-    mismatch = (client's view + RTT estimate) - (server's view)
-~~~~
-
-There are several potential sources of error that make an exact
-measurement of time difficult. Variations in client and server clock
-rates are likely to be minimal, though potentially with gross time
-corrections.  Network propagation delays are the most likely causes of
-a mismatch in legitimate values for elapsed time.  Both the
-NewSessionTicket and ClientHello messages might be retransmitted and
-therefore delayed, which might be hidden by TCP.  For browser clients
-on the Internet, this implies that an
-allowance on the order of ten seconds to account for errors in clocks and
-variations in measurements is advisable; other deployment scenarios
-may have different needs. Outside the selected range, the
-server SHOULD reject early data and fall back to a full 1-RTT
-handshake. Clock skew distributions are not
-symmetric, so the optimal tradeoff may involve an asymmetric range
-of permissible mismatch values.
 
 ## Server Parameters
 
@@ -3590,6 +3556,160 @@ appropriate application traffic key as described in {{updating-traffic-keys}}.
 In particular, this includes any alerts sent by the
 server in response to client Certificate and CertificateVerify messages.
 
+## 0-RTT and Anti-Replay {#anti-replay}
+
+As noted in {{zero-rtt-data}}, unlike 1-RTT data, TLS does not provide
+inherent replay protections for 0-RTT data. Instead, it provides
+mechanisms which allow a server to implement a number of limited
+server-side anti-replay defenses.
+Servers need not permit 0-RTT at all, but those which do
+SHOULD implement
+either Single-Use Tickets {{single-use-tickets}} or
+Client Hello Recording {{client-hello-recording}}
+as described
+below, and if not, SHOULD implement the stateless mechanism
+described in {{stateless-anti-replay}}.
+See {{replay-0rtt}} for more information on the limitations
+of these mechanisms.
+
+Clients are unable to determine which, if any, of these mechanisms
+servers actually implement and therefore MUST only send early
+data which they are willing to have subject to the attacks
+described in {{replay-0rtt}}.
+
+
+### Single-Use Tickets
+
+The simplest form of anti-replay defense is for the server to only
+allow each session ticket once. In order to implement this, the server
+maintains a database of all outstanding valid tickets; deleting each
+ticket from the database as it is used. If an unknown ticket is
+provided, the server falls back to a full handshake as normal.
+
+If the tickets are not self-contained but rather are database keys,
+and these PSKs are deleted upon use, then connections established
+using one PSK enjoy forward security. This is a security advantage for
+all 0-RTT data and for PSK usage when PSK is used without DH.
+
+Because this mechanism requires sharing the session database between
+server nodes, in environments with multiple distributed servers
+it may be hard to achieve high rates of PSK 0-RTT
+success when compared with self-encrypted tickets which do not
+require consistent server-side storage for PSK-based session
+establishment but do require it for anti-replay if 0-RTT is allowed,
+as described below.
+
+
+### Client Hello Recording
+
+An alternative form of anti-replay is to record a unique value derived
+from the ClientHello (generally either the random value or the PSK
+binder) and reject duplicates. Recording all ClientHellos causes state
+to grow without bound. A server can instead record ClientHellos within
+a given time window and use the "obfuscated_ticket_age" to ensure that
+tickets aren't reused outside that window.
+
+In order to implement this mechanism, a server needs to store the time
+that the server generated the session ticket, offset by an estimate of
+the round trip time between client and server. I.e.,
+
+~~~~
+    adjusted_creation_time = creation time + estimated RTT
+~~~~
+
+This value can be encoded in the ticket, thus avoiding the need to
+keep state for each outstanding ticket. The server can determine the
+client's view of the age of the ticket by subtracting the ticket's
+"ticket_age_add value" from the "obfuscated_ticket_age" parameter in
+the client's "pre_shared_key" extension. The server can determine the
+"expected arrival time" of the ClientHello as:
+
+~~~~
+    expected_arrival_time = adjusted_creation_time + client's ticket age
+~~~~
+
+For a given storage window, the server implements anti-replay as
+follows.
+
+1. Verify the PSK binder.
+
+2. If the expected_arrival_time is outside the window or the ClientHello
+   matches a known ClientHello then accept the PSK but
+   reject 0-RTT.
+
+3. If the ClientHello matches a known ClientHello then
+   either abort the handshake with an "illegal_parameter" alert
+   or accept the PSK but reject 0-RTT.
+
+4. Otherwise, store the ClientHello as long as its
+   expected_arrival_time is inside the the window and
+   accept 0-RTT.
+
+The server MUST derive the storage key only from validated sections
+of the ClientHello. If the ClientHello contains multiple
+PSK identities, then an attacker can create multiple ClientHellos
+with different binders for the less-preferred identity on the
+assumption that the server will not verify it, thus bypassing
+anti-replay defenses. If the validated binder or the ClientHello.random
+are used for this purpose, then this attack is not possible.
+
+Because this mechanism does not require storing all outstanding
+tickets, it may be easier to implement in distributed systems with
+high rates of resumption and 0-RTT, at the cost of potentially
+weaker anti-replay defense because of the difficulty reliably
+storing and retrieving the received ClientHello messages. In addition,
+servers MAY implement a separate cache for each cluster, thus
+limiting replay to once per cluster. Servers MAY also implement
+data stores with false positives, such as Bloom filters, in
+which case they MUST respond to apparent replay by rejecting
+0-RTT but SHOULD NOT abort the handshake.
+
+Note: When implementations are freshly started, they SHOULD
+reject 0-RTT as long as any portion of their storage window overlaps
+the startup time. Otherwise, they run the risk of accepting
+replays which were originally sent during that period.
+
+
+### Stateless Time-Based Anti-Replay {#stateless-anti-replay}
+
+Finally, the server can implement a very rough anti-replay mechanism
+merely by measuring the mismatch between client and server views of
+time. The server can determine its view of the age of the ticket by
+subtracting the the time the ticket was issued from the current
+time. If the client and server clocks were running at the same rate,
+the client's view of would be shorter than the actual time elapsed on
+the server by a single round trip time.  This difference is comprised
+of the delay in sending the NewSessionTicket message to the client,
+plus the time taken to send the ClientHello to the server.
+
+The mismatch between the client's and server's views of age is thus
+given by:
+
+~~~~
+    mismatch = (client's view + RTT estimate) - (server's view)
+~~~~
+
+There are several potential sources of error that make an exact
+measurement of time difficult. Variations in client and server clock
+rates are likely to be minimal, though potentially with gross time
+corrections.  Network propagation delays are the most likely causes of
+a mismatch in legitimate values for elapsed time.  Both the
+NewSessionTicket and ClientHello messages might be retransmitted and
+therefore delayed, which might be hidden by TCP. For browser clients
+on the Internet, this implies that an
+allowance on the order of ten seconds to account for errors in clocks and
+variations in measurements is advisable; other deployment scenarios
+may have different needs. Outside the selected range, the
+server SHOULD reject early data and fall back to a full 1-RTT
+handshake. Clock skew distributions are not
+symmetric, so the optimal tradeoff may involve an asymmetric range
+of permissible mismatch values.
+
+Note that while stateless anti-replay can bound over how long in time
+a packet may be replayed, the total amount of replays tolerated is
+bounded by bandwidth and system capacity. This can be thousands to
+billions of replays in real-world settings.
+
 ## End of Early Data
 
 %%% Updating Keys
@@ -3615,9 +3735,10 @@ appropriate application traffic key.
 
 ### New Session Ticket Message {#NSTMessage}
 
-At any time after the server has received the client Finished message, it MAY send
-a NewSessionTicket message. This message creates a pre-shared key
-(PSK) binding between the ticket value and the resumption master secret.
+At any time after the server has received the client Finished message,
+it MAY send a NewSessionTicket message. This message creates a
+pre-shared key (PSK) binding between the ticket value and a secret
+derived from the resumption master secret.
 
 The client MAY use this PSK for future handshakes by including the
 ticket value in the "pre_shared_key" extension in its ClientHello
@@ -3650,6 +3771,7 @@ handshake, for example.
        struct {
            uint32 ticket_lifetime;
            uint32 ticket_age_add;
+           opaque ticket_nonce<1..255>;
            opaque ticket<1..2^16-1>;
            Extension extensions<0..2^16-2>;
        } NewSessionTicket;
@@ -3671,6 +3793,9 @@ ticket_age_add
   The client-side ticket age is added to this value modulo 2^32 to
   obtain the value that is transmitted by the client. The server MUST
   generate a fresh value for each ticket it sends.
+
+ticket_nonce
+: A unique per-ticket value.
 
 ticket
 : The value of the ticket to be used as the PSK identity.
@@ -3698,6 +3823,16 @@ max_early_data_size
   will be unable to differentiate padding from content, so clients SHOULD NOT
   depend on being able to send large quantities of padding in early data records.
 {:br }
+
+The PSK associated with the ticket is computed as:
+
+~~~~
+    HKDF-Expand-Label(resumption_master_secret,
+                     "resumption", ticket_nonce, Hash.length)
+~~~~
+
+Because the ticket_nonce value is distinct for each NewSessionTicket
+message, a different PSK will be derived for each ticket.
 
 Note that in principle it is possible to continue issuing new tickets
 which indefinitely extend the lifetime of the keying
@@ -4445,8 +4580,8 @@ etc.  The initial secret is simply a string of Hash.length zero bytes.
 Concretely, for the
 present version of TLS 1.3, secrets are added in the following order:
 
-- PSK (a pre-shared key established externally or a resumption_master_secret
-  value from a previous connection)
+- PSK (a pre-shared key established externally or derived from
+  the resumption_master_secret value from a previous connection)
 - (EC)DHE shared secret ({{ecdhe-shared-secret-calculation}})
 
 This produces a full key derivation schedule shown in the diagram below.
@@ -5332,6 +5467,12 @@ secret. The resumption PSK has been designed so that the
 resumption master secret computed by connection N and needed to form
 connection N+1 is separate from the traffic keys used by connection N,
 thus providing forward secrecy between the connections.
+In addition, if multiple tickets are established on the same
+connection, they are associated with different keys, so compromise of
+the PSK associated with one ticket does not lead to the compromise of
+connections established with PSKs associated with other tickets.
+This property is most interesting if tickets are stored in a database
+(and so can be deleted) rather than if they are self-encrypted.
 
 The PSK binder value forms a binding between a PSK
 and the current handshake, as well as between the session where the
@@ -5574,6 +5715,48 @@ TLS, in application protocols and the applications that use
 them. Resistance to side-channel attacks depends on applications and
 application protocols separately ensuring that confidential
 information is not inadvertently leaked.
+
+
+## Replay Attacks on 0-RTT {#replay-0rtt}
+
+Replayable 0-RTT data presents a number of security threats to
+TLS-using applications. Specifically, if applications are not
+engineered to be replay safe (minimally, this means idempotent, but
+in some cases may require even stronger conditions),
+then duplication of actions
+may cause side effects (e.g., purchasing an item or transferring
+money) to be duplicated, thus harming the site or the user.
+In addition, if data can be replayed a large number of times,
+this enables a variety of attacks via side channels such
+as cache timing or measuring the speed of cryptographic
+operations {{Mac17}}.
+
+The limited anti-replay described in {{anti-replay}} are intended to
+prevent large-scale replay but do not provide complete protection
+against replays. Specifically, because they fall back to the 1-RTT
+handshake when the server does not have any information about the
+client, e.g., because it is in a different cluster which does not
+share state or because the ticket has been deleted as described in
+{{single-use-tickets}}. If the application layer protocol retransmits
+data in this setting, then it is possible for an attacker to induce a
+replay attack by sending the ClientHello to both the original cluster
+(which processes the data immediately) and another cluster which will
+fall back to 1-RTT and process the data upon application layer
+replay. The scale of this attack is limited by the client's
+willingness to replay and therefore only allows a limited number of
+replays, which will also use different encryption keys.
+
+If implemented correctly,
+the mechanisms described in {{single-use-tickets}} and
+{{client-hello-recording}}, prevent a
+replayed ClientHello and its associated 0-RTT data from being accepted
+multiple times by any cluster with consistent state.  However, if
+state is not completely consistent, then an attacker might be able to
+have multiple copies of the data be accepted during the replication
+window. The stateless mechanism described in
+{{stateless-anti-replay}} only prevents replay outside the
+time window.
+
 
 
 # Working Group Information
