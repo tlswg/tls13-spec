@@ -1394,13 +1394,19 @@ will not process the same data twice for the same connection) and
 an attacker will not be able to make 0-RTT data appear to be
 1-RTT data (because it is protected with different keys.)
 
-Protocols MUST NOT use 0-RTT data without a profile that defines its
-use. That profile needs to identify which messages or interactions are
-safe to use with 0-RTT. In addition, to avoid accidental misuse,
-implementations SHOULD NOT enable 0-RTT unless specifically
-requested. Implementations SHOULD provide special functions for 0-RTT data to ensure
-that an application is always aware that it is sending or receiving
-data that might be replayed.
+
+Clients MUST NOT send messages in early data which are not safe to
+have replayed and which they would not be willing to retry across
+multiple 1-RTT connections. Nevertheless, servers have the
+responsibility to protect themselves against attacks employing 0-RTT
+data replication. Additionally, protocols MUST NOT use 0-RTT data
+without a profile that defines its use. That profile needs to identify
+which messages or interactions are safe to use with 0-RTT. In
+addition, to avoid accidental misuse, implementations SHOULD NOT
+enable 0-RTT unless specifically requested. Implementations SHOULD
+provide special functions for 0-RTT data to ensure that an application
+is always aware that it is sending or receiving data that might be
+replayed.
 
 The same warnings apply to any use of the early_exporter_master_secret.
 
@@ -3601,20 +3607,23 @@ to grow without bound. A server can instead record ClientHellos within
 a given time window and use the "obfuscated_ticket_age" to ensure that
 tickets aren't reused outside that window.
 
-In order to implement this mechanism, a server needs to store the the
-time that the server generated the session ticket, offset by an
-estimate of the round trip time between client and server;
-this value can be encoded in the ticket, thus avoiding
-the need to keep state for each outstanding ticket.
-
-The server can determine the client's view of the age of the ticket by
-subtracting the ticket's "ticket_age_add value" from the
-"obfuscated_ticket_age" parameter in the client's "pre_shared_key"
-extension. The server can determine the approximate time that the
-client sent the ClientHello as:
+In order to implement this mechanism, a server needs to store the time
+that the server generated the session ticket, offset by an estimate of
+the round trip time between client and server. I.e.,
 
 ~~~~
-    adjusted creation time - client's ticket age
+    adjusted_creation_time = creation time + estimated RTT
+~~~~
+
+This value can be encoded in the ticket, thus avoiding the need to
+keep state for each outstanding ticket. The server can determine the
+client's view of the age of the ticket by subtracting the ticket's
+"ticket_age_add value" from the "obfuscated_ticket_age" parameter in
+the client's "pre_shared_key" extension. The server can determine the
+"expected arrival time" of the ClientHello as:
+
+~~~~
+    expected_arrival_time = adjusted_creation_time + client's ticket age
 ~~~~
 
 For a given storage window, the server implements anti-replay as
@@ -3622,7 +3631,7 @@ follows.
 
 1. Verify the PSK binder.
 
-2. If the sending time is outside the window or the ClientHello
+2. If the expected_arrival_time is outside the window or the ClientHello
    matches a known ClientHello then accept the PSK but
    reject 0-RTT.
 
@@ -3630,7 +3639,8 @@ follows.
    either abort the handshake with an "illegal_parameter" alert
    or accept the PSK but reject 0-RTT.
 
-4. Otherwise, store the ClientHello for the duration of the window and
+4. Otherwise, store the ClientHello as long as its
+   expected_arrival_time is inside the the window and
    accept 0-RTT.
 
 The server MUST derive the storage key only from validated sections
@@ -5738,6 +5748,7 @@ have multiple copies of the data be accepted during the replication
 window. The stateless mechanism described in
 {{stateless-anti-replay}} only prevents replay outside the
 time window.
+
 
 
 # Working Group Information
