@@ -3373,7 +3373,8 @@ use the deprecated SHA-1 hash algorithm only if the "signature_algorithms"
 extension provided by the client permits it.
 If the client cannot construct an acceptable chain using the provided
 certificates and decides to abort the handshake, then it MUST abort the
-handshake with an "unsupported_certificate" alert.
+handshake with an appropriate certificate-related alert (by default,
+"unsupported_certificate"; see {{error-alerts}} for more).
 
 If the server has multiple certificates, it chooses one of them based on the
 above-mentioned criteria (in addition to other criteria, such as transport
