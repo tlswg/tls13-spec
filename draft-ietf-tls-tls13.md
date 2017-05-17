@@ -4537,7 +4537,7 @@ which PSK the server ultimately selects. The client will need to compute
 one for each potential PSK; if no PSK is selected, it will then need to
 compute the early secret corresponding to the zero PSK.
 
-Once all the values which are to be derived from a given secre<t have
+Once all the values which are to be derived from a given secret have
 been computed, that secret SHOULD be erased.
 
 
@@ -5378,8 +5378,7 @@ to define a new exporter that includes the full handshake
 transcript.
 
 For all handshake modes, the Finished MAC (and where present, the
-signature), prevents downgrade attacks
-In addition, the use of
+signature), prevents downgrade attacks. In addition, the use of
 certain bytes in the random nonces as described in {{server-hello}}
 allows the detection of downgrade to previous TLS versions.
 See {{BBFKZG16}} for more detail on TLS 1.3 and downgrade.
@@ -5520,7 +5519,7 @@ repeatedly encrypted by different users under the same key
 (as is commonly the case for HTTP), the nonce is formed by mixing
 the sequence number with a secret per-connection initialization
 vector derived along with the traffic keys.
-See {{BT16}} for analysis of this construction,
+See {{BT16}} for analysis of this construction.
 
 The re-keying technique in TLS 1.3 (see {{updating-traffic-keys}}) follows the
 construction of the serial generator in [REKEY], which shows that re-keying can
