@@ -3184,7 +3184,7 @@ for each scenario:
 | Mode | Handshake Context | Base Key |
 |------|-------------------|----------|
 | Server | ClientHello ... later of EncryptedExtensions/CertificateRequest | server_handshake_traffic_secret |
-| Client | ClientHello ... later of server Finished/EndOfEarlyData | client_handshake_traffic_secret |
+| Client | ClientHello ... EndOfEarlyData | client_handshake_traffic_secret |
 | Post-Handshake | ClientHello ... client Finished + CertificateRequest | client_application_traffic_secret_N |
 
 
