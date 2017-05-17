@@ -2934,10 +2934,12 @@ but in the second flight, ClientHello1 is hashed and then reinjected as a
 
 Clients are permitted to "stream" 0-RTT data until they
 receive the server's Finished, only then sending the EndOfEarlyData
-message. In order to avoid deadlocks, when accepting "early_data",
+message, followed by the rest of the handshake.
+In order to avoid deadlocks, when accepting "early_data",
 servers MUST process the client's ClientHello and then immediately
 send the ServerHello, rather than waiting for the client's
 EndOfEarlyData message.
+
 
 #### Replay Properties {#replay-time}
 
