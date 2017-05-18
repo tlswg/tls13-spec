@@ -5838,6 +5838,10 @@ Archives of the list can be found at:
   Microsoft, Inc. \\
   dansimon@microsoft.com
 
+* Brian Smith \\
+  Independent \\
+  brian@briansmith.org
+
 * Brian Sniffen \\
   Akamai Technologies \\
   ietf@bts.evenmere.org
