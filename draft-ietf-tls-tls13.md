@@ -4190,7 +4190,7 @@ enum) MUST terminate the connection with an "illegal_parameter" alert.
        } AlertDescription;
 
        struct {
-           AlertLevel level;
+           AlertLevel legacy_level;
            AlertDescription description;
        } Alert;
 
