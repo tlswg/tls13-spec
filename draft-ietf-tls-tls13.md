@@ -4812,11 +4812,11 @@ by IANA:
 
 # State Machine
 
-This section provides a summary of the legal state transitions for the
-client and server handshakes.  State names (in all capitals, e.g.,
-START) have no formal meaning but are provided for ease of
-comprehension.  Messages which are sent only sometimes are indicated
-in [].
+This section provides a summary of the legal state transitions for the client
+and server handshakes and handshake-level interactions that occur after the
+initial handshake.  State names (in all capitals, e.g., START) have no formal
+meaning but are provided for ease of comprehension.  Messages which are sent
+only sometimes are indicated in [].
 
 ## Client
 
@@ -4890,6 +4890,28 @@ here         No 0-RTT |                 | 0-RTT
                                | Recv Finished
                                v
                            CONNECTED
+~~~~
+
+## Post-Handshake
+
+~~~~
+                        CONNECTED---------------+
+                         |   ^                  | Send 
+                         |   |                  | CertificateRequest
+          Send KeyUpdate |   |                  V
+                -- or -- |   |              WAIT_CERT
+          Recv KeyUpdate |   |         Recv |       | Recv Certificate
+        [Send KeyUpdate] |   |        empty |       v
+                -- or -- |   |  Certificate |    WAIT_CV
+   Send NewSessionTicket |   |              |       | Recv 
+                -- or -- |   |              |       | CertificateVerify
+   Recv NewSessionTicket |   |              v       V 
+                -- or -- |   |            WAIT_FINISHED
+ Recv CertificateRequest |   |                  | Recv Finished
+        Send Certificate |   |                  |
+[Send CertificateVerify] |   |                  |
+           Send Finished |   |                  |
+                         +-->+<-----------------+
 ~~~~
 
 # Protocol Data Structures and Constant Values
