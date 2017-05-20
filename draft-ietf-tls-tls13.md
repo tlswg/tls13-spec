@@ -4530,6 +4530,13 @@ even with the same secret. In a 0-RTT exchange, Derive-Secret is
 called with four distinct transcripts; in a 1-RTT-only exchange
 with three distinct transcripts.
 
+The complete transcript passed to Derive-Secret is always taken from the
+following sequence of handshake messages, starting at the first ClientHello and
+including only those messages that were sent: ClientHello, HelloRetryRequest,
+ClientHello, ServerHello, EncryptedExtensions, Server CertificateRequest, Server
+Certificate, Server CertificateVerify, Server Finished, EndOfEarlyData, Client
+Certificate, Client CertificateVerify, Client Finished.
+
 If a given secret is not available, then the 0-value consisting of
 a string of Hash.length zero bytes is used.  Note that this does not mean skipping
 rounds, so if PSK is not in use Early Secret will still be
