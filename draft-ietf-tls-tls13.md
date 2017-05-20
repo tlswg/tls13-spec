@@ -4245,10 +4245,9 @@ below. The phrases "terminate the connection with a X alert" and
 MUST send alert X if it sends any alert. All
 alerts defined in this section below, as well as all unknown alerts,
 are universally considered fatal as of TLS 1.3 (see
-{{alert-protocol}}). Implementations (especially servers) SHOULD
-log or otherwise record sending and receiving alerts to assist in debugging.
-
-The following error alerts are defined:
+{{alert-protocol}}).
+The implementation SHOULD provide a way to facilitate logging
+the sending and receiving of alerts.
 
 unexpected_message
 : An inappropriate message (e.g., the wrong handshake message, premature
