@@ -1093,7 +1093,7 @@ Auth | {CertificateVerify*}
               {} Indicates messages protected using keys
                  derived from a [sender]_handshake_traffic_secret.
 
-              [] Indicates messages protected using keys
+              \[] Indicates messages protected using keys
                  derived from [sender]_application_traffic_secret_N
 ~~~
 {: #tls-full title="Message flow for full TLS Handshake"}
@@ -1358,7 +1358,7 @@ as with a 1-RTT handshake with PSK resumption.
                {} Indicates messages protected using keys
                   derived from a [sender]_handshake_traffic_secret.
 
-               [] Indicates messages protected using keys
+               \[] Indicates messages protected using keys
                   derived from [sender]_application_traffic_secret_N
 ~~~
 {: #tls-0-rtt title="Message flow for a zero round trip handshake"}
@@ -2921,17 +2921,17 @@ and HelloRetryRequest are included in the transcript along with the
 new ClientHello.  For instance, if the client sends ClientHello1, its
 binder will be computed over:
 
-       Transcript-Hash(ClientHello1[truncated])
+       Transcript-Hash(ClientHello1\[truncated])
 
 If the server responds with HelloRetryRequest, and the client then sends
 ClientHello2, its binder will be computed over:
 
        Transcript-Hash(ClientHello1,
                        HelloRetryRequest,
-                       ClientHello2[truncated])
+                       ClientHello2\[truncated])
 
 The full ClientHello1 is included in all other handshake hash computations.
-Note that in the first flight, ClientHello1[truncated] is hashed directly,
+Note that in the first flight, ClientHello1\[truncated] is hashed directly,
 but in the second flight, ClientHello1 is hashed and then reinjected as a
 "handshake_hash" message, as described in {{the-transcript-hash}}.
 
@@ -4816,7 +4816,7 @@ This section provides a summary of the legal state transitions for the
 client and server handshakes.  State names (in all capitals, e.g.,
 START) have no formal meaning but are provided for ease of
 comprehension.  Messages which are sent only sometimes are indicated
-in [].
+in \[].
 
 ## Client
 
@@ -5462,7 +5462,7 @@ compute any exporter value, they SHOULD be erased as soon as
 possible. If the total set of exporter labels is known, then
 implementations SHOULD pre-compute the inner Derive-Secret
 stage of the exporter computation for all those labels,
-then erase the [early_]exporter_master_secret, followed by
+then erase the \[early_]exporter_master_secret, followed by
 each inner values as soon as it is known that it will not be
 needed again.
 
