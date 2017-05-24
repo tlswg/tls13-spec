@@ -1093,7 +1093,7 @@ Auth | {CertificateVerify*}
               {} Indicates messages protected using keys
                  derived from a [sender]_handshake_traffic_secret.
 
-              \[] Indicates messages protected using keys
+              [] Indicates messages protected using keys
                  derived from [sender]_application_traffic_secret_N
 ~~~
 {: #tls-full title="Message flow for full TLS Handshake"}
@@ -1358,7 +1358,7 @@ as with a 1-RTT handshake with PSK resumption.
                {} Indicates messages protected using keys
                   derived from a [sender]_handshake_traffic_secret.
 
-               \[] Indicates messages protected using keys
+               [] Indicates messages protected using keys
                   derived from [sender]_application_traffic_secret_N
 ~~~
 {: #tls-0-rtt title="Message flow for a zero round trip handshake"}
@@ -2921,14 +2921,14 @@ and HelloRetryRequest are included in the transcript along with the
 new ClientHello.  For instance, if the client sends ClientHello1, its
 binder will be computed over:
 
-       Transcript-Hash(ClientHello1\[truncated])
+       Transcript-Hash(ClientHello1[truncated])
 
 If the server responds with HelloRetryRequest, and the client then sends
 ClientHello2, its binder will be computed over:
 
        Transcript-Hash(ClientHello1,
                        HelloRetryRequest,
-                       ClientHello2\[truncated])
+                       ClientHello2[truncated])
 
 The full ClientHello1 is included in all other handshake hash computations.
 Note that in the first flight, ClientHello1\[truncated] is hashed directly,
