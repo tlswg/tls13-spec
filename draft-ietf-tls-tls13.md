@@ -2549,9 +2549,10 @@ FFDHE groups.  The key_exchange values for each KeyShareEntry MUST be
 generated independently.  Clients MUST NOT offer multiple
 KeyShareEntry values for the same group.  Clients MUST NOT offer any
 KeyShareEntry values for groups not listed in the client's
-"supported_groups" extension.  Servers MAY check for violations of
-these rules and abort the handshake with an
-"illegal_parameter" alert if one is violated.
+"supported_groups" extension. Clients MUST NOT send the same KeyShareEntry
+in two ClientHello messages, even to different servers.  Servers MAY check for
+violations of these rules and abort the handshake with an "illegal_parameter"
+alert if one is violated.
 
 Upon receipt of this extension in a HelloRetryRequest, the client MUST
 verify that (1) the selected_group field corresponds to a group which was provided
@@ -2571,6 +2572,9 @@ by the client that the server has selected for the negotiated key exchange.
 Servers MUST NOT send a KeyShareEntry for any group not
 indicated in the "supported_groups" extension and
 MUST NOT send a KeyShareEntry when using the "psk_ke" PskKeyExchangeMode.
+Servers MUST NOT send the same KeyShareEntry in two ServerHello messages, even
+to different clients.
+
 If a HelloRetryRequest was received by the client, the client MUST verify that the
 selected NamedGroup in the ServerHello is the same as that in the HelloRetryRequest. If this check
 fails, the client MUST abort the handshake with an "illegal_parameter" alert.
