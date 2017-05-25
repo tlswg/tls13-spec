@@ -3403,7 +3403,7 @@ The following rules apply to certificates sent by the client:
 
 - If the certificate_extensions list in the CertificateRequest message
   was non-empty, the end-entity certificate MUST match the extension OIDs
-  recognized by the client, as described in {{certificate-request}}.
+  recognized by the client, as described in {{oid-filters}}.
 
 Note that, as with the server certificate, there are certificates that use
 algorithm combinations that cannot be currently used with TLS.
