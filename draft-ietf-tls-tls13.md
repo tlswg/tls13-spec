@@ -4011,37 +4011,48 @@ maximum AEAD expansion of 255 octets.
 
 ## Per-Record Nonce {#nonce}
 
-A 64-bit sequence number is maintained separately for reading and writing
-records.  Each sequence number is set to zero at the beginning of a connection
-and whenever the key is changed.
+The length of the per-record nonce (iv_length) is set to max(8 bytes,
+N_MIN) for the AEAD algorithm (see {{RFC5116}} Section 4). An AEAD
+algorithm, where N_MAX is less than 8 bytes, MUST NOT be used with TLS.
 
-The appropriate sequence number is incremented by one after reading or writing each record.
-The first record transmitted under a particular set of traffic keys
-MUST use sequence number 0.
+The TLS session maintains a variable of iv_lenth bytes, called here an iv,
+separately for reading and writing records. One iv is initialized with client_write_iv
+and another -- with server_write_iv, depending on the role. The initializion
+is done once per TLS session.
 
-Because the size of sequence numbers is 64-bit, they should not
-wrap. If a TLS implementation would need to
-wrap a sequence number, it MUST either re-key ({{key-update}}) or
-terminate the connection.
+The per-record nonce for the AEAD construction is managed as follows for each
+of the two ivs:
 
-Each AEAD algorithm will specify a range of possible lengths for the
-per-record nonce, from N_MIN bytes to N_MAX bytes of input ({{RFC5116}}).
-The length of the TLS per-record nonce (iv_length) is set to the larger of
-8 bytes and N_MIN for the AEAD algorithm (see {{RFC5116}} Section 4). An AEAD
-algorithm where N_MAX is less than 8 bytes MUST NOT be used with TLS.
-The per-record nonce for the AEAD construction is formed as follows:
-
-  1. The 64-bit record sequence number is encoded in network byte order
-     and padded to the left with zeros to iv_length.
-
-  2. The padded sequence number is XORed with the static client_write_iv
-     or server_write_iv, depending on the role.
-
-The resulting quantity (of length iv_length) is used as the per-record
+   1. The iv is incremented as described later in this session. 
+   2. The resulting iv (of length iv_length) is used as the per-record
 nonce.
 
-Note: This is a different construction from that in TLS 1.2, which
-specified a partially explicit nonce.
+The following steps are performed per each record.
+
+In mathematical notation, treating iv as an integer < 2^(iv_length*7):
+
+       t0 = iv mod 2^64
+       t1 = t0 + 1 mod 2^64
+       iv = iv - t0 + t1
+
+In C code:
+
+       void inc64_be( uint8_t *p ) {
+          int i;
+          for (i = 7; i >= 0 && !(p[i]++); i--);
+       }
+       ...
+       uint8_t iv[iv_length];   /* session state */
+       ...
+      /* generate the next nonce for each record */
+      inc64_be( iv + iv_length - 8 );  
+
+This is a different construction from that in TLS 1.2, which
+specified a partially explicit nonce. 
+
+The method assumes that the limits on key usage are followed. The increment
+occures before the very first encrypted record, and continues for each
+record.
 
 
 ## Record Padding
