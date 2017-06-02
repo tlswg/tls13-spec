@@ -4027,12 +4027,13 @@ of the two ivs:
    2. The resulting iv (of length iv_length) is used as the per-record
 nonce.
 
-The following steps are performed per each record.
+Once the initial iv is set, the trailing 64 bits of iv are incremented by 1
+as a big-endian integer, per each record.
 
 In mathematical notation, treating iv as an integer < 2^(iv_length*7):
 
        t0 = iv mod 2^64
-       t1 = t0 + 1 mod 2^64
+       t1 = (t0 + 1) mod 2^64
        iv = iv - t0 + t1
 
 In C code:
@@ -4051,7 +4052,7 @@ This is a different construction from that in TLS 1.2, which
 specified a partially explicit nonce. 
 
 The method assumes that the limits on key usage are followed. The increment
-occures before the very first encrypted record, and continues for each
+is performed before the very first encrypted record, and continues for each
 record.
 
 
