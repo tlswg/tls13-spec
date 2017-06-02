@@ -4031,21 +4031,21 @@ The following steps are performed per each record.
 
 In mathematical notation, treating iv as an integer < 2^(iv_length*7):
 
-   t0 = iv mod 2^64
-   t1 = t0 + 1 mod 2^64
-   iv = iv - t0 + t1
+       t0 = iv mod 2^64
+       t1 = t0 + 1 mod 2^64
+       iv = iv - t0 + t1
 
 In C code:
 
-   void inc64_be( uint8_t *p ) {
-       int i;
-       for (i = 7; i >= 0 && !(p[i]++); i--);
-   }
-   ...
-   uint8_t iv[iv_length];   /* session state */
-   ...
-   /* generate the next nonce for each record */
-   inc64_be( iv + iv_length - 8 );  
+       void inc64_be( uint8_t *p ) {
+          int i;
+          for (i = 7; i >= 0 && !(p[i]++); i--);
+       }
+       ...
+       uint8_t iv[iv_length];   /* session state */
+       ...
+      /* generate the next nonce for each record */
+      inc64_be( iv + iv_length - 8 );  
 
 This is a different construction from that in TLS 1.2, which
 specified a partially explicit nonce. 
