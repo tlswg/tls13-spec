@@ -599,6 +599,11 @@ RFC EDITOR PLEASE DELETE THIS SECTION.
 (*) indicates changes to the wire protocol which may require implementations
     to update.
 
+draft-21
+
+- Add a per-ticket nonce so that each ticket is associated with a
+  different PSK (*).
+
 draft-20
 
 - Add "post_handshake_auth" extension to negotiate post-handshake authentication
@@ -3622,9 +3627,10 @@ appropriate application traffic key.
 
 ### New Session Ticket Message {#NSTMessage}
 
-At any time after the server has received the client Finished message, it MAY send
-a NewSessionTicket message. This message creates a pre-shared key
-(PSK) binding between the ticket value and the resumption master secret.
+At any time after the server has received the client Finished message,
+it MAY send a NewSessionTicket message. This message creates a
+pre-shared key (PSK) binding between the ticket value and a secret
+derived from the resumption master secret.
 
 The client MAY use this PSK for future handshakes by including the
 ticket value in the "pre_shared_key" extension in its ClientHello
@@ -3657,6 +3663,7 @@ handshake, for example.
        struct {
            uint32 ticket_lifetime;
            uint32 ticket_age_add;
+           opaque ticket_nonce<1..255>;
            opaque ticket<1..2^16-1>;
            Extension extensions<0..2^16-2>;
        } NewSessionTicket;
@@ -3678,6 +3685,9 @@ ticket_age_add
   The client-side ticket age is added to this value modulo 2^32 to
   obtain the value that is transmitted by the client. The server MUST
   generate a fresh value for each ticket it sends.
+
+ticket_nonce
+: A unique per-ticket value.
 
 ticket
 : The value of the ticket to be used as the PSK identity.
@@ -3705,6 +3715,16 @@ max_early_data_size
   will be unable to differentiate padding from content, so clients SHOULD NOT
   depend on being able to send large quantities of padding in early data records.
 {:br }
+
+The PSK associated with the ticket is computed as:
+
+~~~~
+    HKDF-Expand-Label(resumption_master_secret,
+                     "resumption", ticket_nonce, Hash.length)
+~~~~
+
+Because the ticket_nonce value is distinct for each NewSessionTicket
+message, a different PSK will be derived for each ticket.
 
 Note that in principle it is possible to continue issuing new tickets
 which indefinitely extend the lifetime of the keying
@@ -4452,8 +4472,8 @@ etc.  The initial secret is simply a string of Hash.length zero bytes.
 Concretely, for the
 present version of TLS 1.3, secrets are added in the following order:
 
-- PSK (a pre-shared key established externally or a resumption_master_secret
-  value from a previous connection)
+- PSK (a pre-shared key established externally or derived from
+  the resumption_master_secret value from a previous connection)
 - (EC)DHE shared secret ({{ecdhe-shared-secret-calculation}})
 
 This produces a full key derivation schedule shown in the diagram below.
@@ -5343,6 +5363,12 @@ secret. The resumption PSK has been designed so that the
 resumption master secret computed by connection N and needed to form
 connection N+1 is separate from the traffic keys used by connection N,
 thus providing forward secrecy between the connections.
+In addition, if multiple tickets are established on the same
+connection, they are associated with different keys, so compromise of
+the PSK associated with one ticket does not lead to the compromise of
+connections established with PSKs associated with other tickets.
+This property is most interesting if tickets are stored in a database
+(and so can be deleted) rather than if they are self-encrypted.
 
 The PSK binder value forms a binding between a PSK
 and the current handshake, as well as between the session where the
