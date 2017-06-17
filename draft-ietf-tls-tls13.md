@@ -3209,7 +3209,7 @@ replaced with a special synthetic handshake message of handshake
 type "message_hash" containing Hash(ClientHello1). I.e.,
 
      Transcript-Hash(ClientHello1, HelloRetryRequest, ... MN) =
-         Hash(message_hash ||                 // Handshake Type
+         Hash(message_hash ||        // Handshake type
               00 00 Hash.length ||   // Handshake message length
               Hash(ClientHello1) ||  // Hash of ClientHello1
               HelloRetryRequest ... MN)
