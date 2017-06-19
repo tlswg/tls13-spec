@@ -1323,7 +1323,8 @@ additional information MUST be provisioned to both parties:
 
   * The TLS version number for use with this PSK
   * The cipher suite for use with this PSK
-  * The Application-Layer Protocol Negotiation (ALPN) protocol, if any is to be used
+  * The Application-Layer Protocol Negotiation (ALPN) protocol {{!RFC7301}}, if
+    any is to be used
   * The Server Name Indication (SNI), if any is to be used
 
 As shown in {{tls-0-rtt}}, the 0-RTT data is just added to the 1-RTT
