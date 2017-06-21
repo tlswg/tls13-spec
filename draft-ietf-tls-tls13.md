@@ -3363,7 +3363,7 @@ The following rules apply to the certificates sent by the server:
   digitalSignature bit MUST be set if the Key Usage extension is present) with
   a signature scheme indicated in the client's "signature_algorithms" extension.
 
-- The "server_name" and "trusted_ca_keys" extensions {{RFC6066}} are used to
+- The "server_name" and "certificate_authorities" extensions {{RFC6066}} are used to
   guide certificate selection. As servers MAY require the presence of the "server_name"
   extension, clients SHOULD send this extension, when applicable.
 
