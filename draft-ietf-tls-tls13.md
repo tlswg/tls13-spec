@@ -4753,7 +4753,7 @@ storing and retrieving the received ClientHello messages.
 In many such systems, it is impractical to have globally
 consistent storage of all the received ClientHellos.
 In this case, the best anti-replay protection is provided by
-having single storage zone be
+having a single storage zone be
 authoritative for a given ticket and refusing 0-RTT for that
 ticket in any other zone. This approach prevents simple
 replay by the attacker because only one zone will accept
@@ -5835,7 +5835,7 @@ data if it is rejected by the server unless instructed by the
 application. Server-side applications may wish to implement special
 processing for 0-RTT data for some kinds of application traffic (e.g.,
 abort the connection, request that data be resent at the application
-layer, or delay processing until the handshake completes) In order to
+layer, or delay processing until the handshake completes). In order to
 allow applications to implement this kind of processing, TLS
 implementations MUST provide a way for the application to determine if
 the handshake has completed.
