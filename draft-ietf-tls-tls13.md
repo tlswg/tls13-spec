@@ -4675,7 +4675,7 @@ sections.
 
 The second class of attack cannot be prevented at the TLS layer and
 MUST be dealt with by any application. Note that any application whose
-clients implement any kind of retry behavior already needed to
+clients implement any kind of retry behavior already needs to
 implement some sort of anti-replay defense.
 
 In normal operation, clients will not know which, if any, of these
@@ -4687,15 +4687,15 @@ described in {{replay-0rtt}}.
 ## Single-Use Tickets
 
 The simplest form of anti-replay defense is for the server to only
-allow each session ticket to be used once. In order to implement this, the server
-maintains a database of all outstanding valid tickets; deleting each
+allow each session ticket to be used once. For instance, the server
+can maintain a database of all outstanding valid tickets; deleting each
 ticket from the database as it is used. If an unknown ticket is
-provided, the server falls back to a full handshake.
+provided, the server would then fall back to a full handshake.
 
 If the tickets are not self-contained but rather are database keys,
 and the corresponding PSKs are deleted upon use, then connections established
 using one PSK enjoy forward security. This improves security for
-all 0-RTT data and PSK usage when PSK is used without DH.
+all 0-RTT data and PSK usage when PSK is used without (EC)DHE.
 
 Because this mechanism requires sharing the session database between
 server nodes in environments with multiple distributed servers,
@@ -4719,7 +4719,7 @@ tickets aren't reused outside that window.
 In order to implement this, when a ClientHello is received, the server
 first verifies the PSK binder as described
 {{pre-shared-key-extension}}. It then computes the
-expected_arrival_time as described in the next section and and rejects
+expected_arrival_time as described in the next section and rejects
 0-RTT if it is outside the recording window, falling back to the
 1-RTT handshake.
 
@@ -4727,8 +4727,8 @@ If the expected arrival time is in the window, then the server
 checks to see if it has recorded a matching ClientHello. It
 either aborts the handshake with an "illegal_parameter" alert
 or accepts the PSK but reject 0-RTT. If no matching ClientHello
-is found, then it stores the ClientHello as long as the
-expected_arrival_time is inside the window and accepts 0-RTT.
+is found, then it accepts 0-RTT and then stores the ClientHello for
+as long as the expected_arrival_time is inside the window.
 Servers MAY also implement data stores with false positives, such as
 Bloom filters, in which case they MUST respond to apparent replay by
 rejecting 0-RTT but MUST NOT abort the handshake.
@@ -4737,11 +4737,13 @@ The server MUST derive the storage key only from validated sections
 of the ClientHello. If the ClientHello contains multiple
 PSK identities, then an attacker can create multiple ClientHellos
 with different binder values for the less-preferred identity on the
-assumption that the server will not verify it. I.e., if the
+assumption that the server will not verify it, as recommended
+by {{pre-shared-key-extension}}.
+I.e., if the
 client sends PSKs A and B but the server prefers A, then the
 attacker can change the binder for B without affecting the binder
 for A. If the validated binder or the ClientHello.random
-are used for this purpose, then this attack is not possible.
+are used as the storage key, then this attack is not possible.
 
 Because this mechanism does not require storing all outstanding
 tickets, it may be easier to implement in distributed systems with
@@ -4750,8 +4752,9 @@ weaker anti-replay defense because of the difficulty of reliably
 storing and retrieving the received ClientHello messages.
 In many such systems, it is impractical to have globally
 consistent storage of all the received ClientHellos.
-In this case, the stronger design is to have a single storage zone be
-authoritative for a given ticket and refuse 0-RTT for that
+In this case, the best anti-replay protection is provided by
+having single storage zone be
+authoritative for a given ticket and refusing 0-RTT for that
 ticket in any other zone. This approach prevents simple
 replay by the attacker because only one zone will accept
 0-RTT data. A weaker design is to implement separate storage for
@@ -4772,11 +4775,11 @@ the second form of attack described above.
 
 
 
-## Relevance Checks
+## Freshness Checks
 
 Because the ClientHello indicates the time at which the client sent
 it, it is possible to efficiently determine whether a ClientHello was
-likely sent reasonably recently and only accept 0-RTT for such
+likely sent reasonably recently and only accept 0-RTT for such a
 ClientHello, otherwise falling back to a 1-RTT handshake.
 This is necessary for the ClientHello storage mechanism
 described in {{client-hello-recording}} because otherwise the server
@@ -4823,7 +4826,7 @@ may have different needs. Clock skew distributions are not
 symmetric, so the optimal tradeoff may involve an asymmetric range
 of permissible mismatch values.
 
-Note that relevance checking alone is not sufficient to prevent replays
+Note that freshness checking alone is not sufficient to prevent replays
 because it does not detect them during the error window, which,
 depending on bandwidth and system capacity could include
 billions of replays in real-world settings.
@@ -5762,24 +5765,33 @@ information is not inadvertently leaked.
 ## Replay Attacks on 0-RTT {#replay-0rtt}
 
 Replayable 0-RTT data presents a number of security threats to
-TLS-using applications. Specifically, if applications are not
-engineered to be replay safe (minimally, this means idempotent, but in
-some cases may there might be even stronger conditions), then duplication of
-actions will cause side effects (e.g., purchasing an item or
-transferring money) to be duplicated, thus harming the site or the
-user.  Attackers can also store and replay 0-RTT messages in order to
-re-order them with respect to other messages, which may harm
-unsuspecting applications.
+TLS-using applications, unless those applications are specifically
+engineered to be safe under replay
+(minimally, this means idempotent, but in many cases may
+also require other stronger conditions, such as constant-time
+response). Potential attacks include:
+
+- Duplication of actions which cause side effects (e.g., purchasing an
+item or transferring money) to be duplicated, thus harming the site or
+the user.
+
+- Attackers can store and replay 0-RTT messages in order to
+re-order them with respect to other messages (e.g., moving
+a delete to after a create).
+
+- Exploiting cache timing behavior to discover the content of 0-RTT
+messages by replaying a 0-RTT message to a different cache node
+and then using a separate connection to measure request latency,
+to see if the two requests address the same resource.
 
 If data can be replayed a large number of times, additional attacks
-become possible. Specifically, attackers can use multiple replays to
-exploit information leakage via side channels such as timing network
-caches or measuring the speed of cryptographic operations. In addition, they may
+become possible, such as making repeated measurements of the
+the speed of cryptographic operations. In addition, they may
 be able to overload rate-limiting systems. For further description of
 these attacks, see {{Mac17}}.
 
 Ultimately, servers have the responsibility to protect themselves
-against attacks employing 0-RTT data replication. The mechanism
+against attacks employing 0-RTT data replication. The mechanisms
 described in {{anti-replay}} are intended to
 prevent replay at the TLS layer do not provide complete protection
 against receiving multiple copies of client data.
@@ -5788,8 +5800,8 @@ handshake when the server does not have any information about the
 client, e.g., because it is in a different cluster which does not
 share state or because the ticket has been deleted as described in
 {{single-use-tickets}}. If the application layer protocol retransmits
-data in this setting, then it is possible for an attacker to induce a
-replay attack by sending the ClientHello to both the original cluster
+data in this setting, then it is possible for an attacker to induce
+message duplicatio nby sending the ClientHello to both the original cluster
 (which processes the data immediately) and another cluster which will
 fall back to 1-RTT and process the data upon application layer
 replay. The scale of this attack is limited by the client's
@@ -5806,7 +5818,7 @@ ClientHello and its associated 0-RTT data will only be accepted once.
 However, if state is not completely consistent,
 then an attacker might be able to have multiple copies of the data be
 accepted during the replication window.
-Because they do not know the exact details of server behavior, clients
+Because clients do not know the exact details of server behavior, they
 MUST NOT send messages in early data which are not safe to have
 replayed and which they would not be willing to retry across multiple
 1-RTT connections.
@@ -5817,12 +5829,15 @@ interactions are safe to use with 0-RTT and how to handle the
 situation when the server rejects 0-RTT and falls back to 1-RTT.
 
 In addition, to avoid accidental misuse, TLS implementations MUST NOT
-enable 0-RTT (either sending or receiving) unless specifically
-requested by the application and SHOULD NOT automatically resend 0-RTT
+enable 0-RTT (either sending or accepting) unless specifically
+requested by the application and MUST NOT automatically resend 0-RTT
 data if it is rejected by the server unless instructed by the
-application.  In order to allow applications to implement special
-processing for 0-RTT data, when accepting 0-RTT as a server, a TLS
-implementation MUST provide a way for the application to determine if
+application. Server-side applications may wish to implement special
+processing for 0-RTT data for some kinds of application traffic (e.g.,
+abort the connection, request that data be resent at the application
+layer, or delay processing until the handshake completes) In order to
+allow applications to implement this kind of processing, TLS
+implementations MUST provide a way for the application to determine if
 the handshake has completed.
 
 # Working Group Information
