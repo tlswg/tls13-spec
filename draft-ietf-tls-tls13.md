@@ -5840,6 +5840,21 @@ allow applications to implement this kind of processing, TLS
 implementations MUST provide a way for the application to determine if
 the handshake has completed.
 
+### Replay and Exporters
+
+Replays of the ClientHello produce the same early exporter, thus
+requiring additional care by applications which use these exporters.
+In particular, if these exporters are used as an authentication
+channel binding (e.g., by signing the output of the exporter)
+an attacker who compromises the PSK can transplant authenticators
+between connections without compromising the authentication key.
+
+In addition, the early exporter SHOULD NOT be used to generate
+server-to-client encryption keys because that would entail
+the reuse of those keys. This parallels the use of the early
+application traffic keys only in the client-to-server direction.
+
+
 # Working Group Information
 
 The discussion list for the IETF TLS working group is located at the e-mail
