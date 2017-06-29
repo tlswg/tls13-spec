@@ -5801,7 +5801,7 @@ client, e.g., because it is in a different cluster which does not
 share state or because the ticket has been deleted as described in
 {{single-use-tickets}}. If the application layer protocol retransmits
 data in this setting, then it is possible for an attacker to induce
-message duplicatio nby sending the ClientHello to both the original cluster
+message duplication by sending the ClientHello to both the original cluster
 (which processes the data immediately) and another cluster which will
 fall back to 1-RTT and process the data upon application layer
 replay. The scale of this attack is limited by the client's
