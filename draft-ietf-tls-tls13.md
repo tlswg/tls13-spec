@@ -4995,22 +4995,24 @@ by IANA:
 This section provides a summary of the legal state transitions for the
 client and server handshakes.  State names (in all capitals, e.g.,
 START) have no formal meaning but are provided for ease of
-comprehension.  Messages which are sent only sometimes are indicated
-in \[].
-
+comprehension.  Actions which are taken only in certain circumstances are
+indicated in []. The notation "K_{send,recv} = foo" means "set the send/recv
+key to the given key".
 
 ## Client
 
 ~~~~
                            START <----+
             Send ClientHello |        | Recv HelloRetryRequest
+       [K_send = early data] |        |
          /                   v        |
-        |                  WAIT_SH ---+
-    Can |                    | Recv ServerHello
-   send |                    V
-  early |                 WAIT_EE
-   data |                    | Recv EncryptedExtensions
-        |           +--------+--------+
+        |                 WAIT_SH ----+
+        |                    | Recv ServerHello
+        |                    | K_send = K_recv = handshake
+    Can |                    V
+   send |                 WAIT_EE
+  early |                    | Recv EncryptedExtensions
+   data |           +--------+--------+
         |     Using |                 | Using certificate
         |       PSK |                 v
         |           |            WAIT_CERT_CR
@@ -5023,14 +5025,13 @@ in \[].
         |           |                 | Recv CertificateVerify
         |           +> WAIT_FINISHED <+
         |                  | Recv Finished
-        \                  |
+         \                 | K_recv = application
                            | [Send EndOfEarlyData]
                            | [Send Certificate [+ CertificateVerify]]
-                           | Send Finished
- Can send                  v
- app data -->          CONNECTED
- after
- here
+ Can send                  | Send Finished
+ app data   -->            | K_send = application
+ after here                v
+                       CONNECTED
 ~~~~
 
 
@@ -5045,17 +5046,20 @@ in \[].
                                v
                             NEGOTIATED
                                | Send ServerHello
+                               | K_send = handshake
                                | Send EncryptedExtensions
                                | [Send CertificateRequest]
 Can send                       | [Send Certificate + CertificateVerify]
 app data -->                   | Send Finished
-after                 +--------+--------+
-here         No 0-RTT |                 | 0-RTT
-                      |                 v
-                      |             WAIT_EOED <---+
+after                          | K_send = application
+here                  +--------+--------+
+             No 0-RTT |                 | 0-RTT
+   K_recv = handshake |                 | K_recv = early_data
+[Skip decrypt errors] |             WAIT_EOED <---+
                       |            Recv |   |     | Recv
-                      |  EndOfEarlyData |   |     | early data
-                      |                 |   +-----+
+                      |  EndOfEarlyData |   |     | Early data
+                      |        K_recv = |   +-----+
+                      |       handshake |
                       +> WAIT_FLIGHT2 <-+
                                |
                       +--------+--------+
@@ -5070,7 +5074,7 @@ here         No 0-RTT |                 | 0-RTT
                       |             v       | CertificateVerify
                       +-> WAIT_FINISHED <---+
                                | Recv Finished
-                               v
+                               v K_recv = application
                            CONNECTED
 ~~~~
 
