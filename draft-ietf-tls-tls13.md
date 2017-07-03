@@ -614,8 +614,8 @@ draft-21
 - Add a per-ticket nonce so that each ticket is associated with a
   different PSK (*).
 
-- Clarify that clients should change to sending with handshake keys
-  immediately upon reading ServerHello. Arguably a wire format change. (*).
+- Clarify that clients should send alerts with the handshake key
+  if possible.
 
 - Update state machine to show rekeying events
 
