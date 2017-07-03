@@ -4722,8 +4722,6 @@ Requirements for the format of exporter labels are defined in section 4
 of {{RFC5705}}.
 
 
-<<<<<<< HEAD
-=======
 # 0-RTT and Anti-Replay {#anti-replay}
 
 As noted in {{zero-rtt-data}} and {{replay-0rtt}}, TLS does not provide inherent replay
@@ -4913,7 +4911,6 @@ because it does not detect them during the error window, which,
 depending on bandwidth and system capacity could include
 billions of replays in real-world settings.
 
->>>>>>> Add extensive discussion of 0-RTT anti-replay as suggested by
 #  Compliance Requirements
 
 ##  Mandatory-to-Implement Cipher Suites
@@ -5210,19 +5207,6 @@ The TLS protocol cannot prevent many common security mistakes. This section
 provides several recommendations to assist implementors.
 {{?I-D.ietf-tls-tls13-vectors}} provides test vectors for TLS 1.3 handshakes.
 
-<<<<<<< HEAD
-
-## API considerations for 0-RTT
-
-0-RTT data has very different security properties from data
-transmitted after a completed handshake: it can be
-replayed. Implementations SHOULD provide different functions for
-reading and writing 0-RTT data and data transmitted after the
-handshake, and SHOULD NOT automatically resend 0-RTT data if it is
-rejected by the server.
-
-=======
->>>>>>> Add extensive discussion of 0-RTT anti-replay as suggested by
 ## Random Number Generation and Seeding
 
 TLS requires a cryptographically secure pseudorandom number generator (CSPRNG).
