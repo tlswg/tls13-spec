@@ -3018,69 +3018,8 @@ servers MUST process the client's ClientHello and then immediately
 send the ServerHello, rather than waiting for the client's
 EndOfEarlyData message.
 
-
-<<<<<<< HEAD
-#### Replay Properties {#replay-time}
-
-As noted in {{zero-rtt-data}}, TLS provides a limited mechanism for
-replay protection for data sent by the client in the first flight.
-This mechanism is intended to ensure that attackers cannot replay
-ClientHello messages at a time substantially after the original
-ClientHello was sent.
-
-To properly validate the ticket age, a server needs to store
-the following values, either locally or by encoding them in
-the ticket:
-
-- The time that the server generated the session ticket.
-- The estimated round trip time between the client and server;
-  this can be estimated by measuring the time between sending
-  the Finished message and receiving the first message in the
-  client's second flight, or potentially using information
-  from the operating system.
-- The "ticket_age_add" parameter from the NewSessionTicket message in
-  which the ticket was established.
-
-The server can determine the client's view of the age of the ticket by
-subtracting the ticket's "ticket_age_add value" from the
-"obfuscated_ticket_age" parameter in the client's "pre_shared_key"
-extension. The server can independently determine its view of the
-age of the ticket by subtracting the the time the ticket was issued
-from the current time. If the client and server clocks were running
-at the same rate, the client's view of would be shorter than the
-actual time elapsed on the server by a single round trip time.  This
-difference is comprised of the delay in sending the NewSessionTicket
-message to the client, plus the time taken to send the ClientHello to
-the server.
-
-The mismatch between the client's and server's views of age is thus
-given by:
-
-~~~~
-    mismatch = (client's view + RTT estimate) - (server's view)
-~~~~
-
-There are several potential sources of error that make an exact
-measurement of time difficult. Variations in client and server clock
-rates are likely to be minimal, though potentially with gross time
-corrections.  Network propagation delays are the most likely causes of
-a mismatch in legitimate values for elapsed time.  Both the
-NewSessionTicket and ClientHello messages might be retransmitted and
-therefore delayed, which might be hidden by TCP.  For browser clients
-on the Internet, this implies that an
-allowance on the order of ten seconds to account for errors in clocks and
-variations in measurements is advisable; other deployment scenarios
-may have different needs. Outside the selected range, the
-server SHOULD reject early data and fall back to a full 1-RTT
-handshake. Clock skew distributions are not
-symmetric, so the optimal tradeoff may involve an asymmetric range
-of permissible mismatch values.
-
-
 ## Server Parameters
 
-=======
->>>>>>> Add extensive discussion of 0-RTT anti-replay as suggested by
 The next two messages from the server, EncryptedExtensions and
 CertificateRequest, contain information from the server
 that determines the rest of the handshake. These messages
