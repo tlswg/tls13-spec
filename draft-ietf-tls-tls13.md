@@ -3519,7 +3519,7 @@ receiving the peer's Finished:
 1. Clients ending 0-RTT data as described in {{early-data-indication}}.
 2. Servers MAY send data after sending their first flight, but
    because the handshake is not yet complete, they have no assurance
-   of either the peer's identity or of it's liveness (i.e.,
+   of either the peer's identity or of its liveness (i.e.,
    the ClientHello might have been replayed).
 
 The key used to compute the finished message is computed from the
