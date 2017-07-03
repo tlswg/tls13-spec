@@ -614,6 +614,11 @@ draft-21
 - Add a per-ticket nonce so that each ticket is associated with a
   different PSK (*).
 
+- Clarify that clients should change to sending with handshake keys
+  immediately upon reading ServerHello. Arguably a wire format change. (*).
+
+- Update state machine to show rekeying events
+
 - Add discussion of 0-RTT and replay. Recommend that implementations
   implement some anti-replay mechanism.
 
@@ -3514,7 +3519,7 @@ receiving the peer's Finished:
 1. Clients ending 0-RTT data as described in {{early-data-indication}}.
 2. Servers MAY send data after sending their first flight, but
    because the handshake is not yet complete, they have no assurance
-   of either the peer's identity or of it's liveness (i.e.,
+   of either the peer's identity or of its liveness (i.e.,
    the ClientHello might have been replayed).
 
 The key used to compute the finished message is computed from the
@@ -4995,22 +5000,24 @@ by IANA:
 This section provides a summary of the legal state transitions for the
 client and server handshakes.  State names (in all capitals, e.g.,
 START) have no formal meaning but are provided for ease of
-comprehension.  Messages which are sent only sometimes are indicated
-in \[].
-
+comprehension.  Actions which are taken only in certain circumstances are
+indicated in []. The notation "K_{send,recv} = foo" means "set the send/recv
+key to the given key".
 
 ## Client
 
 ~~~~
                            START <----+
             Send ClientHello |        | Recv HelloRetryRequest
-         /                   v        |
-        |                  WAIT_SH ---+
-    Can |                    | Recv ServerHello
-   send |                    V
-  early |                 WAIT_EE
-   data |                    | Recv EncryptedExtensions
-        |           +--------+--------+
+       [K_send = early data] |        |
+                             v        |
+        /                 WAIT_SH ----+
+        |                    | Recv ServerHello
+        |                    | K_recv = handshake
+    Can |                    V
+   send |                 WAIT_EE
+  early |                    | Recv EncryptedExtensions
+   data |           +--------+--------+
         |     Using |                 | Using certificate
         |       PSK |                 v
         |           |            WAIT_CERT_CR
@@ -5023,15 +5030,19 @@ in \[].
         |           |                 | Recv CertificateVerify
         |           +> WAIT_FINISHED <+
         |                  | Recv Finished
-        \                  |
-                           | [Send EndOfEarlyData]
+        \                  | [Send EndOfEarlyData]
+                           | K_send = handshake
                            | [Send Certificate [+ CertificateVerify]]
-                           | Send Finished
- Can send                  v
- app data -->          CONNECTED
- after
- here
+ Can send                  | Send Finished
+ app data   -->            | K_send = K_recv = application
+ after here                v
+                       CONNECTED
 ~~~~
+
+Note that with the transitions as shown above, clients may send alerts
+that derive from post-ServerHello messages in the clear or with the
+early data keys. If clients need to send such alerts, they SHOULD
+first rekey to the handshake keys if possible.
 
 
 ## Server
@@ -5045,17 +5056,21 @@ in \[].
                                v
                             NEGOTIATED
                                | Send ServerHello
+                               | K_send = handshake
                                | Send EncryptedExtensions
                                | [Send CertificateRequest]
 Can send                       | [Send Certificate + CertificateVerify]
-app data -->                   | Send Finished
-after                 +--------+--------+
-here         No 0-RTT |                 | 0-RTT
-                      |                 v
-                      |             WAIT_EOED <---+
+app data                       | Send Finished
+after   -->                    | K_send = application
+here                  +--------+--------+
+             No 0-RTT |                 | 0-RTT
+   K_recv = handshake |                 | K_recv = early_data
+[Skip decrypt errors] |             WAIT_EOED <---+
                       |            Recv |   |     | Recv
-                      |  EndOfEarlyData |   |     | early data
-                      |                 |   +-----+
+                      |  EndOfEarlyData |   |     | Early data
+                      |        K_recv = |   +-----+
+                      |       handshake |
+                      |                 |
                       +> WAIT_FLIGHT2 <-+
                                |
                       +--------+--------+
@@ -5070,6 +5085,7 @@ here         No 0-RTT |                 | 0-RTT
                       |             v       | CertificateVerify
                       +-> WAIT_FINISHED <---+
                                | Recv Finished
+                               | K_recv = application
                                v
                            CONNECTED
 ~~~~
