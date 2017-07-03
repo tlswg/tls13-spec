@@ -4804,8 +4804,8 @@ expected_arrival_time as described in the next section and rejects
 1-RTT handshake.
 
 If the expected arrival time is in the window, then the server
-checks to see if it has recorded a matching ClientHello. It
-either aborts the handshake with an "illegal_parameter" alert
+checks to see if it has recorded a matching ClientHello. If one
+is found, it either aborts the handshake with an "illegal_parameter" alert
 or accepts the PSK but reject 0-RTT. If no matching ClientHello
 is found, then it accepts 0-RTT and then stores the ClientHello for
 as long as the expected_arrival_time is inside the window.
@@ -4822,7 +4822,10 @@ by {{pre-shared-key-extension}}.
 I.e., if the
 client sends PSKs A and B but the server prefers A, then the
 attacker can change the binder for B without affecting the binder
-for A. If the validated binder or the ClientHello.random
+for A. This will cause the ClientHello to be accepted, and may
+casue side effects such as replay cache pollution, although any
+0-RTT data will not be decryptable because it will use different
+keys. If the validated binder or the ClientHello.random
 are used as the storage key, then this attack is not possible.
 
 Because this mechanism does not require storing all outstanding
