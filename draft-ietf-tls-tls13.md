@@ -5010,10 +5010,10 @@ key to the given key".
                            START <----+
             Send ClientHello |        | Recv HelloRetryRequest
        [K_send = early data] |        |
-         /                   v        |
-        |                 WAIT_SH ----+
+                             v        |
+        /                 WAIT_SH ----+
         |                    | Recv ServerHello
-        |                    | K_send = K_recv = handshake
+        |                    | K_recv = handshake
     Can |                    V
    send |                 WAIT_EE
   early |                    | Recv EncryptedExtensions
@@ -5030,14 +5030,19 @@ key to the given key".
         |           |                 | Recv CertificateVerify
         |           +> WAIT_FINISHED <+
         |                  | Recv Finished
-         \                 | K_recv = application
-                           | [Send EndOfEarlyData]
+        \                  | [Send EndOfEarlyData]
+                           | K_send = handshake
                            | [Send Certificate [+ CertificateVerify]]
  Can send                  | Send Finished
- app data   -->            | K_send = application
+ app data   -->            | K_send = K_recv = application
  after here                v
                        CONNECTED
 ~~~~
+
+Note that with the transitions as shown above, clients may send alerts
+that derive from post-ServerHello messages in the clear or with the
+early data keys. If clients need to send such alerts, they SHOULD
+first rekey to the handshake keys if possible.
 
 
 ## Server
@@ -5055,8 +5060,8 @@ key to the given key".
                                | Send EncryptedExtensions
                                | [Send CertificateRequest]
 Can send                       | [Send Certificate + CertificateVerify]
-app data -->                   | Send Finished
-after                          | K_send = application
+app data                       | Send Finished
+after   -->                    | K_send = application
 here                  +--------+--------+
              No 0-RTT |                 | 0-RTT
    K_recv = handshake |                 | K_recv = early_data
@@ -5065,6 +5070,7 @@ here                  +--------+--------+
                       |  EndOfEarlyData |   |     | Early data
                       |        K_recv = |   +-----+
                       |       handshake |
+                      |                 |
                       +> WAIT_FLIGHT2 <-+
                                |
                       +--------+--------+
