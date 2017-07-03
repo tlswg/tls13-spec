@@ -508,8 +508,6 @@ tampering, and message forgery.
 
 #  Introduction
 
-DISCLAIMER: This is a WIP draft of TLS 1.3 and has not yet seen significant security analysis.
-
 RFC EDITOR: PLEASE REMOVE THE FOLLOWING PARAGRAPH
 The source for this draft is maintained in GitHub. Suggested changes
 should be submitted as pull requests at
