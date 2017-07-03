@@ -5085,7 +5085,8 @@ here                  +--------+--------+
                       |             v       | CertificateVerify
                       +-> WAIT_FINISHED <---+
                                | Recv Finished
-                               v K_recv = application
+                               | K_recv = application
+                               v
                            CONNECTED
 ~~~~
 
