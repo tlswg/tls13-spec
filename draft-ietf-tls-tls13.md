@@ -2444,7 +2444,7 @@ filters
 : A list of certificate extension OIDs {{RFC5280}} with their allowed values and
   represented in DER-encoded {{X690}} format. Some certificate extension OIDs
   allow multiple values (e.g., Extended Key Usage).  If the server has included
-  a non-empty certificate_extensions list, the client certificate included in
+  a non-empty filters list, the client certificate included in
   the response MUST contain all of the specified extension OIDs that the client
   recognizes. For each extension OID recognized by the client, all of the
   specified values MUST be present in the client certificate (but the
@@ -3423,8 +3423,8 @@ The following rules apply to certificates sent by the client:
   relaxes the constraints on certificate-signing algorithms found in
   prior versions of TLS.
 
-- If the certificate_extensions list in the CertificateRequest message
-  was non-empty, the end-entity certificate MUST match the extension OIDs
+- If the CertificateRequest message contained a non-empty "oid_filters"
+  extension, the end-entity certificate MUST match the extension OIDs
   recognized by the client, as described in {{oid-filters}}.
 
 Note that, as with the server certificate, there are certificates that use
