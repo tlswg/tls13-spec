@@ -1707,10 +1707,6 @@ following four sets of options in its ClientHello:
   extension which indicates the key exchange modes that may be used
   with PSKs.
 
-If the server selects an (EC)DHE group and the client did not offer a
-compatible "key_share" extension in the initial ClientHello, the server MUST
-respond with a HelloRetryRequest ({{hello-retry-request}}) message.
-
 If the server does not select a PSK, then the first three of these
 options are entirely orthogonal: the server independently selects a
 cipher suite, an (EC)DHE group and key share for key establishment,
@@ -1895,9 +1891,9 @@ is in use, the client may transmit early application data
 
 ### Server Hello {#server-hello}
 
-The server will send this message to proceed with the handshake
-in response to a ClientHello message if it is able to negotiate
-an acceptable set of handshake parameters based on the ClientHello.
+The server will send this message in response to a ClientHello message
+to proceed with the handshake if it is able to negotiate an acceptable
+set of handshake parameters based on the ClientHello.
 
 Structure of this message:
 
@@ -1976,9 +1972,11 @@ It does not provide downgrade protection when static RSA is used.
 Note: This is a change from {{RFC5246}}, so in practice many TLS 1.2 clients
 and servers will not behave as specified above.
 
-A legacy TLS client expecting to use renegotiation for TLS 1.2 or prior
-after a previous handshake which receives a TLS 1.3 ServerHello during renegotiation
+A legacy TLS client performing renegotiation with TLS 1.2 or prior
+and which receives a TLS 1.3 ServerHello during renegotiation
 MUST abort the handshake with a "protocol_version" alert.
+Note that renegotiation is not possible when TLS 1.3 has been
+negotiated.
 
 RFC EDITOR: PLEASE REMOVE THE FOLLOWING PARAGRAPH
 Implementations of draft versions (see {{draft-version-indicator}}) of this
@@ -4642,7 +4640,7 @@ application data keys or upon a key update).
 For finite field groups, a conventional Diffie-Hellman computation is performed.
 The negotiated key (Z) is converted to a byte string by encoding in big-endian and
 padded with zeros up to the size of the prime. This byte string is used as the
-shared secret and in the key schedule as specified above.
+shared secret in the key schedule as specified above.
 
 Note that this construction differs from previous versions of TLS which remove
 leading zeros.
@@ -5654,7 +5652,7 @@ designed to make it easier to write side-channel resistant code:
   attacks against the cryptographic primitives that require multiple
   trials.
 
-Information leakage through side channels can occur at layers, above
+Information leakage through side channels can occur at layers above
 TLS, in application protocols and the applications that use
 them. Resistance to side-channel attacks depends on applications and
 application protocols separately ensuring that confidential
