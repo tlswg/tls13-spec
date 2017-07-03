@@ -4909,10 +4909,14 @@ may have different needs. Clock skew distributions are not
 symmetric, so the optimal tradeoff may involve an asymmetric range
 of permissible mismatch values.
 
-Note that freshness checking alone is not sufficient to prevent replays
-because it does not detect them during the error window, which,
-depending on bandwidth and system capacity could include
-billions of replays in real-world settings.
+Note that freshness checking alone is not sufficient to prevent
+replays because it does not detect them during the error window,
+which, depending on bandwidth and system capacity could include
+billions of replays in real-world settings.  In addition, this
+freshness checking is only done at the time the ClientHello is
+received, and not when later early application data records are
+received. After early data is accepted, records may continue to be
+streamed to the server over a longer time period.
 
 #  Compliance Requirements
 
