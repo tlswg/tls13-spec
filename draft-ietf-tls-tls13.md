@@ -1327,15 +1327,16 @@ providing forward secrecy.
 
 When PSKs are provisioned out of band, the PSK identity and the KDF hash
 algorithm to
-be used with the PSK MUST also be provisioned.  Note: When using an
-out-of-band provisioned pre-shared secret, a critical consideration is
-using sufficient entropy during the key generation, as discussed in
-[RFC4086]. Deriving a shared secret from a password or other
-low-entropy sources is not secure. A low-entropy secret, or password,
-is subject to dictionary attacks based on the PSK binder.  The
-specified PSK authentication is not a strong password-based
-authenticated key exchange even when used with Diffie-Hellman key
-establishment.
+be used with the PSK MUST also be provisioned.
+
+Note:
+: When using an out-of-band provisioned pre-shared secret, a critical
+  consideration is using sufficient entropy during the key generation, as
+  discussed in [RFC4086]. Deriving a shared secret from a password or other
+  low-entropy sources is not secure. A low-entropy secret, or password, is
+  subject to dictionary attacks based on the PSK binder.  The specified PSK
+  authentication is not a strong password-based authenticated key exchange even
+  when used with Diffie-Hellman key establishment.
 
 
 ## Zero-RTT Data
