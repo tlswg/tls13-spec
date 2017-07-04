@@ -5064,14 +5064,14 @@ app data                       | Send Finished
 after   -->                    | K_send = application
 here                  +--------+--------+
              No 0-RTT |                 | 0-RTT
-   K_recv = handshake |                 | K_recv = early_data
-[Skip decrypt errors] |             WAIT_EOED <---+
-                      |            Recv |   |     | Recv
-                      |  EndOfEarlyData |   |     | Early data
-                      |        K_recv = |   +-----+
-                      |       handshake |
                       |                 |
-                      +> WAIT_FLIGHT2 <-+
+  K_recv = handshake  |                 |
+[Skip decrypt errors] |    +------> WAIT_EOED -+
+                      |    |       Recv |      | Recv EndOfEarlyData
+                      |    | early data |      | K_recv = handshake
+                      |    +------------+      |
+                      |                        |
+                      +> WAIT_FLIGHT2 <--------+
                                |
                       +--------+--------+
               No auth |                 | Client auth
