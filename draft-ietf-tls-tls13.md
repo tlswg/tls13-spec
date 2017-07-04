@@ -1204,7 +1204,7 @@ Finished:
 Upon receiving the server's messages, the client responds with its Authentication
 messages, namely Certificate and CertificateVerify (if requested), and Finished.
 
-At this point, the handshake is complete, and the client and server must
+At this point, the handshake is complete, and the client and server
 derive the keying material required by the record layer to exchange
 application-layer data protected through authenticated encryption.
 Application data MUST NOT be sent prior to sending the Finished message and
