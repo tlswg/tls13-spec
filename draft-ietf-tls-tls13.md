@@ -1027,9 +1027,9 @@ are many minor differences.
   be more consistent and to remove superfluous messages such as
   ChangeCipherSpec.
 
-- ECC is now in the base spec and includes new signature algorithms, such as
-  ed25519 and ed448. TLS 1.3 removed point format negotiation
-  in favor of a single point format for each curve.
+- Elliptic curve algorithms are now in the base spec and includes new signature
+  algorithms, such as ed25519 and ed448. TLS 1.3 removed point format
+  negotiation in favor of a single point format for each curve.
 
 - Other cryptographic improvements including the removal of compression and
   custom DHE groups, changing the RSA padding to use PSS, and the removal of
@@ -1204,7 +1204,7 @@ Finished:
 Upon receiving the server's messages, the client responds with its Authentication
 messages, namely Certificate and CertificateVerify (if requested), and Finished.
 
-At this point, the handshake is complete, and the client and server must
+At this point, the handshake is complete, and the client and server
 derive the keying material required by the record layer to exchange
 application-layer data protected through authenticated encryption.
 Application data MUST NOT be sent prior to sending the Finished message and
@@ -1327,15 +1327,16 @@ providing forward secrecy.
 
 When PSKs are provisioned out of band, the PSK identity and the KDF hash
 algorithm to
-be used with the PSK MUST also be provisioned.  Note: When using an
-out-of-band provisioned pre-shared secret, a critical consideration is
-using sufficient entropy during the key generation, as discussed in
-[RFC4086]. Deriving a shared secret from a password or other
-low-entropy sources is not secure. A low-entropy secret, or password,
-is subject to dictionary attacks based on the PSK binder.  The
-specified PSK authentication is not a strong password-based
-authenticated key exchange even when used with Diffie-Hellman key
-establishment.
+be used with the PSK MUST also be provisioned.
+
+Note:
+: When using an out-of-band provisioned pre-shared secret, a critical
+  consideration is using sufficient entropy during the key generation, as
+  discussed in [RFC4086]. Deriving a shared secret from a password or other
+  low-entropy sources is not secure. A low-entropy secret, or password, is
+  subject to dictionary attacks based on the PSK binder.  The specified PSK
+  authentication is not a strong password-based authenticated key exchange even
+  when used with Diffie-Hellman key establishment.
 
 
 ## Zero-RTT Data
