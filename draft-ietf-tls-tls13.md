@@ -528,7 +528,7 @@ provide the following properties:
   is only visible to the
   endpoints. TLS does not hide the length of the data it transmits,
   though endpoints are able to pad TLS records in order to obscure lengths
-  and improve protection agains traffic analysis techniques.
+  and improve protection against traffic analysis techniques.
 
 - Integrity: Data sent over the channel after establishment cannot be
   modified by attackers.
@@ -4767,7 +4767,7 @@ I.e., if the
 client sends PSKs A and B but the server prefers A, then the
 attacker can change the binder for B without affecting the binder
 for A. This will cause the ClientHello to be accepted, and may
-casue side effects such as replay cache pollution, although any
+cause side effects such as replay cache pollution, although any
 0-RTT data will not be decryptable because it will use different
 keys. If the validated binder or the ClientHello.random
 are used as the storage key, then this attack is not possible.
