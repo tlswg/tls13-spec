@@ -1027,9 +1027,9 @@ are many minor differences.
   be more consistent and to remove superfluous messages such as
   ChangeCipherSpec.
 
-- ECC is now in the base spec and includes new signature algorithms, such as
-  ed25519 and ed448. TLS 1.3 removed point format negotiation
-  in favor of a single point format for each curve.
+- Elliptic curve algorithms are now in the base spec and includes new signature
+  algorithms, such as ed25519 and ed448. TLS 1.3 removed point format
+  negotiation in favor of a single point format for each curve.
 
 - Other cryptographic improvements including the removal of compression and
   custom DHE groups, changing the RSA padding to use PSS, and the removal of
