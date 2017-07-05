@@ -4982,8 +4982,8 @@ In addition, this document defines a new registry to be maintained
 by IANA:
 
 - TLS SignatureScheme Registry: Values with the first byte in the range
-  0-254 (decimal) are assigned via Specification Required {{RFC5226}}.
-  Values with the first byte 255 (decimal) are reserved for Private
+  0-253 (decimal) are assigned via Specification Required {{RFC5226}}.
+  Values with the first byte 254 or 255 (decimal) are reserved for Private
   Use {{RFC5226}}. Values with the first byte in the range 0-6 or with the
   second byte in the range 0-3 that are not currently allocated are reserved for
   backwards compatibility.
