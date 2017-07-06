@@ -4243,6 +4243,8 @@ are universally considered fatal as of TLS 1.3 (see {{alert-protocol}}).
 The implementation SHOULD provide a way to facilitate logging
 the sending and receiving of alerts.
 
+The following error alerts are defined:
+
 unexpected_message
 : An inappropriate message (e.g., the wrong handshake message, premature
   application data, etc.) was received. This alert should never be
