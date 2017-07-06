@@ -3651,7 +3651,7 @@ ticket_age_add
   The server MUST generate a fresh value for each ticket it sends.
 
 ticket_nonce
-: A unique per-ticket value.
+: A per-ticket value that is unique across all tickets issued on this connection.
 
 ticket
 : The value of the ticket to be used as the PSK identity.
