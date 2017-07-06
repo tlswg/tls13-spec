@@ -5842,7 +5842,7 @@ these attacks, see {{Mac17}}.
 Ultimately, servers have the responsibility to protect themselves
 against attacks employing 0-RTT data replication. The mechanisms
 described in {{anti-replay}} are intended to
-prevent replay at the TLS layer do not provide complete protection
+prevent replay at the TLS layer but do not provide complete protection
 against receiving multiple copies of client data.
 TLS 1.3 falls back to the 1-RTT
 handshake when the server does not have any information about the
