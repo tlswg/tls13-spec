@@ -3651,7 +3651,7 @@ ticket_age_add
   The server MUST generate a fresh value for each ticket it sends.
 
 ticket_nonce
-: A unique per-ticket value.
+: A per-ticket value that is unique across all tickets issued on this connection.
 
 ticket
 : The value of the ticket to be used as the PSK identity.
@@ -4242,6 +4242,8 @@ alerts defined in this section below, as well as all unknown alerts,
 are universally considered fatal as of TLS 1.3 (see {{alert-protocol}}).
 The implementation SHOULD provide a way to facilitate logging
 the sending and receiving of alerts.
+
+The following error alerts are defined:
 
 unexpected_message
 : An inappropriate message (e.g., the wrong handshake message, premature
@@ -5840,7 +5842,7 @@ these attacks, see {{Mac17}}.
 Ultimately, servers have the responsibility to protect themselves
 against attacks employing 0-RTT data replication. The mechanisms
 described in {{anti-replay}} are intended to
-prevent replay at the TLS layer do not provide complete protection
+prevent replay at the TLS layer but do not provide complete protection
 against receiving multiple copies of client data.
 TLS 1.3 falls back to the 1-RTT
 handshake when the server does not have any information about the
