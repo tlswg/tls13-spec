@@ -3517,7 +3517,7 @@ receive application data over the connection. There are two
 settings in which it is permitted to send data prior to
 receiving the peer's Finished:
 
-1. Clients ending 0-RTT data as described in {{early-data-indication}}.
+1. Clients sending 0-RTT data as described in {{early-data-indication}}.
 2. Servers MAY send data after sending their first flight, but
    because the handshake is not yet complete, they have no assurance
    of either the peer's identity or of its liveness (i.e.,
