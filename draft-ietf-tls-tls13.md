@@ -6189,6 +6189,10 @@ Archives of the list can be found at:
   sn3rd \\
   sean@sn3rd.com
 
+* Steven Valdez \\
+  Google \\
+  svaldez@google.com
+
 * Filippo Valsorda \\
   Cloudflare Inc. \\
   filippo@cloudflare.com
@@ -6196,6 +6200,10 @@ Archives of the list can be found at:
 * Thyla van der Merwe \\
   Royal Holloway, University of London \\
   tjvdmerwe@gmail.com
+
+* Victor Vasiliev \\
+  Google \\
+  vasilvv@google.com
 
 * Tom Weinstein
 
