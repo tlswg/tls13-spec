@@ -5924,6 +5924,10 @@ Archives of the list can be found at:
   Alacrity Ventures \\
   ChristopherA@AlacrityManagement.com
 
+* Richard Barnes \\
+  Cisco \\
+  rlb@ipv.sx
+
 * Steven M. Bellovin \\
   Columbia University \\
   smb@cs.columbia.edu
