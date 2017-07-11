@@ -3173,7 +3173,7 @@ type "message_hash" containing Hash(ClientHello1). I.e.,
 
      Transcript-Hash(ClientHello1, HelloRetryRequest, ... MN) =
          Hash(message_hash ||        // Handshake type
-              00 00 Hash.length ||   // Handshake message length
+              00 00 Hash.length ||   // Handshake message length (bytes)
               Hash(ClientHello1) ||  // Hash of ClientHello1
               HelloRetryRequest ... MN)
 
