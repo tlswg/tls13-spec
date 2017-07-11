@@ -1016,7 +1016,7 @@ are many minor differences.
 - All handshake messages after the ServerHello are now encrypted. The
   newly introduced EncryptedExtension message allows various extensions
   previously sent in clear in the ServerHello to also enjoy
-  confidentiality protection.
+  confidentiality protection from active attackers.
 
 - The key derivation functions have been re-designed. The new design allows
   easier analysis by cryptographers due to their improved key separation
@@ -1894,7 +1894,7 @@ client MAY abort the handshake.
 After sending the ClientHello message, the client waits for a ServerHello
 or HelloRetryRequest message. If early data
 is in use, the client may transmit early application data
-{{zero-rtt-data}} while waiting for the next handshake message.
+({{zero-rtt-data}}) while waiting for the next handshake message.
 
 ### Server Hello {#server-hello}
 
@@ -1916,7 +1916,7 @@ Structure of this message:
 version
 : This field contains the version of TLS negotiated for this connection.  Servers
   MUST select a version from the list in ClientHello's supported_versions extension,
-  or otherwise negotiate TLS 1.2 or previous.
+  or otherwise negotiate TLS 1.2 or a previous version.
   A client that receives a version that was not offered MUST abort the handshake.
   For this version of the specification, the version is 0x0304.  (See
   {{backward-compatibility}} for details about backward compatibility.)
@@ -2253,7 +2253,7 @@ client (this is an exception to the usual rule that the only extensions that
 may be sent are those that appear in the ClientHello). When sending the
 new ClientHello, the client MUST copy the contents of the extension received in
 the HelloRetryRequest into a "cookie" extension in the new ClientHello.
-Clients MUST NOT use cookies in subsequent connections.
+Clients MUST NOT use cookies in their initial ClientHello in subsequent connections.
 
 ###  Signature Algorithms
 
@@ -2428,7 +2428,7 @@ purpose {{RFC6066}}, but is more complicated, is not used in TLS 1.3
 (although it may appear in ClientHello messages from clients which are
 offering prior versions of TLS).
 
-#### OID Filters
+### OID Filters
 
 The "oid_filters" extension allows servers to provide a set of OID/value
 pairs which it would like the client's certificate to match. This
@@ -2517,7 +2517,7 @@ The "extension_data" field of this extension contains a
            x25519(0x001D), x448(0x001E),
 
            /* Finite Field Groups (DHE) */
-           ffdhe2048(0x0100), ffdhe3072(0x0101), ffdhe4096 (0x0102),
+           ffdhe2048(0x0100), ffdhe3072(0x0101), ffdhe4096(0x0102),
            ffdhe6144(0x0103), ffdhe8192(0x0104),
 
            /* Reserved Code Points */
@@ -3009,7 +3009,7 @@ ClientHello2, its binder will be computed over:
                        HelloRetryRequest,
                        ClientHello2[truncated])
 
-The full ClientHello1 is included in all other handshake hash computations.
+The full ClientHello1/ClientHello2 is included in all other handshake hash computations.
 Note that in the first flight, ClientHello1\[truncated] is hashed directly,
 but in the second flight, ClientHello1 is hashed and then reinjected as a
 "handshake_hash" message, as described in {{the-transcript-hash}}.
@@ -3829,7 +3829,8 @@ type MUST contain exactly one message.
 Application Data messages contain data that is opaque to
 TLS. Application Data messages are always protected. Zero-length
 fragments of Application Data MAY be sent as they are potentially
-useful as a traffic analysis countermeasure.
+useful as a traffic analysis countermeasure.  Application Data fragments
+MAY be split across multiple records or coalesced into a single record.
 
 
 %%% Record Layer
@@ -4379,7 +4380,7 @@ certificate_required
 no_application_protocol
 : Sent by servers when a client
   "application_layer_protocol_negotiation" extension advertises
-  protocols that the server does not support
+  only protocols that the server does not support
   (see {{RFC7301}}).
 {:br }
 
@@ -4436,7 +4437,7 @@ this limit.
 
 Given a set of n InputSecrets, the final "master secret" is computed
 by iteratively invoking HKDF-Extract with InputSecret_1, InputSecret_2,
-etc.  The initial secret is simply a string of Hash.length zero bytes.
+etc.  The initial secret is simply a string of Hash.length bytes set to zeros.
 Concretely, for the present version of TLS 1.3, secrets are
 added in the following order:
 
@@ -4519,7 +4520,7 @@ called with four distinct transcripts; in a 1-RTT-only exchange
 with three distinct transcripts.
 
 If a given secret is not available, then the 0-value consisting of
-a string of Hash.length zero bytes is used.  Note that this does not mean skipping
+a string of Hash.length bytes set to zeros is used.  Note that this does not mean skipping
 rounds, so if PSK is not in use Early Secret will still be
 HKDF-Extract(0, 0). For the computation of the binder_secret, the label is
 "ext binder" for external PSKs (those provisioned outside of TLS)
@@ -4906,7 +4907,7 @@ applicable features:
 
 A client is considered to be attempting to negotiate using this
 specification if the ClientHello contains a "supported_versions"
-extension 0x0304 the highest version number contained in its body.
+extension with 0x0304 as the highest version number contained in its body.
 Such a ClientHello message MUST meet the following requirements:
 
  - If not containing a "pre_shared_key" extension, it MUST contain both
@@ -5237,8 +5238,8 @@ TLS protocol issues:
 
 - Do you properly ignore unrecognized cipher suites
   ({{client-hello}}), hello extensions ({{extensions}}), named groups
-  ({{negotiated-groups}}), key shares {{key-share}},
-  supported versions {{supported-versions}},
+  ({{negotiated-groups}}), key shares ({{key-share}}),
+  supported versions ({{supported-versions}}),
   and signature algorithms ({{signature-algorithms}}) in the
   ClientHello?
 
@@ -5346,7 +5347,7 @@ whenever TLS 1.3 is used.
 A TLS 1.3 client who wishes to negotiate with servers that do not
 support TLS 1.3 will send a
 normal TLS 1.3 ClientHello containing 0x0303 (TLS 1.2) in
-ClientHello.legacy_version but with the correct version in the
+ClientHello.legacy_version but with the correct version(s) in the
 "supported_versions" extension. If the server does not support TLS 1.3 it
 will respond with a ServerHello containing an older version number. If the
 client agrees to use this version, the negotiation will proceed as appropriate
