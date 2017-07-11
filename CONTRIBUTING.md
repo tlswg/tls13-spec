@@ -2,7 +2,7 @@
 
 Before submitting feedback, please familiarize yourself with our current issues
 list and review the [working
-group home page](https://trac.tools.ietf.org/wg/tls/trac/wiki). If you're
+group home page](https://datatracker.ietf.org/wg/tls/documents/). If you're
 new to this, you may also want to read the [Tao of the
 IETF](https://www.ietf.org/tao.html).
 

@@ -3,11 +3,11 @@ TLS 1.3 Draft Specifications
 =============================
 
 This is the working area for the [IETF TLS Working
-Group](https://trac.tools.ietf.org/wg/tls/trac/wiki) draft of [TLS 1.3]
+Group](https://datatracker.ietf.org/wg/tls/documents/) draft of [TLS 1.3]
 
 TLS 1.3 specification:
 * [Editor's copy](https://tlswg.github.io/tls13-spec/)
-* [Working Group Draft] (https://tools.ietf.org/html/draft-ietf-tls-tls13)
+* [Working Group Draft](https://tools.ietf.org/html/draft-ietf-tls-tls13)
 
 
 Contributing
@@ -15,7 +15,7 @@ Contributing
 
 Before submitting feedback, please familiarize yourself with our current issues
 list and review the [working
-group home page](https://trac.tools.ietf.org/wg/tls/trac/wiki). If you're
+group home page](https://datatracker.ietf.org/wg/tls/documents/). If you're
 new to this, you may also want to read the [Tao of the
 IETF](https://www.ietf.org/tao.html).
 
@@ -53,7 +53,7 @@ Building The Draft
 ------------------
 
 You will need kramdown-rfc2629 (https://github.com/cabo/kramdown-rfc2629)
-and xml2rfc (http://xml2rfc.tools.ietf.org/).
+and xml2rfc (https://xml2rfc.tools.ietf.org/).
 
 
 NOTE WELL
