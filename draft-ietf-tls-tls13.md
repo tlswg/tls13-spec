@@ -4406,7 +4406,7 @@ functions as defined for HKDF {{RFC5869}}, as well as the functions
 defined below:
 
 ~~~~
-    HKDF-Expand-Label(Secret, Label, HashValue, Length) =
+    HKDF-Expand-Label(Secret, Label, Context, Length) =
          HKDF-Expand(Secret, HkdfLabel, Length)
 
     Where HkdfLabel is specified as:
@@ -4414,7 +4414,7 @@ defined below:
     struct {
         uint16 length = Length;
         opaque label<7..255> = "tls13 " + Label;
-        opaque hash_value<0..255> = HashValue;
+        opaque context<0..255> = Context;
     } HkdfLabel;
 
     Derive-Secret(Secret, Label, Messages) =
@@ -4427,7 +4427,7 @@ algorithm.
 Hash.length is its output length in bytes. Messages are the concatenation of the
 indicated handshake messages, including the handshake message type
 and length fields, but not including record layer headers. Note that
-in some cases a zero-length HashValue (indicated by "") is passed to
+in some cases a zero-length Context (indicated by "") is passed to
 HKDF-Expand-Label.
 
 Note: with common hash functions, any label longer than 12 characters
