@@ -3012,7 +3012,7 @@ ClientHello2, its binder will be computed over:
 The full ClientHello1/ClientHello2 is included in all other handshake hash computations.
 Note that in the first flight, ClientHello1\[truncated] is hashed directly,
 but in the second flight, ClientHello1 is hashed and then reinjected as a
-"handshake_hash" message, as described in {{the-transcript-hash}}.
+"message_hash" message, as described in {{the-transcript-hash}}.
 
 #### Processing Order
 
@@ -4962,7 +4962,7 @@ The registries and their allocation policies are below:
   Standards Action {{RFC5226}}. IANA \[SHALL update/has updated] this registry
   to rename item 4 from "NewSessionTicket" to "new_session_ticket"
   and to add the "hello_retry_request", "encrypted_extensions",
-  "end_of_early_data", "key_update", and "handshake_hash" values.
+  "end_of_early_data", "key_update", and "message_hash" values.
 
 This document also uses the TLS ExtensionType Registry originally created in
 {{RFC4366}}. IANA has updated it to reference this document. The registry and
