@@ -3627,7 +3627,7 @@ handshake, for example.
        struct {
            uint32 ticket_lifetime;
            uint32 ticket_age_add;
-           opaque ticket_nonce<1..255>;
+           opaque ticket_nonce<0..255>;
            opaque ticket<1..2^16-1>;
            Extension extensions<0..2^16-2>;
        } NewSessionTicket;
