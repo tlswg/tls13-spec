@@ -3215,7 +3215,7 @@ Structure of this message:
 %%% Authentication Messages
 
        struct {
-           select(certificate_type){
+           select (certificate_type){
                case RawPublicKey:
                  // From RFC 7250 ASN.1_subjectPublicKeyInfo
                  opaque ASN1_subjectPublicKeyInfo<1..2^24-1>;
