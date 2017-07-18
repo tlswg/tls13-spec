@@ -4722,7 +4722,7 @@ provided, the server would then fall back to a full handshake.
 
 If the tickets are not self-contained but rather are database keys,
 and the corresponding PSKs are deleted upon use, then connections established
-using one PSK enjoy forward security. This improves security for
+using one PSK enjoy forward secrecy. This improves security for
 all 0-RTT data and PSK usage when PSK is used without (EC)DHE.
 
 Because this mechanism requires sharing the session database between
