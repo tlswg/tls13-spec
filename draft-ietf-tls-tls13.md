@@ -4695,21 +4695,33 @@ concerned with:
   handshake with B and probably retry the request, leading to duplication on
   the server system as a whole.
 
-The first class of attack can be prevented by the mechanism described
-in this section.  Servers need not permit 0-RTT at all, but those
-which do SHOULD implement either the single-use tickets or
-ClientHello recording techniques described in the following two
-sections.
+The first class of attack can be prevented by sharing the state across all of
+the servers that would accept the 0-RTT, providing a guarantee that the 0-RTT is
+only accepted once.  Servers SHOULD provide that level of replay safety, by
+implementing one of the methods described in this section or by equivalent
+means.  It is understood, however, that due to operational concerns not all
+deployments would maintain the state at that level.  Therefore, in normal
+operation, clients will not know which, if any, of these mechanisms servers
+actually implement and hence MUST only send early data which they are willing to
+be replayed.
+
+Besides replays, there is a class of attacks where even the operations normally
+considered idempotent could be exploited by a large number of replays (timing
+attacks, resource limit exhaustion and others described in {{replay-0rtt}}).
+Those can be mitigated by providing a guarantee that every 0-RTT payload can be
+replayed only a limited number of times.  In order to provide such level of
+replay protection, the server MUST ensure that any instance of it (be it a
+machine, a thread or any other entity within the relevant serving
+infrastructure) would accept the same 0-RTT handshake only once.  This can be
+done by using ClientHello recording locally, or by any other method that
+provides same or a stronger guarantee.  The "at most once per server instance"
+guarantee is a minimum requirement; servers SHOULD limit 0-RTT replays further
+when necessary.
 
 The second class of attack cannot be prevented at the TLS layer and
 MUST be dealt with by any application. Note that any application whose
 clients implement any kind of retry behavior already needs to
 implement some sort of anti-replay defense.
-
-In normal operation, clients will not know which, if any, of these
-mechanisms servers actually implement and therefore MUST only send
-early data which they are willing to have subject to the attacks
-described in {{replay-0rtt}}.
 
 
 ## Single-Use Tickets
