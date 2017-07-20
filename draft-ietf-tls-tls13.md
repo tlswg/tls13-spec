@@ -4710,13 +4710,13 @@ number of replays (timing attacks, resource limit exhaustion and others
 described in {{replay-0rtt}}).  Those can be mitigated by providing a guarantee
 that every 0-RTT payload can be replayed only a limited number of times.  The
 server MUST ensure that any instance of it (be it a machine, a thread or any
-other entity within the relevant serving infrastructure) would accept the same
-0-RTT handshake only once; this limits the number of replays to the number of
-server instances in the deployment.  Such guarantee can be accomplished by
-locally recording data from recently-received ClientHellos and rejecting
-repeats, or by any other method that provides the same or a stronger guarantee.
-The "at most once per server instance" guarantee is a minimum requirement;
-servers SHOULD limit 0-RTT replays further when feasible.
+other entity within the relevant serving infrastructure) would accept 0-RTT for
+the same 0-RTT handshake only once; this limits the number of replays to the
+number of server instances in the deployment.  Such guarantee can be
+accomplished by locally recording data from recently-received ClientHellos and
+rejecting repeats, or by any other method that provides the same or a stronger
+guarantee.  The "at most once per server instance" guarantee is a minimum
+requirement; servers SHOULD limit 0-RTT replays further when feasible.
 
 The second class of attack cannot be prevented at the TLS layer and
 MUST be dealt with by any application. Note that any application whose
