@@ -2823,18 +2823,18 @@ In order to accept early data, the server MUST have accepted a
 PSK cipher suite and selected the first key offered in the
 client's "pre_shared_key" extension. In addition, it MUST verify that
 the following values are consistent with those associated with the selected
-PSK.  For externally established PSKs, the associated values are those
-provisioned along with the key.  For PSKs established via a NewSessionTicket
-message, the associated values are those negotiated in the
-connection during which the ticket was established.
+PSK:
 
 - The TLS version number
-- The selected cipher suite.
-- The selected ALPN {{RFC7301}} protocol, if any.
-- The selected SNI (Section 3 of {{RFC6066}}) value, if any.
+- The selected cipher suite
+- The selected ALPN {{RFC7301}} protocol, if any
+- The selected SNI (Section 3 of {{RFC6066}}) value, if any
 
 These requirements are a superset of those needed to perform a 1-RTT
-handshake using the PSK in question.
+handshake using the PSK in question.  For externally established PSKs, the
+associated values are those provisioned along with the key.  For PSKs
+established via a NewSessionTicket message, the associated values are those
+negotiated in the connection during which the ticket was established.
 
 Future extensions MUST define their interaction with 0-RTT.
 
@@ -3630,7 +3630,6 @@ first.
 Any ticket MUST only be resumed on connections where the following values
 match the values negotiated in the connection during which the ticket
 was established:
-
 
 - The KDF hash algorithm associated with the cipher suite
 - The SNI value (if any), as described in Section 3 of {{RFC6066}}
