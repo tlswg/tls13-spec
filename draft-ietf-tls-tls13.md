@@ -3916,7 +3916,7 @@ by an encrypted body, which itself contains a type and optional padding.
            ContentType opaque_type = 23; /* application_data */
            ProtocolVersion legacy_record_version = 0x0301; /* TLS v1.x */
            uint16 length;
-           opaque encrypted_record[length];
+           opaque encrypted_record[TLSCiphertext.length];
        } TLSCiphertext;
 
 content
