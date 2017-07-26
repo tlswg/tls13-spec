@@ -5183,6 +5183,47 @@ preference to crafting a new one. Many adequate cryptographic libraries
 are already available under favorable license terms.  Should those prove
 unsatisfactory, {{RFC4086}} provides guidance on the generation of random values.
 
+TLS uses random values in various places, some of which are made public (e.g.
+ClientHello.random) and others of which are kept private and used as input to
+crytpographic functions (e.g. Diffie-Hellman private values).
+
+There have been well-documented attacks [checkoway] where bad actors have
+arranged that public random values leak information about other (private) random
+values that are later output from the same pseudo-random number generator.
+
+It is therefore RECOMMENDED that separate streams of random numbers are used
+for public and private random values, such that an attack that affects the
+public stream does not (to the extent that can be assured) provide an
+advanatage to the attacker in terms of guessing or validating a guess about the
+private random values used in the protocol.
+
+One way to do this is to take the output of a cryptographically "good"
+pseudo-random number generator (PRNG) and to pass that through a function that
+also has locally generated "secrets" as input, that also uses a hash or PRF,
+and that possibly compresses more PRNG-output bits into fewer public or private
+random bits to be used in the TLS protocol. For example if R is a set of bits
+output from a PRNG, and L is some local secret then HMAC-SHA256(L,R) would
+produce 256 bits that could be used for public random values. For private
+values, one might use different local secret values. One might also use such
+constructs to seed diffeent PRNG streams and then use those different streams
+for public and private values.
+
+Note that there are many other ways to achieve the required effect, and one
+ought not expect to find a broadly-based consensus on all details here, as many
+of those are system and development-environment specific.  
+
+Of course, re-seeding and use of true random numbers are advantageous but may
+not be possible in some environments. Where those actions are possible, they
+SHOULD be done.
+
+Lastly, since the cryptographic properties of TLS very strongly depend on the
+randomness of public and private random values, the correctness (and integrity
+of) code that deals with the PRNG ought be considered extremely critical and
+subject to whatever is the highest level of review and control available in
+your environment. Devoting engineering resources to this problem is to be
+encouraged.
+
+
 
 ## Certificates and Authentication
 
