@@ -5183,6 +5183,18 @@ preference to crafting a new one. Many adequate cryptographic libraries
 are already available under favorable license terms.  Should those prove
 unsatisfactory, {{RFC4086}} provides guidance on the generation of random values.
 
+TLS uses random values both in public protocol fields such as the
+public Random values in the ClientHello and ServerHello and to
+generate keying material. With a properly functioning CSPRNG, this
+does not present a security problem as it is not feasible to determine
+the CSPRNG state from its output. However, with a broken CSPRNG, it
+may be possible for an attacker to use the public output to determine
+the CSPRNG internal state and thereby predict the keying material, as
+documented in {{?CHECKOWAY=DOI.10.1145/2976749.2978395}}.
+Implementations can provide extra security against
+this form of attack by using separate CSPRNGs to generate public and
+private values.
+
 
 ## Certificates and Authentication
 
