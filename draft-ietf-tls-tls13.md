@@ -2510,6 +2510,8 @@ The "extension_data" field of this extension contains a
 %%% Supported Groups Extension
 
        enum {
+           unallocated_RESERVED(0x0000),
+
            /* Elliptic Curve Groups (ECDHE) */
            obsolete_RESERVED(0x0001..0x0016),
            secp256r1(0x0017), secp384r1(0x0018), secp521r1(0x0019),
