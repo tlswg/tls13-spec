@@ -1303,7 +1303,6 @@ Initial Handshake:
 Subsequent Handshake:
        ClientHello
        + key_share*
-       + psk_key_exchange_modes
        + pre_shared_key          -------->
                                                        ServerHello
                                                   + pre_shared_key
