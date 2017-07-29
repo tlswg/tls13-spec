@@ -1284,7 +1284,8 @@ a PSK and the second uses it:
 
 Initial Handshake:
        ClientHello
-       + key_share               -------->
+       + key_share
+       + psk_key_exchange_modes  -------->
                                                        ServerHello
                                                        + key_share
                                              {EncryptedExtensions}
