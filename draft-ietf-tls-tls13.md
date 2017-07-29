@@ -1570,15 +1570,14 @@ like that of C.
            T2 f2;
            ...
            Tn fn;
-       } [[T]];
+       } T;
 
 Fixed- and variable-length vector fields are allowed using the standard vector
 syntax. Structures V1 and V2 in the variants example below demonstrate this.
 
 The fields within a structure may be qualified using the type's name, with a
 syntax much like that available for enumerateds. For example, T.f2 refers to
-the second field of the previous declaration. Structure definitions may be
-embedded. Anonymous structs may also be defined inside other structures.
+the second field of the previous declaration.
 
 
 ## Constants
@@ -1611,7 +1610,7 @@ runtime is not prescribed by the presentation language.
                ....
                case en: Ten;
            } [[fv]];
-       } [[Tv]];
+       } Tv;
 
 For example:
 
