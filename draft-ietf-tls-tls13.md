@@ -2687,11 +2687,13 @@ the opaque key_exchange field of a KeyShareEntry in a KeyShare structure.
 For secp256r1, secp384r1 and secp521r1, the contents are the serialized
 value of the following struct:
 
+%%% Key Exchange Messages
+
        struct {
-           uint8                legacy_form = 4;
-           opaque               X[coordinate_length];
-           opaque               Y[coordinate_length];
-        } UncompressedPointRepresentation;
+           uint8 legacy_form = 4;
+           opaque X[coordinate_length];
+           opaque Y[coordinate_length];
+       } UncompressedPointRepresentation;
 
 X and Y respectively are the binary representations of the X and Y
 values in network byte order.  There are no internal length markers,
@@ -3222,7 +3224,7 @@ Structure of this message:
 %%% Authentication Messages
 
        struct {
-           select (certificate_type){
+           select (certificate_type) {
                case RawPublicKey:
                  // From RFC 7250 ASN.1_subjectPublicKeyInfo
                  opaque ASN1_subjectPublicKeyInfo<1..2^24-1>;
