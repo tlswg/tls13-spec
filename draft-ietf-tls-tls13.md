@@ -1612,7 +1612,7 @@ at runtime is not prescribed by the presentation language.
                case e2: Te2 [[fe2]];
                ....
                case en: Ten [[fen]];
-           } [[fv]];
+           };
        } Tv;
 
 For example:
