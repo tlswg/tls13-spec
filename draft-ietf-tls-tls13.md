@@ -3181,9 +3181,9 @@ replaced with a special synthetic handshake message of handshake
 type "message_hash" containing Hash(ClientHello1). I.e.,
 
      Transcript-Hash(ClientHello1, HelloRetryRequest, ... MN) =
-         Hash(message_hash ||        // Handshake type
-              00 00 Hash.length ||   // Handshake message length (bytes)
-              Hash(ClientHello1) ||  // Hash of ClientHello1
+         Hash(message_hash ||        /* Handshake type */
+              00 00 Hash.length ||   /* Handshake message length (bytes) */
+              Hash(ClientHello1) ||  /* Hash of ClientHello1 */
               HelloRetryRequest ... MN)
 
 The reason for this construction is to allow the server to do a
@@ -3226,7 +3226,7 @@ Structure of this message:
        struct {
            select (certificate_type) {
                case RawPublicKey:
-                 // From RFC 7250 ASN.1_subjectPublicKeyInfo
+                 /* From RFC 7250 ASN.1_subjectPublicKeyInfo */
                  opaque ASN1_subjectPublicKeyInfo<1..2^24-1>;
 
                case X509:
