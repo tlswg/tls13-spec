@@ -1453,6 +1453,9 @@ brackets.
 Single-byte entities containing uninterpreted data are of type
 opaque.
 
+A type alias T' for an existing type T is defined by:
+
+       T T';
 
 ##  Vectors
 
