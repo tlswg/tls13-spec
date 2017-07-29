@@ -1595,10 +1595,10 @@ Fields and variables may be assigned a fixed value using "=", as in:
 
 Defined structures may have variants based on some knowledge that is
 available within the environment. The selector must be an enumerated
-type that defines the possible variants the structure defines.
-The body of the variant structure may be given a label
-for reference. The mechanism by which the variant is selected at
-runtime is not prescribed by the presentation language.
+type that defines the possible variants the structure defines. Each
+arm of the select specifies the type of that variant's field and an
+optional field label. The mechanism by which the variant is selected
+at runtime is not prescribed by the presentation language.
 
        struct {
            T1 f1;
@@ -1606,11 +1606,11 @@ runtime is not prescribed by the presentation language.
            ....
            Tn fn;
            select (E) {
-               case e1: Te1;
-               case e2: Te2;
+               case e1: Te1 [[fe1]];
+               case e2: Te2 [[fe2]];
                ....
-               case en: Ten;
-           } [[fv]];
+               case en: Ten [[fen]];
+           };
        } [[Tv]];
 
 For example:
@@ -1681,7 +1681,7 @@ processed and transmitted as specified by the current active connection state.
                case finished:              Finished;
                case new_session_ticket:    NewSessionTicket;
                case key_update:            KeyUpdate;
-           } body;
+           };
        } Handshake;
 
 Protocol messages MUST be sent in the order defined in
@@ -2882,15 +2882,15 @@ The "extension_data" field of this extension contains a
        opaque PskBinderEntry<32..255>;
 
        struct {
+           PskIdentity identities<7..2^16-1>;
+           PskBinderEntry binders<33..2^16-1>;
+       } OfferedPsks;
+
+       struct {
            select (Handshake.msg_type) {
-               case client_hello:
-                   PskIdentity identities<7..2^16-1>;
-                   PskBinderEntry binders<33..2^16-1>;
-
-               case server_hello:
-                   uint16 selected_identity;
+               case client_hello: OfferedPsks;
+               case server_hello: uint16 selected_identity;
            };
-
        } PreSharedKeyExtension;
 
 identity
