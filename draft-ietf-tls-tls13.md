@@ -5924,12 +5924,12 @@ server-to-client encryption keys because that would entail
 the reuse of those keys. This parallels the use of the early
 application traffic keys only in the client-to-server direction.
 
-## Static (EC) DH Shares
+## Static (EC)DH Shares
 
 For various reasons, some implementations may be tempted to use static
-(EC) DH private key. Using such keys lowers the security guarantees of
-TLS 1.3. Adversaries that get access to the static (EC) DH private key
-can now get access to the content of the communication. Adversaries that
+(EC)DH private keys. Using such keys lowers the security guarantees of
+TLS 1.3. Adversaries that get access to the static (EC)DH private key
+can get access to the content of the communication. Adversaries that
 acquire the key in real-time can compromise the confidentiality of the
 conversation. Adversaries that acquire the key later can use it to
 access the content of recorded sessions, thus breaking the forward
