@@ -1016,7 +1016,7 @@ are many minor differences.
 - All handshake messages after the ServerHello are now encrypted. The
   newly introduced EncryptedExtension message allows various extensions
   previously sent in clear in the ServerHello to also enjoy
-  confidentiality protection.
+  confidentiality protection from active attackers.
 
 - The key derivation functions have been re-designed. The new design allows
   easier analysis by cryptographers due to their improved key separation
@@ -1303,7 +1303,6 @@ Initial Handshake:
 Subsequent Handshake:
        ClientHello
        + key_share*
-       + psk_key_exchange_modes
        + pre_shared_key          -------->
                                                        ServerHello
                                                   + pre_shared_key
@@ -1453,6 +1452,9 @@ brackets.
 Single-byte entities containing uninterpreted data are of type
 opaque.
 
+A type alias T' for an existing type T is defined by:
+
+       T T';
 
 ##  Vectors
 
@@ -1570,12 +1572,14 @@ like that of C.
            T2 f2;
            ...
            Tn fn;
-       } [[T]];
+       } T;
+
+Fixed- and variable-length vector fields are allowed using the standard vector
+syntax. Structures V1 and V2 in the variants example below demonstrate this.
 
 The fields within a structure may be qualified using the type's name, with a
 syntax much like that available for enumerateds. For example, T.f2 refers to
-the second field of the previous declaration. Structure definitions may be
-embedded. Anonymous structs may also be defined inside other structures.
+the second field of the previous declaration.
 
 
 ## Constants
@@ -1592,10 +1596,10 @@ Fields and variables may be assigned a fixed value using "=", as in:
 
 Defined structures may have variants based on some knowledge that is
 available within the environment. The selector must be an enumerated
-type that defines the possible variants the structure defines.
-The body of the variant structure may be given a label
-for reference. The mechanism by which the variant is selected at
-runtime is not prescribed by the presentation language.
+type that defines the possible variants the structure defines. Each
+arm of the select specifies the type of that variant's field and an
+optional field label. The mechanism by which the variant is selected
+at runtime is not prescribed by the presentation language.
 
        struct {
            T1 f1;
@@ -1603,12 +1607,12 @@ runtime is not prescribed by the presentation language.
            ....
            Tn fn;
            select (E) {
-               case e1: Te1;
-               case e2: Te2;
+               case e1: Te1 [[fe1]];
+               case e2: Te2 [[fe2]];
                ....
-               case en: Ten;
-           } [[fv]];
-       } [[Tv]];
+               case en: Ten [[fen]];
+           };
+       } Tv;
 
 For example:
 
@@ -1678,7 +1682,7 @@ processed and transmitted as specified by the current active connection state.
                case finished:              Finished;
                case new_session_ticket:    NewSessionTicket;
                case key_update:            KeyUpdate;
-           } body;
+           };
        } Handshake;
 
 Protocol messages MUST be sent in the order defined in
@@ -1894,7 +1898,7 @@ client MAY abort the handshake.
 After sending the ClientHello message, the client waits for a ServerHello
 or HelloRetryRequest message. If early data
 is in use, the client may transmit early application data
-{{zero-rtt-data}} while waiting for the next handshake message.
+({{zero-rtt-data}}) while waiting for the next handshake message.
 
 ### Server Hello {#server-hello}
 
@@ -1916,7 +1920,7 @@ Structure of this message:
 version
 : This field contains the version of TLS negotiated for this connection.  Servers
   MUST select a version from the list in ClientHello's supported_versions extension,
-  or otherwise negotiate TLS 1.2 or previous.
+  or otherwise negotiate TLS 1.2 or a previous version.
   A client that receives a version that was not offered MUST abort the handshake.
   For this version of the specification, the version is 0x0304.  (See
   {{backward-compatibility}} for details about backward compatibility.)
@@ -2253,7 +2257,7 @@ client (this is an exception to the usual rule that the only extensions that
 may be sent are those that appear in the ClientHello). When sending the
 new ClientHello, the client MUST copy the contents of the extension received in
 the HelloRetryRequest into a "cookie" extension in the new ClientHello.
-Clients MUST NOT use cookies in subsequent connections.
+Clients MUST NOT use cookies in their initial ClientHello in subsequent connections.
 
 ###  Signature Algorithms
 
@@ -2428,7 +2432,7 @@ purpose {{RFC6066}}, but is more complicated, is not used in TLS 1.3
 (although it may appear in ClientHello messages from clients which are
 offering prior versions of TLS).
 
-#### OID Filters
+### OID Filters
 
 The "oid_filters" extension allows servers to provide a set of OID/value
 pairs which it would like the client's certificate to match. This
@@ -2510,6 +2514,8 @@ The "extension_data" field of this extension contains a
 %%% Supported Groups Extension
 
        enum {
+           unallocated_RESERVED(0x0000),
+
            /* Elliptic Curve Groups (ECDHE) */
            obsolete_RESERVED(0x0001..0x0016),
            secp256r1(0x0017), secp384r1(0x0018), secp521r1(0x0019),
@@ -2517,7 +2523,7 @@ The "extension_data" field of this extension contains a
            x25519(0x001D), x448(0x001E),
 
            /* Finite Field Groups (DHE) */
-           ffdhe2048(0x0100), ffdhe3072(0x0101), ffdhe4096 (0x0102),
+           ffdhe2048(0x0100), ffdhe3072(0x0101), ffdhe4096(0x0102),
            ffdhe6144(0x0103), ffdhe8192(0x0104),
 
            /* Reserved Code Points */
@@ -2680,11 +2686,13 @@ the opaque key_exchange field of a KeyShareEntry in a KeyShare structure.
 For secp256r1, secp384r1 and secp521r1, the contents are the serialized
 value of the following struct:
 
+%%% Key Exchange Messages
+
        struct {
-           uint8                legacy_form = 4;
-           opaque               X[coordinate_length];
-           opaque               Y[coordinate_length];
-        } UncompressedPointRepresentation;
+           uint8 legacy_form = 4;
+           opaque X[coordinate_length];
+           opaque Y[coordinate_length];
+       } UncompressedPointRepresentation;
 
 X and Y respectively are the binary representations of the X and Y
 values in network byte order.  There are no internal length markers,
@@ -2879,15 +2887,15 @@ The "extension_data" field of this extension contains a
        opaque PskBinderEntry<32..255>;
 
        struct {
+           PskIdentity identities<7..2^16-1>;
+           PskBinderEntry binders<33..2^16-1>;
+       } OfferedPsks;
+
+       struct {
            select (Handshake.msg_type) {
-               case client_hello:
-                   PskIdentity identities<7..2^16-1>;
-                   PskBinderEntry binders<33..2^16-1>;
-
-               case server_hello:
-                   uint16 selected_identity;
+               case client_hello: OfferedPsks;
+               case server_hello: uint16 selected_identity;
            };
-
        } PreSharedKeyExtension;
 
 identity
@@ -3009,10 +3017,10 @@ ClientHello2, its binder will be computed over:
                        HelloRetryRequest,
                        ClientHello2[truncated])
 
-The full ClientHello1 is included in all other handshake hash computations.
+The full ClientHello1/ClientHello2 is included in all other handshake hash computations.
 Note that in the first flight, ClientHello1\[truncated] is hashed directly,
 but in the second flight, ClientHello1 is hashed and then reinjected as a
-"handshake_hash" message, as described in {{the-transcript-hash}}.
+"message_hash" message, as described in {{the-transcript-hash}}.
 
 #### Processing Order
 
@@ -3172,9 +3180,9 @@ replaced with a special synthetic handshake message of handshake
 type "message_hash" containing Hash(ClientHello1). I.e.,
 
      Transcript-Hash(ClientHello1, HelloRetryRequest, ... MN) =
-         Hash(message_hash ||        // Handshake type
-              00 00 Hash.length ||   // Handshake message length (bytes)
-              Hash(ClientHello1) ||  // Hash of ClientHello1
+         Hash(message_hash ||        /* Handshake type */
+              00 00 Hash.length ||   /* Handshake message length (bytes) */
+              Hash(ClientHello1) ||  /* Hash of ClientHello1 */
               HelloRetryRequest ... MN)
 
 The reason for this construction is to allow the server to do a
@@ -3215,9 +3223,9 @@ Structure of this message:
 %%% Authentication Messages
 
        struct {
-           select(certificate_type){
+           select (certificate_type) {
                case RawPublicKey:
-                 // From RFC 7250 ASN.1_subjectPublicKeyInfo
+                 /* From RFC 7250 ASN.1_subjectPublicKeyInfo */
                  opaque ASN1_subjectPublicKeyInfo<1..2^24-1>;
 
                case X509:
@@ -3627,7 +3635,7 @@ handshake, for example.
        struct {
            uint32 ticket_lifetime;
            uint32 ticket_age_add;
-           opaque ticket_nonce<1..255>;
+           opaque ticket_nonce<0..255>;
            opaque ticket<1..2^16-1>;
            Extension extensions<0..2^16-2>;
        } NewSessionTicket;
@@ -3829,7 +3837,8 @@ type MUST contain exactly one message.
 Application Data messages contain data that is opaque to
 TLS. Application Data messages are always protected. Zero-length
 fragments of Application Data MAY be sent as they are potentially
-useful as a traffic analysis countermeasure.
+useful as a traffic analysis countermeasure.  Application Data fragments
+MAY be split across multiple records or coalesced into a single record.
 
 
 %%% Record Layer
@@ -4379,7 +4388,7 @@ certificate_required
 no_application_protocol
 : Sent by servers when a client
   "application_layer_protocol_negotiation" extension advertises
-  protocols that the server does not support
+  only protocols that the server does not support
   (see {{RFC7301}}).
 {:br }
 
@@ -4395,7 +4404,7 @@ and the handshake transcript. Note that because the handshake
 transcript includes the random values from the Hello messages,
 any given handshake will have different traffic secrets, even
 if the same input secrets are used, as is the case when
-the same PSK is used for multiple connections
+the same PSK is used for multiple connections.
 
 
 ## Key Schedule
@@ -4405,7 +4414,7 @@ functions as defined for HKDF {{RFC5869}}, as well as the functions
 defined below:
 
 ~~~~
-    HKDF-Expand-Label(Secret, Label, HashValue, Length) =
+    HKDF-Expand-Label(Secret, Label, Context, Length) =
          HKDF-Expand(Secret, HkdfLabel, Length)
 
     Where HkdfLabel is specified as:
@@ -4413,7 +4422,7 @@ defined below:
     struct {
         uint16 length = Length;
         opaque label<7..255> = "tls13 " + Label;
-        opaque hash_value<0..255> = HashValue;
+        opaque context<0..255> = Context;
     } HkdfLabel;
 
     Derive-Secret(Secret, Label, Messages) =
@@ -4426,7 +4435,7 @@ algorithm.
 Hash.length is its output length in bytes. Messages are the concatenation of the
 indicated handshake messages, including the handshake message type
 and length fields, but not including record layer headers. Note that
-in some cases a zero-length HashValue (indicated by "") is passed to
+in some cases a zero-length Context (indicated by "") is passed to
 HKDF-Expand-Label.
 
 Note: with common hash functions, any label longer than 12 characters
@@ -4436,7 +4445,7 @@ this limit.
 
 Given a set of n InputSecrets, the final "master secret" is computed
 by iteratively invoking HKDF-Extract with InputSecret_1, InputSecret_2,
-etc.  The initial secret is simply a string of Hash.length zero bytes.
+etc.  The initial secret is simply a string of Hash.length bytes set to zeros.
 Concretely, for the present version of TLS 1.3, secrets are
 added in the following order:
 
@@ -4519,7 +4528,7 @@ called with four distinct transcripts; in a 1-RTT-only exchange
 with three distinct transcripts.
 
 If a given secret is not available, then the 0-value consisting of
-a string of Hash.length zero bytes is used.  Note that this does not mean skipping
+a string of Hash.length bytes set to zeros is used.  Note that this does not mean skipping
 rounds, so if PSK is not in use Early Secret will still be
 HKDF-Extract(0, 0). For the computation of the binder_secret, the label is
 "ext binder" for external PSKs (those provisioned outside of TLS)
@@ -4721,7 +4730,7 @@ provided, the server would then fall back to a full handshake.
 
 If the tickets are not self-contained but rather are database keys,
 and the corresponding PSKs are deleted upon use, then connections established
-using one PSK enjoy forward security. This improves security for
+using one PSK enjoy forward secrecy. This improves security for
 all 0-RTT data and PSK usage when PSK is used without (EC)DHE.
 
 Because this mechanism requires sharing the session database between
@@ -4906,7 +4915,7 @@ applicable features:
 
 A client is considered to be attempting to negotiate using this
 specification if the ClientHello contains a "supported_versions"
-extension 0x0304 the highest version number contained in its body.
+extension with 0x0304 as the highest version number contained in its body.
 Such a ClientHello message MUST meet the following requirements:
 
  - If not containing a "pre_shared_key" extension, it MUST contain both
@@ -4961,7 +4970,7 @@ The registries and their allocation policies are below:
   Standards Action {{RFC5226}}. IANA \[SHALL update/has updated] this registry
   to rename item 4 from "NewSessionTicket" to "new_session_ticket"
   and to add the "hello_retry_request", "encrypted_extensions",
-  "end_of_early_data", "key_update", and "handshake_hash" values.
+  "end_of_early_data", "key_update", and "message_hash" values.
 
 This document also uses the TLS ExtensionType Registry originally created in
 {{RFC4366}}. IANA has updated it to reference this document. The registry and
@@ -5067,14 +5076,14 @@ app data                       | Send Finished
 after   -->                    | K_send = application
 here                  +--------+--------+
              No 0-RTT |                 | 0-RTT
-   K_recv = handshake |                 | K_recv = early_data
-[Skip decrypt errors] |             WAIT_EOED <---+
-                      |            Recv |   |     | Recv
-                      |  EndOfEarlyData |   |     | Early data
-                      |        K_recv = |   +-----+
-                      |       handshake |
                       |                 |
-                      +> WAIT_FLIGHT2 <-+
+  K_recv = handshake  |                 | K_recv = early data
+[Skip decrypt errors] |    +------> WAIT_EOED -+
+                      |    |       Recv |      | Recv EndOfEarlyData
+                      |    | early data |      | K_recv = handshake
+                      |    +------------+      |
+                      |                        |
+                      +> WAIT_FLIGHT2 <--------+
                                |
                       +--------+--------+
               No auth |                 | Client auth
@@ -5182,6 +5191,18 @@ preference to crafting a new one. Many adequate cryptographic libraries
 are already available under favorable license terms.  Should those prove
 unsatisfactory, {{RFC4086}} provides guidance on the generation of random values.
 
+TLS uses random values both in public protocol fields such as the
+public Random values in the ClientHello and ServerHello and to
+generate keying material. With a properly functioning CSPRNG, this
+does not present a security problem as it is not feasible to determine
+the CSPRNG state from its output. However, with a broken CSPRNG, it
+may be possible for an attacker to use the public output to determine
+the CSPRNG internal state and thereby predict the keying material, as
+documented in {{?CHECKOWAY=DOI.10.1145/2976749.2978395}}.
+Implementations can provide extra security against
+this form of attack by using separate CSPRNGs to generate public and
+private values.
+
 
 ## Certificates and Authentication
 
@@ -5237,8 +5258,8 @@ TLS protocol issues:
 
 - Do you properly ignore unrecognized cipher suites
   ({{client-hello}}), hello extensions ({{extensions}}), named groups
-  ({{negotiated-groups}}), key shares {{key-share}},
-  supported versions {{supported-versions}},
+  ({{negotiated-groups}}), key shares ({{key-share}}),
+  supported versions ({{supported-versions}}),
   and signature algorithms ({{signature-algorithms}}) in the
   ClientHello?
 
@@ -5346,7 +5367,7 @@ whenever TLS 1.3 is used.
 A TLS 1.3 client who wishes to negotiate with servers that do not
 support TLS 1.3 will send a
 normal TLS 1.3 ClientHello containing 0x0303 (TLS 1.2) in
-ClientHello.legacy_version but with the correct version in the
+ClientHello.legacy_version but with the correct version(s) in the
 "supported_versions" extension. If the server does not support TLS 1.3 it
 will respond with a ServerHello containing an older version number. If the
 client agrees to use this version, the negotiation will proceed as appropriate
