@@ -5924,7 +5924,7 @@ server-to-client encryption keys because that would entail
 the reuse of those keys. This parallels the use of the early
 application traffic keys only in the client-to-server direction.
 
-## Static DH Shares
+## Static (EC) DH Shares
 
 For various reasons, some implementations may be tempted to use static
 (EC) DH private key. Using such keys lowers the security guarantees of
