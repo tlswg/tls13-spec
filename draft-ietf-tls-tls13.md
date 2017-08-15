@@ -5272,6 +5272,10 @@ Cryptographic details:
 
 - What countermeasures do you use to prevent timing attacks {{TIMING}}?
 
+- In particular, does the time it takes to process a record and pass it to
+  application not depend on the amount of padding in the application data
+  record?
+
 - When using Diffie-Hellman key exchange, do you correctly preserve
   leading zero bytes in the negotiated key (see {{finite-field-diffie-hellman}})?
 
@@ -5795,9 +5799,46 @@ directly determine the length of the padding, but may be able to
 measure it indirectly by the use of timing channels exposed during
 record processing (i.e., seeing how long it takes to process a
 record or trickling in records to see which ones elicit a response
-from the server). In general, it is not known how to remove all of
-these channels because even a constant time padding removal function will
-then feed the content into data-dependent functions.
+from the server).
+
+To remove the contribution of the TLS library to the timing differences in
+processing of the records, the removal of the padding and detection of the
+ContentType in TLSInnerPlaintext MUST be done in a constant time manner.
+It can be done using following Python3 pseudocode:
+
+    def ct_neq_u8(x, y):
+        return (((x-y) & 0xff)|((y-x) & 0xff))>>7
+
+    def ct_eq_u8(x, y):
+        return 1 ^ ct_neq_u8(x, y)
+
+    def ct_isnonzero_u8(x):
+        return (x|(-x & 0xff)) >> 7
+
+    def ct_iszero_u8(x):
+        return 1 ^ ct_isnonzero_u8(x)
+
+    def ct_mask_u8(bit):
+        return (-ct_isnonzero_u8(bit)) & 0xff
+
+    def ct_select_u8(x, y, bit):
+        mask = ct_mask_u8(bit)
+        return (x & mask) | (y & ~mask)
+
+    def de_pad(data):
+        content_type = 0
+        type_pos = 0
+        data = memoryview(data)
+        for pos, val in reversed(list(enumerate(data))):
+            mask = ct_isnonzero_u8(val) & ct_iszero_u8(content_type)
+            content_type = ct_select_u8(val, content_type, mask)
+            type_pos = ct_select_u8(pos, type_pos, mask)
+
+        return content_type, data[:type_pos]
+
+In general there are many factors to consider to make constant time processing
+in applicaiton level protocol, thus to fully remove the timing side-channels
+careful analysis of the application protocol and source code is required.
 
 Note: Robust
 traffic analysis defences will likely lead to inferior performance
