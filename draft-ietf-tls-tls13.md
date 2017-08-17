@@ -3251,7 +3251,7 @@ certificate_list
 extensions:
 : A set of extension values for the CertificateEntry. The "Extension"
   format is defined in {{extensions}}. Valid extensions include
-  OCSP Status extensions ({{RFC6066}} and {{!RFC6961}}) and
+  OCSP Status extension ({{RFC6066}}) and
   SignedCertificateTimestamps ({{!RFC6962}}).  An extension MUST only be present
   in a Certificate message if the corresponding
   ClientHello extension was presented in the initial handshake.
@@ -3303,6 +3303,13 @@ certificate. Specifically:
 The body of the "status_request" extension
 from the server MUST be a CertificateStatus structure as defined
 in {{RFC6066}}, which is interpreted as defined in {{!RFC6960}}.
+
+Note: status_request_v2 extension ({{!RFC6961}}) is deprecated. TLS 1.3 servers
+MUST NOT act upon its presence or information in it when processing Client
+Hello, in particular they MUST NOT send the status_request_v2 extension in the
+Encrypted Extensions, Certificate Request or the Certificate messages.
+TLS 1.3 servers MUST be able to process Client Hello messages that include it,
+as it MAY be sent by clients that wish to use it in earlier protocol versions.
 
 A server MAY request that a client present an OCSP response with its
 certificate by sending an empty "status_request" extension in its
