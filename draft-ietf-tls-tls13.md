@@ -1771,6 +1771,12 @@ ClientHello when the server has responded to its ClientHello with a
 HelloRetryRequest. In that case, the client MUST send the same
 ClientHello (without modification) except:
 
+- cipher_suites only lists the one cipher suite provided in the
+  HelloRetryRequest.
+
+- Updating the "supported_versions" extension to only list the
+  version provided in server_version.
+
 - If a "key_share" extension was supplied in the HelloRetryRequest,
   replacing the list of shares with a list containing a single
   KeyShareEntry from the indicated group.
