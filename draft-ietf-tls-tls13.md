@@ -120,7 +120,7 @@ informative:
          -
            ins: E. Barker
          -
-           ins: Lily Chen
+           ins: L. Chen
          -
            ins: A. Roginsky
          -
