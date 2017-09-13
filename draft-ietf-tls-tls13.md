@@ -3616,9 +3616,16 @@ ticket no more than once, with more recent tickets being used
 first.
 
 Any ticket MUST only be resumed with a cipher suite that has the
-same KDF hash algorithm as that used to establish the original connection,
-and only if the client provides the same SNI value as in the original
-connection, as described in Section 3 of {{RFC6066}}.
+same KDF hash algorithm as that used to establish the original connection.
+Clients MUST only resume if the new SNI value is valid for the server
+certificate presented in the original session, and SHOULD only resume if
+the SNI value matches the one used in the original session.  The latter
+is a performance optimization: normally, there is no reason to expect
+that different servers covered by a single certificate would be able to
+accept each other's tickets, hence attempting resumption in that case
+would waste a single-use ticket.  If such an indication is provided
+(externally or by any other means), clients MAY resume with a different
+SNI value.
 
 Note: Although the resumption master secret depends on the client's second
 flight, servers which do not request client authentication MAY compute
