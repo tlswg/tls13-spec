@@ -5272,6 +5272,9 @@ Cryptographic details:
 
 - What countermeasures do you use to prevent timing attacks {{TIMING}}?
 
+- Do you perform removal and addition of padding in constant time? If not,
+  do you document that limitation in the implementation documentation?
+
 - When using Diffie-Hellman key exchange, do you correctly preserve
   leading zero bytes in the negotiated key (see {{finite-field-diffie-hellman}})?
 
@@ -5795,9 +5798,21 @@ directly determine the length of the padding, but may be able to
 measure it indirectly by the use of timing channels exposed during
 record processing (i.e., seeing how long it takes to process a
 record or trickling in records to see which ones elicit a response
-from the server). In general, it is not known how to remove all of
-these channels because even a constant time padding removal function will
-then feed the content into data-dependent functions.
+from the server). Implementations of the protocol MAY opt for constant time
+handling of padding. Implementations which do not provide such guarantiess
+SHOULD include information about that limitation in their documentation.
+
+Implementations that do opt for constant time processing of padding will,
+at the very least, need to implement constant time detection of ContentType
+in TLSInnerPlaintext and handing off the content to application. Adding of
+the padding, if done entirely on the TLS implementation level, will need to
+take special care on making the memory accesses not depend on the length of
+padding added.
+
+In general, it is not known how to remove all of
+these channels. A fully constant time server or client will require a close
+cooperation with the application layer protocol implementation, including
+making that higher level protocol constant time.
 
 Note: Robust
 traffic analysis defences will likely lead to inferior performance
