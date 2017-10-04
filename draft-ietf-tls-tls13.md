@@ -4695,28 +4695,28 @@ concerned with:
   handshake with B and probably retry the request, leading to duplication on
   the server system as a whole.
 
-The first class of attack can be prevented by sharing state to provide a
-guarantee that the 0-RTT is only accepted once.  Servers SHOULD provide that
-level of replay safety, by implementing one of the methods described in this
-section or by equivalent means.  It is understood, however, that due to
-operational concerns not all deployments will maintain the state at that level.
-Therefore, in normal operation, clients will not know which, if any, of these
-mechanisms servers actually implement and hence MUST only send early data which
-they deem safe to be replayed.
+The first class of attack can be prevented by sharing state to guarantee that
+the 0-RTT data is accepted at most once.  Servers SHOULD provide that level of
+replay safety, by implementing one of the methods described in this section or
+by equivalent means.  It is understood, however, that due to operational
+concerns not all deployments will maintain state at that level.  Therefore, in
+normal operation, clients will not know which, if any, of these mechanisms
+servers actually implement and hence MUST only send early data which they deem
+safe to be replayed.
 
 In addition to the direct effects of replays, there is a class of attacks where
 even operations normally considered idempotent could be exploited by a large
 number of replays (timing attacks, resource limit exhaustion and others
-described in {{replay-0rtt}}).  Those can be mitigated by providing a guarantee
-that every 0-RTT payload can be replayed only a limited number of times.  The
-server MUST ensure that any instance of it (be it a machine, a thread or any
-other entity within the relevant serving infrastructure) would accept 0-RTT for
-the same 0-RTT handshake at most once; this limits the number of replays to the
-number of server instances in the deployment.  Such guarantee can be
-accomplished by locally recording data from recently-received ClientHellos and
-rejecting repeats, or by any other method that provides the same or a stronger
-guarantee.  The "at most once per server instance" guarantee is a minimum
-requirement; servers SHOULD limit 0-RTT replays further when feasible.
+described in {{replay-0rtt}}).  Those can be mitigated by ensuring that every
+0-RTT payload can be replayed only a limited number of times.  The server MUST
+ensure that any instance of it (be it a machine, a thread or any other entity
+within the relevant serving infrastructure) would accept 0-RTT for the same
+0-RTT handshake at most once; this limits the number of replays to the number of
+server instances in the deployment.  Such guarantee can be accomplished by
+locally recording data from recently-received ClientHellos and rejecting
+repeats, or by any other method that provides the same or a stronger guarantee.
+The "at most once per server instance" guarantee is a minimum requirement;
+servers SHOULD limit 0-RTT replays further when feasible.
 
 The second class of attack cannot be prevented at the TLS layer and
 MUST be dealt with by any application. Note that any application whose
