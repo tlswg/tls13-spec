@@ -4712,7 +4712,7 @@ described in {{replay-0rtt}}).  Those can be mitigated by ensuring that every
 ensure that any instance of it (be it a machine, a thread or any other entity
 within the relevant serving infrastructure) would accept 0-RTT for the same
 0-RTT handshake at most once; this limits the number of replays to the number of
-server instances in the deployment.  Such guarantee can be accomplished by
+server instances in the deployment.  Such a guarantee can be accomplished by
 locally recording data from recently-received ClientHellos and rejecting
 repeats, or by any other method that provides the same or a stronger guarantee.
 The "at most once per server instance" guarantee is a minimum requirement;
