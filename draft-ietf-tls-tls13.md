@@ -2070,7 +2070,7 @@ A number of TLS messages contain tag-length-value encoded extensions structures.
            max_fragment_length(1),                     /* RFC 6066 */
            status_request(5),                          /* RFC 6066 */
            supported_groups(10),                       /* RFC 4492, 7919 */
-           signature_algorithms(13),                   /* RFC 5246 */
+           signature_algorithms(13),                   /* [[this document]] */
            use_srtp(14),                               /* RFC 5764 */
            heartbeat(15),                              /* RFC 6520 */
            application_layer_protocol_negotiation(16), /* RFC 7301 */
