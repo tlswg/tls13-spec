@@ -1644,6 +1644,10 @@ of a connection. Handshake messages are supplied to the TLS record layer, where
 they are encapsulated within one or more TLSPlaintext or TLSCiphertext structures, which are
 processed and transmitted as specified by the current active connection state.
 
+Implementations MUST send these messages with the "handshake" ContentType, with the exception of
+server plaintext messages (ServerHello and HelloRetryRequest) which MUST be sent using the
+"server_plaintext_handshake" ContentType.
+
 %%% Handshake Protocol
 
        enum {
@@ -3832,6 +3836,11 @@ record or fragmented across several records, provided that:
 Implementations MUST NOT send zero-length fragments of Handshake
 types, even if those fragments contain padding.
 
+Clients receiving plaintext records of type server_plaintext_handshake MUST treat them
+exactly as if they were of type handshake. Implementations receiving records of type
+server_plaintext_handshake in any other situation MUST terminate the connection with an
+"unexpected_message" alert.
+
 Alert messages ({{alert-protocol}}) MUST NOT be fragmented across
 records and multiple Alert messages MUST NOT be coalesced into a
 single TLSPlaintext record. In other words, a record with an Alert
@@ -3852,6 +3861,7 @@ MAY be split across multiple records or coalesced into a single record.
            alert(21),
            handshake(22),
            application_data(23),
+           server_plaintext_handshake(99),
            (255)
        } ContentType;
 
