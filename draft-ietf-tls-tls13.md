@@ -4439,7 +4439,8 @@ Hash.length is its output length in bytes. Messages are the concatenation of the
 indicated handshake messages, including the handshake message type
 and length fields, but not including record layer headers. Note that
 in some cases a zero-length Context (indicated by "") is passed to
-HKDF-Expand-Label.
+HKDF-Expand-Label.  The Labels specified in this document are all
+ASCII strings, and do not include a trailing NUL byte.
 
 Note: with common hash functions, any label longer than 12 characters
 requires an additional iteration of the hash function to compute.
