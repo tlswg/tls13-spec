@@ -1787,6 +1787,9 @@ ClientHello (without modification) except:
   any PSKs which are incompatible with the server's indicated
   cipher suite.
 
+- Optionally adding, removing, or changing the length of the "padding"
+  extension {{RFC7685}}.
+
 Because TLS 1.3 forbids renegotiation, if a server has negotiated TLS
 1.3 and receives a ClientHello at any other time, it MUST terminate
 the connection with an "unexpected_message" alert.
