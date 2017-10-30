@@ -1836,7 +1836,7 @@ legacy_session_id
 : Versions of TLS before TLS 1.3 supported a "session resumption"
   feature which has been merged with Pre-Shared Keys in this version
   (see {{resumption-and-psk}}). In compatibility mode
-  ({{compatibility-mode}} this field MUST be set to a 32-byte value
+  ({{middlebox}} this field MUST be set to a 32-byte value
   Otherwise, it MUST be set as a zero length vector (i.e., a single
   zero byte length field). If servers receive a ClientHello which
   advertises TLS 1.3 but has   a legacy_sesson_id field of any other
@@ -3832,7 +3832,7 @@ TLS records are typed, which allows multiple higher-level protocols to
 be multiplexed over the same record layer. This document specifies
 four content types: handshake, application data, alert, and
 change_cipher_spec, with the latter being used only for
-compatibility purposes (see {{compatibility-mode}}).
+compatibility purposes (see {{middlebox}}).
 An implementation may receive a zero-length record of type change_cipher_spec
 at any time and MUST simply drop it without further processing.
 
@@ -5415,10 +5415,6 @@ indicate the use of the Extended Master Secret extension in their APIs
 whenever TLS 1.3 is used.
 
 
-## Compatibility Mode
-
-[TODO]
-
 ## Negotiating with an older server
 
 A TLS 1.3 client who wishes to negotiate with servers that do not
@@ -5484,6 +5480,29 @@ ClientHello without 0-RTT data.
 To avoid this error condition, multi-server deployments SHOULD ensure a uniform
 and stable deployment of TLS 1.3 without 0-RTT prior to enabling 0-RTT.
 
+## Middlebox Compatibility Mode {#middlebox}
+
+Field measurements have found that a significant number of middleboxes
+misbehave when a TLS client/server pair negotiates TLS 1.3. Implementations
+can increase the chance of making connections through those middleboxes
+by making the TLS 1.3 handshake look more like a TLS 1.2 handshake:
+
+- The client provides a dummy 32-byte session ID in the ClientHello.
+
+- Send a dummy change_cipher_spec message prior to changing
+  over from cleartext records into protected records. In
+  1-RTT mode, this means that the server sends a change_cipher_spec
+  after the ServerHello and the client sends it before sending
+  its first flight. In 0-RTT mode, this means the client sends
+  the change_cipher_spec immediate after the ClientHello. Because
+  implementations are required to ignore change_cipher_spec,
+  whether an implementation sends it or not need not be negotiated.
+
+When put together, these changes make the TLS 1.3 handshake resemble
+TLS 1.2 session resumption, which improves the chance of successfully
+connecting through middleboxes.
+ 
+[[OPEN ISSUE: HRR.]]
 
 ## Backwards Compatibility Security Restrictions
 
