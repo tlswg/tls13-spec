@@ -1835,11 +1835,13 @@ random
 legacy_session_id
 : Versions of TLS before TLS 1.3 supported a "session resumption"
   feature which has been merged with Pre-Shared Keys in this version
-  (see {{resumption-and-psk}}). In compatibility mode
-  ({{middlebox}} this field MUST be set to a 32-byte value
+  (see {{resumption-and-psk}}). A client which has a cached
+  session ID set by a pre-TLS 1.3 server SHOULD set this field
+  to that value. In compatibility mode
+  (see {{middlebox}}) this field MUST be set to a 32-byte value.
   Otherwise, it MUST be set as a zero length vector (i.e., a single
   zero byte length field). If servers receive a ClientHello which
-  advertises TLS 1.3 but has   a legacy_sesson_id field of any other
+  advertises TLS 1.3 but has a legacy_sesson_id field of any other
   length, they MUST abort the handshake with an "invalid_parameter"
   alert.
 
@@ -1944,7 +1946,10 @@ random
   generated independently of the ClientHello.random.
 
 legacy_session_id_echo
-: The contents of the client's legacy_session_id field.
+: The contents of the client's legacy_session_id field. Note that
+this field is echoed even if the client's value corresponded to
+a cached pre-TLS 1.3 session which the server has chosen not
+to resume.
   
 cipher_suite
 : The single cipher suite selected by the server from the list in
@@ -3833,10 +3838,19 @@ be multiplexed over the same record layer. This document specifies
 four content types: handshake, application data, alert, and
 change_cipher_spec, with the latter being used only for
 compatibility purposes (see {{middlebox}}).
-An implementation may receive a zero-length record of type change_cipher_spec
-at any time during the handshake and MUST simply drop it without further processing.
-After the handshake is complete, change_cipher_spec MUST be treated as
-an unknown record type.
+
+An implementation may receive an unencrypted record of type
+change_cipher_spec consisting of the single byte value 0x01 at any
+time during the handshake and MUST simply drop it without further
+processing.  Note that this record may appear at a point at the
+handshake where the implementation is expecting protected records with
+content type application_data, and so it is necessary to detect this
+condition prior to attempting to deprotect the record. An
+implementation which receives any other change_cipher_spec value or
+which receives a protected change_cipher_spec record MUST abort the
+handshake with an "illegal_parameter" alert. After the handshake is
+complete, change_cipher_spec MUST be treated as an unknown record
+type.
 
 Implementations MUST NOT send record types not defined in this
 document unless negotiated by some extension.  If a TLS implementation
