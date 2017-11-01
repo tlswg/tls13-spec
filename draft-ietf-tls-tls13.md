@@ -2034,8 +2034,9 @@ The server will send this message in response to a ClientHello message
 if it is able to find an acceptable set of parameters but the
 ClientHello does not contain sufficient information to proceed with
 the handshake. As discussed in {{server-hello}}, the HelloRetryRequest
-has the same format as a ServerHello message, and the fields have
-the same meaning.
+has the same format as a ServerHello message, and the
+legacy_version, legacy_session_id_echo, cipher_suite, and legacy_compression
+methods fields have the same meaning.
 
 The server's extensions MUST contain "supported_versions" and
 otherwise the server SHOULD send only the extensions necessary for the
