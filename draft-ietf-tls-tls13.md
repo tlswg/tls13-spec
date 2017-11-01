@@ -1653,6 +1653,7 @@ processed and transmitted as specified by the current active connection state.
            hello_verify_request_RESERVED(3),
            new_session_ticket(4),
            end_of_early_data(5),
+           hello_retry_request_RESERVED(6),           
            encrypted_extensions(8),
            certificate(11),
            server_key_exchange_RESERVED(12),
