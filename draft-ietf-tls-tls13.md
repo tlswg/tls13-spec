@@ -1833,15 +1833,13 @@ random
 legacy_session_id
 : Versions of TLS before TLS 1.3 supported a "session resumption"
   feature which has been merged with Pre-Shared Keys in this version
-  (see {{resumption-and-psk}}). A client which has a cached
-  session ID set by a pre-TLS 1.3 server SHOULD set this field
-  to that value. In compatibility mode
-  (see {{middlebox}}) this field MUST be set to a 32-byte value.
+  (see {{resumption-and-psk}}). A client which has a cached session ID
+  set by a pre-TLS 1.3 server SHOULD set this field to that value. In
+  compatibility mode (see {{middlebox}}) this field MUST be non-empty,
+  so a client not offering a pre-TLS 1.3 session MUST generate a
+  random 32-byte value.
   Otherwise, it MUST be set as a zero length vector (i.e., a single
-  zero byte length field). If servers receive a ClientHello which
-  advertises TLS 1.3 but has a legacy_sesson_id field of any other
-  length, they MUST abort the handshake with an "invalid_parameter"
-  alert.
+  zero byte length field).
 
 cipher_suites
 : This is a list of the symmetric cipher options supported by the
@@ -3850,13 +3848,13 @@ An implementation may receive an unencrypted record of type
 change_cipher_spec consisting of the single byte value 0x01 at any
 time during the handshake and MUST simply drop it without further
 processing.  Note that this record may appear at a point at the
-handshake where the implementation is expecting protected records with
-content type application_data, and so it is necessary to detect this
+handshake where the implementation is expecting protected records
+and so it is necessary to detect this
 condition prior to attempting to deprotect the record. An
 implementation which receives any other change_cipher_spec value or
 which receives a protected change_cipher_spec record MUST abort the
 handshake with an "illegal_parameter" alert. After the handshake is
-complete, change_cipher_spec MUST be treated as an unknown record
+complete, change_cipher_spec MUST be treated as an unexpected record
 type.
 
 Implementations MUST NOT send record types not defined in this
@@ -5511,16 +5509,17 @@ misbehave when a TLS client/server pair negotiates TLS 1.3. Implementations
 can increase the chance of making connections through those middleboxes
 by making the TLS 1.3 handshake look more like a TLS 1.2 handshake:
 
-- The client provides a dummy 32-byte session ID in the ClientHello.
+- The client always provides a non-empty session ID in the ClientHello.
 
-- Send a dummy change_cipher_spec message prior to changing
-  over from cleartext records into protected records. In
-  1-RTT mode, this means that the server sends a change_cipher_spec
-  after the ServerHello and the client sends it before sending
-  its first flight. In 0-RTT mode, this means the client sends
-  the change_cipher_spec immediate after the ClientHello.
-  The server SHOULD also send a change_cipher_spec after
-  sending HelloRetryRequest.
+- If not offering early data, the client sends a dummy
+  change_cipher_spec record immediately before its second flight. This
+  may either be before its second ClientHello or before its encrypted
+  handshake flight. If offering early data, the record is placed
+  immediately after the first ClientHello.
+
+- The server sends a dummy change_cipher_spec record immediately
+  after its first handshake message. This may either be after a
+  ServerHello or a HelloRetryRequest.
 
 When put together, these changes make the TLS 1.3 handshake resemble
 TLS 1.2 session resumption, which improves the chance of successfully
