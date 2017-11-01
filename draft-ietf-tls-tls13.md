@@ -1653,7 +1653,6 @@ processed and transmitted as specified by the current active connection state.
            hello_verify_request_RESERVED(3),
            new_session_ticket(4),
            end_of_early_data(5),
-           hello_retry_request(6),
            encrypted_extensions(8),
            certificate(11),
            server_key_exchange_RESERVED(12),
@@ -1674,7 +1673,6 @@ processed and transmitted as specified by the current active connection state.
                case client_hello:          ClientHello;
                case server_hello:          ServerHello;
                case end_of_early_data:     EndOfEarlyData;
-               case hello_retry_request:   HelloRetryRequest;
                case encrypted_extensions:  EncryptedExtensions;
                case certificate_request:   CertificateRequest;
                case certificate:           Certificate;
@@ -1947,10 +1945,13 @@ random
 
 legacy_session_id_echo
 : The contents of the client's legacy_session_id field. Note that
-this field is echoed even if the client's value corresponded to
-a cached pre-TLS 1.3 session which the server has chosen not
-to resume.
-  
+  this field is echoed even if the client's value corresponded to
+  a cached pre-TLS 1.3 session which the server has chosen not
+  to resume. A client which receives a legacy_session_id field
+  which does not match what it sent in the ClientHello
+  MUST abort the handshake with an "illegal_parameter"
+  alert.
+
 cipher_suite
 : The single cipher suite selected by the server from the list in
   ClientHello.cipher_suites. A client which receives a cipher suite
@@ -1969,6 +1970,19 @@ extensions
   The remaining extensions are sent separately in the EncryptedExtensions
   message.
 {:br }
+
+For backward compatibility reasons with middleboxes
+(see {{middlebox}}) the HelloRetryRequest
+message uses the same structure as the ServerHello, but with
+Random set to the special value of the SHA-256 of
+"HelloRetryRequest":
+
+      CF 21 AD 74 E5 9A 61 11 BE 1D 8C 02 1E 65 B8 91
+      C2 A2 11 16 7A BB 8C 5E 07 9E 09 E2 C8 A8 33 9C
+
+Upon receiving a message with type server_hello, implementations
+MUST first examine the Random value and if it matches
+this value, process it as described in {{hello-retry-request}}).
 
 TLS 1.3 has a downgrade protection mechanism embedded in the server's
 random value. TLS 1.3 servers which negotiate TLS 1.2 or below in
@@ -2018,42 +2032,35 @@ interoperability failure.
 
 ###  Hello Retry Request
 
-The server will send this message in response to a ClientHello message if it is
-able to find an acceptable set of parameters but the ClientHello does not
-contain sufficient information to proceed with the handshake.
+The server will send this message in response to a ClientHello message
+if it is able to find an acceptable set of parameters but the
+ClientHello does not contain sufficient information to proceed with
+the handshake. As discussed in {{server-hello}}, the HelloRetryRequest
+has the same format as a ServerHello message, and the fields have
+the same meaning.
 
-Structure of this message:
-
-%%% Key Exchange Messages
-
-       struct {
-           ProtocolVersion server_version;
-           CipherSuite cipher_suite;
-           Extension extensions<2..2^16-1>;
-       } HelloRetryRequest;
-
-{:br }
-
-The version, cipher_suite, and extensions fields have the
-same meanings as their corresponding values in the ServerHello.
-The server SHOULD send only the extensions necessary for the client to
-generate a correct ClientHello pair. As with ServerHello, a
+The server's extensions MUST contain "supported_versions" and
+otherwise the server SHOULD send only the extensions necessary for the
+client to generate a correct ClientHello pair. As with ServerHello, a
 HelloRetryRequest MUST NOT contain any extensions that were not first
-offered by the client in its ClientHello, with the exception of optionally the
-"cookie" (see {{cookie}}) extension.
+offered by the client in its ClientHello, with the exception of
+optionally the "cookie" (see {{cookie}}) extension.
 
-Upon receipt of a HelloRetryRequest, the client MUST verify that the
-extensions block is not empty and otherwise MUST abort the handshake
-with a "decode_error" alert. Clients MUST abort the handshake with
+Upon receipt of a HelloRetryRequest, the client MUST perform the
+checks specified in {{server-hello}} and then process the
+extensions, starting with determining the version using
+"supported_versions". Clients MUST abort the handshake with
 an "illegal_parameter" alert if the HelloRetryRequest would not result in
 any change in the ClientHello. If a client receives a second
 HelloRetryRequest in the same connection (i.e., where
 the ClientHello was itself in response to a HelloRetryRequest), it
 MUST abort the handshake with an "unexpected_message" alert.
 
-Otherwise, the client MUST process all extensions in the HelloRetryRequest and
-send a second updated ClientHello. The HelloRetryRequest extensions defined in
-this specification are:
+Otherwise, the client MUST process all extensions in the
+HelloRetryRequest and send a second updated ClientHello. The
+HelloRetryRequest extensions defined in this specification are:
+
+- supported_versions (see {{supported_versions}})
 
 - cookie (see {{cookie}})
 
@@ -2163,7 +2170,7 @@ appears it MUST abort the handshake with an "illegal_parameter" alert.
 | psk_key_exchange_modes \[\[this document]]|          CH |
 | early_data \[\[this document]]           | CH, EE, NST |
 | cookie \[\[this document]]               |     CH, HRR |
-| supported_versions \[\[this document]]   |      CH, SH |
+| supported_versions \[\[this document]]   | CH, SH, HRR |
 | certificate_authorities \[\[this document]]|      CH, CR |
 | oid_filters \[\[this document]]          |          CR |
 | post_handshake_auth \[\[this document]]  |          CH |
@@ -5512,6 +5519,8 @@ by making the TLS 1.3 handshake look more like a TLS 1.2 handshake:
   after the ServerHello and the client sends it before sending
   its first flight. In 0-RTT mode, this means the client sends
   the change_cipher_spec immediate after the ClientHello.
+  The server SHOULD also send a change_cipher_spec after
+  sending HelloRetryRequest.
 
 When put together, these changes make the TLS 1.3 handshake resemble
 TLS 1.2 session resumption, which improves the chance of successfully
@@ -5520,8 +5529,6 @@ negotiated. The client can opt to provide a session ID or not
 and the server has to echo it. Either side can send change_cipher_spec
 at any time during the handshake, as they must be ignored by the peer.
 
- 
-[[OPEN ISSUE: HRR.]]
 
 ## Backwards Compatibility Security Restrictions
 
