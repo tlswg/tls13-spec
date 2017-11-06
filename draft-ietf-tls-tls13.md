@@ -1838,7 +1838,8 @@ legacy_session_id
   set by a pre-TLS 1.3 server SHOULD set this field to that value. In
   compatibility mode (see {{middlebox}}) this field MUST be non-empty,
   so a client not offering a pre-TLS 1.3 session MUST generate a
-  random 32-byte value.
+  new 32-byte value. This value need not be random but SHOULD be
+  unpredictable to avoid ossification.
   Otherwise, it MUST be set as a zero length vector (i.e., a single
   zero byte length field).
 
