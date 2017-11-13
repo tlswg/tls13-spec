@@ -2784,7 +2784,10 @@ The "extension_data" field of this extension contains an
 See {{NSTMessage}} for the use of the max_early_data_size field.
 
 The parameters for the 0-RTT data (symmetric cipher suite, ALPN
-protocol, etc.) are the same as those which were negotiated in the connection
+protocol, etc.) are those associated with the PSK in use.
+For externally established PSKs, the associated values are those
+provisioned along with the key.  For PSKs established via a NewSessionTicket
+message, the associated values are those which were negotiated in the connection
 which established the PSK. The PSK used to encrypt the early data
 MUST be the first PSK listed in the client's "pre_shared_key" extension.
 
@@ -2830,11 +2833,19 @@ MUST behave in one of three ways:
 In order to accept early data, the server MUST have accepted a
 PSK cipher suite and selected the first key offered in the
 client's "pre_shared_key" extension. In addition, it MUST verify that
-the following values are consistent with those negotiated in the
-connection during which the ticket was established.
+the following values are consistent with those associated with the selected
+PSK:
 
-- The TLS version number and cipher suite.
-- The selected ALPN {{RFC7301}} protocol, if any.
+- The TLS version number
+- The selected cipher suite
+- The selected ALPN {{RFC7301}} protocol, if any
+- The selected SNI (Section 3 of {{RFC6066}}) value, if any
+
+These requirements are a superset of those needed to perform a 1-RTT
+handshake using the PSK in question.  For externally established PSKs, the
+associated values are those provisioned along with the key.  For PSKs
+established via a NewSessionTicket message, the associated values are those
+negotiated in the connection during which the ticket was established.
 
 Future extensions MUST define their interaction with 0-RTT.
 
@@ -2934,8 +2945,17 @@ via the ticket mechanism ({{NSTMessage}}), this is the KDF Hash algorithm
 on the connection where the ticket was established.
 For externally established PSKs, the Hash algorithm MUST be set when the
 PSK is established, or default to SHA-256 if no such algorithm
-is defined. The server must ensure that it selects a compatible
+is defined. The server MUST ensure that it selects a compatible
 PSK (if any) and cipher suite.
+
+Each PSK is also associated with at most one Server Name Identification
+(SNI) value (Section 3 of {{RFC6066}}).  For PSKs established via the
+ticket mechanism ({{NSTMessage}}), this is the SNI value (if any) on
+the connection where the ticket was established.  For externally established
+PSKs, the associated SNI value (or lack of value) is set when the PSK
+is established.  The server MUST ensure that it selects a compatible
+PSK (if any) and SNI value (if any).  SNI MUST NOT be negotiated when
+using a PSK not associated with an SNI value.
 
 Implementor's note: the most straightforward way to implement the
 PSK/cipher suite matching requirements is to negotiate the cipher
@@ -3625,10 +3645,12 @@ authentication state. Clients SHOULD attempt to use each
 ticket no more than once, with more recent tickets being used
 first.
 
-Any ticket MUST only be resumed with a cipher suite that has the
-same KDF hash algorithm as that used to establish the original connection,
-and only if the client provides the same SNI value as in the original
-connection, as described in Section 3 of {{RFC6066}}.
+Any ticket MUST only be resumed on connections where the following values
+match the values negotiated in the connection during which the ticket
+was established:
+
+- The KDF hash algorithm associated with the cipher suite
+- The SNI value (if any), as described in Section 3 of {{RFC6066}}
 
 Note: Although the resumption master secret depends on the client's second
 flight, servers which do not request client authentication MAY compute
