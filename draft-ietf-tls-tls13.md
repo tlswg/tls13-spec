@@ -2493,7 +2493,7 @@ extensions.
 
 The "post_handshake_auth" extension is used to indicate that a client is willing
 to perform post-handshake authentication {{post-handshake-authentication}}. Servers
-MUST not send a post-handshake CertificateRequest to clients which do not
+MUST NOT send a post-handshake CertificateRequest to clients which do not
 offer this extension. Servers MUST NOT send this extension.
 
 The "extension_data" field of the "post_handshake_auth" extension is zero
@@ -4083,10 +4083,10 @@ a non-zero octet in the cleartext, it MUST terminate the
 connection with an "unexpected_message" alert.
 
 The presence of padding does not change the overall record size limitations
-- the full encoded TLSInnerPlaintext MUST not exceed 2^14 octets. If the maximum
-fragment length is reduced, as for example by the max_fragment_length extension
-from [RFC6066], then the reduced limit applies to the full plaintext,
-including the padding.
+- the full encoded TLSInnerPlaintext MUST NOT exceed 2^14 + 1 octets. If the
+maximum fragment length is reduced, as for example by the max_fragment_length
+extension from [RFC6066], then the reduced limit applies to the full plaintext,
+including the content type and padding.
 
 Selecting a padding policy that suggests when and how much to pad is a
 complex topic and is beyond the scope of this specification. If the
