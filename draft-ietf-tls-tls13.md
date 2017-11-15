@@ -93,6 +93,7 @@ informative:
   RFC6176:
   RFC6091:
   RFC6520:
+  RFC6555:
   RFC7230:
   RFC7250:
   RFC7465:
@@ -3641,9 +3642,11 @@ single connection, either immediately after each other or
 after specific events.
 For instance, the server might send a new ticket after post-handshake
 authentication in order to encapsulate the additional client
-authentication state. Clients SHOULD attempt to use each
-ticket no more than once, with more recent tickets being used
-first.
+authentication state. Multiple tickets are useful for clients that 
+perform connection racing across interfaces and address families 
+via, for example, Happy Eyeballs {{RFC6555}} or related techniques.
+Clients SHOULD attempt to use each ticket no more than once, with 
+more recent tickets being used first.
 
 Any ticket MUST only be resumed on connections where the following values
 match the values negotiated in the connection during which the ticket
