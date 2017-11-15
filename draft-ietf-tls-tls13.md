@@ -3644,7 +3644,7 @@ For instance, the server might send a new ticket after post-handshake
 authentication in order to encapsulate the additional client
 authentication state. Multiple tickets are useful for clients that 
 perform connection racing across interfaces and address families 
-via, for example, Happy Eyeballs {{RFC6555}} or related techniques.
+via, e.g., Happy Eyeballs {{RFC6555}} or related techniques.
 Clients SHOULD attempt to use each ticket no more than once, with 
 more recent tickets being used first.
 
