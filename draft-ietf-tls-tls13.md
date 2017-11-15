@@ -3642,9 +3642,13 @@ single connection, either immediately after each other or
 after specific events.
 For instance, the server might send a new ticket after post-handshake
 authentication in order to encapsulate the additional client
-authentication state. Multiple tickets are useful for clients that 
-perform connection racing across interfaces and address families 
+authentication state. Multiple tickets are useful for clients 
+for a variety of purposes, including: 
+
+- Opening multiple parallel HTTP connections. 
+- Performing connection racing across interfaces and address families 
 via, e.g., Happy Eyeballs {{RFC6555}} or related techniques.
+
 Clients SHOULD attempt to use each ticket no more than once, with 
 more recent tickets being used first.
 
