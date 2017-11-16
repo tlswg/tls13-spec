@@ -2140,7 +2140,7 @@ appears it MUST abort the handshake with an "illegal_parameter" alert.
 | application_layer_protocol_negotiation [RFC7301]|      CH, EE |
 | signed_certificate_timestamp [RFC6962]   |  CH, CR, CT |
 | client_certificate_type [RFC7250]        |      CH, EE |
-| server_certificate_type [RFC7250]        |      CH, CT |
+| server_certificate_type [RFC7250]        |      CH, EE |
 | padding [RFC7685]                        |          CH |
 | key_share \[\[this document]]            | CH, SH, HRR |
 | pre_shared_key \[\[this document]]       |      CH, SH |
@@ -3284,8 +3284,8 @@ extensions:
 {:br }
 
 If the corresponding certificate type extension
-("server_certificate_type" or "client_certificate_type") was not used
-or the X.509 certificate type was negotiated, then each
+("server_certificate_type" or "client_certificate_type") was not negotiated
+in Encrypted Extensions, or the X.509 certificate type was negotiated, then each
 CertificateEntry contains an X.509 certificate. The sender's
 certificate MUST come in the first CertificateEntry in the list.  Each
 following certificate SHOULD directly certify one preceding it.
