@@ -93,6 +93,7 @@ informative:
   RFC6176:
   RFC6091:
   RFC6520:
+  RFC6555:
   RFC7230:
   RFC7250:
   RFC7465:
@@ -1787,6 +1788,9 @@ ClientHello (without modification) except:
   any PSKs which are incompatible with the server's indicated
   cipher suite.
 
+- Optionally adding, removing, or changing the length of the "padding"
+  extension {{RFC7685}}.
+
 Because TLS 1.3 forbids renegotiation, if a server has negotiated TLS
 1.3 and receives a ClientHello at any other time, it MUST terminate
 the connection with an "unexpected_message" alert.
@@ -2070,7 +2074,7 @@ A number of TLS messages contain tag-length-value encoded extensions structures.
            max_fragment_length(1),                     /* RFC 6066 */
            status_request(5),                          /* RFC 6066 */
            supported_groups(10),                       /* RFC 4492, 7919 */
-           signature_algorithms(13),                   /* RFC 5246 */
+           signature_algorithms(13),                   /* [[this document]] */
            use_srtp(14),                               /* RFC 5764 */
            heartbeat(15),                              /* RFC 6520 */
            application_layer_protocol_negotiation(16), /* RFC 7301 */
@@ -2136,7 +2140,7 @@ appears it MUST abort the handshake with an "illegal_parameter" alert.
 | application_layer_protocol_negotiation [RFC7301]|      CH, EE |
 | signed_certificate_timestamp [RFC6962]   |  CH, CR, CT |
 | client_certificate_type [RFC7250]        |      CH, EE |
-| server_certificate_type [RFC7250]        |      CH, CT |
+| server_certificate_type [RFC7250]        |      CH, EE |
 | padding [RFC7685]                        |          CH |
 | key_share \[\[this document]]            | CH, SH, HRR |
 | pre_shared_key \[\[this document]]       |      CH, SH |
@@ -2490,7 +2494,7 @@ extensions.
 
 The "post_handshake_auth" extension is used to indicate that a client is willing
 to perform post-handshake authentication {{post-handshake-authentication}}. Servers
-MUST not send a post-handshake CertificateRequest to clients which do not
+MUST NOT send a post-handshake CertificateRequest to clients which do not
 offer this extension. Servers MUST NOT send this extension.
 
 The "extension_data" field of the "post_handshake_auth" extension is zero
@@ -2781,7 +2785,10 @@ The "extension_data" field of this extension contains an
 See {{NSTMessage}} for the use of the max_early_data_size field.
 
 The parameters for the 0-RTT data (symmetric cipher suite, ALPN
-protocol, etc.) are the same as those which were negotiated in the connection
+protocol, etc.) are those associated with the PSK in use.
+For externally established PSKs, the associated values are those
+provisioned along with the key.  For PSKs established via a NewSessionTicket
+message, the associated values are those which were negotiated in the connection
 which established the PSK. The PSK used to encrypt the early data
 MUST be the first PSK listed in the client's "pre_shared_key" extension.
 
@@ -2827,11 +2834,19 @@ MUST behave in one of three ways:
 In order to accept early data, the server MUST have accepted a
 PSK cipher suite and selected the first key offered in the
 client's "pre_shared_key" extension. In addition, it MUST verify that
-the following values are consistent with those negotiated in the
-connection during which the ticket was established.
+the following values are consistent with those associated with the selected
+PSK:
 
-- The TLS version number and cipher suite.
-- The selected ALPN {{RFC7301}} protocol, if any.
+- The TLS version number
+- The selected cipher suite
+- The selected ALPN {{RFC7301}} protocol, if any
+- The selected SNI (Section 3 of {{RFC6066}}) value, if any
+
+These requirements are a superset of those needed to perform a 1-RTT
+handshake using the PSK in question.  For externally established PSKs, the
+associated values are those provisioned along with the key.  For PSKs
+established via a NewSessionTicket message, the associated values are those
+negotiated in the connection during which the ticket was established.
 
 Future extensions MUST define their interaction with 0-RTT.
 
@@ -2931,8 +2946,17 @@ via the ticket mechanism ({{NSTMessage}}), this is the KDF Hash algorithm
 on the connection where the ticket was established.
 For externally established PSKs, the Hash algorithm MUST be set when the
 PSK is established, or default to SHA-256 if no such algorithm
-is defined. The server must ensure that it selects a compatible
+is defined. The server MUST ensure that it selects a compatible
 PSK (if any) and cipher suite.
+
+Each PSK is also associated with at most one Server Name Identification
+(SNI) value (Section 3 of {{RFC6066}}).  For PSKs established via the
+ticket mechanism ({{NSTMessage}}), this is the SNI value (if any) on
+the connection where the ticket was established.  For externally established
+PSKs, the associated SNI value (or lack of value) is set when the PSK
+is established.  The server MUST ensure that it selects a compatible
+PSK (if any) and SNI value (if any).  SNI MUST NOT be negotiated when
+using a PSK not associated with an SNI value.
 
 Implementor's note: the most straightforward way to implement the
 PSK/cipher suite matching requirements is to negotiate the cipher
@@ -3251,7 +3275,7 @@ certificate_list
 extensions:
 : A set of extension values for the CertificateEntry. The "Extension"
   format is defined in {{extensions}}. Valid extensions include
-  OCSP Status extensions ({{RFC6066}} and {{!RFC6961}}) and
+  OCSP Status extension ({{RFC6066}}) and
   SignedCertificateTimestamps ({{!RFC6962}}).  An extension MUST only be present
   in a Certificate message if the corresponding
   ClientHello extension was presented in the initial handshake.
@@ -3260,8 +3284,8 @@ extensions:
 {:br }
 
 If the corresponding certificate type extension
-("server_certificate_type" or "client_certificate_type") was not used
-or the X.509 certificate type was negotiated, then each
+("server_certificate_type" or "client_certificate_type") was not negotiated
+in Encrypted Extensions, or the X.509 certificate type was negotiated, then each
 CertificateEntry contains an X.509 certificate. The sender's
 certificate MUST come in the first CertificateEntry in the list.  Each
 following certificate SHOULD directly certify one preceding it.
@@ -3304,6 +3328,13 @@ The body of the "status_request" extension
 from the server MUST be a CertificateStatus structure as defined
 in {{RFC6066}}, which is interpreted as defined in {{!RFC6960}}.
 
+Note: status_request_v2 extension ({{!RFC6961}}) is deprecated. TLS 1.3 servers
+MUST NOT act upon its presence or information in it when processing Client
+Hello, in particular they MUST NOT send the status_request_v2 extension in the
+Encrypted Extensions, Certificate Request or the Certificate messages.
+TLS 1.3 servers MUST be able to process Client Hello messages that include it,
+as it MAY be sent by clients that wish to use it in earlier protocol versions.
+
 A server MAY request that a client present an OCSP response with its
 certificate by sending an empty "status_request" extension in its
 CertificateRequest message. If the client opts to send an OCSP response, the
@@ -3331,7 +3362,7 @@ The following rules apply to the certificates sent by the server:
   digitalSignature bit MUST be set if the Key Usage extension is present) with
   a signature scheme indicated in the client's "signature_algorithms" extension.
 
-- The "server_name" and "certificate_authorities" extensions {{RFC6066}} are used to
+- The "server_name" {{RFC6066}} and "certificate_authorities" extensions are used to
   guide certificate selection. As servers MAY require the presence of the "server_name"
   extension, clients SHOULD send this extension, when applicable.
 
@@ -3611,12 +3642,16 @@ single connection, either immediately after each other or
 after specific events.
 For instance, the server might send a new ticket after post-handshake
 authentication in order to encapsulate the additional client
-authentication state. Clients SHOULD attempt to use each
-ticket no more than once, with more recent tickets being used
-first.
+authentication state. Multiple tickets are useful for clients 
+for a variety of purposes, including: 
+
+- Opening multiple parallel HTTP connections. 
+- Performing connection racing across interfaces and address families 
+via, e.g., Happy Eyeballs {{RFC6555}} or related techniques.
 
 Any ticket MUST only be resumed with a cipher suite that has the
 same KDF hash algorithm as that used to establish the original connection.
+
 Clients MUST only resume if the new SNI value is valid for the server
 certificate presented in the original session, and SHOULD only resume if
 the SNI value matches the one used in the original session.  The latter
@@ -3929,7 +3964,7 @@ by an encrypted body, which itself contains a type and optional padding.
            ContentType opaque_type = 23; /* application_data */
            ProtocolVersion legacy_record_version = 0x0301; /* TLS v1.x */
            uint16 length;
-           opaque encrypted_record[length];
+           opaque encrypted_record[TLSCiphertext.length];
        } TLSCiphertext;
 
 content
@@ -4086,10 +4121,10 @@ a non-zero octet in the cleartext, it MUST terminate the
 connection with an "unexpected_message" alert.
 
 The presence of padding does not change the overall record size limitations
-- the full encoded TLSInnerPlaintext MUST not exceed 2^14 octets. If the maximum
-fragment length is reduced, as for example by the max_fragment_length extension
-from [RFC6066], then the reduced limit applies to the full plaintext,
-including the padding.
+- the full encoded TLSInnerPlaintext MUST NOT exceed 2^14 + 1 octets. If the
+maximum fragment length is reduced, as for example by the max_fragment_length
+extension from [RFC6066], then the reduced limit applies to the full plaintext,
+including the content type and padding.
 
 Selecting a padding policy that suggests when and how much to pad is a
 complex topic and is beyond the scope of this specification. If the
@@ -4125,7 +4160,7 @@ Alert messages convey a description of the alert and a legacy field
 that conveyed the severity of the message in previous versions of
 TLS.  In TLS 1.3, the severity is implicit in the type of alert
 being sent, and the 'level' field can safely be ignored. The "close_notify" alert
-is used to indicate orderly closure of the connection.
+is used to indicate orderly closure of one direction of the connection.
 Upon receiving such an alert, the TLS implementation SHOULD
 indicate end-of-data to the application.
 
@@ -4208,7 +4243,7 @@ order to avoid a truncation attack.
 close_notify
 : This alert notifies the recipient that the sender will not send
   any more messages on this connection. Any data received after a
-  closure MUST be ignored.
+  closure alert has been received MUST be ignored.
 
 user_canceled
 : This alert notifies the recipient that the sender is canceling the
@@ -4218,30 +4253,31 @@ user_canceled
   SHOULD be followed by a "close_notify". This alert is generally a warning.
 {:br }
 
-Either party MAY initiate a close by sending a "close_notify" alert. Any data
-received after a closure alert MUST be ignored. If a transport-level close is
-received prior to a "close_notify", the receiver cannot know that all the
-data that was sent has been received.
+Either party MAY initiate a close of its write side of the connection by
+sending a "close_notify" alert. Any data received after a closure alert has
+been received MUST be ignored. If a transport-level close is received prior
+to a "close_notify", the receiver cannot know that all the data that was sent
+has been received.
 
-Each party MUST send a "close_notify" alert before closing the write side
-of the connection, unless some other fatal alert has been transmitted. The
-other party MUST respond with a "close_notify" alert of its own and close down
-the connection immediately, discarding any pending writes. The initiator of the
-close need not wait for the responding "close_notify" alert before closing the
-read side of the connection.
+Each party MUST send a "close_notify" alert before closing its write side
+of the connection, unless it has already sent some other fatal alert. This
+does not have any effect on its read side of the connection. Note that this is
+a change from versions of TLS prior to TLS 1.3 in which implementations were
+required to react to a "close_notify" by discarding pending writes and
+sending an immediate "close_notify" alert of their own. That previous
+requirement could cause truncation in the read side. Both parties need not
+wait to receive a "close_notify" alert before closing their read side of the
+connection.
 
 If the application protocol using TLS provides that any data may be carried
 over the underlying transport after the TLS connection is closed, the TLS
-implementation MUST receive the responding "close_notify" alert before indicating
-to the application layer that the TLS connection has ended. If the application
-protocol will not transfer any additional data but will only close the
-underlying transport connection, then the implementation MAY choose to close
-the transport without waiting for the responding "close_notify". No part of this
+implementation MUST receive a "close_notify" alert before indicating
+end-of-data to the application-layer. No part of this
 standard should be taken to dictate the manner in which a usage profile for TLS
 manages its data transport, including when connections are opened or closed.
 
-Note: It is assumed that closing a connection reliably delivers pending data
-before destroying the transport.
+Note: It is assumed that closing the write side of a connection reliably
+delivers pending data before destroying the transport.
 
 
 ##  Error Alerts
@@ -4449,7 +4485,8 @@ Hash.length is its output length in bytes. Messages are the concatenation of the
 indicated handshake messages, including the handshake message type
 and length fields, but not including record layer headers. Note that
 in some cases a zero-length Context (indicated by "") is passed to
-HKDF-Expand-Label.
+HKDF-Expand-Label.  The Labels specified in this document are all
+ASCII strings, and do not include a trailing NUL byte.
 
 Note: with common hash functions, any label longer than 12 characters
 requires an additional iteration of the hash function to compute.
@@ -4716,21 +4753,33 @@ concerned with:
   handshake with B and probably retry the request, leading to duplication on
   the server system as a whole.
 
-The first class of attack can be prevented by the mechanism described
-in this section.  Servers need not permit 0-RTT at all, but those
-which do SHOULD implement either the single-use tickets or
-ClientHello recording techniques described in the following two
-sections.
+The first class of attack can be prevented by sharing state to guarantee that
+the 0-RTT data is accepted at most once.  Servers SHOULD provide that level of
+replay safety, by implementing one of the methods described in this section or
+by equivalent means.  It is understood, however, that due to operational
+concerns not all deployments will maintain state at that level.  Therefore, in
+normal operation, clients will not know which, if any, of these mechanisms
+servers actually implement and hence MUST only send early data which they deem
+safe to be replayed.
+
+In addition to the direct effects of replays, there is a class of attacks where
+even operations normally considered idempotent could be exploited by a large
+number of replays (timing attacks, resource limit exhaustion and others
+described in {{replay-0rtt}}).  Those can be mitigated by ensuring that every
+0-RTT payload can be replayed only a limited number of times.  The server MUST
+ensure that any instance of it (be it a machine, a thread or any other entity
+within the relevant serving infrastructure) would accept 0-RTT for the same
+0-RTT handshake at most once; this limits the number of replays to the number of
+server instances in the deployment.  Such a guarantee can be accomplished by
+locally recording data from recently-received ClientHellos and rejecting
+repeats, or by any other method that provides the same or a stronger guarantee.
+The "at most once per server instance" guarantee is a minimum requirement;
+servers SHOULD limit 0-RTT replays further when feasible.
 
 The second class of attack cannot be prevented at the TLS layer and
 MUST be dealt with by any application. Note that any application whose
 clients implement any kind of retry behavior already needs to
 implement some sort of anti-replay defense.
-
-In normal operation, clients will not know which, if any, of these
-mechanisms servers actually implement and therefore MUST only send
-early data which they are willing to have subject to the attacks
-described in {{replay-0rtt}}.
 
 
 ## Single-Use Tickets
@@ -6190,6 +6239,10 @@ Archives of the list can be found at:
 * Rich Salz \\
   Akamai \\
   rsalz@akamai.com
+
+* David Schinazi \\
+  Apple Inc. \\
+  dschinazi@apple.com
 
 * Sam Scott \\
   Royal Holloway, University of London \\
