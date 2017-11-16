@@ -3627,6 +3627,12 @@ would waste a single-use ticket.  If such an indication is provided
 (externally or by any other means), clients MAY resume with a different
 SNI value.
 
+On resumption, if reporting an SNI value to the calling application,
+implementations MUST use the value sent in the resumption ClientHello rather
+than the value sent in the previous session. Note that if a server
+implementation declines all PSK identities with different SNI values, these two
+values are always the same.
+
 Note: Although the resumption master secret depends on the client's second
 flight, servers which do not request client authentication MAY compute
 the remainder of the transcript independently and then send a
