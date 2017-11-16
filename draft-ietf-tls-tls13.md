@@ -4151,7 +4151,7 @@ Alert messages convey a description of the alert and a legacy field
 that conveyed the severity of the message in previous versions of
 TLS.  In TLS 1.3, the severity is implicit in the type of alert
 being sent, and the 'level' field can safely be ignored. The "close_notify" alert
-is used to indicate orderly closure of the connection.
+is used to indicate orderly closure of one direction of the connection.
 Upon receiving such an alert, the TLS implementation SHOULD
 indicate end-of-data to the application.
 
@@ -4234,7 +4234,7 @@ order to avoid a truncation attack.
 close_notify
 : This alert notifies the recipient that the sender will not send
   any more messages on this connection. Any data received after a
-  closure MUST be ignored.
+  closure alert has been received MUST be ignored.
 
 user_canceled
 : This alert notifies the recipient that the sender is canceling the
@@ -4244,30 +4244,31 @@ user_canceled
   SHOULD be followed by a "close_notify". This alert is generally a warning.
 {:br }
 
-Either party MAY initiate a close by sending a "close_notify" alert. Any data
-received after a closure alert MUST be ignored. If a transport-level close is
-received prior to a "close_notify", the receiver cannot know that all the
-data that was sent has been received.
+Either party MAY initiate a close of its write side of the connection by
+sending a "close_notify" alert. Any data received after a closure alert has
+been received MUST be ignored. If a transport-level close is received prior
+to a "close_notify", the receiver cannot know that all the data that was sent
+has been received.
 
-Each party MUST send a "close_notify" alert before closing the write side
-of the connection, unless some other fatal alert has been transmitted. The
-other party MUST respond with a "close_notify" alert of its own and close down
-the connection immediately, discarding any pending writes. The initiator of the
-close need not wait for the responding "close_notify" alert before closing the
-read side of the connection.
+Each party MUST send a "close_notify" alert before closing its write side
+of the connection, unless it has already sent some other fatal alert. This
+does not have any effect on its read side of the connection. Note that this is
+a change from versions of TLS prior to TLS 1.3 in which implementations were
+required to react to a "close_notify" by discarding pending writes and
+sending an immediate "close_notify" alert of their own. That previous
+requirement could cause truncation in the read side. Both parties need not
+wait to receive a "close_notify" alert before closing their read side of the
+connection.
 
 If the application protocol using TLS provides that any data may be carried
 over the underlying transport after the TLS connection is closed, the TLS
-implementation MUST receive the responding "close_notify" alert before indicating
-to the application layer that the TLS connection has ended. If the application
-protocol will not transfer any additional data but will only close the
-underlying transport connection, then the implementation MAY choose to close
-the transport without waiting for the responding "close_notify". No part of this
+implementation MUST receive a "close_notify" alert before indicating
+end-of-data to the application-layer. No part of this
 standard should be taken to dictate the manner in which a usage profile for TLS
 manages its data transport, including when connections are opened or closed.
 
-Note: It is assumed that closing a connection reliably delivers pending data
-before destroying the transport.
+Note: It is assumed that closing the write side of a connection reliably
+delivers pending data before destroying the transport.
 
 
 ##  Error Alerts
