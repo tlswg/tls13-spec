@@ -6231,6 +6231,10 @@ Archives of the list can be found at:
   Akamai \\
   rsalz@akamai.com
 
+* David Schinazi \\
+  Apple Inc. \\
+  dschinazi@apple.com
+
 * Sam Scott \\
   Royal Holloway, University of London \\
   me@samjs.co.uk
