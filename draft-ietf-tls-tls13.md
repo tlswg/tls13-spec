@@ -2954,8 +2954,9 @@ matches the one specified in the resumption handshake.  However, in reality the
 implementations were not consistent on which of two supplied SNI values they
 would use, leading to the consistency requirement being de-facto enforced by the
 clients.  In TLS 1.3, the SNI value is always explicitly specified in the
-resumption handshake, and there is no need to associate an SNI value with the
-ticket anymore.
+resumption handshake, and there is no need for the server to associate an SNI value with the
+ticket. Clients, however, SHOULD store the SNI with the PSK to fulfill
+the requirements of {{NSTMessage}}.
 
 Implementor's note: the most straightforward way to implement the
 PSK/cipher suite matching requirements is to negotiate the cipher
