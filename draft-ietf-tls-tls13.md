@@ -1353,7 +1353,6 @@ additional information MUST be provisioned to both parties:
   * The cipher suite for use with this PSK
   * The Application-Layer Protocol Negotiation (ALPN) protocol {{!RFC7301}}, if
     any is to be used
-  * The Server Name Indication (SNI), if any is to be used
 
 As shown in {{tls-0-rtt}}, the 0-RTT data is just added to the 1-RTT
 handshake in the first flight. The rest of the handshake uses the same messages
@@ -2840,7 +2839,6 @@ PSK:
 - The TLS version number
 - The selected cipher suite
 - The selected ALPN {{RFC7301}} protocol, if any
-- The selected SNI (Section 3 of {{RFC6066}}) value, if any
 
 These requirements are a superset of those needed to perform a 1-RTT
 handshake using the PSK in question.  For externally established PSKs, the
@@ -2949,14 +2947,15 @@ PSK is established, or default to SHA-256 if no such algorithm
 is defined. The server MUST ensure that it selects a compatible
 PSK (if any) and cipher suite.
 
-Each PSK is also associated with at most one Server Name Identification
-(SNI) value (Section 3 of {{RFC6066}}).  For PSKs established via the
-ticket mechanism ({{NSTMessage}}), this is the SNI value (if any) on
-the connection where the ticket was established.  For externally established
-PSKs, the associated SNI value (or lack of value) is set when the PSK
-is established.  The server MUST ensure that it selects a compatible
-PSK (if any) and SNI value (if any).  SNI MUST NOT be negotiated when
-using a PSK not associated with an SNI value.
+In TLS versions prior to TLS 1.3, the Server Name Identification (SNI) value was
+intended to be associated with the session (Section 3 of {{RFC6066}}), with the
+server being required to enforce that the SNI value associated with the session
+matches the one specified in the resumption handshake.  However, in reality the
+implementations were not consistent on which of two supplied SNI values they
+would use, leading to the consistency requirement being de-facto enforced by the
+clients.  In TLS 1.3, the SNI value is always explicitly specified in the
+resumption handshake, and there is no need to associate an SNI value with the
+ticket anymore.
 
 Implementor's note: the most straightforward way to implement the
 PSK/cipher suite matching requirements is to negotiate the cipher
