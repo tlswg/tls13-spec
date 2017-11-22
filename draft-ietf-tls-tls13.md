@@ -115,20 +115,6 @@ informative:
        date: 2005-11
        seriesinfo:
          ANSI: ANS X9.62-2005
-  KEYAGREEMENT:
-       title: "Recommendation for Pair-Wise Key Establishment Schemes Using Discrete Logarithm Cryptography"
-       author:
-         -
-           ins: E. Barker
-         -
-           ins: L. Chen
-         -
-           ins: A. Roginsky
-         -
-           ins: M. Smid
-       date: 2013-05
-       seriesinfo:
-         NIST: Special Publication 800-38D
   RSA:
        title: "A Method for Obtaining Digital Signatures and Public-Key Cryptosystems"
        author:
@@ -2708,7 +2694,7 @@ For the curves secp256r1, secp384r1 and secp521r1,
 peers MUST validate each other's public value Y by ensuring
 that the point is a valid point on the elliptic curve.
 The appropriate validation procedures are defined in Section 4.3.7 of {{X962}}
-and alternatively in Section 5.6.2.6  of {{KEYAGREEMENT}}.
+and alternatively in Section 5.6.2.3 of {{?KEYAGREEMENT=DOI.10.6028/NIST.SP.800-56Ar2}}.
 This process consists of three steps: (1) verify that Y is not the point at
 infinity (O), (2) verify that for Y = (x, y) both integers are in the correct
 interval, (3) ensure that (x, y) is a correct solution to the elliptic curve equation.
