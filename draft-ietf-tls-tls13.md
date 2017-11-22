@@ -2349,8 +2349,12 @@ RSASSA-PSS algorithms
   digest used in the mask generation function and the digest being signed are
   both the corresponding hash algorithm as defined in {{SHS}}. When used in
   signed TLS handshake messages, the length of the salt MUST be equal to the
-  length of the digest output.  This codepoint is new in this document and is also
-  defined for use with TLS 1.2.
+  length of the digest output. An RSA public key (OID rsaEncryption) MUST be
+  supported, an RSASSA-PSS public key (OID id-RSASSA-PSS) MAY be supported.
+  When used as signature algorithm in certificates, the same parameters as used
+  for TLS handshake messages MUST be supported but other parameters MAY be used.
+  This codepoint is new in this document and is also defined for use with TLS
+  1.2.
 
 EdDSA algorithms
 : Indicates a signature algorithm using EdDSA as defined in
