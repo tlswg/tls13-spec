@@ -88,6 +88,7 @@ informative:
   RFC5077:
   RFC5116:
   RFC5246:
+  RFC5756:
   RFC5764:
   RFC5929:
   RFC6176:
@@ -2349,12 +2350,16 @@ RSASSA-PSS algorithms
   digest used in the mask generation function and the digest being signed are
   both the corresponding hash algorithm as defined in {{SHS}}. When used in
   signed TLS handshake messages, the length of the salt MUST be equal to the
-  length of the digest output. An RSA public key (OID rsaEncryption) MUST be
-  supported, an RSASSA-PSS public key (OID id-RSASSA-PSS) MAY be supported.
-  When used as signature algorithm in certificates, the same parameters as used
-  for TLS handshake messages MUST be supported but other parameters MAY be used.
+  length of the digest output.
+  When used as signature algorithm in certificates, the length of the salt
+  SHOULD be equal to the length of the digest output, but other salt lengths MAY
+  be used.
   This codepoint is new in this document and is also defined for use with TLS
   1.2.
+: An RSA public key (OID rsaEncryption) MUST be supported, an RSASSA-PSS public
+  key (OID id-RSASSA-PSS {{RFC5756}}) without parameters MUST be supported (such
+  that any hash algorithm and salt length can be used), while an RSASSA-PSS
+  public key (OID id-RSASSA-PSS) with parameters MAY be supported.
 
 EdDSA algorithms
 : Indicates a signature algorithm using EdDSA as defined in
