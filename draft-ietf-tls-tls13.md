@@ -43,13 +43,6 @@ normative:
   RFC7919:
   RFC8032:
   RFC8017:
-  SHS:
-       title: Secure Hash Standard
-       date: 2012-03
-       author:
-         org: National Institute of Standards and Technology, U.S. Department of Commerce
-       seriesinfo:
-         NIST: FIPS PUB 180-4
   X690:
        title: "Information technology - ASN.1 encoding Rules: Specification of Basic Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished Encoding Rules (DER)"
        date: 2002
@@ -115,20 +108,6 @@ informative:
        date: 2005-11
        seriesinfo:
          ANSI: ANS X9.62-2005
-  KEYAGREEMENT:
-       title: "Recommendation for Pair-Wise Key Establishment Schemes Using Discrete Logarithm Cryptography"
-       author:
-         -
-           ins: E. Barker
-         -
-           ins: L. Chen
-         -
-           ins: A. Roginsky
-         -
-           ins: M. Smid
-       date: 2013-05
-       seriesinfo:
-         NIST: Special Publication 800-38D
   RSA:
        title: "A Method for Obtaining Digital Signatures and Public-Key Cryptosystems"
        author:
@@ -2332,7 +2311,7 @@ The code point groups listed above have the following meanings:
 
 RSASSA-PKCS1-v1_5 algorithms
 : Indicates a signature algorithm using RSASSA-PKCS1-v1_5 {{RFC8017}}
-  with the corresponding hash algorithm as defined in {{SHS}}. These values
+  with the corresponding hash algorithm as defined in {{!SHS=DOI.10.6028/NIST.FIPS.180-4}}. These values
   refer solely to signatures which appear in certificates (see
   {{server-certificate-selection}}) and are not defined for use in signed
   TLS handshake messages.
@@ -2340,14 +2319,14 @@ RSASSA-PKCS1-v1_5 algorithms
 ECDSA algorithms
 : Indicates a signature algorithm using ECDSA {{ECDSA}}, the corresponding
   curve as defined in ANSI X9.62 {{X962}} and FIPS 186-4 {{DSS}}, and the
-  corresponding hash algorithm as defined in {{SHS}}. The signature is
+  corresponding hash algorithm as defined in {{!SHS}}. The signature is
   represented as a DER-encoded {{X690}} ECDSA-Sig-Value structure.
 
 RSASSA-PSS algorithms
 : Indicates a signature algorithm using RSASSA-PSS {{RFC8017}} with mask
   generation function 1. The
   digest used in the mask generation function and the digest being signed are
-  both the corresponding hash algorithm as defined in {{SHS}}. When used in
+  both the corresponding hash algorithm as defined in {{!SHS}}. When used in
   signed TLS handshake messages, the length of the salt MUST be equal to the
   length of the digest output.  This codepoint is new in this document and is also
   defined for use with TLS 1.2.
@@ -2708,7 +2687,7 @@ For the curves secp256r1, secp384r1 and secp521r1,
 peers MUST validate each other's public value Y by ensuring
 that the point is a valid point on the elliptic curve.
 The appropriate validation procedures are defined in Section 4.3.7 of {{X962}}
-and alternatively in Section 5.6.2.6  of {{KEYAGREEMENT}}.
+and alternatively in Section 5.6.2.3 of {{?KEYAGREEMENT=DOI.10.6028/NIST.SP.800-56Ar2}}.
 This process consists of three steps: (1) verify that Y is not the point at
 infinity (O), (2) verify that for Y = (x, y) both integers are in the correct
 interval, (3) ensure that (x, y) is a correct solution to the elliptic curve equation.
@@ -3642,11 +3621,11 @@ single connection, either immediately after each other or
 after specific events.
 For instance, the server might send a new ticket after post-handshake
 authentication in order to encapsulate the additional client
-authentication state. Multiple tickets are useful for clients 
-for a variety of purposes, including: 
+authentication state. Multiple tickets are useful for clients
+for a variety of purposes, including:
 
-- Opening multiple parallel HTTP connections. 
-- Performing connection racing across interfaces and address families 
+- Opening multiple parallel HTTP connections.
+- Performing connection racing across interfaces and address families
 via, e.g., Happy Eyeballs {{RFC6555}} or related techniques.
 
 Any ticket MUST only be resumed with a cipher suite that has the
@@ -5226,7 +5205,7 @@ This specification defines the following cipher suites for use with TLS 1.3.
 The corresponding AEAD algorithms AEAD_AES_128_GCM, AEAD_AES_256_GCM, and
 AEAD_AES_128_CCM are defined in {{RFC5116}}. AEAD_CHACHA20_POLY1305 is defined
 in {{RFC7539}}. AEAD_AES_128_CCM_8 is defined in {{RFC6655}}. The corresponding
-hash algorithms are defined in {{SHS}}.
+hash algorithms are defined in {{!SHS}}.
 
 Although TLS 1.3 uses the same cipher suite space as previous versions
 of TLS, TLS 1.3 cipher suites are defined differently, only specifying
