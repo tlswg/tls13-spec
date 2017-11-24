@@ -2038,7 +2038,9 @@ ClientHello does not contain sufficient information to proceed with
 the handshake. As discussed in {{server-hello}}, the HelloRetryRequest
 has the same format as a ServerHello message, and the
 legacy_version, legacy_session_id_echo, cipher_suite, and legacy_compression
-methods fields have the same meaning.
+methods fields have the same meaning. However, for convenience we
+discuss HelloRetryRequest throughout this document as if it were
+a distinct message.
 
 The server's extensions MUST contain "supported_versions" and
 otherwise the server SHOULD send only the extensions necessary for the
