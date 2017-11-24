@@ -5938,7 +5938,10 @@ record processing (i.e., seeing how long it takes to process a
 record or trickling in records to see which ones elicit a response
 from the server). In general, it is not known how to remove all of
 these channels because even a constant time padding removal function will
-then feed the content into data-dependent functions.
+likely feed the content into data-dependent functions.
+At minimum, a fully constant time server or client would require close
+cooperation with the application layer protocol implementation, including
+making that higher level protocol constant time.
 
 Note: Robust
 traffic analysis defences will likely lead to inferior performance
