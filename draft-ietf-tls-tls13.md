@@ -3281,6 +3281,13 @@ Structure of this message:
 
 %%% Authentication Messages
 
+       enum {
+           X509(0),
+           OpenPGP_RESERVED(1),
+           RawPublicKey(2),
+           (255)
+       } CertificateType;
+       
        struct {
            select (certificate_type) {
                case RawPublicKey:
