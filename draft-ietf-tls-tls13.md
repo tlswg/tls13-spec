@@ -3069,17 +3069,19 @@ and HelloRetryRequest are included in the transcript along with the
 new ClientHello.  For instance, if the client sends ClientHello1, its
 binder will be computed over:
 
-       Transcript-Hash(ClientHello1[truncated])
+       Transcript-Hash(Truncate(ClientHello1))
+
+Where Truncate() removes the binders list from the ClientHello.
 
 If the server responds with HelloRetryRequest, and the client then sends
 ClientHello2, its binder will be computed over:
 
        Transcript-Hash(ClientHello1,
                        HelloRetryRequest,
-                       ClientHello2[truncated])
+                       Truncate(ClientHello2))
 
 The full ClientHello1/ClientHello2 is included in all other handshake hash computations.
-Note that in the first flight, ClientHello1\[truncated] is hashed directly,
+Note that in the first flight, Truncate(ClientHello1) is hashed directly,
 but in the second flight, ClientHello1 is hashed and then reinjected as a
 "message_hash" message, as described in {{the-transcript-hash}}.
 
