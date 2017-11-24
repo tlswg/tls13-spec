@@ -589,6 +589,18 @@ RFC EDITOR PLEASE DELETE THIS SECTION.
 (*) indicates changes to the wire protocol which may require implementations
     to update.
 
+draft-22
+- Implement changes for improved middlebox penetration (*)
+
+- Move server_certificate_type to encrypted extensions (*)
+
+- Allow resumption with a different SNI (*)
+
+- Padding extension can change on HRR (*)
+
+- Remove requirement to immediately respond to close_notify with
+  close_notify (allowing half-close)
+  
 draft-21
 
 - Add a per-ticket nonce so that each ticket is associated with a
