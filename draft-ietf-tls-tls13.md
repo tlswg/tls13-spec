@@ -2061,7 +2061,7 @@ Otherwise, the client MUST process all extensions in the
 HelloRetryRequest and send a second updated ClientHello. The
 HelloRetryRequest extensions defined in this specification are:
 
-- supported_versions (see {{supported_versions}})
+- supported_versions (see {{supported-versions}})
 
 - cookie (see {{cookie}})
 
