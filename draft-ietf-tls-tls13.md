@@ -999,7 +999,7 @@ are many minor differences.
   the record protection algorithm (including secret key length) and a hash
   to be used with the key derivation function and HMAC.
 
-- A Zero-RTT mode was added, saving a round-trip at connection setup for
+- A 0-RTT mode was added, saving a round-trip at connection setup for
   some application data, at the cost of certain security properties.
 
 - Static RSA and Diffie-Hellman cipher suites have been removed;
@@ -1330,7 +1330,7 @@ Note:
   when used with Diffie-Hellman key establishment.
 
 
-## Zero-RTT Data
+## 0-RTT Data {#zero-rtt-data}
 
 When clients and servers share a PSK (either obtained externally or
 via a previous handshake), TLS 1.3 allows clients to send data on the
@@ -2893,7 +2893,7 @@ a 0-RTT handshake but the server rejects it, the server will generally
 not have the 0-RTT record protection keys and must instead
 use trial decryption (either with the 1-RTT handshake keys or
 by looking for a cleartext ClientHello in the case of HelloRetryRequest) to
-find the first non-0RTT message.
+find the first non-0-RTT message.
 
 If the server chooses to accept the "early_data" extension,
 then it MUST comply with the same error handling requirements
@@ -5536,7 +5536,7 @@ will receive various TLS 1.x versions in this field, but its value
 MUST always be ignored.
 
 
-## Zero-RTT backwards compatibility
+## 0-RTT backwards compatibility {#zero-rtt-backwards-compatibility}
 
 0-RTT data is not compatible with older servers. An older server will respond
 to the ClientHello with an older ServerHello, but it will not correctly skip
