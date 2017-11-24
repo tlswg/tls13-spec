@@ -6122,6 +6122,10 @@ Archives of the list can be found at:
   OpenSSL \\
   matt@openssl.org
 
+* Stephen Checkoway \\
+  University of Illinois at Chicago \\
+  sfc@uic.edu
+  
 * Pete Chown \\
   Skygate Technology Ltd \\
   pc@skygate.co.uk
