@@ -4764,8 +4764,9 @@ requiring a new construction. The exporter interface remains the same.
 
 The exporter value is computed as:
 
-    HKDF-Expand-Label(Derive-Secret(Secret, label, ""),
-                      "exporter", Hash(context_value), key_length)
+    TLS-Exporter(label, context_value, key_length) =
+        HKDF-Expand-Label(Derive-Secret(Secret, label, ""),
+                          "exporter", Hash(context_value), key_length)
 
 Where Secret is either the early_exporter_master_secret or the
 exporter_master_secret.  Implementations MUST use the exporter_master_secret unless
