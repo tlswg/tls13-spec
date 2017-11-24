@@ -1653,7 +1653,7 @@ processed and transmitted as specified by the current active connection state.
            hello_verify_request_RESERVED(3),
            new_session_ticket(4),
            end_of_early_data(5),
-           hello_retry_request_RESERVED(6),           
+           hello_retry_request_RESERVED(6),
            encrypted_extensions(8),
            certificate(11),
            server_key_exchange_RESERVED(12),
@@ -1948,7 +1948,7 @@ legacy_session_id_echo
   this field is echoed even if the client's value corresponded to
   a cached pre-TLS 1.3 session which the server has chosen not
   to resume. A client which receives a legacy_session_id field
-  which does not match what it sent in the ClientHello
+  that does not match what it sent in the ClientHello
   MUST abort the handshake with an "illegal_parameter"
   alert.
 
@@ -1959,7 +1959,7 @@ cipher_suite
   alert.
 
 legacy_compression_method
-: A single byte of value 0.
+: A single byte which MUST have the value 0.
 
 extensions
 : A list of extensions.  The ServerHello MUST only include extensions
@@ -2253,8 +2253,11 @@ extension but do not include 0x0304 in the list of versions.
 
 A server which negotiates TLS 1.3 MUST respond by sending a
 "supported_versions" extension containing the selected version value
-(0x0304). It MUST set the ServerHello.version field to 0x0303 (TLS
-1.2).  If this extension is present, clients MUST ignore the
+(0x0304). It MUST set the ServerHello.legacy_version field to 0x0303 (TLS
+1.2). Clients MUST check for this extension prior to processing
+the rest of the ServerHello (although they will have to parse the
+ServerHello in order to read the extension).
+If this extension is present, clients MUST ignore the
 ServerHello.legacy_version value and MUST use only the
 "supported_versions" extension to determine client preferences. If the
 "supported_versions" extension contains a version not offered by the
@@ -3856,7 +3859,7 @@ and so it is necessary to detect this
 condition prior to attempting to deprotect the record. An
 implementation which receives any other change_cipher_spec value or
 which receives a protected change_cipher_spec record MUST abort the
-handshake with an "illegal_parameter" alert. After the handshake is
+handshake with an "unexpected_message" alert. After the handshake is
 complete, change_cipher_spec MUST be treated as an unexpected record
 type.
 
@@ -3949,9 +3952,11 @@ fragment
 This document describes TLS 1.3, which uses the version 0x0304.
 This version value is historical, deriving from the use of 0x0301
 for TLS 1.0 and 0x0300 for SSL 3.0. In order to maximize backwards
-compatibility, the record layer version identifies as simply TLS 1.0.
-Endpoints supporting multiple versions negotiate the version to use
-by following the procedure and requirements in {{backward-compatibility}}.
+compatibility, records containing the ClientHello MUST have version
+0x0301 and records containing the ServerHello MUST have version
+0x0303, reflecting TLS 1.0 and TLS 1.2 respectively.
+Endpoints which negotiate other versions of TLS 
+SHOULD follow the procedure and requirements in {{backward-compatibility}}.
 
 When record protection has not yet been engaged, TLSPlaintext
 structures are written directly onto the wire. Once record protection
