@@ -3955,8 +3955,8 @@ for TLS 1.0 and 0x0300 for SSL 3.0. In order to maximize backwards
 compatibility, records containing the ClientHello MUST have version
 0x0301 and records containing the ServerHello MUST have version
 0x0303, reflecting TLS 1.0 and TLS 1.2 respectively.
-Endpoints which negotiate other versions of TLS 
-SHOULD follow the procedure and requirements in {{backward-compatibility}}.
+When negotiating prior versions of TLS, endpoints
+follow the procedure and requirements in {{backward-compatibility}}.
 
 When record protection has not yet been engaged, TLSPlaintext
 structures are written directly onto the wire. Once record protection
