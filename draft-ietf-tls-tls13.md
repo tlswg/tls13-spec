@@ -3685,7 +3685,7 @@ The client MAY use this PSK for future handshakes by including the
 ticket value in the "pre_shared_key" extension in its ClientHello
 ({{pre-shared-key-extension}}). Servers MAY send multiple tickets on a
 single connection, either immediately after each other or
-after specific events {{client-tracking}}.
+after specific events (see {{client-tracking}}).
 For instance, the server might send a new ticket after post-handshake
 authentication in order to encapsulate the additional client
 authentication state. Multiple tickets are useful for clients
@@ -5418,7 +5418,7 @@ Cryptographic details:
   key leaks? {{FW15}}
 
 
-## Client Tracking Prevention {client-tracking}
+## Client Tracking Prevention {#client-tracking}
 
 Clients SHOULD NOT reuse a ticket for multiple connections. Reuse
 of a ticket allows passive observers to correlate different connections.
