@@ -1337,14 +1337,6 @@ via a previous handshake), TLS 1.3 allows clients to send data on the
 first flight ("early data"). The client uses the PSK to authenticate
 the server and to encrypt the early data.
 
-When clients use a PSK obtained externally to send early data, then the following
-additional information MUST be provisioned to both parties:
-
-  * The TLS version number for use with this PSK
-  * The cipher suite for use with this PSK
-  * The Application-Layer Protocol Negotiation (ALPN) protocol {{!RFC7301}}, if
-    any is to be used
-
 As shown in {{tls-0-rtt}}, the 0-RTT data is just added to the 1-RTT
 handshake in the first flight. The rest of the handshake uses the same messages
 as with a 1-RTT handshake with PSK resumption.
