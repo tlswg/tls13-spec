@@ -2213,7 +2213,7 @@ be taken into account when designing new extensions:
                     
                case server_hello:
                     ProtocolVersion selected_version;
-           }
+           };
        } SupportedVersions;
 
 The "supported_versions" extension is used by the client to indicate
