@@ -2523,6 +2523,8 @@ to perform post-handshake authentication {{post-handshake-authentication}}. Serv
 MUST NOT send a post-handshake CertificateRequest to clients which do not
 offer this extension. Servers MUST NOT send this extension.
 
+%%% Post Handshake Authentication Extension
+
        struct {} PostHandshakeAuth;
 
 The "extension_data" field of the "post_handshake_auth" extension is zero
