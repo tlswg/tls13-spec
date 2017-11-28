@@ -600,7 +600,7 @@ draft-22
 
 - Remove requirement to immediately respond to close_notify with
   close_notify (allowing half-close)
-  
+
 draft-21
 
 - Add a per-ticket nonce so that each ticket is associated with a
@@ -1918,7 +1918,7 @@ Structure of this message:
 version
 : In previous versions of TLS, this field was used for version negotiation
   and represented the selected version number for the connection. Unfortunately,
-  some middleboxes fail when presented with new value. 
+  some middleboxes fail when presented with new value.
   In TLS 1.3, the TLS server indicates its version using the
   "supported_versions" extension ({{supported-versions}}),
   and the legacy_version field MUST
@@ -2210,7 +2210,7 @@ be taken into account when designing new extensions:
            select (Handshake.msg_type) {
                case client_hello:
                     ProtocolVersion versions<2..254>;
-                    
+
                case server_hello:
                     ProtocolVersion selected_version;
            }
@@ -3291,7 +3291,7 @@ Structure of this message:
            RawPublicKey(2),
            (255)
        } CertificateType;
-       
+
        struct {
            select (certificate_type) {
                case RawPublicKey:
@@ -5033,7 +5033,7 @@ TLS-compliant application MUST implement the following TLS extensions:
 All implementations MUST send and use these extensions when offering
 applicable features:
 
-  * "supported_versions"   is REQUIRED for all ClientHello messages.
+  * "supported_versions"   is REQUIRED for all ClientHello and ServerHello messages.
   * "signature_algorithms" is REQUIRED for certificate authentication.
   * "supported_groups"     is REQUIRED for ClientHello messages using
                             DHE or ECDHE key exchange.
@@ -6140,7 +6140,7 @@ Archives of the list can be found at:
 * Stephen Checkoway \\
   University of Illinois at Chicago \\
   sfc@uic.edu
-  
+
 * Pete Chown \\
   Skygate Technology Ltd \\
   pc@skygate.co.uk
