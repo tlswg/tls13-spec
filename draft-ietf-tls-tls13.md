@@ -5033,7 +5033,7 @@ TLS-compliant application MUST implement the following TLS extensions:
 All implementations MUST send and use these extensions when offering
 applicable features:
 
-  * "supported_versions"   is REQUIRED for all ClientHello messages.
+  * "supported_versions"   is REQUIRED for all ClientHello, ServerHello and HelloRetryRequest messages.
   * "signature_algorithms" is REQUIRED for certificate authentication.
   * "supported_groups"     is REQUIRED for ClientHello messages using
                             DHE or ECDHE key exchange.
