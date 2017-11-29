@@ -1910,7 +1910,7 @@ Structure of this message:
 version
 : In previous versions of TLS, this field was used for version negotiation
   and represented the selected version number for the connection. Unfortunately,
-  some middleboxes fail when presented with new value. 
+  some middleboxes fail when presented with new value.
   In TLS 1.3, the TLS server indicates its version using the
   "supported_versions" extension ({{supported-versions}}),
   and the legacy_version field MUST
@@ -2376,7 +2376,15 @@ RSASSA-PSS algorithms
   digest used in the mask generation function and the digest being signed are
   both the corresponding hash algorithm as defined in {{!SHS}}. When used in
   signed TLS handshake messages, the length of the salt MUST be equal to the
-  length of the digest output.  This codepoint is new in this document and is also
+  length of the digest output. When used in certificate signatures, the
+  length of the salt MUST be at least as long as the length of the
+  digest output, and the algorithm parameters MUST be DER encoded.
+  This codepoint indicates that the sender
+  will accept certificates in which the public key has OID rsaEncryption,
+  but not necessarily OID id-RSASSA-PSS {{RFC5756}}, whether with
+  or without parameters. Future documents may register codepoints that
+  indicate support for id-RSASSA-PSS.
+  This codepoint is new in this document and is also
   defined for use with TLS 1.2.
 
 EdDSA algorithms
