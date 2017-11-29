@@ -6402,6 +6402,10 @@ Archives of the list can be found at:
   Vodafone \\
   timothy.wright@vodafone.com
 
+* Peter Wu \\
+  Independent \\
+  peter@lekensteyn.nl
+
 * Kazu Yamamoto \\
   Internet Initiative Japan Inc. \\
   kazu@iij.ad.jp
