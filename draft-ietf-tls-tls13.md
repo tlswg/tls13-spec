@@ -600,7 +600,7 @@ draft-22
 
 - Remove requirement to immediately respond to close_notify with
   close_notify (allowing half-close)
-  
+
 draft-21
 
 - Add a per-ticket nonce so that each ticket is associated with a
@@ -2202,10 +2202,10 @@ be taken into account when designing new extensions:
            select (Handshake.msg_type) {
                case client_hello:
                     ProtocolVersion versions<2..254>;
-                    
+
                case server_hello:
                     ProtocolVersion selected_version;
-           }
+           };
        } SupportedVersions;
 
 The "supported_versions" extension is used by the client to indicate
@@ -2522,6 +2522,8 @@ The "post_handshake_auth" extension is used to indicate that a client is willing
 to perform post-handshake authentication {{post-handshake-authentication}}. Servers
 MUST NOT send a post-handshake CertificateRequest to clients which do not
 offer this extension. Servers MUST NOT send this extension.
+
+%%% Post Handshake Authentication Extension
 
        struct {} PostHandshakeAuth;
 
@@ -3283,7 +3285,7 @@ Structure of this message:
            RawPublicKey(2),
            (255)
        } CertificateType;
-       
+
        struct {
            select (certificate_type) {
                case RawPublicKey:
@@ -6132,7 +6134,7 @@ Archives of the list can be found at:
 * Stephen Checkoway \\
   University of Illinois at Chicago \\
   sfc@uic.edu
-  
+
 * Pete Chown \\
   Skygate Technology Ltd \\
   pc@skygate.co.uk
