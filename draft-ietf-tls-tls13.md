@@ -2625,42 +2625,25 @@ key_exchange
   definition.
 {:br }
 
-The "extension_data" field of this extension contains a
-"KeyShare" value:
+In the ClientHello message, the "extension_data" field of this extension
+contains a "KeyShareClientHello" value:
 
 %%% Key Exchange Messages
-
        struct {
-           select (Handshake.msg_type) {
-               case client_hello:
-                   KeyShareEntry client_shares<0..2^16-1>;
-
-               case hello_retry_request:
-                   NamedGroup selected_group;
-
-               case server_hello:
-                   KeyShareEntry server_share;
-           };
-       } KeyShare;
+           KeyShareEntry client_shares<0..2^16-1>;
+       } KeyShareClientHello;
 
 client_shares
 : A list of offered KeyShareEntry values in descending order of client preference.
-  This vector MAY be empty if the client is requesting a HelloRetryRequest.
-  Each KeyShareEntry value MUST correspond to a group offered in the
-  "supported_groups" extension and MUST appear in the same order.  However, the
-  values MAY be a non-contiguous subset of the "supported_groups" extension and
-  MAY omit the most preferred groups. Such a situation could arise if the most
-  preferred groups are new and unlikely to be supported in enough places to
-  make pregenerating key shares for them efficient.
-
-selected_group
-: The mutually supported group the server intends to negotiate and
-  is requesting a retried ClientHello/KeyShare for.
-
-server_share
-: A single KeyShareEntry value that is in the same group as one of the
-  client's shares.
 {:br }
+
+This vector MAY be empty if the client is requesting a HelloRetryRequest.
+Each KeyShareEntry value MUST correspond to a group offered in the
+"supported_groups" extension and MUST appear in the same order.  However, the
+values MAY be a non-contiguous subset of the "supported_groups" extension and
+MAY omit the most preferred groups. Such a situation could arise if the most
+preferred groups are new and unlikely to be supported in enough places to
+make pregenerating key shares for them efficient.
 
 Clients can offer an arbitrary number of KeyShareEntry values, each
 representing a single set of key exchange parameters. For instance, a
@@ -2673,6 +2656,19 @@ KeyShareEntry values for groups not listed in the client's
 these rules and abort the handshake with an "illegal_parameter" alert
 if one is violated.
 
+In a HelloRetryRequest message, the "extension_data" field of this
+extension contains a KeyShareHelloRetryRequest value:
+
+%%% Key Exchange Messages
+       struct {
+           NamedGroup selected_group;
+       } KeyShareHelloRetryRequest;
+
+selected_group
+: The mutually supported group the server intends to negotiate and
+  is requesting a retried ClientHello/KeyShare for.
+{:br }
+
 Upon receipt of this extension in a HelloRetryRequest, the client MUST
 verify that (1) the selected_group field corresponds to a group which was provided
 in the "supported_groups" extension in the original ClientHello; and (2)
@@ -2683,6 +2679,19 @@ these checks fails, then the client MUST abort the handshake with an
 client MUST replace the original "key_share" extension with one
 containing only a new KeyShareEntry for the group indicated in the
 selected_group field of the triggering HelloRetryRequest.
+
+In a ServerHello message, the "extension_data" field of this
+extension contains a KeyShareServerHello value:
+
+%%% Key Exchange Messages
+       struct {
+           KeyShareEntry server_share;
+       } KeyShareServerHello;
+
+server_share
+: A single KeyShareEntry value that is in the same group as one of the
+  client's shares.
+{:br}
 
 If using (EC)DHE key establishment, servers offer exactly one
 KeyShareEntry in the ServerHello. This value MUST be in the same group
@@ -5090,7 +5099,7 @@ The registries and their allocation policies are below:
 - TLS HandshakeType Registry: Future values are allocated via
   Standards Action {{RFC5226}}. IANA \[SHALL update/has updated] this registry
   to rename item 4 from "NewSessionTicket" to "new_session_ticket"
-  and to add the "hello_retry_request", "encrypted_extensions",
+  and to add the "encrypted_extensions",
   "end_of_early_data", "key_update", and "message_hash" values.
 
 This document also uses the TLS ExtensionType Registry originally created in
