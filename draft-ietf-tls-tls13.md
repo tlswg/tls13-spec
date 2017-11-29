@@ -598,6 +598,8 @@ draft-22
 
 - Padding extension can change on HRR (*)
 
+- Allow an empty ticket_nonce (*)
+
 - Remove requirement to immediately respond to close_notify with
   close_notify (allowing half-close)
 
