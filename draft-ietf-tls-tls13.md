@@ -2820,7 +2820,7 @@ The "extension_data" field of this extension contains an
 
 See {{NSTMessage}} for the use of the max_early_data_size field.
 
-The parameters for the 0-RTT data (symmetric cipher suite, ALPN
+The parameters for the 0-RTT data (version, symmetric cipher suite, ALPN
 protocol, etc.) are those associated with the PSK in use.
 For externally established PSKs, the associated values are those
 provisioned along with the key.  For PSKs established via a NewSessionTicket
