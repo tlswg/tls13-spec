@@ -5099,7 +5099,7 @@ The registries and their allocation policies are below:
 - TLS HandshakeType Registry: Future values are allocated via
   Standards Action {{RFC5226}}. IANA \[SHALL update/has updated] this registry
   to rename item 4 from "NewSessionTicket" to "new_session_ticket"
-  and to add the "encrypted_extensions",
+  and to add the "hello_retry_request_RESERVED", "encrypted_extensions",
   "end_of_early_data", "key_update", and "message_hash" values.
 
 This document also uses the TLS ExtensionType Registry originally created in
