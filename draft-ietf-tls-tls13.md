@@ -1910,7 +1910,7 @@ Structure of this message:
 version
 : In previous versions of TLS, this field was used for version negotiation
   and represented the selected version number for the connection. Unfortunately,
-  some middleboxes fail when presented with new value. 
+  some middleboxes fail when presented with new values. 
   In TLS 1.3, the TLS server indicates its version using the
   "supported_versions" extension ({{supported-versions}}),
   and the legacy_version field MUST
