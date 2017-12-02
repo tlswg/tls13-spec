@@ -2385,7 +2385,7 @@ ECDSA algorithms
   corresponding hash algorithm as defined in {{!SHS}}. The signature is
   represented as a DER-encoded {{X690}} ECDSA-Sig-Value structure.
 
-RSASSA-PSS RSA algorithms
+RSASSA-PSS RSAE algorithms
 : Indicates a signature algorithm using RSASSA-PSS {{RFC8017}} with mask
   generation function 1. The
   digest used in the mask generation function and the digest being signed are
