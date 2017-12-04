@@ -3337,7 +3337,7 @@ extensions:
 If the corresponding certificate type extension
 ("server_certificate_type" or "client_certificate_type") was not negotiated
 in Encrypted Extensions, or the X.509 certificate type was negotiated, then each
-CertificateEntry contains an X.509 certificate. The sender's
+CertificateEntry contains a DER-encoded X.509 certificate. The sender's
 certificate MUST come in the first CertificateEntry in the list.  Each
 following certificate SHOULD directly certify one preceding it.
 Because certificate validation requires that trust anchors be
