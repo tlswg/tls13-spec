@@ -3328,8 +3328,8 @@ extensions:
   format is defined in {{extensions}}. Valid extensions for server certificates
   include OCSP Status extension ({{RFC6066}}) and
   SignedCertificateTimestamps ({{!RFC6962}}). Extensions in the Certificate
-  message from the server MUST correspond to one from the ClientHello message,
-  extensions in the Certificate from the client MUST correspond with an
+  message from the server MUST correspond to one from the ClientHello message.
+  Extensions in the Certificate from the client MUST correspond with an
   extension in the CertificateRequest message from the server.
   If an extension applies to the entire chain, it SHOULD be included
   in the first CertificateEntry.
