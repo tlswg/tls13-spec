@@ -1747,7 +1747,7 @@ it MUST abort the handshake with either
 a "handshake_failure" or "insufficient_security" fatal alert
 (see {{alert-protocol}}).
 
-###  Client Hello
+###  Client Hello {#client_hello}
 
 When a client first connects to a server, it is REQUIRED to send the
 ClientHello as its first message. The client will also send a
@@ -1821,10 +1821,12 @@ legacy_session_id
   feature which has been merged with Pre-Shared Keys in this version
   (see {{resumption-and-psk}}). A client which has a cached session ID
   set by a pre-TLS 1.3 server SHOULD set this field to that value. In
-  compatibility mode (see {{middlebox}}) this field MUST be non-empty,
+  compatibility mode (see {{intermediary}}), this field MUST be non-empty,
   so a client not offering a pre-TLS 1.3 session MUST generate a
-  new 32-byte value. This value need not be random but SHOULD be
-  unpredictable to avoid ossification.
+  new 32-byte value. This value need not be a cryptographically-secure
+  random value, but SHOULD be
+  unpredictable to avoid intermediaries depending on a specific value
+  (also known as ossification).
   Otherwise, it MUST be set as a zero length vector (i.e., a single
   zero byte length field).
 
@@ -1912,7 +1914,7 @@ Structure of this message:
 version
 : In previous versions of TLS, this field was used for version negotiation
   and represented the selected version number for the connection. Unfortunately,
-  some middleboxes fail when presented with new values. 
+  some network intermediaries fail when presented with new values.
   In TLS 1.3, the TLS server indicates its version using the
   "supported_versions" extension ({{supported-versions}}),
   and the legacy_version field MUST
@@ -1956,8 +1958,8 @@ extensions
   message.
 {:br }
 
-For backward compatibility reasons with middleboxes
-(see {{middlebox}}) the HelloRetryRequest
+For backward compatibility reasons with network intermediaries
+(see {{intermediary}}), the HelloRetryRequest
 message uses the same structure as the ServerHello, but with
 Random set to the special value of the SHA-256 of
 "HelloRetryRequest":
@@ -3885,7 +3887,7 @@ encrypted with the new key. Failure to do so may allow message truncation
 attacks.
 
 
-#  Record Protocol
+#  Record Protocol {#dummy-ccs}
 
 The TLS record protocol takes messages to be transmitted, fragments
 the data into manageable blocks, protects the records, and transmits
@@ -3895,9 +3897,10 @@ then delivered to higher-level clients.
 TLS records are typed, which allows multiple higher-level protocols to
 be multiplexed over the same record layer. This document specifies
 four content types: handshake, application data, alert, and
-change_cipher_spec, with the latter being used only for
-compatibility purposes (see {{middlebox}}).
+change_cipher_spec.
 
+The change_cipher_spec record is used only for compatibility purposes
+(see {{intermediary}}).
 An implementation may receive an unencrypted record of type
 change_cipher_spec consisting of the single byte value 0x01 at any
 time during the handshake and MUST simply drop it without further
@@ -4054,7 +4057,7 @@ zeros
 opaque_type
 : The outer opaque_type field of a TLSCiphertext record is always set to the
   value 23 (application_data) for outward compatibility with
-  middleboxes accustomed to parsing previous versions of TLS.  The
+  network intermediaries accustomed to parsing previous versions of TLS.  The
   actual content type of the record is found in TLSInnerPlaintext.type after
   decryption.
 
@@ -5560,17 +5563,21 @@ ClientHello without 0-RTT data.
 To avoid this error condition, multi-server deployments SHOULD ensure a uniform
 and stable deployment of TLS 1.3 without 0-RTT prior to enabling 0-RTT.
 
-## Middlebox Compatibility Mode {#middlebox}
+## Network Intermediary Compatibility Mode {#intermediary}
 
-Field measurements have found that a significant number of middleboxes
-misbehave when a TLS client/server pair negotiates TLS 1.3. Implementations
+Field measurements have found that a significant number of network
+intermediaries, or "middleboxes,"
+can cause the TLS endpoints to fail to negotiate TLS 1.3.
+Implementations
 can increase the chance of making connections through those middleboxes
 by making the TLS 1.3 handshake look more like a TLS 1.2 handshake:
 
-- The client always provides a non-empty session ID in the ClientHello.
+- The client always provides a non-empty session ID in the ClientHello as
+  described in the legacy_session_id section of {{client_hello}}.
 
 - If not offering early data, the client sends a dummy
-  change_cipher_spec record immediately before its second flight. This
+  change_cipher_spec record (see the third paragraph of {{dummy-ccs}})
+  immediately before its second flight. This
   may either be before its second ClientHello or before its encrypted
   handshake flight. If offering early data, the record is placed
   immediately after the first ClientHello.
@@ -5584,7 +5591,10 @@ TLS 1.2 session resumption, which improves the chance of successfully
 connecting through middleboxes. This "compatibility mode" is not explicitly
 negotiated. The client can opt to provide a session ID or not
 and the server has to echo it. Either side can send change_cipher_spec
-at any time during the handshake, as they must be ignored by the peer.
+at any time during the handshake, as it must be ignored by the peer.
+
+In the absence of out of band information, endpoints SHOULD use the
+techniques described here.
 
 
 ## Backwards Compatibility Security Restrictions
