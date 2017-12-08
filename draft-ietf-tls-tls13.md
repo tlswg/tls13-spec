@@ -2205,7 +2205,7 @@ be taken into account when designing new extensions:
                case client_hello:
                     ProtocolVersion versions<2..254>;
 
-               case server_hello:
+               case server_hello: /* and HelloRetryRequest */
                     ProtocolVersion selected_version;
            };
        } SupportedVersions;
