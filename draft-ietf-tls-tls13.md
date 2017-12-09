@@ -5747,10 +5747,9 @@ the PSK binder. {{PSK-FINISHED}}
 describes a concrete attack on constructions that do not bind to
 the server's certificate (see also {{Kraw16}}). It is unsafe to use certificate-based client
 authentication when the client might potentially share the same
-PSK/key-id pair with two different endpoints.  Without an extension
-to indicate otherwise, implementations MUST NOT combine
+PSK/key-id pair with two different endpoints.  Implementations MUST NOT combine
 external PSKs with certificate-based authentication of either the
-client or the server.
+client or the server unless an extension indicates otherwise.
 
 If an exporter is used, then it produces values which are unique
 and secret (because they are generated from a unique session key).
