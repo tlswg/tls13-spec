@@ -1914,7 +1914,7 @@ Structure of this message:
            Extension extensions<6..2^16-1>;
        } ServerHello;
 
-version
+legacy_version
 : In previous versions of TLS, this field was used for version negotiation
   and represented the selected version number for the connection. Unfortunately,
   some middleboxes fail when presented with new values.
