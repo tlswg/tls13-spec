@@ -5749,7 +5749,7 @@ the server's certificate (see also {{Kraw16}}). It is unsafe to use certificate-
 authentication when the client might potentially share the same
 PSK/key-id pair with two different endpoints.  Implementations MUST NOT combine
 external PSKs with certificate-based authentication of either the
-client or the server unless an extension indicates otherwise.
+client or the server unless negotiated by some extension.
 
 If an exporter is used, then it produces values which are unique
 and secret (because they are generated from a unique session key).
