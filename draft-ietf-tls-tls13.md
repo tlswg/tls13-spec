@@ -5544,7 +5544,7 @@ records thereafter.
 
 For maximum compatibility with previously non-standard behavior and misconfigured
 deployments, all implementations SHOULD support validation of certification paths
-based on the expectations in this document, even when handling prior TLS versions'
+based on the expectations in this document, even when handling prior TLS versions
 handshakes. (see {{server-certificate-selection}})
 
 TLS 1.2 and prior supported an "Extended Master Secret" {{RFC7627}} extension
