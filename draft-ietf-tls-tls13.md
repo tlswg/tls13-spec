@@ -1879,7 +1879,7 @@ ClientHello. Note that this method of detecting optional data differs
 from the normal TLS method of having a variable-length field, but it
 is used for compatibility with TLS before extensions were defined.
 TLS 1.3 servers will need to perform this check first and only
-attempt to negotiate TLS 1.3 if a "supported_version" extension
+attempt to negotiate TLS 1.3 if the "supported_versions" extension
 is present.
 If negotiating a version of TLS prior to 1.3, a server MUST check that
 the message either contains no data after legacy_compression_methods
