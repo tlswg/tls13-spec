@@ -2259,7 +2259,7 @@ RFC EDITOR: PLEASE REMOVE THIS SECTION
 While the eventual version indicator for the RFC version of TLS 1.3 will
 be 0x0304, implementations of draft versions of this specification SHOULD
 instead advertise 0x7f00 | draft_version
-in ServerHello and HelloRetryRequest "supported_versions" extension.
+in the ServerHello and HelloRetryRequest "supported_versions" extension.
 For instance, draft-17 would be encoded as the 0x7f11.
 This allows pre-RFC implementations to safely negotiate with each other,
 even if they would otherwise be incompatible.
@@ -5475,8 +5475,8 @@ TLSPlaintext.legacy_record_version MUST be ignored by all implementations.
 The value of TLSCiphertext.legacy_record_version MAY be ignored,
 or MAY be validated to match the fixed constant value.
 Version negotiation is performed using only the handshake versions
-(ClientHello.legacy_version, as well as
-ClientHello and ServerHello "supported_versions" extension).
+(ClientHello.legacy_version, as well as the
+ClientHello, HelloRetryRequest and ServerHello "supported_versions" extension).
 In order to maximize interoperability with older endpoints, implementations
 that negotiate the use of TLS 1.0-1.2 SHOULD set the record layer
 version number to the negotiated version for the ServerHello and all
@@ -5484,7 +5484,7 @@ records thereafter.
 
 For maximum compatibility with previously non-standard behavior and misconfigured
 deployments, all implementations SHOULD support validation of certification paths
-based on the expectations in this document, even when handling prior TLS versions
+based on the expectations in this document, even when handling prior TLS versions'
 handshakes. (see {{server-certificate-selection}})
 
 TLS 1.2 and prior supported an "Extended Master Secret" {{RFC7627}} extension
