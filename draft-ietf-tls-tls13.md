@@ -5465,8 +5465,8 @@ endpoints potentially supporting different versions of TLS.
 
 TLS 1.x and SSL 3.0 use compatible ClientHello messages. Servers can also handle
 clients trying to use future versions of TLS as long as the ClientHello format
-remains compatible and and there is at lest one protocol version that both the
-client and the server support.
+remains compatible and and there is at least one protocol version supported by
+both the client and the server.
 
 Prior versions of TLS used the record layer version number for various
 purposes. (TLSPlaintext.legacy_record_version and TLSCiphertext.legacy_record_version)
