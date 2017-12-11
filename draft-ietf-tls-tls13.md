@@ -43,6 +43,7 @@ normative:
   RFC7919:
   RFC8032:
   RFC8017:
+  RFC8174:
   X690:
        title: "Information technology - ASN.1 encoding Rules: Specification of Basic Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished Encoding Rules (DER)"
        date: 2002
@@ -560,7 +561,8 @@ and obsoletes {{RFC6961}} as described in section {{ocsp-and-sct}}.
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
 "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this
-document are to be interpreted as described in RFC 2119 {{RFC2119}}.
+document are to be interpreted as described in BCP 14 {{RFC2119}} {{RFC8174}}
+when, and only when, they appear in all capitals, as shown here.
 
 The following terms are used:
 
