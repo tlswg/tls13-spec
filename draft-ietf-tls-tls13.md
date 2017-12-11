@@ -198,6 +198,50 @@ informative:
          ins: G. Leurent
        seriesinfo: Network and Distributed System Security Symposium (NDSS 2016)
        date: 2016
+  DROWN:
+       title: "DROWN: Breaking TLS with SSLv2"
+       author:
+       -
+         ins: N. Aviram
+       -
+         ins: S. Schinzel
+       -
+         ins: J. Somorovsky
+       -
+         ins: N. Heninger
+       -
+         ins: M. Dankel
+       -
+         ins: J. Steube
+       -
+         ins: L. Valenta
+       -
+         ins: D. Adrian
+       -
+         ins: J. A. Halderman
+       -
+         ins: V. Dukhovni
+       -
+         ins: E. Käsper
+       -
+         ins: S. Cohney
+       -
+         ins: S. Engels
+       -
+         ins: C. Paar
+       -
+         ins: Y. Shavitt
+       seriesinfo: 25th USENIX Security Symposium
+       date: 2016
+  WAGNER:
+       title: "Analysis of the SSL 3.0 protocol"
+       author:
+       -
+         ins: D. Wagner
+       -
+         ins: B. Schneier
+       seriesinfo:  2nd USENIX Workshop on Electronic Commerce
+       date: 1996
   AEAD-LIMITS:
        title: "Limits on Authenticated Encryption Use in TLS"
        author:
@@ -5845,6 +5889,35 @@ stage of the exporter computation for all those labels,
 then erase the \[early_]exporter_master_secret, followed by
 each inner values as soon as it is known that it will not be
 needed again.
+
+### Cross-Protocol Private Key Reuse
+
+Use of the same private key for different versions of TLS exposes that
+key to attacks in all versions of the protocol, as demonstrated by
+the {{DROWN}} attack. Previous versions of TLS were further susceptible
+to cross-protocol attacks between different ciphersuites {{WAGNER}}.
+This version of TLS takes steps to thwart cross-protocol attacks between
+different ciphersuites, and between different protocol versions sharing
+the same private key (see {{certificate-verify}}) for the same purpose.
+
+While it is not feasible to associate certificates to a particular
+protocol version, to achieve a full isolation between protocols,
+it is possible to reduce the risks arising from the TLS 1.2 RSA
+(key transport) ciphersuites. These ciphersuites, are the most
+vulnerable to variants of the Bleichenbacher attack and have been
+taken advantage over the years for successful server impersonation
+attacks. With that in mind, a TLS 1.3 server supporting older protocol
+versions, is RECOMMENDED to either
+
+- Disable support for RSA-encryption-only ciphersuites under TLS 1.2
+  or earlier.
+- Use a designated key for RSA-encryption ciphersuites, with a certificate
+  containing key usage flags for keyEncipherment only (see Key Usage of {{RFC5280}}).
+
+Furthermore, to eliminate risks against future attacks to other types
+of keys, all key types which are to be used under TLS 1.3 (RSA, ECDSA, EdDSA),
+are RECOMMENDED to contain the digitalSignature flag, and only that,
+in their corresponding certificate.
 
 ### Post-Compromise Security
 
