@@ -5475,8 +5475,8 @@ TLSPlaintext.legacy_record_version MUST be ignored by all implementations.
 The value of TLSCiphertext.legacy_record_version MAY be ignored,
 or MAY be validated to match the fixed constant value.
 Version negotiation is performed using only the handshake versions
-(ClientHello.legacy_version, as well as the
-ClientHello, HelloRetryRequest and ServerHello "supported_versions" extension).
+(ClientHello.legacy_version, ServerHello.legacy_version, as well as the
+ClientHello, HelloRetryRequest and ServerHello "supported_versions" extensions).
 In order to maximize interoperability with older endpoints, implementations
 that negotiate the use of TLS 1.0-1.2 SHOULD set the record layer
 version number to the negotiated version for the ServerHello and all
