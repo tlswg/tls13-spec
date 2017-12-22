@@ -1914,7 +1914,7 @@ Structure of this message:
 version
 : In previous versions of TLS, this field was used for version negotiation
   and represented the selected version number for the connection. Unfortunately,
-  some middleboxes fail when presented with new values. 
+  some middleboxes fail when presented with new values.
   In TLS 1.3, the TLS server indicates its version using the
   "supported_versions" extension ({{supported-versions}}),
   and the legacy_version field MUST
@@ -5467,8 +5467,8 @@ endpoints potentially supporting different versions of TLS.
 
 TLS 1.x and SSL 3.0 use compatible ClientHello messages. Servers can also handle
 clients trying to use future versions of TLS as long as the ClientHello format
-remains compatible and the client supports the highest protocol version available
-in the server.
+remains compatible and and there is at least one protocol version supported by
+both the client and the server.
 
 Prior versions of TLS used the record layer version number for various
 purposes. (TLSPlaintext.legacy_record_version and TLSCiphertext.legacy_record_version)
