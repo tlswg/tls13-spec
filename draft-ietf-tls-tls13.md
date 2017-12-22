@@ -2207,7 +2207,7 @@ be taken into account when designing new extensions:
                case client_hello:
                     ProtocolVersion versions<2..254>;
 
-               case server_hello:
+               case server_hello: /* and HelloRetryRequest */
                     ProtocolVersion selected_version;
            };
        } SupportedVersions;
@@ -2261,7 +2261,7 @@ RFC EDITOR: PLEASE REMOVE THIS SECTION
 While the eventual version indicator for the RFC version of TLS 1.3 will
 be 0x0304, implementations of draft versions of this specification SHOULD
 instead advertise 0x7f00 | draft_version
-in ServerHello.version, and HelloRetryRequest.server_version.
+in the "supported_versions" extension.
 For instance, draft-17 would be encoded as the 0x7f11.
 This allows pre-RFC implementations to safely negotiate with each other,
 even if they would otherwise be incompatible.
