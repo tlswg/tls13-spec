@@ -87,7 +87,7 @@ informative:
   RFC6176:
   RFC6091:
   RFC6520:
-  RFC6555:
+  RFC8305:
   RFC7230:
   RFC7250:
   RFC7465:
@@ -3701,7 +3701,7 @@ for a variety of purposes, including:
 
 - Opening multiple parallel HTTP connections.
 - Performing connection racing across interfaces and address families
-via, e.g., Happy Eyeballs {{RFC6555}} or related techniques.
+via, e.g., Happy Eyeballs {{RFC8305}} or related techniques.
 
 Any ticket MUST only be resumed with a cipher suite that has the
 same KDF hash algorithm as that used to establish the original connection.
