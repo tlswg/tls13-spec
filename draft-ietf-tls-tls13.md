@@ -1060,6 +1060,9 @@ An implementation of TLS 1.3 that also supports TLS 1.2 might need to include
 changes to support these changes even when TLS 1.3 is not in use.  See the
 referenced sections for more details.
 
+Additionally, this document clarifies some compliance requirements in TLS 1.2,
+as described in {{protocol-invariants}}.
+
 
 # Protocol Overview
 
@@ -5070,6 +5073,58 @@ Servers requiring this extension SHOULD respond to a ClientHello
 lacking a "server_name" extension by terminating the connection with a
 "missing_extension" alert.
 
+
+## Protocol Invariants
+
+This section describes invariants that TLS endpoints and intermediaries MUST
+follow. It also applies to earlier versions, which assumed these rules but did
+not document them.
+
+TLS is designed to be securely and compatibly extensible. Newer clients or
+servers, when communicating with newer peers, should negotiate the most
+preferred common parameters with downgrade protection.  In particular, it is a
+security requirement (see {{security-handshake}}) that intermediaries passing
+traffic between a newer client and newer server without terminating TLS are
+unable to influence the handshake. At the same time, deployments update at
+different rates, so a newer client or server MAY continue to support older
+parameters, which would allow it to interoperate with older endpoints.
+
+For this to work, implementations MUST correctly handle extensible fields:
+
+- A client sending a ClientHello MUST support all parameters advertised in it.
+  Otherwise, the server may fail to interoperate by selecting one of those
+  parameters.
+
+- A server receiving a ClientHello MUST correctly ignore all unrecognized
+  cipher suites, extensions, and other parameters. Otherwise, it may fail to
+  interoperate with newer clients.
+
+- An intermediary which terminates a TLS connection MUST behave as a compliant
+  TLS server (to the original client) and as a compliant TLS client (to the
+  original server). In particular, it MUST generate its own ClientHello
+  containing only parameters it understands, and it MUST generate a fresh
+  ServerHello random value, rather than forwarding the endpoint's value.
+
+  In this scenario, the intermediary is a pair of TLS endpoints for purposes
+  of protocol requirements and security analysis. In most TLS deployments this
+  would require configuring one or both endpoints to trust the intermediary's
+  certificate authority.
+
+- An intermediary which forwards ClientHello parameters it did not generate MUST
+  NOT process any messages beyond that ClientHello. It MUST forward all
+  subsequent traffic unmodified. Otherwise, it may fail to interoperate with
+  newer clients and servers.
+
+  Forwarded ClientHellos may contain advertisements for features not supported
+  by the intermediary, so the response may include future TLS additions the
+  intermediary does not recognize. These additions MAY change any message beyond
+  the ClientHello arbitrarily. In particular, the values sent in the ServerHello
+  MAY change, the ServerHello format MAY change, and the TLSCiphertext format
+  MAY change.
+
+This specification was constrained by widely-deployed non-compliant TLS
+intermediaries (see {{middlebox}}), however it does not relax the invariants.
+Those intermediaries continue to be non-compliant.
 
 #  Security Considerations
 
