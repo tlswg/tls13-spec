@@ -5647,10 +5647,12 @@ by making the TLS 1.3 handshake look more like a TLS 1.2 handshake:
 
 When put together, these changes make the TLS 1.3 handshake resemble
 TLS 1.2 session resumption, which improves the chance of successfully
-connecting through middleboxes. This "compatibility mode" is not explicitly
-negotiated. The client can opt to provide a session ID or not
+connecting through middleboxes. This "compatibility mode" is partially
+negotiated: The client can opt to provide a session ID or not
 and the server has to echo it. Either side can send change_cipher_spec
-at any time during the handshake, as they must be ignored by the peer.
+at any time during the handshake, as they must be ignored by the peer,
+but if the client sends a non-empty session ID, the server MUST send
+the change_cipher_spec as described in this section.
 
 
 ## Backwards Compatibility Security Restrictions
