@@ -477,6 +477,39 @@ informative:
        -
          ins: C. MacCarthaigh
 
+  Res17a:
+       title: Preliminary data on Firefox TLS 1.3 Middlebox experiment
+       date: 2017
+       target: https://www.ietf.org/mail-archive/web/tls/current/msg25091.html
+       author:
+       -
+         ins: E. Rescorla
+
+  Res17b:
+       title: More compatibility measurement results
+       date: 2017
+       target: https://www.ietf.org/mail-archive/web/tls/current/msg25179.html
+       author:
+       -
+         ins: E. Rescorla
+
+  Ben17a:
+       title: Presentation before the TLS WG at IETF 100
+       date: 2017
+       target: https://datatracker.ietf.org/meeting/100/materials/slides-100-tls-sessa-tls13/
+       author:
+       -
+         ins: D. Benjamin
+         
+  Ben17b:
+       title: Additional TLS 1.3 results from Chrome
+       date: 2017
+       target: https://www.ietf.org/mail-archive/web/tls/current/msg25168.html
+       author:
+       -
+         ins: D. Benjamin
+
+   
 
 --- abstract
 
@@ -5625,7 +5658,8 @@ and stable deployment of TLS 1.3 without 0-RTT prior to enabling 0-RTT.
 
 ## Middlebox Compatibility Mode {#middlebox}
 
-Field measurements have found that a significant number of middleboxes
+Field measurements
+{{Ben17a}}, {{Ben17b}}, {{Res17a}}, {{Res17b}} have found that a significant number of middleboxes
 misbehave when a TLS client/server pair negotiates TLS 1.3. Implementations
 can increase the chance of making connections through those middleboxes
 by making the TLS 1.3 handshake look more like a TLS 1.2 handshake:
