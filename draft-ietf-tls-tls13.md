@@ -1829,7 +1829,9 @@ legacy_session_id
   compatibility mode (see {{middlebox}}) this field MUST be non-empty,
   so a client not offering a pre-TLS 1.3 session MUST generate a
   new 32-byte value. This value need not be random but SHOULD be
-  unpredictable to avoid ossification.
+  unpredictable to avoid but SHOULD be
+  unpredictable to avoid intermediaries fixating on a specific value
+  (also known as ossification).
   Otherwise, it MUST be set as a zero length vector (i.e., a single
   zero byte length field).
 
@@ -3900,8 +3902,9 @@ then delivered to higher-level clients.
 TLS records are typed, which allows multiple higher-level protocols to
 be multiplexed over the same record layer. This document specifies
 four content types: handshake, application data, alert, and
-change_cipher_spec, with the latter being used only for
-compatibility purposes (see {{middlebox}}).
+change_cipher_spec.
+The change_cipher_spec record is used only for compatibility purposes
+(see {{middlebox}}).
 
 An implementation may receive an unencrypted record of type
 change_cipher_spec consisting of the single byte value 0x01 at any
@@ -5627,10 +5630,13 @@ misbehave when a TLS client/server pair negotiates TLS 1.3. Implementations
 can increase the chance of making connections through those middleboxes
 by making the TLS 1.3 handshake look more like a TLS 1.2 handshake:
 
-- The client always provides a non-empty session ID in the ClientHello.
+- The client always provides a non-empty session ID in the ClientHello,
+  as described in the legacy_session_id section of {{client-hello}}.
 
 - If not offering early data, the client sends a dummy
-  change_cipher_spec record immediately before its second flight. This
+  change_cipher_spec record
+  change_cipher_spec record (see the third paragraph of {{record-layer}})
+  immediately before its second flight. This
   may either be before its second ClientHello or before its encrypted
   handshake flight. If offering early data, the record is placed
   immediately after the first ClientHello.
