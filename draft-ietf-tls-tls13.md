@@ -509,7 +509,18 @@ informative:
        -
          ins: D. Benjamin
 
-   
+  JSS15:
+       title: On the Security of TLS 1.3 and QUIC Against Weaknesses in PKCS#1 v1.5 Encryption
+       date: 2015
+       seriesinfo: Proceedings of ACM CCS 2015
+       target: https://www.nds.rub.de/media/nds/veroeffentlichungen/2015/08/21/Tls13QuicAttacks.pdf
+       author:
+       -
+         ins: T. Jager
+       -
+         ins: J. Schwenk
+       -
+         ins: J. Somorovsky
 
 --- abstract
 
@@ -6188,6 +6199,20 @@ server-to-client encryption keys because that would entail
 the reuse of those keys. This parallels the use of the early
 application traffic keys only in the client-to-server direction.
 
+## Attacks on Static RSA
+
+Although TLS 1.3 does not use RSA key transport and so is not
+directly susceptible to Bleichenbacher-type attacks, if TLS 1.3
+servers also support static RSA in the context of previous
+versions of TLS, then it may be possible to impersonate the server
+for TLS 1.3 connections {{JSS15}}. TLS
+1.3 implementations can prevent this attack by disabling support
+for static RSA across all versions of TLS. In principle, implementations
+might also be able to separate certificates with different keyUsage
+bits for static RSA decryption and RSA signature, but this technique
+relies on clients refusing to accept signatures using keys
+in certificates that do not have the digitalSignature bit set,
+and many clients do not enforce this restriction.
 
 # Working Group Information
 
