@@ -2153,6 +2153,7 @@ A number of TLS messages contain tag-length-value encoded extensions structures.
            certificate_authorities(47),                /* [[this document]] */
            oid_filters(48),                            /* [[this document]] */
            post_handshake_auth(49),                    /* [[this document]] */
+           signature_algorithms_cert(50),              /* [[this document]] */
            (65535)
        } ExtensionType;
 
@@ -2213,6 +2214,7 @@ appears it MUST abort the handshake with an "illegal_parameter" alert.
 | certificate_authorities \[\[this document]]|      CH, CR |
 | oid_filters \[\[this document]]          |          CR |
 | post_handshake_auth \[\[this document]]  |          CH |
+| signature_algorithms_cert \[\[this document]]|      CH, CR |
 
 When multiple extensions of different types are present, the
 extensions MAY appear in any order, with the exception of
@@ -2344,14 +2346,28 @@ Clients MUST NOT use cookies in their initial ClientHello in subsequent connecti
 
 ###  Signature Algorithms
 
-The client uses the "signature_algorithms" extension to indicate to the server
-which signature algorithms may be used in digital signatures. Clients which
-desire the server to authenticate itself via a certificate MUST send this extension.
-If a server is authenticating via a certificate and the client has not sent a
-"signature_algorithms" extension, then the server MUST
-abort the handshake with a "missing_extension" alert (see {{mti-extensions}}).
+TLS 1.3 provides two extensions for indicating which signature
+algorithms may be used in digital signatures. The
+"signature_algorithms_cert" extension applies to signatures in
+certificates and the "signature_algorithms" extension, which originally
+appeared in TLS 1.2, applies to signatures in CertificateVerify
+messages. The keys found in certificates MUST also be of
+appropriate type for the signature algorithms they are used
+with. This is a particular issue for RSA keys and PSS signatures,
+as described below. If no "signature_algorithms_cert" extension is present,
+then the "signature_algorithms" extension also applies to signatures
+appearing in certificates. Clients which desire the server to authenticate
+itself via a certificate MUST send "signature_algorithms". If a server
+is authenticating via a certificate and the client has not sent a
+"signature_algorithms" extension, then the server MUST abort the
+handshake with a "missing_extension" alert (see {{mti-extensions}}).
 
-The "extension_data" field of this extension in a ClientHello contains a
+The "signature_algorithms_cert" extension was added to allow implementatations
+which supported different sets of algorithms for certificates and in TLS itself
+to clearly signal their capabilities. TLS 1.2 implementations SHOULD also process
+this extension.
+
+The "extension_data" field of these extension contains a
 SignatureSchemeList value:
 
 %%% Signature Algorithm Extension
@@ -2367,14 +2383,18 @@ SignatureSchemeList value:
            ecdsa_secp384r1_sha384(0x0503),
            ecdsa_secp521r1_sha512(0x0603),
 
-           /* RSASSA-PSS algorithms */
-           rsa_pss_sha256(0x0804),
-           rsa_pss_sha384(0x0805),
-           rsa_pss_sha512(0x0806),
-
+           /* RSASSA-PSS algorithms with public key OID rsaEncryption */
+           rsa_pss_rsae_sha256(0x0804),
+           rsa_pss_rsae_sha384(0x0805),
+           rsa_pss_rsae_sha512(0x0806),
            /* EdDSA algorithms */
            ed25519(0x0807),
            ed448(0x0808),
+
+           /* RSASSA-PSS algorithms with public key OID RSASSA-PSS */
+           rsa_pss_pss_sha256(0x0809),
+           rsa_pss_pss_sha384(0x0810),
+           rsa_pss_pss_sha512(0x0811),
 
            /* Legacy algorithms */
            rsa_pkcs1_sha1(0x0201),
@@ -2415,7 +2435,8 @@ RSASSA-PKCS1-v1_5 algorithms
   with the corresponding hash algorithm as defined in {{!SHS=DOI.10.6028/NIST.FIPS.180-4}}. These values
   refer solely to signatures which appear in certificates (see
   {{server-certificate-selection}}) and are not defined for use in signed
-  TLS handshake messages.
+  TLS handshake messages, although they MAY appear in "signature_algorithms"
+  and "signature_algorithms_cert" for backward compatibility with TLS 1.2,
 
 ECDSA algorithms
 : Indicates a signature algorithm using ECDSA {{ECDSA}}, the corresponding
@@ -2423,19 +2444,31 @@ ECDSA algorithms
   corresponding hash algorithm as defined in {{!SHS}}. The signature is
   represented as a DER-encoded {{X690}} ECDSA-Sig-Value structure.
 
-RSASSA-PSS algorithms
+RSASSA-PSS RSAE algorithms
 : Indicates a signature algorithm using RSASSA-PSS {{RFC8017}} with mask
   generation function 1. The
   digest used in the mask generation function and the digest being signed are
-  both the corresponding hash algorithm as defined in {{!SHS}}. When used in
-  signed TLS handshake messages, the length of the salt MUST be equal to the
-  length of the digest output.  This codepoint is new in this document and is also
-  defined for use with TLS 1.2.
+  both the corresponding hash algorithm as defined in {{!SHS}}.
+  The length of the salt MUST be equal to the length of the digest
+  algorithm. If the public key is carried
+  in an X.509 certificate, it MUST use the rsaEncryption OID {{!RFC5280}}.
 
 EdDSA algorithms
 : Indicates a signature algorithm using EdDSA as defined in
   {{RFC8032}} or its successors. Note that these correspond to the
   "PureEdDSA" algorithms and not the "prehash" variants.
+
+RSASSA-PSS PSS algorithms
+: Indicates a signature algorithm using RSASSA-PSS {{RFC8017}} with mask
+  generation function 1. The
+  digest used in the mask generation function and the digest being signed are
+  both the corresponding hash algorithm as defined in {{!SHS}}.
+  The length of the salt MUST be equal to the length of the digest
+  algorithm. If the public key is carried in an X.509 certificate,
+  it MUST use the RSASSA-PSS OID  {{!RFC5756}}. When used in certificate signatures,
+  the algorithm parameters MUST be DER encoded. If the corresponding
+  public key's parameters present, then the parameters in the signature
+  MUST be identical to those in the public key.
 
 Legacy algorithms
 : Indicates algorithms which are being deprecated because they use
@@ -2443,7 +2476,9 @@ Legacy algorithms
   in this context with either with RSA using RSASSA-PKCS1-v1_5 or ECDSA.  These values
   refer solely to signatures which appear in certificates (see
   {{server-certificate-selection}}) and are not defined for use in
-  signed TLS handshake messages. Endpoints SHOULD NOT negotiate these algorithms
+  signed TLS handshake messages, even if they appear in the "signature_algorithms"
+  list (this is necessary for backward compatibility with TLS 1.2).
+  Endpoints SHOULD NOT negotiate these algorithms
   but are permitted to do so solely for backward compatibility. Clients
   offering these values MUST list
   them as the lowest priority (listed after all other algorithms in
@@ -5070,7 +5105,7 @@ TLS_CHACHA20_POLY1305_SHA256 [RFC7539] cipher suites.  (see
 {{cipher-suites}})
 
 A TLS-compliant application MUST support digital signatures with
-rsa_pkcs1_sha256 (for certificates), rsa_pss_sha256 (for
+rsa_pkcs1_sha256 (for certificates), rsa_pss_rsae_sha256_ (for
 CertificateVerify and certificates), and ecdsa_secp256r1_sha256. A
 TLS-compliant application MUST support key exchange with secp256r1
 (NIST P-256) and SHOULD support key exchange with X25519 {{RFC7748}}.
@@ -5219,7 +5254,7 @@ its allocation policy is listed below:
 - IANA \[SHALL update/has updated] this registry to include the
   "key_share", "pre_shared_key", "psk_key_exchange_modes",
   "early_data", "cookie", "supported_versions",
-  "certificate_authorities", "oid_filters", and "post_handshake_auth"
+  "certificate_authorities", "oid_filters", "post_handshake_auth", and "signature_algorithms_certs",
   extensions with the values defined in this document and the Recommended value of "Yes".
 
 - IANA \[SHALL update/has updated] this registry to include a "TLS
