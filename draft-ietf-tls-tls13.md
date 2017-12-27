@@ -2298,8 +2298,8 @@ Clients MUST NOT use cookies in their initial ClientHello in subsequent connecti
 TLS 1.3 provides two extensions for indicating which signature
 algorithms may be used in digital signatures. The
 "signature_algorithms_cert" extension applies to signatures in
-certificates and to the and the "signature_algorithms" extension, which originally
-appeared in TLS 1.2, applies signatures in CertificateVerify
+certificates and the "signature_algorithms" extension, which originally
+appeared in TLS 1.2, applies to signatures in CertificateVerify
 messages. The keys found in certificates MUST also be of
 appropriate type for the signature algorithms they are used
 with. This is a particular issue for RSA keys and PSS signatures,
@@ -2310,7 +2310,11 @@ itself via a certificate MUST send "signature_algorithms". If a server
 is authenticating via a certificate and the client has not sent a
 "signature_algorithms" extension, then the server MUST abort the
 handshake with a "missing_extension" alert (see {{mti-extensions}}).
-TLS 1.2 implementations SHOULD also process this extension.
+
+The "signature_algorithms_cert" extension was added to allow implementatations
+which supported different sets of algorithms for certificates and in TLS itself
+to clearly signal their capabilities. TLS 1.2 implementations SHOULD also process
+this extension.
 
 The "extension_data" field of these extension contains a
 SignatureSchemeList value:
@@ -2396,7 +2400,7 @@ RSASSA-PSS RSAE algorithms
   both the corresponding hash algorithm as defined in {{!SHS}}.
   The length of the salt MUST be equal to the length of the digest
   algorithm. If the public key is carried
-  in an X.509 certificate, it MUST use the rsaEncryption OID.
+  in an X.509 certificate, it MUST use the rsaEncryption OID {{!RFC5280}}.
 
 EdDSA algorithms
 : Indicates a signature algorithm using EdDSA as defined in
@@ -2410,9 +2414,10 @@ RSASSA-PSS PSS algorithms
   both the corresponding hash algorithm as defined in {{!SHS}}.
   The length of the salt MUST be equal to the length of the digest
   algorithm. If the public key is carried in an X.509 certificate,
-  it MUST use the RSASSA-PSS OID. When used in certificate signatures,
-  the algorithm parameters MUST be DER encoded and identical to those
-  used in the corresponding public key.
+  it MUST use the RSASSA-PSS OID  {{!RFC5756}}. When used in certificate signatures,
+  the algorithm parameters MUST be DER encoded. If the corresponding
+  public key's parameters present, then the parameters in the signature
+  MUST be identical to those in the public key.
 
 Legacy algorithms
 : Indicates algorithms which are being deprecated because they use
