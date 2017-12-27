@@ -2144,7 +2144,7 @@ A number of TLS messages contain tag-length-value encoded extensions structures.
            client_certificate_type(19),                /* RFC 7250 */
            server_certificate_type(20),                /* RFC 7250 */
            padding(21),                                /* RFC 7685 */
-           key_share(40),                              /* [[this document]] */
+           RESERVED(40),                               /* Used but never assigned */
            pre_shared_key(41),                         /* [[this document]] */
            early_data(42),                             /* [[this document]] */
            supported_versions(43),                     /* [[this document]] */
@@ -2154,6 +2154,7 @@ A number of TLS messages contain tag-length-value encoded extensions structures.
            oid_filters(48),                            /* [[this document]] */
            post_handshake_auth(49),                    /* [[this document]] */
            signature_algorithms_cert(50),              /* [[this document]] */
+           key_share(51),                              /* [[this document]] */
            (65535)
        } ExtensionType;
 
