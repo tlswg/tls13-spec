@@ -2344,6 +2344,12 @@ new ClientHello, the client MUST copy the contents of the extension received in
 the HelloRetryRequest into a "cookie" extension in the new ClientHello.
 Clients MUST NOT use cookies in their initial ClientHello in subsequent connections.
 
+When a server is operating statelessly it may receive an unprotected record of
+type change_cipher_spec between the first and second ClientHello (see
+{{Record Protocol}}). Since the server is not storing any state this will appear
+as if it were the first message to be received. Servers operating statelessly
+MUST ignore these records.
+
 ###  Signature Algorithms
 
 TLS 1.3 provides two extensions for indicating which signature
@@ -3987,16 +3993,18 @@ The change_cipher_spec record is used only for compatibility purposes
 
 An implementation may receive an unencrypted record of type
 change_cipher_spec consisting of the single byte value 0x01 at any
-time during the handshake and MUST simply drop it without further
-processing.  Note that this record may appear at a point at the
+time after the first ClientHello message has been sent or received and before
+the peer's Finished message has been received and MUST simply drop it without
+further processing.  Note that this record may appear at a point at the
 handshake where the implementation is expecting protected records
 and so it is necessary to detect this
 condition prior to attempting to deprotect the record. An
 implementation which receives any other change_cipher_spec value or
 which receives a protected change_cipher_spec record MUST abort the
-handshake with an "unexpected_message" alert. After the handshake is
-complete, change_cipher_spec MUST be treated as an unexpected record
-type.
+handshake with an "unexpected_message" alert. A change_cipher_spec record
+received before the first ClientHello message or after the peer's Finished
+message MUST be treated as an unexpected record type.
+
 
 Implementations MUST NOT send record types not defined in this
 document unless negotiated by some extension.  If a TLS implementation
