@@ -6572,6 +6572,10 @@ Archives of the list can be found at:
   NCC Group \\
   david.wong@nccgroup.trust
 
+* Christopher A. Wood \\
+  Apple Inc. \\
+  cawood@apple.com
+
 * Tim Wright \\
   Vodafone \\
   timothy.wright@vodafone.com
