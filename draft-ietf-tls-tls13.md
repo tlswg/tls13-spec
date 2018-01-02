@@ -2346,7 +2346,7 @@ Clients MUST NOT use cookies in their initial ClientHello in subsequent connecti
 
 When a server is operating statelessly it may receive an unprotected record of
 type change_cipher_spec between the first and second ClientHello (see
-{{Record Protocol}}). Since the server is not storing any state this will appear
+{{record-protocol}}). Since the server is not storing any state this will appear
 as if it were the first message to be received. Servers operating statelessly
 MUST ignore these records.
 
