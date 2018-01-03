@@ -5159,14 +5159,14 @@ lacking a "server_name" extension by terminating the connection with a
 
 ## Protocol Invariants
 
-This section describes invariants that TLS endpoints and intermediaries MUST
+This section describes invariants that TLS endpoints and middleboxes MUST
 follow. It also applies to earlier versions, which assumed these rules but did
 not document them.
 
 TLS is designed to be securely and compatibly extensible. Newer clients or
 servers, when communicating with newer peers, SHOULD negotiate the
 most preferred common parameters. The TLS handshake provides downgrade
-protection: Intermediaries passing traffic between a newer client and
+protection: Middleboxes passing traffic between a newer client and
 newer server without terminating TLS should be unable to influence the
 handshake (see {{security-handshake}}). At the same time, deployments
 update at different rates, so a newer client or server MAY continue to
@@ -5185,7 +5185,7 @@ For this to work, implementations MUST correctly handle extensible fields:
   CertificateRequest or NewSessionTicket MUST also ignore all unrecognized
   extensions.
 
-- An intermediary which terminates a TLS connection MUST behave as a compliant
+- A middlebox which terminates a TLS connection MUST behave as a compliant
   TLS server (to the original client), including having a certificate
   which the client is willing to accept, and as a compliant TLS client (to the
   original server), including verifying the original server's certificate.
@@ -5193,24 +5193,25 @@ For this to work, implementations MUST correctly handle extensible fields:
   containing only parameters it understands, and it MUST generate a fresh
   ServerHello random value, rather than forwarding the endpoint's value.
 
-  In this scenario, the intermediary is a pair of TLS endpoints for purposes
-  of protocol requirements and security analysis.
+  Note that TLS's protocol requirements and security analysis only apply to the
+  two connections separately. Safely deploying a TLS terminator requires
+  additional security considerations which are beyond the scope of this document.
 
-- An intermediary which forwards ClientHello parameters it does not understand MUST
+- An middlebox which forwards ClientHello parameters it does not understand MUST
   NOT process any messages beyond that ClientHello. It MUST forward all
   subsequent traffic unmodified. Otherwise, it may fail to interoperate with
   newer clients and servers.
 
   Forwarded ClientHellos may contain advertisements for features not supported
-  by the intermediary, so the response may include future TLS additions the
-  intermediary does not recognize. These additions MAY change any message beyond
+  by the middlebox, so the response may include future TLS additions the
+  middlebox does not recognize. These additions MAY change any message beyond
   the ClientHello arbitrarily. In particular, the values sent in the ServerHello
   might change, the ServerHello format might change, and the TLSCiphertext format
   might change.
 
 The design of TLS 1.3 was constrained by widely-deployed non-compliant TLS
-intermediaries (see {{middlebox}}), however it does not relax the invariants.
-Those intermediaries continue to be non-compliant.
+middleboxes (see {{middlebox}}), however it does not relax the invariants.
+Those middleboxes continue to be non-compliant.
 
 #  Security Considerations
 
