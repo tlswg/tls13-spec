@@ -2387,6 +2387,7 @@ SignatureSchemeList value:
            rsa_pss_rsae_sha256(0x0804),
            rsa_pss_rsae_sha384(0x0805),
            rsa_pss_rsae_sha512(0x0806),
+
            /* EdDSA algorithms */
            ed25519(0x0807),
            ed448(0x0808),
