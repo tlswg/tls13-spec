@@ -4536,7 +4536,7 @@ decrypt_error
   
 access_denied_by_intermediary
 : The access was denied by a network intermediary - i.e. a server other 
-  than the client or the desired server.
+  than the client or the desired server, for example by an Internet Sevice Provider.
 
 protocol_version
 : The protocol version the peer has attempted to negotiate is
