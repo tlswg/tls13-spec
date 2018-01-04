@@ -4368,6 +4368,7 @@ enum) MUST terminate the connection with an "illegal_parameter" alert.
            access_denied(49),
            decode_error(50),
            decrypt_error(51),
+           access_denied_by_intermediary(52),
            export_restriction_RESERVED(60),
            protocol_version(70),
            insufficient_security(71),
@@ -4532,6 +4533,10 @@ decrypt_error
 : A handshake (not record-layer) cryptographic operation failed, including being unable
   to correctly verify a signature or validate a Finished message
   or a PSK binder.
+  
+access_denied_by_intermediary
+: The access was denied by a network intermediary - i.e. a server other 
+  than the client or the desired server.
 
 protocol_version
 : The protocol version the peer has attempted to negotiate is
