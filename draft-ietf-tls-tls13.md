@@ -500,7 +500,7 @@ informative:
        author:
        -
          ins: D. Benjamin
-         
+
   Ben17b:
        title: Additional TLS 1.3 results from Chrome
        date: 2017
@@ -2394,8 +2394,8 @@ SignatureSchemeList value:
 
            /* RSASSA-PSS algorithms with public key OID RSASSA-PSS */
            rsa_pss_pss_sha256(0x0809),
-           rsa_pss_pss_sha384(0x0810),
-           rsa_pss_pss_sha512(0x0811),
+           rsa_pss_pss_sha384(0x080a),
+           rsa_pss_pss_sha512(0x080b),
 
            /* Legacy algorithms */
            rsa_pkcs1_sha1(0x0201),
