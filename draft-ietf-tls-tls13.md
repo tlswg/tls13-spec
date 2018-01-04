@@ -1874,7 +1874,7 @@ legacy_session_id
   so a client not offering a pre-TLS 1.3 session MUST generate a
   new 32-byte value. This value need not be random but SHOULD be
   unpredictable to avoid but SHOULD be
-  unpredictable to avoid intermediaries fixating on a specific value
+  unpredictable to avoid implementations fixating on a specific value
   (also known as ossification).
   Otherwise, it MUST be set as a zero length vector (i.e., a single
   zero byte length field).
