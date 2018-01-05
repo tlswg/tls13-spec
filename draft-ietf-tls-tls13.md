@@ -635,6 +635,19 @@ RFC EDITOR PLEASE DELETE THIS SECTION.
 (*) indicates changes to the wire protocol which may require implementations
     to update.
 
+draft-23
+- Renumber key_share (*)
+
+- Add a new extension and new code points to allow negotiating PSS
+  separately for certificates and CertificateVerify (*)
+
+- Slightly restrict when CCS must be accepted to amke implementation
+  easier.
+
+- Document protocol invariants
+
+- Add some text on the security of static RSA.
+  
 draft-22
 - Implement changes for improved middlebox penetration (*)
 
