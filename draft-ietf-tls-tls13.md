@@ -647,7 +647,7 @@ draft-23
 - Document protocol invariants
 
 - Add some text on the security of static RSA.
-  
+
 draft-22
 - Implement changes for improved middlebox penetration (*)
 
@@ -6611,3 +6611,6 @@ Archives of the list can be found at:
   Internet Initiative Japan Inc. \\
   kazu@iij.ad.jp
 
+* Illya Gerasymchuk \\
+  Independent \\
+  illya@iluxonchik.me
