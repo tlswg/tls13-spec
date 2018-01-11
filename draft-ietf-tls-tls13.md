@@ -6370,6 +6370,10 @@ Archives of the list can be found at:
 * David M. Garrett \\
   dave@nulldereference.com
 
+* Illya Gerasymchuk \\
+  Independent \\
+  illya@iluxonchik.me
+
 * Alessandro Ghedini \\
   Cloudflare Inc. \\
   alessandro@cloudflare.com
@@ -6610,7 +6614,3 @@ Archives of the list can be found at:
 * Kazu Yamamoto \\
   Internet Initiative Japan Inc. \\
   kazu@iij.ad.jp
-
-* Illya Gerasymchuk \\
-  Independent \\
-  illya@iluxonchik.me
