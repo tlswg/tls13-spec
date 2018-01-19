@@ -2013,10 +2013,10 @@ extensions
 : A list of extensions.  The ServerHello MUST only include extensions
   which are required to establish the cryptographic context and negotiate
   the protocol version. All TLS 1.3 ServerHello messages MUST contain the
-  "supported_versions" extension, and at least one of either the "pre_shared_key"
-  or "key_share" extensions, or both when using a PSK with (EC)DHE key establishment.
-  The remaining extensions are sent separately in the EncryptedExtensions
-  message.
+  "supported_versions" extension.  Current ServerHello messages contain
+  either the "pre_shared_key" or "key_share" extensions, or both when using
+  a PSK with (EC)DHE key establishment. The remaining extensions are sent
+  separately in the EncryptedExtensions message.
 {:br }
 
 For backward compatibility reasons with middleboxes
@@ -2132,7 +2132,7 @@ HelloRetryRequest and otherwise abort the handshake with an
 "illegal_parameter" alert.
 
 The value of selected_version in the HelloRetryRequest "supported_versions"
-extension MUST be retained in ServerHello, and a client MUST abort the
+extension MUST be retained in the ServerHello, and a client MUST abort the
 handshake with an "illegal_parameter" alert if the value changes.
 
 ##  Extensions
