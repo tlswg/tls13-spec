@@ -4053,10 +4053,11 @@ record or fragmented across several records, provided that:
 Implementations MUST NOT send zero-length fragments of Handshake
 types, even if those fragments contain padding.
 
-Alert messages ({{alert-protocol}}) MUST NOT be fragmented across
-records and multiple Alert messages MUST NOT be coalesced into a
-single TLSPlaintext record. In other words, a record with an Alert
-type MUST contain exactly one message.
+Alert ({{alert-protocol}}) and change_cipher_spec messages MUST NOT be
+fragmented across records and multiple Alert and change_cipher_spec messages
+MUST NOT be coalesced into a single TLSPlaintext record. In other words, a
+record with an alert or change_cipher_spec ContentType MUST contain exactly one
+message.
 
 Application Data messages contain data that is opaque to
 TLS. Application Data messages are always protected. Zero-length
