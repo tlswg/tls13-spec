@@ -5277,7 +5277,7 @@ its allocation policy is listed below:
 - IANA \[SHALL update/has updated] this registry to include the
   "key_share", "pre_shared_key", "psk_key_exchange_modes",
   "early_data", "cookie", "supported_versions",
-  "certificate_authorities", "oid_filters", "post_handshake_auth", and "signature_algorithms_certs",
+  "certificate_authorities", "oid_filters", "post_handshake_auth", and "signature_algorithms_cert",
   extensions with the values defined in this document and the Recommended value of "Yes".
 
 - IANA \[SHALL update/has updated] this registry to include a "TLS
