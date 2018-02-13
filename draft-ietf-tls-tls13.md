@@ -5737,7 +5737,6 @@ by making the TLS 1.3 handshake look more like a TLS 1.2 handshake:
   as described in the legacy_session_id section of {{client-hello}}.
 
 - If not offering early data, the client sends a dummy
-  change_cipher_spec record
   change_cipher_spec record (see the third paragraph of {{record-layer}})
   immediately before its second flight. This
   may either be before its second ClientHello or before its encrypted
