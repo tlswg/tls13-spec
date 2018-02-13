@@ -641,7 +641,7 @@ draft-23
 - Add a new extension and new code points to allow negotiating PSS
   separately for certificates and CertificateVerify (*)
 
-- Slightly restrict when CCS must be accepted to amke implementation
+- Slightly restrict when CCS must be accepted to make implementation
   easier.
 
 - Document protocol invariants
