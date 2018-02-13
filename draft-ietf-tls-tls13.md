@@ -5127,7 +5127,7 @@ TLS_CHACHA20_POLY1305_SHA256 [RFC7539] cipher suites.  (see
 {{cipher-suites}})
 
 A TLS-compliant application MUST support digital signatures with
-rsa_pkcs1_sha256 (for certificates), rsa_pss_rsae_sha256_ (for
+rsa_pkcs1_sha256 (for certificates), rsa_pss_rsae_sha256 (for
 CertificateVerify and certificates), and ecdsa_secp256r1_sha256. A
 TLS-compliant application MUST support key exchange with secp256r1
 (NIST P-256) and SHOULD support key exchange with X25519 {{RFC7748}}.
