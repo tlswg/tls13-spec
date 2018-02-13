@@ -2162,6 +2162,7 @@ A number of TLS messages contain tag-length-value encoded extensions structures.
            supported_versions(43),                     /* [[this document]] */
            cookie(44),                                 /* [[this document]] */
            psk_key_exchange_modes(45),                 /* [[this document]] */
+           RESERVED(46),                               /* Used but never assigned */
            certificate_authorities(47),                /* [[this document]] */
            oid_filters(48),                            /* [[this document]] */
            post_handshake_auth(49),                    /* [[this document]] */
