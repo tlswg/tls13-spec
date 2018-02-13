@@ -2381,7 +2381,7 @@ is authenticating via a certificate and the client has not sent a
 "signature_algorithms" extension, then the server MUST abort the
 handshake with a "missing_extension" alert (see {{mti-extensions}}).
 
-The "signature_algorithms_cert" extension was added to allow implementatations
+The "signature_algorithms_cert" extension was added to allow implementations
 which supported different sets of algorithms for certificates and in TLS itself
 to clearly signal their capabilities. TLS 1.2 implementations SHOULD also process
 this extension.
