@@ -635,6 +635,13 @@ RFC EDITOR PLEASE DELETE THIS SECTION.
 (*) indicates changes to the wire protocol which may require implementations
     to update.
 
+draft-24
+
+- Require that CH2 have version 0303
+
+- Some clarifications
+
+
 draft-23
 - Renumber key_share (*)
 
