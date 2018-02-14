@@ -2384,7 +2384,8 @@ handshake with a "missing_extension" alert (see {{mti-extensions}}).
 The "signature_algorithms_cert" extension was added to allow implementatations
 which supported different sets of algorithms for certificates and in TLS itself
 to clearly signal their capabilities. TLS 1.2 implementations SHOULD also process
-this extension.
+this extension. Implementations which have the same policy in both cases
+MAY omit the "signature_algorithms_cert" extension.
 
 The "extension_data" field of these extension contains a
 SignatureSchemeList value:
