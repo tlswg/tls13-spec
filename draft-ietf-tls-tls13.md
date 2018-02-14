@@ -2385,7 +2385,8 @@ handshake with a "missing_extension" alert (see {{mti-extensions}}).
 The "signature_algorithms_cert" extension was added to allow implementations
 which supported different sets of algorithms for certificates and in TLS itself
 to clearly signal their capabilities. TLS 1.2 implementations SHOULD also process
-this extension.
+this extension. Implementations which have the same policy in both cases
+MAY omit the "signature_algorithms_cert" extension.
 
 The "extension_data" field of these extension contains a
 SignatureSchemeList value:
@@ -3281,7 +3282,8 @@ extensions
 In prior versions of TLS, the CertificateRequest message
 carried a list of signature algorithms and certificate authorities
 which the server would accept. In TLS 1.3 the former is expressed
-by sending the "signature_algorithms" extension. The latter is
+by sending the "signature_algorithms" and "signature_algorithms_cert"
+extensions. The latter is
 expressed by sending the "certificate_authorities" extension
 (see {{certificate-authorities}}).
 
@@ -3519,15 +3521,15 @@ The following rules apply to the certificates sent by the server:
 
 - The certificate MUST allow the key to be used for signing (i.e., the
   digitalSignature bit MUST be set if the Key Usage extension is present) with
-  a signature scheme indicated in the client's "signature_algorithms" extension.
+  a signature scheme indicated in the client's "signature_algorithms"/"signature_algorithms_cert"
+  extensions (see {{signature-algorithms}}).
 
 - The "server_name" {{RFC6066}} and "certificate_authorities" extensions are used to
   guide certificate selection. As servers MAY require the presence of the "server_name"
   extension, clients SHOULD send this extension, when applicable.
 
 All certificates provided by the server MUST be signed by a
-signature algorithm that appears in the "signature_algorithms"
-extension provided by the client, if they are able to provide such
+signature algorithm advertised by the client, if they are able to provide such
 a chain (see {{signature-algorithms}}).
 Certificates that are self-signed
 or certificates that are expected to be trust anchors are not validated as
@@ -3538,7 +3540,7 @@ indicated supported algorithms, then it SHOULD continue the handshake by sending
 the client a certificate chain of its choice that may include algorithms
 that are not known to be supported by the client.
 This fallback chain SHOULD NOT use the deprecated SHA-1 hash algorithm in general,
-but MAY do so if the "signature_algorithms" extension provided by the client permits it,
+but MAY do so if the client's advertisement permits it,
 and MUST NOT do so otherwise.
 
 If the client cannot construct an acceptable chain using the provided
@@ -5142,6 +5144,7 @@ TLS-compliant application MUST implement the following TLS extensions:
   * Supported Versions     ("supported_versions"; {{supported-versions}})
   * Cookie                 ("cookie"; {{cookie}})
   * Signature Algorithms   ("signature_algorithms"; {{signature-algorithms}})
+  * Signature Algorithms Certificate  ("signature_algorithms_cert"; {{signature-algorithms}})
   * Negotiated Groups      ("supported_groups"; {{negotiated-groups}})
   * Key Share              ("key_share"; {{key-share}})
   * Server Name Indication ("server_name"; Section 3 of {{RFC6066}})
