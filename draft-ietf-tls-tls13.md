@@ -4112,7 +4112,7 @@ This document describes TLS 1.3, which uses the version 0x0304.
 This version value is historical, deriving from the use of 0x0301
 for TLS 1.0 and 0x0300 for SSL 3.0. In order to maximize backwards
 compatibility, records containing an initial ClientHello MUST have version
-0x0301 and a records containing a second ClientHello or
+0x0301 and a record containing a second ClientHello or
 a ServerHello MUST have version
 0x0303, reflecting TLS 1.0 and TLS 1.2 respectively.
 When negotiating prior versions of TLS, endpoints
