@@ -637,7 +637,7 @@ RFC EDITOR PLEASE DELETE THIS SECTION.
 
 draft-24
 
-- Require that CH2 have version 0303
+- Require that CH2 have version 0303 (*)
 
 - Some clarifications
 
