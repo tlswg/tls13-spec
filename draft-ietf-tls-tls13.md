@@ -6368,6 +6368,10 @@ Archives of the list can be found at:
   Independent \\
   tim@dierks.org
 
+* Roelof DuToit \\
+  Symantec Corporation \\
+  roelof_dutoit@symantec.com
+
 * Taher Elgamal \\
   Securify \\
   taher@securify.com
