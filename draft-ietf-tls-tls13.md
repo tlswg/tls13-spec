@@ -78,7 +78,6 @@ informative:
   RFC4346:
   RFC4366:
   RFC4492:
-  RFC4681:
   RFC5077:
   RFC5116:
   RFC5246:
