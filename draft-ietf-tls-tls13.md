@@ -5170,6 +5170,7 @@ applicable features:
                             DHE or ECDHE key exchange.
   * "key_share"            is REQUIRED for DHE or ECDHE key exchange.
   * "pre_shared_key"       is REQUIRED for PSK key agreement.
+  * "psk_key_exchange_modes" is REQUIRED for PSK key agreement.
 
 A client is considered to be attempting to negotiate using this
 specification if the ClientHello contains a "supported_versions"
