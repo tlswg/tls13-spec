@@ -3627,7 +3627,7 @@ The algorithm field specifies the signature algorithm used (see
 {{signature-algorithms}} for the definition of this field). The
 signature is a digital signature using that algorithm. The
 content that is covered under the signature is the hash output as described in
-{{authentication-messages}}, namely:
+{{the-transcript-hash}}, namely:
 
        Transcript-Hash(Handshake Context, Certificate)
 
