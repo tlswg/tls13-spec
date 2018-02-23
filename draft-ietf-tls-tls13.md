@@ -2322,7 +2322,7 @@ the rest of the ServerHello (although they will have to parse the
 ServerHello in order to read the extension).
 If this extension is present, clients MUST ignore the
 ServerHello.legacy_version value and MUST use only the
-"supported_versions" extension to determine client preferences. If the
+"supported_versions" extension to determine the selected version. If the
 "supported_versions" extension contains a version not offered by the
 client, the client MUST abort the handshake with an
 "illegal_parameter" alert.
