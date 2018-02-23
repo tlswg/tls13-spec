@@ -5876,7 +5876,7 @@ Forward secret with respect to long-term keys
 
 Key Compromise Impersonation (KCI) resistance
 : In a mutually-authenticated connection with certificates, compromising the long-term
-  secret of one actor should not compromise that actor’s authentication of their peer in
+  secret of one actor should not break that actor’s authentication of their peer in
   the given connection (see {{HGFS15}}). For example, if a client's signature key is
   compromised, it should not be possible to impersonate arbitrary servers to that client
   in subsequent handshakes.
