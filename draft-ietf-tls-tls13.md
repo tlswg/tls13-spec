@@ -5875,11 +5875,11 @@ Forward secret with respect to long-term keys
   when PSK is used in the "psk_ke" PskKeyExchangeMode.
 
 Key Compromise Impersonation (KCI) resistance
-: In a mutually-authenticated connection with certificates, peer authentication
-   should hold even if the local long-term secret was compromised before the
-   connection was established (see {{HGFS15}}). For example, if a client's
-   signature key is compromised, it should not be possible to impersonate
-   arbitrary servers to that client in subsequent handshakes.
+: In a mutually-authenticated connection with certificates, compromising the long-term
+  secret of one actor should not compromise that actor’s authentication of their peer in
+  the given connection (see {{HGFS15}}). For example, if a client's signature key is
+  compromised, it should not be possible to impersonate arbitrary servers to that client
+  in subsequent handshakes.
 
 Protection of endpoint identities.
 : The server's identity (certificate) should be protected against passive
