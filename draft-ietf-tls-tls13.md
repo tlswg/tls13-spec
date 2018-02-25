@@ -4220,9 +4220,11 @@ data" to be included in the authentication check, as described in Section 2.1
 of {{RFC5116}}. The key is either the client_write_key or the server_write_key,
 the nonce is derived from the sequence number (see {{nonce}}) and the
 client_write_iv or server_write_iv, and the additional data input is the
-plaintext header associated with the record:
+header associated with the record:
 
-       additional_data = opaque_type | legacy_record_version | length
+       additional_data = TLSCiphertext.opaque_type |
+                         TLSCiphertext.legacy_record_version |
+                         TLSCiphertext.length
 
 The plaintext input to the AEAD algorithm is the encoded TLSInnerPlaintext structure.
 Derivation of traffic keys is defined in {{traffic-key-calculation}}.
