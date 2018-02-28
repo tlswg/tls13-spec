@@ -5259,7 +5259,7 @@ Security issues are discussed throughout this memo, especially in
 #  IANA Considerations
 
 This document uses several registries that were originally created in
-{{RFC4346}}. IANA has updated these to reference this document.
+{{RFC4346}}. IANA \[SHALL update/has updated] these to reference this document.
 The registries and their allocation policies are below:
 
 - TLS Cipher Suite Registry: values with the first byte in the range
@@ -5278,17 +5278,23 @@ The registries and their allocation policies are below:
 
 - TLS Alert Registry: Future values are allocated via Standards
   Action {{RFC8126}}. IANA \[SHALL update/has updated] this registry
-  to include values for "missing_extension" and "certificate_required".
+  to include values for "missing_extension" and "certificate_required".  The
+  "DTLS-OK" column is marked as "Yes" for each new alert.
 
 - TLS HandshakeType Registry: Future values are allocated via
   Standards Action {{RFC8126}}. IANA \[SHALL update/has updated] this registry
   to rename item 4 from "NewSessionTicket" to "new_session_ticket"
   and to add the "hello_retry_request_RESERVED", "encrypted_extensions",
-  "end_of_early_data", "key_update", and "message_hash" values.
+  "end_of_early_data", "key_update", and "message_hash" values.  The "DTLS-OK"
+  are marked as "Yes" for each of these additions.
 
 This document also uses the TLS ExtensionType Registry originally created in
 {{RFC4366}}. IANA has updated it to reference this document. The registry and
 its allocation policy is listed below:
+
+ - IANA \[SHALL update/has updated] Values with the first byte in the range
+   0-254 (decimal) are assigned via Specification Required [RFC8126].  Values
+   with the first byte 255 (decimal) are reserved for Private Use [RFC8126].
 
 - IANA \[SHALL update/has updated] this registry to include the
   "key_share", "pre_shared_key", "psk_key_exchange_modes",
