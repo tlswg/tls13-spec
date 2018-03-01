@@ -5294,12 +5294,14 @@ The registries and their allocation policies are below:
   are marked as "Yes" for each of these additions.
 
 This document also uses the TLS ExtensionType Registry originally created in
-{{RFC4366}}. IANA has updated it to reference this document. The registry and
-its allocation policy is listed below:
+{{RFC4366}}. IANA has updated it to reference this document.  Changes to the
+registry follow:
 
- - IANA \[SHALL update/has updated] Values with the first byte in the range
-   0-254 (decimal) are assigned via Specification Required [RFC8126].  Values
-   with the first byte 255 (decimal) are reserved for Private Use [RFC8126].
+ - IANA \[SHALL update/has updated] this registration policy as follows:
+
+   Values with the first byte in the range 0-254 (decimal) are assigned
+   via Specification Required [RFC8126].  Values with the first byte
+   255 (decimal) are reserved for Private Use [RFC8126].
 
 - IANA \[SHALL update/has updated] this registry to include the
   "key_share", "pre_shared_key", "psk_key_exchange_modes",
