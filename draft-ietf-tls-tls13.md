@@ -5297,7 +5297,7 @@ This document also uses the TLS ExtensionType Registry originally created in
 {{RFC4366}}. IANA has updated it to reference this document.  Changes to the
 registry follow:
 
- - IANA \[SHALL update/has updated] this registration policy as follows:
+ - IANA \[SHALL update/has updated] the registration policy as follows:
 
    Values with the first byte in the range 0-254 (decimal) are assigned
    via Specification Required [RFC8126].  Values with the first byte
