@@ -521,6 +521,15 @@ informative:
        -
          ins: J. Somorovsky
 
+  Anon18:
+       title: "Secure Channels for Multiplexed Data Streams: Analyzing the TLS 1.3 Record Layer Without Elision"
+       date: 2018
+       seriesinfo: "In sumbission to CRYPTO 2018. RFC EDITOR: PLEASE UPDATE THIS
+       REFERENCE AFTER FINAL NOTIFICATION (2018-4-29)."
+       author:
+       -
+         ins: A. Anonymous
+
 --- abstract
 
 This document specifies version 1.3 of the Transport Layer Security
@@ -4190,8 +4199,6 @@ legacy_record_version
 : The legacy_record_version field is always 0x0303.  TLS 1.3 TLSCiphertexts
   are not generated until after TLS 1.3 has been negotiated, so there are
   no historical compatibility concerns where other values might be received.
-  Implementations MAY verify that the legacy_record_version field is 0x0303
-  and abort the connection if it is not.
   Note that the handshake protocol including the ClientHello and ServerHello
   messages authenticates the protocol version, so this value is redundant.
 
@@ -4212,36 +4219,42 @@ AEAD algorithms take as input a single key, a nonce, a plaintext, and "additiona
 data" to be included in the authentication check, as described in Section 2.1
 of {{RFC5116}}. The key is either the client_write_key or the server_write_key,
 the nonce is derived from the sequence number (see {{nonce}}) and the
-client_write_iv or server_write_iv, and the additional data input is empty
-(zero length).  Derivation of traffic keys is defined in {{traffic-key-calculation}}.
+client_write_iv or server_write_iv, and the additional data input is the
+header associated with the record:
+
+       additional_data = TLSCiphertext.opaque_type |
+                         TLSCiphertext.legacy_record_version |
+                         TLSCiphertext.length
 
 The plaintext input to the AEAD algorithm is the encoded TLSInnerPlaintext structure.
+Derivation of traffic keys is defined in {{traffic-key-calculation}}.
 
 The AEAD output consists of the ciphertext output from the AEAD
 encryption operation. The length of the plaintext is greater than the
 corresponding TLSPlaintext.length due to the inclusion of TLSInnerPlaintext.type and
-any padding supplied by the sender.  The length of the
+any padding supplied by the sender. The length of the
 AEAD output will generally be larger than the plaintext, but by an
 amount that varies with the AEAD algorithm. Since the ciphers might
 incorporate padding, the amount of overhead could vary with different
 lengths of plaintext. Symbolically,
 
        AEADEncrypted =
-           AEAD-Encrypt(write_key, nonce, plaintext)
+           AEAD-Encrypt(write_key, nonce, additional_data, plaintext)
 
-In order to decrypt and verify, the cipher takes as input the key,
-nonce, and the AEADEncrypted value. The output is either the plaintext
-or an error indicating that the decryption failed. There is no
-separate integrity check. That is:
+Then the encrypted_record field of TLSCiphertext is set to AEADEncrypted.
+In order to decrypt and verify, the cipher takes as input the key, nonce,
+additional data, and the AEADEncrypted value. The output is either the plaintext
+or an error indicating that the decryption failed. There is no separate
+integrity check. That is:
 
        plaintext of encrypted_record =
-           AEAD-Decrypt(peer_write_key, nonce, AEADEncrypted)
+           AEAD-Decrypt(peer_write_key, nonce, additional_data, AEADEncrypted)
 
 If the decryption fails, the receiver MUST terminate the connection
 with a "bad_record_mac" alert.
 
 An AEAD algorithm used in TLS 1.3 MUST NOT produce an expansion greater than
-255 octets.  An endpoint that receives a record from its peer with
+255 octets. An endpoint that receives a record from its peer with
 TLSCiphertext.length larger than 2^14 + 256 octets MUST terminate
 the connection with a "record_overflow" alert.
 This limit is derived from the maximum TLSPlaintext length of
