@@ -2819,9 +2819,11 @@ by the client that the server has selected for the negotiated key exchange.
 Servers MUST NOT send a KeyShareEntry for any group not
 indicated in the "supported_groups" extension and
 MUST NOT send a KeyShareEntry when using the "psk_ke" PskKeyExchangeMode.
-If a HelloRetryRequest was received by the client, the client MUST verify that the
-selected NamedGroup in the ServerHello is the same as that in the HelloRetryRequest. If this check
-fails, the client MUST abort the handshake with an "illegal_parameter" alert.
+If using (EC)DHE key establishment, and a HelloRetryRequest containing a
+"key_share" extension was received by the client, the client MUST verify that the
+selected NamedGroup in the ServerHello is the same as that in the HelloRetryRequest.
+If this check fails, the client MUST abort the handshake with an "illegal_parameter"
+alert.
 
 ####  Diffie-Hellman Parameters {#ffdhe-param}
 
