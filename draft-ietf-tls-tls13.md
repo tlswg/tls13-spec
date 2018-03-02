@@ -3119,12 +3119,15 @@ resumption handshake, and there is no need for the server to associate an SNI va
 ticket. Clients, however, SHOULD store the SNI with the PSK to fulfill
 the requirements of {{NSTMessage}}.
 
-Implementor's note: the most straightforward way to implement the
+Implementor's note: when session resumption is the primary use case of PSKs
+the most straightforward way to implement the
 PSK/cipher suite matching requirements is to negotiate the cipher
 suite first and then exclude any incompatible PSKs. Any unknown PSKs
 (e.g., they are not in the PSK database or are encrypted with an
 unknown key) SHOULD simply be ignored. If no acceptable PSKs are
 found, the server SHOULD perform a non-PSK handshake if possible.
+If backwards compatibility is important, client provided, externally
+established PSKs SHOULD influence cipher suite selection.
 
 Prior to accepting PSK key establishment, the server MUST validate the
 corresponding binder value (see {{psk-binder}} below). If this value is
