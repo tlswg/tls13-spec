@@ -5329,7 +5329,7 @@ by IANA:
   The registry \[shall be/ has been] initially populated with the values described in
   {{signature-algorithms}}. The following values SHALL be marked as
   "Recommended": ecdsa_secp256r1_sha256, ecdsa_secp384r1_sha384,
-  rsa_pss_sha256, rsa_pss_sha384, rsa_pss_sha512, ed25519.
+  rsa_pss_rsae_sha256, rsa_pss_rsae_sha384, rsa_pss_rsae_sha512, and ed25519.
 
 --- back
 
