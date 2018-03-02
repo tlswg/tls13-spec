@@ -524,7 +524,7 @@ informative:
   Anon18:
        title: "Secure Channels for Multiplexed Data Streams: Analyzing the TLS 1.3 Record Layer Without Elision"
        date: 2018
-       seriesinfo: "In sumbission to CRYPTO 2018. RFC EDITOR: PLEASE UPDATE THIS
+       seriesinfo: "In submission to CRYPTO 2018. RFC EDITOR: PLEASE UPDATE THIS
        REFERENCE AFTER FINAL NOTIFICATION (2018-4-29)."
        author:
        -
@@ -649,6 +649,9 @@ draft-24
 
 - Some clarifications
 
+
+draft-24
+- 
 
 draft-23
 - Renumber key_share (*)
@@ -4220,10 +4223,10 @@ data" to be included in the authentication check, as described in Section 2.1
 of {{RFC5116}}. The key is either the client_write_key or the server_write_key,
 the nonce is derived from the sequence number (see {{nonce}}) and the
 client_write_iv or server_write_iv, and the additional data input is the
-header associated with the record:
+record header. I.e., 
 
-       additional_data = TLSCiphertext.opaque_type |
-                         TLSCiphertext.legacy_record_version |
+       additional_data = TLSCiphertext.opaque_type ||
+                         TLSCiphertext.legacy_record_version ||
                          TLSCiphertext.length
 
 The plaintext input to the AEAD algorithm is the encoded TLSInnerPlaintext structure.
@@ -6132,7 +6135,7 @@ guarantees need to do a fresh handshake and establish a new connection with an
 ### External References
 
 The reader should refer to the following references for analysis of the TLS record layer:
-{{BMMT15}} {{BT16}} {{BDFKPPRSZZ16}} {{BBK17}}.
+{{BMMT15}} {{BT16}} {{BDFKPPRSZZ16}} {{BBK17}} {{Anon18}}.
 
 
 ## Traffic Analysis
