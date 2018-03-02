@@ -643,15 +643,18 @@ RFC EDITOR PLEASE DELETE THIS SECTION.
 (*) indicates changes to the wire protocol which may require implementations
     to update.
 
+draft-25
+- Add the header to additional data (*)
+
+- Minor clarifications.
+
+- IANA cleanup.
+
 draft-24
 
 - Require that CH2 have version 0303 (*)
 
 - Some clarifications
-
-
-draft-24
-- 
 
 draft-23
 - Renumber key_share (*)
