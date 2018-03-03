@@ -4248,6 +4248,7 @@ lengths of plaintext. Symbolically,
            AEAD-Encrypt(write_key, nonce, additional_data, plaintext)
 
 Then the encrypted_record field of TLSCiphertext is set to AEADEncrypted.
+
 In order to decrypt and verify, the cipher takes as input the key, nonce,
 additional data, and the AEADEncrypted value. The output is either the plaintext
 or an error indicating that the decryption failed. There is no separate
@@ -5677,7 +5678,8 @@ Prior versions of TLS used the record layer version number for various
 purposes. (TLSPlaintext.legacy_record_version and TLSCiphertext.legacy_record_version)
 As of TLS 1.3, this field is deprecated. The value of
 TLSPlaintext.legacy_record_version MUST be ignored by all implementations.
-The value of TLSCiphertext.legacy_record_version MAY be ignored,
+The value of TLSCiphertext.legacy_record_version is included in the
+additional data for deprotection but MAY otherwise be ignored
 or MAY be validated to match the fixed constant value.
 Version negotiation is performed using only the handshake versions
 (ClientHello.legacy_version, ServerHello.legacy_version, as well as the
