@@ -643,6 +643,9 @@ RFC EDITOR PLEASE DELETE THIS SECTION.
 (*) indicates changes to the wire protocol which may require implementations
     to update.
 
+draft-26
+- Clarify that you can't negotiate pre-TLS 1.3 with supported_versions.
+
 draft-25
 - Add the header to additional data (*)
 
@@ -2329,6 +2332,9 @@ to support prior versions of TLS SHOULD support TLS 1.2.
 Servers should be prepared to receive ClientHellos that include this
 extension but do not include 0x0304 in the list of versions.
 
+A server which negotiates a version of TLS prior to TLS 1.3 MUST
+set ServerHello.version and MUST NOT send the "supported_versions"
+extension.
 A server which negotiates TLS 1.3 MUST respond by sending a
 "supported_versions" extension containing the selected version value
 (0x0304). It MUST set the ServerHello.legacy_version field to 0x0303 (TLS
@@ -2339,8 +2345,8 @@ If this extension is present, clients MUST ignore the
 ServerHello.legacy_version value and MUST use only the
 "supported_versions" extension to determine the selected version. If the
 "supported_versions" extension contains a version not offered by the
-client, the client MUST abort the handshake with an
-"illegal_parameter" alert.
+client or contains a version prior to TLS 1.3, the client MUST abort the handshake with an
+"illegal_parameter" alert. 
 
 
 #### Draft Version Indicator
