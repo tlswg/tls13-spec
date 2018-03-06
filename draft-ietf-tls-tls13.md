@@ -604,7 +604,7 @@ mechanism defined in {{RFC5077}} and replaces it with the mechanism
 defined in {{resumption-and-psk}}. {{negotiated-groups}} updates
 {{RFC4492}} by modifying the protocol attributes used to negotiate
 Elliptic Curves.  Because TLS 1.3 changes the way keys are derived it
-updates {{RFC5705}} as described in {{exporters}} it also changes
+updates {{RFC5705}} as described in {{exporters}}.  It also changes
 how OCSP messages are carried and therefore updates {{RFC6066}}
 and obsoletes {{RFC6961}} as described in section {{ocsp-and-sct}}.
 
@@ -624,7 +624,7 @@ connection: A transport-layer connection between two endpoints.
 
 endpoint: Either the client or server of the connection.
 
-handshake: An initial negotiation between client and server that establishes the parameters of their subsequent interactions.
+handshake: An initial negotiation between client and server that establishes the parameters of their subsequent interactions within TLS.
 
 peer: An endpoint. When discussing a particular endpoint, "peer" refers to the endpoint that is not the primary subject of discussion.
 
@@ -644,9 +644,11 @@ RFC EDITOR PLEASE DELETE THIS SECTION.
     to update.
 
 draft-26
+
 - Clarify that you can't negotiate pre-TLS 1.3 with supported_versions.
 
 draft-25
+
 - Add the header to additional data (*)
 
 - Minor clarifications.
@@ -660,6 +662,7 @@ draft-24
 - Some clarifications
 
 draft-23
+
 - Renumber key_share (*)
 
 - Add a new extension and new code points to allow negotiating PSS
@@ -673,6 +676,7 @@ draft-23
 - Add some text on the security of static RSA.
 
 draft-22
+
 - Implement changes for improved middlebox penetration (*)
 
 - Move server_certificate_type to encrypted extensions (*)
@@ -1102,19 +1106,19 @@ are many minor differences.
 
 - The handshake state machine has been significantly restructured to
   be more consistent and to remove superfluous messages such as
-  ChangeCipherSpec.
+  ChangeCipherSpec (except when needed for middlebox compatibility).
 
-- Elliptic curve algorithms are now in the base spec and includes new signature
-  algorithms, such as ed25519 and ed448. TLS 1.3 removed point format
+- Elliptic curve algorithms are now in the base specification and new signature
+  algorithms are included, such as ed25519 and ed448. TLS 1.3 removed point format
   negotiation in favor of a single point format for each curve.
 
 - Other cryptographic improvements including the removal of compression and
-  custom DHE groups, changing the RSA padding to use PSS, and the removal of
+  custom DHE groups, changing the RSA padding to use RSASSA-PSS, and the removal of
   DSA.
 
 - The TLS 1.2 version negotiation mechanism has been deprecated in favor
   of a version list in an extension. This increases compatibility with
-  servers which incorrectly implemented version negotiation.
+  existing servers that incorrectly implemented version negotiation.
 
 - Session resumption with and without server-side state as well as the
   PSK-based ciphersuites of earlier TLS versions have been replaced by a
@@ -1136,6 +1140,9 @@ TLS 1.2:
 * The "supported_versions" ClientHello extension can be used to negotiate
   the version of TLS to use, in preference to the legacy_version field of
   the ClientHello.
+
+* The "signature_algorithms_cert" extension allows a client to indicate
+  which signature algorithms it can validate in X.509 certificates
 
 An implementation of TLS 1.3 that also supports TLS 1.2 might need to include
 changes to support these changes even when TLS 1.3 is not in use.  See the
@@ -1225,7 +1232,8 @@ In the Key Exchange phase, the client sends the ClientHello
 symmetric cipher/HKDF hash pairs; either a set of Diffie-Hellman key shares (in the
 "key_share" extension {{key-share}}), a set of pre-shared key labels (in the
 "pre_shared_key" extension {{pre-shared-key-extension}}) or both; and
-potentially additional extensions.
+potentially additional extensions.  Additional fields and/or messages
+may also be present for middlebox compatibility.
 
 The server processes the ClientHello and determines the appropriate
 cryptographic parameters for the connection. It then responds with its
@@ -1254,7 +1262,9 @@ CertificateRequest:
   omitted if client authentication is not desired. \[{{certificate-request}}]
 
 Finally, the client and server exchange Authentication messages. TLS
-uses the same set of messages every time that authentication is needed.
+uses the same set of messages every time that certificate-based
+authentication is needed.  (PSK-based authentication happens as a side
+effect of key exchange.)
 Specifically:
 
 Certificate:
@@ -1288,7 +1298,8 @@ At this point, the handshake is complete, and the client and server
 derive the keying material required by the record layer to exchange
 application-layer data protected through authenticated encryption.
 Application data MUST NOT be sent prior to sending the Finished message and
-until the record layer starts using encryption keys.
+until the record layer starts using encryption keys, except as specified
+in \[{{zero-rtt-data}}].
 Note that while the server may send application data prior to receiving
 the client's Authentication messages, any data sent at that point is,
 of course, being sent to an unauthenticated peer.
@@ -1329,7 +1340,7 @@ the server MUST abort the handshake with an appropriate alert.
 ~~~
 {: #tls-restart title="Message flow for a full handshake with mismatched parameters"}
 
-Note: The handshake transcript includes the initial
+Note: The handshake transcript incorporates the initial
 ClientHello/HelloRetryRequest exchange; it is not reset with the new
 ClientHello.
 
@@ -1341,11 +1352,11 @@ described in the following sections.
 
 Although TLS PSKs can be established out of band,
 PSKs can also be established in a previous connection and
-then reused ("session resumption"). Once a handshake has completed, the server can
+then used to establish a new session ("session resumption"). Once a handshake has completed, the server can
 send to the client a PSK identity that corresponds to a unique key derived from
 the initial handshake (see {{NSTMessage}}). The client
 can then use that PSK identity in future handshakes to negotiate the use
-of the associated PSK. If the server accepts it, then the security context of the
+of the associated PSK. If the server accepts the PSK, then the security context of the
 new connection is cryptographically tied to the original connection and the key derived
 from the initial handshake is used to bootstrap the cryptographic state
 instead of a full handshake.
@@ -1415,7 +1426,9 @@ Note:
   low-entropy sources is not secure. A low-entropy secret, or password, is
   subject to dictionary attacks based on the PSK binder.  The specified PSK
   authentication is not a strong password-based authenticated key exchange even
-  when used with Diffie-Hellman key establishment.
+  when used with Diffie-Hellman key establishment.  That is, it does not provide
+  resistance againt an attacker that can observe the handshake performing
+  a brute-force attack on the password/pre-shared key.
 
 
 ## 0-RTT Data {#zero-rtt-data}
@@ -1427,7 +1440,7 @@ the server and to encrypt the early data.
 
 As shown in {{tls-0-rtt}}, the 0-RTT data is just added to the 1-RTT
 handshake in the first flight. The rest of the handshake uses the same messages
-as with a 1-RTT handshake with PSK resumption.
+as for a 1-RTT handshake with PSK resumption.
 
 ~~~
          Client                                               Server
@@ -1646,7 +1659,8 @@ like that of C.
        } T;
 
 Fixed- and variable-length vector fields are allowed using the standard vector
-syntax. Structures V1 and V2 in the variants example below demonstrate this.
+syntax (but arrays of either sort must themselves only contain fixed-length
+elements). Structures V1 and V2 in the variants example below demonstrate this.
 
 The fields within a structure may be qualified using the type's name, with a
 syntax much like that available for enumerateds. For example, T.f2 refers to
@@ -1860,6 +1874,9 @@ ClientHello (without modification) except:
 - Optionally adding, removing, or changing the length of the "padding"
   extension {{RFC7685}}.
 
+- Other modifications that may be allowed by an extension defined in the
+  future and present in the HelloRetryRequest
+
 Because TLS 1.3 forbids renegotiation, if a server has negotiated TLS
 1.3 and receives a ClientHello at any other time, it MUST terminate
 the connection with an "unexpected_message" alert.
@@ -2037,13 +2054,13 @@ extensions
 : A list of extensions.  The ServerHello MUST only include extensions
   which are required to establish the cryptographic context and negotiate
   the protocol version. All TLS 1.3 ServerHello messages MUST contain the
-  "supported_versions" extension.  Current ServerHello messages contain
+  "supported_versions" extension.  Current ServerHello messages additionally contain
   either the "pre_shared_key" or "key_share" extensions, or both when using
-  a PSK with (EC)DHE key establishment. The remaining extensions are sent
+  a PSK with (EC)DHE key establishment. Other extensions are sent
   separately in the EncryptedExtensions message.
 {:br }
 
-For backward compatibility reasons with middleboxes
+For reasons of backward compatibility with middleboxes
 (see {{middlebox}}) the HelloRetryRequest
 message uses the same structure as the ServerHello, but with
 Random set to the special value of the SHA-256 of
@@ -2309,7 +2326,7 @@ which versions of TLS it supports and by the server to indicate
 which version it is using. The extension contains a list of
 supported versions in preference order, with the most preferred
 version first. Implementations of this specification MUST send this
-extension containing all versions of TLS which they are
+extension in the ClientHello containing all versions of TLS which they are
 prepared to negotiate (for this specification, that means minimally
 0x0304, but if previous versions of TLS are allowed to be negotiated,
 they MUST be present as well).
@@ -2320,8 +2337,8 @@ this specification MUST negotiate TLS 1.2 or prior as specified in
 Servers MAY abort the handshake upon receiving a ClientHello with
 legacy_version 0x0304 or later.
 
-If this extension is present, servers MUST ignore the
-ClientHello.legacy_version value and MUST use only the
+If this extension is present in the ClientHello, servers MUST NOT the
+ClientHello.legacy_version value for version negotiation and MUST use only the
 "supported_versions" extension to determine client
 preferences. Servers MUST only select a version of TLS present in that
 extension and MUST ignore any unknown versions that are present in that
@@ -2344,7 +2361,7 @@ ServerHello in order to read the extension).
 If this extension is present, clients MUST ignore the
 ServerHello.legacy_version value and MUST use only the
 "supported_versions" extension to determine the selected version. If the
-"supported_versions" extension contains a version not offered by the
+"supported_versions" extension in the ServerHello contains a version not offered by the
 client or contains a version prior to TLS 1.3, the client MUST abort the handshake with an
 "illegal_parameter" alert. 
 
@@ -2519,7 +2536,7 @@ RSASSA-PSS PSS algorithms
   algorithm. If the public key is carried in an X.509 certificate,
   it MUST use the RSASSA-PSS OID  {{!RFC5756}}. When used in certificate signatures,
   the algorithm parameters MUST be DER encoded. If the corresponding
-  public key's parameters present, then the parameters in the signature
+  public key's parameters are present, then the parameters in the signature
   MUST be identical to those in the public key.
 
 Legacy algorithms
@@ -2528,8 +2545,8 @@ Legacy algorithms
   in this context with either with RSA using RSASSA-PKCS1-v1_5 or ECDSA.  These values
   refer solely to signatures which appear in certificates (see
   {{server-certificate-selection}}) and are not defined for use in
-  signed TLS handshake messages, even if they appear in the "signature_algorithms"
-  list (this is necessary for backward compatibility with TLS 1.2).
+  signed TLS handshake messages, although they MAY appear in "signature_algorithms"
+  and "signature_algorithms_cert" for backward compatibility with TLS 1.2,
   Endpoints SHOULD NOT negotiate these algorithms
   but are permitted to do so solely for backward compatibility. Clients
   offering these values MUST list
@@ -2621,7 +2638,7 @@ extension, if provided by the server, MUST only be sent in the CertificateReques
 
 filters
 
-: A list of certificate extension OIDs {{RFC5280}} with their allowed values and
+: A list of certificate extension OIDs {{RFC5280}} with their allowed value(s) and
   represented in DER-encoded {{X690}} format. Some certificate extension OIDs
   allow multiple values (e.g., Extended Key Usage).  If the server has included
   a non-empty filters list, the client certificate included in
@@ -2633,7 +2650,9 @@ filters
   some of the required certificate extension OIDs and supplied a certificate
   that does not satisfy the request, the server MAY at its discretion either
   continue the connection without client authentication, or abort the handshake
-  with an "unsupported_certificate" alert.
+  with an "unsupported_certificate" alert.  The client MAY abort the handshake
+  if a given certificate_extension_oid value appears multiple times in the
+  filters list.
 
 PKIX RFCs define a variety of certificate extension OIDs and their corresponding
 value types. Depending on the type, matching certificate extension values are
@@ -2785,7 +2804,8 @@ MAY omit the most preferred groups. Such a situation could arise if the most
 preferred groups are new and unlikely to be supported in enough places to
 make pregenerating key shares for them efficient.
 
-Clients can offer an arbitrary number of KeyShareEntry values, each
+Clients can offer as many KeyShareEntry values as the number of supported
+groups it is offering, each
 representing a single set of key exchange parameters. For instance, a
 client might offer shares for several elliptic curves or multiple
 FFDHE groups.  The key_exchange values for each KeyShareEntry MUST be
@@ -2925,6 +2945,7 @@ The server MUST NOT send a "psk_key_exchange_modes" extension.
 
 %%% Key Exchange Messages
 
+       /* Managed by IANA */
        enum { psk_ke(0), psk_dhe_ke(1), (255) } PskKeyExchangeMode;
 
        struct {
@@ -2941,9 +2962,14 @@ the client and servers MUST supply "key_share" values as described
 in {{key-share}}.
 {:br}
 
+Any future values that are allocated must ensure that the transmitted
+protocol messages unambiguously identify which mode was selected by
+the server; at present, this is indicated by the presence of the "key_share"
+in the ServerHello.
+
 ### Early Data Indication
 
-When a PSK is used, the client can send application data
+When a PSK is used and early data is allowed for that PSK, the client can send application data
 in its first flight of messages. If the client opts to do so, it MUST
 supply both the "early_data" extension as well as the "pre_shared_key"
 extension.
@@ -2976,7 +3002,7 @@ MUST be the first PSK listed in the client's "pre_shared_key" extension.
 For PSKs provisioned via NewSessionTicket, a server MUST validate that
 the ticket age for the selected PSK identity (computed by subtracting
 ticket_age_add from PskIdentity.obfuscated_ticket_age modulo 2^32)
-is within a small tolerance of the
+is within a small tolerance (a small number of seconds) of the
 time since the ticket was issued (see {{anti-replay}}).  If it is not,
 the server SHOULD proceed with the handshake but reject 0-RTT, and
 SHOULD NOT take any other action that assumes that this ClientHello is
@@ -3003,7 +3029,7 @@ MUST behave in one of three ways:
   HelloRetryRequest.  A client MUST NOT include the "early_data" extension in
   its followup ClientHello.  The server then ignores early data by skipping
   all records with external content type of "application_data" (indicating
-  that they are encrypted).
+  that they are encrypted), up to the configured max_early_data_size.
 
 - Return its own extension in EncryptedExtensions,
   indicating that it intends to
@@ -3155,7 +3181,9 @@ corresponding binder value (see {{psk-binder}} below). If this value is
 not present or does not validate, the server MUST abort the handshake.
 Servers SHOULD NOT attempt to validate multiple binders; rather they
 SHOULD select a single PSK and validate solely the binder that
-corresponds to that PSK. In order to accept PSK key establishment, the
+corresponds to that PSK.  There are security implications of
+validating the selected binder in this way, see \[{{client-hello-recording}}]
+In order to accept PSK key establishment, the
 server sends a "pre_shared_key" extension indicating the selected
 identity.
 
@@ -3196,9 +3224,9 @@ age, even in milliseconds.
 #### PSK Binder
 
 The PSK binder value forms a binding between a PSK and the current
-handshake, as well as between the handshake in which the PSK was
-generated (if via a NewSessionTicket message) and the handshake where
-it was used.  Each entry in the binders list is computed as an HMAC
+handshake, as well as a binding between the handshake in which the PSK was
+generated (if via a NewSessionTicket message) and the current handshake.
+Each entry in the binders list is computed as an HMAC
 over a transcript hash (see {{the-transcript-hash}}) containing a partial ClientHello
 up to and including the PreSharedKeyExtension.identities field. That
 is, it includes all of the ClientHello but not the binders list
@@ -3240,8 +3268,8 @@ receive the server's Finished, only then sending the EndOfEarlyData
 message, followed by the rest of the handshake.
 In order to avoid deadlocks, when accepting "early_data",
 servers MUST process the client's ClientHello and then immediately
-send the ServerHello, rather than waiting for the client's
-EndOfEarlyData message.
+send their ServerHello, rather than waiting for the client's
+EndOfEarlyData message before sending their ServerHello.
 
 ## Server Parameters
 
@@ -3317,7 +3345,7 @@ extensions
 In prior versions of TLS, the CertificateRequest message
 carried a list of signature algorithms and certificate authorities
 which the server would accept. In TLS 1.3 the former is expressed
-by sending the "signature_algorithms" and "signature_algorithms_cert"
+by sending the "signature_algorithms" and optionally "signature_algorithms_cert"
 extensions. The latter is
 expressed by sending the "certificate_authorities" extension
 (see {{certificate-authorities}}).
@@ -3356,7 +3384,7 @@ Based on these inputs, the messages then contain:
 Certificate
 : The certificate to be used for authentication, and any
   supporting certificates in the chain. Note that certificate-based
-  client authentication is not available in 0-RTT mode.
+  client authentication is not available in resumption (or 0-RTT) flows.
 
 CertificateVerify
 : A signature over the value Transcript-Hash(Handshake Context, Certificate)
@@ -3428,12 +3456,14 @@ requested client authentication via a CertificateRequest message
 ({{certificate-request}}). If the server requests client authentication
 but no suitable certificate is available, the client
 MUST send a Certificate message containing no certificates (i.e., with
-the "certificate_list" field having length 0).
+the "certificate_list" field having length 0).  A Finished message MUST
+be sent regardless of whether the Certificate message is empty.
 
 Structure of this message:
 
 %%% Authentication Messages
 
+       /* Managed by IANA */
        enum {
            X509(0),
            OpenPGP_RESERVED(1),
@@ -3470,11 +3500,12 @@ certificate_list
 extensions:
 : A set of extension values for the CertificateEntry. The "Extension"
   format is defined in {{extensions}}. Valid extensions for server certificates
-  include OCSP Status extension ({{RFC6066}}) and
-  SignedCertificateTimestamps ({{!RFC6962}}). Extensions in the Certificate
-  message from the server MUST correspond to one from the ClientHello message.
-  Extensions in the Certificate from the client MUST correspond with an
-  extension in the CertificateRequest message from the server.
+  at present include OCSP Status extension ({{RFC6066}}) and
+  SignedCertificateTimestamps ({{!RFC6962}}) and future extensions may
+  be defined for this message as well. Extensions in the Certificate
+  message from the server MUST correspond to ones from the ClientHello message.
+  Extensions in the Certificate from the client MUST correspond with
+  extensions in the CertificateRequest message from the server.
   If an extension applies to the entire chain, it SHOULD be included
   in the first CertificateEntry.
 {:br }
@@ -3552,7 +3583,8 @@ The following rules apply to the certificates sent by the server:
 
 - The server's end-entity certificate's public key (and associated
   restrictions) MUST be compatible with the selected authentication
-  algorithm (currently RSA, ECDSA, or EdDSA).
+  algorithm from the client's "signature_algorithms" extension
+  (currently RSA, ECDSA, or EdDSA).
 
 - The certificate MUST allow the key to be used for signing (i.e., the
   digitalSignature bit MUST be set if the Key Usage extension is present) with
@@ -3618,7 +3650,8 @@ TLS (see {{RFC5280}}). This section provides TLS-specific requirements.
 If the server supplies an empty Certificate message, the client MUST abort
 the handshake with a "decode_error" alert.
 
-If the client does not send any certificates,
+If the client does not send any certificates (i.e., it sends an empty
+Certificate message),
 the server MAY at its discretion either continue the handshake without client
 authentication, or abort the handshake with a "certificate_required" alert. Also, if some
 aspect of the certificate chain was unacceptable (e.g., it was not signed by a
@@ -3890,7 +3923,7 @@ ticket_lifetime
   Servers MUST NOT use any value greater than 604800 seconds (7 days).
   The value of zero indicates that the ticket should be discarded
   immediately. Clients MUST NOT cache tickets for longer than
-  7 days, regardless of the ticket_lifetime, and MAY delete the ticket
+  7 days, regardless of the ticket_lifetime, and MAY delete tickets
   earlier based on local policy. A server MAY treat a ticket as valid
   for a shorter period of time than what is stated in the
   ticket_lifetime.
@@ -4055,7 +4088,8 @@ implementation which receives any other change_cipher_spec value or
 which receives a protected change_cipher_spec record MUST abort the
 handshake with an "unexpected_message" alert. A change_cipher_spec record
 received before the first ClientHello message or after the peer's Finished
-message MUST be treated as an unexpected record type.
+message MUST be treated as an unexpected record type (though stateless
+servers may not be able to distinguish these cases from allowed cases).
 
 
 Implementations MUST NOT send record types not defined in this
@@ -4443,10 +4477,10 @@ enum) MUST terminate the connection with an "illegal_parameter" alert.
            no_renegotiation_RESERVED(100),
            missing_extension(109),
            unsupported_extension(110),
-           certificate_unobtainable(111),
+           certificate_unobtainable_RESERVED(111),
            unrecognized_name(112),
            bad_certificate_status_response(113),
-           bad_certificate_hash_value(114),
+           bad_certificate_hash_value_RESERVED(114),
            unknown_psk_identity(115),
            certificate_required(116),
            no_application_protocol(120),
@@ -4491,7 +4525,7 @@ required to react to a "close_notify" by discarding pending writes and
 sending an immediate "close_notify" alert of their own. That previous
 requirement could cause truncation in the read side. Both parties need not
 wait to receive a "close_notify" alert before closing their read side of the
-connection.
+connection, though doing so would introduce the possibility of truncation.
 
 If the application protocol using TLS provides that any data may be carried
 over the underlying transport after the TLS connection is closed, the TLS
@@ -4544,7 +4578,7 @@ bad_record_mac
 record_overflow
 : A TLSCiphertext record was received that had a length more than
   2^14 + 256 bytes, or a record decrypted to a TLSPlaintext record
-  with more than 2^14 bytes.
+  with more than 2^14 bytes (or some other configured limit).
   This alert should never be observed in communication between
   proper implementations, except when messages were corrupted
   in the network.
@@ -4618,20 +4652,15 @@ inappropriate_fallback
   from a client (see {{!RFC7507}}).
 
 missing_extension
-: Sent by endpoints that receive a hello message not containing an
+: Sent by endpoints that receive a handshake message not containing an
   extension that is mandatory to send for the offered TLS version
   or other negotiated parameters.
 
 unsupported_extension
-: Sent by endpoints receiving any hello message containing an extension
-  known to be prohibited for inclusion in the given hello message, or including
+: Sent by endpoints receiving any handshake message containing an extension
+  known to be prohibited for inclusion in the given handshake message, or including
   any extensions in a ServerHello or Certificate not first offered in the
   corresponding ClientHello.
-
-certificate_unobtainable
-: Sent by servers when unable to obtain a certificate from a URL
-  provided by the client via the "client_certificate_url" extension
-  (see {{RFC6066}}).
 
 unrecognized_name
 : Sent by servers when no server exists identified by the name
@@ -4641,11 +4670,6 @@ unrecognized_name
 bad_certificate_status_response
 : Sent by clients when an invalid or unacceptable OCSP response is
   provided by the server via the "status_request" extension
-  (see {{RFC6066}}).
-
-bad_certificate_hash_value
-: Sent by servers when a retrieved object does not have the correct hash
-  provided by the client via the "client_certificate_url" extension
   (see {{RFC6066}}).
 
 unknown_psk_identity
@@ -4848,7 +4872,7 @@ The traffic keying material is generated from the following input values:
 
 - A secret value
 - A purpose value indicating the specific value being generated
-- The length of the key
+- The length of the key being generated
 
 The traffic keying material is generated from an input traffic secret value using:
 
@@ -4936,9 +4960,7 @@ Where Secret is either the early_exporter_master_secret or the
 exporter_master_secret.  Implementations MUST use the exporter_master_secret unless
 explicitly specified by the application. The early_exporter_master_secret is
 defined for use in settings where an exporter is needed for 0-RTT data.
-A separate interface for the early exporter is RECOMMENDED, especially
-on a server where a single interface can make the early exporter
-inaccessible.
+A separate interface for the early exporter is RECOMMENDED.
 
 If no context is provided, the context_value is zero-length. Consequently,
 providing no context computes the same value as providing an empty context.
@@ -5110,7 +5132,7 @@ ClientHello, otherwise falling back to a 1-RTT handshake.
 This is necessary for the ClientHello storage mechanism
 described in {{client-hello-recording}} because otherwise the server
 needs to store an unlimited number of ClientHellos and is a useful optimization for
-single-use tickets because it allows efficient rejection of ClientHellos
+self-contained single-use tickets because it allows efficient rejection of ClientHellos
 which cannot be used for 0-RTT.
 
 In order to implement this mechanism, a server needs to store the time
@@ -5204,7 +5226,7 @@ applicable features:
 
 A client is considered to be attempting to negotiate using this
 specification if the ClientHello contains a "supported_versions"
-extension with 0x0304 as the highest version number contained in its body.
+extension with 0x0304 contained in its body.
 Such a ClientHello message MUST meet the following requirements:
 
  - If not containing a "pre_shared_key" extension, it MUST contain both
@@ -5690,7 +5712,7 @@ remains compatible and and there is at least one protocol version supported by
 both the client and the server.
 
 Prior versions of TLS used the record layer version number for various
-purposes. (TLSPlaintext.legacy_record_version and TLSCiphertext.legacy_record_version)
+purposes (TLSPlaintext.legacy_record_version and TLSCiphertext.legacy_record_version).
 As of TLS 1.3, this field is deprecated. The value of
 TLSPlaintext.legacy_record_version MUST be ignored by all implementations.
 The value of TLSCiphertext.legacy_record_version is included in the
@@ -5955,7 +5977,7 @@ This property is most interesting if tickets are stored in a database
 
 The PSK binder value forms a binding between a PSK
 and the current handshake, as well as between the session where the
-PSK was established and the session where it was used. This binding
+PSK was established and the current session. This binding
 transitively includes the original handshake transcript, because that
 transcript is digested into the values which produce the Resumption
 Master Secret. This requires that both the KDF used to produce the
