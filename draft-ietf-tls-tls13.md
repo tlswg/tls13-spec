@@ -2329,7 +2329,7 @@ extension. Note that this
 mechanism makes it possible to negotiate a version prior to TLS 1.2 if
 one side supports a sparse range. Implementations of TLS 1.3 which choose
 to support prior versions of TLS SHOULD support TLS 1.2.
-Servers should be prepared to receive ClientHellos that include this
+Servers MUST be prepared to receive ClientHellos that include this
 extension but do not include 0x0304 in the list of versions.
 
 A server which negotiates a version of TLS prior to TLS 1.3 MUST
