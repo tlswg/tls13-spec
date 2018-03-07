@@ -2019,7 +2019,7 @@ legacy_session_id_echo
 : The contents of the client's legacy_session_id field. Note that
   this field is echoed even if the client's value corresponded to
   a cached pre-TLS 1.3 session which the server has chosen not
-  to resume. A client which receives a legacy_session_id field
+  to resume. A client which receives a legacy_session_id_echo field
   that does not match what it sent in the ClientHello
   MUST abort the handshake with an "illegal_parameter"
   alert.
