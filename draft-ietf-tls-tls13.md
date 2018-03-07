@@ -245,7 +245,7 @@ informative:
        seriesinfo: Proceedings of IEEE Symposium on Security and Privacy (Oakland) 2016
        date: 2016
   DOW92:
-       title: “Authentication and authenticated key exchanges”
+       title: "Authentication and authenticated key exchanges"
        author:
        -
          ins: W. Diffie
@@ -603,8 +603,8 @@ including version 1.2 {{RFC5246}}.  It also obsoletes the TLS ticket
 mechanism defined in {{RFC5077}} and replaces it with the mechanism
 defined in {{resumption-and-psk}}. {{negotiated-groups}} updates
 {{RFC4492}} by modifying the protocol attributes used to negotiate
-Elliptic Curves.  Because TLS 1.3 changes the way keys are derived it
-updates {{RFC5705}} as described in {{exporters}} it also changes
+Elliptic Curves.  Because TLS 1.3 changes the way keys are derived, it
+updates {{RFC5705}} as described in {{exporters}}.  It also changes
 how OCSP messages are carried and therefore updates {{RFC6066}}
 and obsoletes {{RFC6961}} as described in section {{ocsp-and-sct}}.
 
@@ -1104,8 +1104,8 @@ are many minor differences.
   be more consistent and to remove superfluous messages such as
   ChangeCipherSpec.
 
-- Elliptic curve algorithms are now in the base spec and includes new signature
-  algorithms, such as ed25519 and ed448. TLS 1.3 removed point format
+- Elliptic curve algorithms are now in the base spec and new signature
+  algorithms, such as ed25519 and ed448, are included. TLS 1.3 removed point format
   negotiation in favor of a single point format for each curve.
 
 - Other cryptographic improvements including the removal of compression and
@@ -1583,7 +1583,7 @@ types are predefined.
        uint8 uint32[4];
        uint8 uint64[8];
 
-All values, here and elsewhere in the specification, are stored in network byte
+All values, here and elsewhere in the specification, are transmitted in network byte
 (big-endian) order; the uint32 represented by the hex bytes 01 02 03 04 is
 equivalent to the decimal value 16909060.
 
@@ -2519,7 +2519,7 @@ RSASSA-PSS PSS algorithms
   algorithm. If the public key is carried in an X.509 certificate,
   it MUST use the RSASSA-PSS OID  {{!RFC5756}}. When used in certificate signatures,
   the algorithm parameters MUST be DER encoded. If the corresponding
-  public key's parameters present, then the parameters in the signature
+  public key's parameters are present, then the parameters in the signature
   MUST be identical to those in the public key.
 
 Legacy algorithms
@@ -2659,7 +2659,7 @@ extensions.
 ### Post-Handshake Client Authentication {#post_handshake_auth}
 
 The "post_handshake_auth" extension is used to indicate that a client is willing
-to perform post-handshake authentication {{post-handshake-authentication}}. Servers
+to perform post-handshake authentication ({{post-handshake-authentication}}). Servers
 MUST NOT send a post-handshake CertificateRequest to clients which do not
 offer this extension. Servers MUST NOT send this extension.
 
@@ -3185,7 +3185,7 @@ tickets which have ages greater than the "ticket_lifetime" value which
 was provided with the ticket. The "obfuscated_ticket_age" field of
 each PskIdentity contains an obfuscated version of the ticket age
 formed by taking the age in milliseconds and adding the "ticket_age_add"
-value that was included with the ticket, see {{NSTMessage}} modulo 2^32.
+value that was included with the ticket (see {{NSTMessage}}), modulo 2^32.
 This addition prevents passive observers from correlating connections
 unless tickets are reused. Note that the "ticket_lifetime" field in
 the NewSessionTicket message is in seconds but the "obfuscated_ticket_age"
@@ -4877,7 +4877,7 @@ application data keys or upon a key update).
 
 For finite field groups, a conventional Diffie-Hellman computation is performed.
 The negotiated key (Z) is converted to a byte string by encoding in big-endian and
-padded with zeros up to the size of the prime. This byte string is used as the
+left padded with zeros up to the size of the prime. This byte string is used as the
 shared secret in the key schedule as specified above.
 
 Note that this construction differs from previous versions of TLS which remove
