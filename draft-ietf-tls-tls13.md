@@ -3682,9 +3682,14 @@ attackers could obtain a signature of a message with a chosen 32-byte
 prefix (ClientHello.random). The initial 64-byte pad clears that prefix
 along with the server-controlled ServerHello.random.
 
-The context string for a server signature is
-"TLS 1.3, server CertificateVerify" and for a client signature is
-"TLS 1.3, client CertificateVerify".
+The context string for a server signature is:
+~~~~
+"TLS 1.3, server CertificateVerify"
+~~~~
+The context string for a client signature is:
+~~~
+"TLS 1.3, client CertificateVerify"
+~~~~
 It is used to provide separation between signatures made in different
 contexts, helping against potential cross-protocol attacks.
 
