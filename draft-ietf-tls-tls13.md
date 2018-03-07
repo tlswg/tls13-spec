@@ -1878,7 +1878,7 @@ ClientHello (without modification) except:
   extension {{RFC7685}}.
 
 - Other modifications that may be allowed by an extension defined in the
-  future and present in the HelloRetryRequest
+  future and present in the HelloRetryRequest.
 
 Because TLS 1.3 forbids renegotiation, if a server has negotiated TLS
 1.3 and receives a ClientHello at any other time, it MUST terminate
@@ -3006,7 +3006,7 @@ MUST be the first PSK listed in the client's "pre_shared_key" extension.
 For PSKs provisioned via NewSessionTicket, a server MUST validate that
 the ticket age for the selected PSK identity (computed by subtracting
 ticket_age_add from PskIdentity.obfuscated_ticket_age modulo 2^32)
-is within a small tolerance (a small number of seconds) of the
+is within a small tolerance of the
 time since the ticket was issued (see {{anti-replay}}).  If it is not,
 the server SHOULD proceed with the handshake but reject 0-RTT, and
 SHOULD NOT take any other action that assumes that this ClientHello is
@@ -3388,7 +3388,7 @@ Based on these inputs, the messages then contain:
 Certificate
 : The certificate to be used for authentication, and any
   supporting certificates in the chain. Note that certificate-based
-  client authentication is not available in resumption (or 0-RTT) flows.
+  client authentication is not available in PSK (including 0-RTT) flows.
 
 CertificateVerify
 : A signature over the value Transcript-Hash(Handshake Context, Certificate)
@@ -4965,7 +4965,11 @@ Where Secret is either the early_exporter_master_secret or the
 exporter_master_secret.  Implementations MUST use the exporter_master_secret unless
 explicitly specified by the application. The early_exporter_master_secret is
 defined for use in settings where an exporter is needed for 0-RTT data.
-A separate interface for the early exporter is RECOMMENDED.
+A separate interface for the early exporter is RECOMMENDED.  This is especially
+relevant on the server, where an implementation that processes the ClientHello
+and generates its first flight immediately would not be able to produce
+early exporter values because the key schedule has already computed the
+handshake secret and discarded the early secret.
 
 If no context is provided, the context_value is zero-length. Consequently,
 providing no context computes the same value as providing an empty context.
