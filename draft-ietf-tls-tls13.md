@@ -5464,7 +5464,7 @@ here                  +--------+--------+
 
 # Protocol Data Structures and Constant Values
 
-This section describes protocol types and constants. Values listed as
+This section provides the normative protocol types and constants definitions.  Values listed as
 _RESERVED were used in previous versions of TLS and are listed here
 for completeness. TLS 1.3 implementations MUST NOT send them but
 might receive them from older TLS implementations.
