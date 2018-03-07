@@ -3114,7 +3114,9 @@ identities
 binders
 : A series of HMAC values, one for
   each PSK offered in the "pre_shared_keys" extension and in the same
-  order, computed as described below.
+  order, computed as described below. If the number of binders does not match
+  number of identities the server MUST abort the connection with
+  "illegal_parameter" alert.
 
 selected_identity
 : The server's chosen identity expressed as a (0-based) index into
@@ -3151,10 +3153,11 @@ If backwards compatibility is important, client provided, externally
 established PSKs SHOULD influence cipher suite selection.
 
 Prior to accepting PSK key establishment, the server MUST validate the
-corresponding binder value (see {{psk-binder}} below). If this value is
-not present or does not validate, the server MUST abort the handshake.
-Servers SHOULD NOT attempt to validate multiple binders; rather they
-SHOULD select a single PSK and validate solely the binder that
+corresponding binder value (see {{psk-binder}} below). If this value does not
+validate, the server MUST ignore the associated identity and continue
+connection as if PSK key establishment wasn't attempted. Servers SHOULD NOT
+attempt to validate multiple binders; rather they
+SHOULD select a single PSK and try to validate solely the binder that
 corresponds to that PSK. In order to accept PSK key establishment, the
 server sends a "pre_shared_key" extension indicating the selected
 identity.
