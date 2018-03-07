@@ -1659,8 +1659,7 @@ like that of C.
        } T;
 
 Fixed- and variable-length vector fields are allowed using the standard vector
-syntax (but arrays of either sort must themselves only contain fixed-length
-elements). Structures V1 and V2 in the variants example below demonstrate this.
+syntax. Structures V1 and V2 in the variants example below demonstrate this.
 
 The fields within a structure may be qualified using the type's name, with a
 syntax much like that available for enumerateds. For example, T.f2 refers to
