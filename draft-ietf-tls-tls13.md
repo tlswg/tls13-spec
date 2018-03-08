@@ -1426,8 +1426,8 @@ Note:
   low-entropy sources is not secure. A low-entropy secret, or password, is
   subject to dictionary attacks based on the PSK binder.  The specified PSK
   authentication is not a strong password-based authenticated key exchange even
-  when used with Diffie-Hellman key establishment.  That is, it does not provide
-  resistance againt an attacker that can observe the handshake performing
+  when used with Diffie-Hellman key establishment.  That is, it does not
+  prevent an attacker that can observe the handshake from performing
   a brute-force attack on the password/pre-shared key.
 
 
@@ -2336,7 +2336,7 @@ this specification MUST negotiate TLS 1.2 or prior as specified in
 Servers MAY abort the handshake upon receiving a ClientHello with
 legacy_version 0x0304 or later.
 
-If this extension is present in the ClientHello, servers MUST NOT the
+If this extension is present in the ClientHello, servers MUST NOT use the
 ClientHello.legacy_version value for version negotiation and MUST use only the
 "supported_versions" extension to determine client
 preferences. Servers MUST only select a version of TLS present in that
@@ -4577,7 +4577,7 @@ bad_record_mac
 record_overflow
 : A TLSCiphertext record was received that had a length more than
   2^14 + 256 bytes, or a record decrypted to a TLSPlaintext record
-  with more than 2^14 bytes (or some other configured limit).
+  with more than 2^14 bytes (or some other negotiated limit).
   This alert should never be observed in communication between
   proper implementations, except when messages were corrupted
   in the network.
