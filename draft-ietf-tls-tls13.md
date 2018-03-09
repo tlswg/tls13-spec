@@ -551,10 +551,10 @@ https://github.com/tlswg/tls13-spec. Instructions are on that page as
 well. Editorial changes can be managed in GitHub, but any substantive
 change should be discussed on the TLS mailing list.
 
-The primary goal of TLS is to provide a secure channel
-between two communicating peers; the only requirement from the underlying
-transport is a reliable data stream. Specifically, the secure channel should
-provide the following properties:
+The primary goal of TLS is to provide a secure channel between two
+communicating peers; the only requirement from the underlying
+transport is a reliable, in-order, data stream. Specifically, the
+secure channel should provide the following properties:
 
 - Authentication: The server side of the channel is always
   authenticated; the client side is optionally
