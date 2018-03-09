@@ -1301,8 +1301,8 @@ messages, namely Certificate and CertificateVerify (if requested), and Finished.
 At this point, the handshake is complete, and the client and server
 derive the keying material required by the record layer to exchange
 application-layer data protected through authenticated encryption.
-Application data MUST NOT be sent prior to sending the Finished message and
-until the record layer starts using encryption keys, except as specified
+Application data MUST NOT be sent prior to sending the Finished message,
+except as specified
 in \[{{zero-rtt-data}}].
 Note that while the server may send application data prior to receiving
 the client's Authentication messages, any data sent at that point is,
@@ -1430,7 +1430,7 @@ Note:
   low-entropy sources is not secure. A low-entropy secret, or password, is
   subject to dictionary attacks based on the PSK binder.  The specified PSK
   authentication is not a strong password-based authenticated key exchange even
-  when used with Diffie-Hellman key establishment.  That is, it does not
+  when used with Diffie-Hellman key establishment.  Specifically, it does not
   prevent an attacker that can observe the handshake from performing
   a brute-force attack on the password/pre-shared key.
 
@@ -2949,7 +2949,6 @@ The server MUST NOT send a "psk_key_exchange_modes" extension.
 
 %%% Key Exchange Messages
 
-       /* Managed by IANA */
        enum { psk_ke(0), psk_dhe_ke(1), (255) } PskKeyExchangeMode;
 
        struct {
@@ -3185,8 +3184,9 @@ corresponding binder value (see {{psk-binder}} below). If this value is
 not present or does not validate, the server MUST abort the handshake.
 Servers SHOULD NOT attempt to validate multiple binders; rather they
 SHOULD select a single PSK and validate solely the binder that
-corresponds to that PSK.  There are security implications of
-validating the selected binder in this way, see \[{{client-hello-recording}}]
+corresponds to that PSK.
+See \[{{client-hello-recording}}] for the security rationale for this
+requirement.
 In order to accept PSK key establishment, the
 server sends a "pre_shared_key" extension indicating the selected
 identity.
@@ -3271,9 +3271,9 @@ Clients are permitted to "stream" 0-RTT data until they
 receive the server's Finished, only then sending the EndOfEarlyData
 message, followed by the rest of the handshake.
 In order to avoid deadlocks, when accepting "early_data",
-servers MUST process the client's ClientHello and then immediately
-send their ServerHello, rather than waiting for the client's
-EndOfEarlyData message before sending their ServerHello.
+the server MUST process the client's ClientHello and then immediately
+send its ServerHello, rather than waiting for the client's
+EndOfEarlyData message before sending its ServerHello.
 
 ## Server Parameters
 
@@ -3505,7 +3505,7 @@ extensions:
 : A set of extension values for the CertificateEntry. The "Extension"
   format is defined in {{extensions}}. Valid extensions for server certificates
   at present include OCSP Status extension ({{RFC6066}}) and
-  SignedCertificateTimestamps ({{!RFC6962}}) and future extensions may
+  SignedCertificateTimestamps ({{!RFC6962}}); future extensions may
   be defined for this message as well. Extensions in the Certificate
   message from the server MUST correspond to ones from the ClientHello message.
   Extensions in the Certificate from the client MUST correspond with
@@ -4965,11 +4965,7 @@ Where Secret is either the early_exporter_master_secret or the
 exporter_master_secret.  Implementations MUST use the exporter_master_secret unless
 explicitly specified by the application. The early_exporter_master_secret is
 defined for use in settings where an exporter is needed for 0-RTT data.
-A separate interface for the early exporter is RECOMMENDED.  This is especially
-relevant on the server, where an implementation that processes the ClientHello
-and generates its first flight immediately would not be able to produce
-early exporter values because the key schedule has already computed the
-handshake secret and discarded the early secret.
+A separate interface for the early exporter is RECOMMENDED.
 
 If no context is provided, the context_value is zero-length. Consequently,
 providing no context computes the same value as providing an empty context.
