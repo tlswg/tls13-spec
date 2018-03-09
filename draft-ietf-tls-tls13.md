@@ -1246,7 +1246,7 @@ parameters. The combination of the ClientHello
 and the ServerHello determines the shared keys. If (EC)DHE
 key establishment is in use, then the ServerHello
 contains a "key_share" extension with the server's ephemeral
-Diffie-Hellman share which MUST be in the same group as one of the
+Diffie-Hellman share; the server's share MUST be in the same group as one of the
 client's shares. If PSK key establishment is
 in use, then the ServerHello contains a "pre_shared_key"
 extension indicating which of the client's offered PSKs was selected.
@@ -2336,7 +2336,8 @@ prepared to negotiate (for this specification, that means minimally
 they MUST be present as well).
 
 If this extension is not present, servers which are compliant with
-this specification MUST negotiate TLS 1.2 or prior as specified in
+this specification, and which also support TLS 1.2,
+MUST negotiate TLS 1.2 or prior as specified in
 {{RFC5246}}, even if ClientHello.legacy_version is 0x0304 or later.
 Servers MAY abort the handshake upon receiving a ClientHello with
 legacy_version 0x0304 or later.
