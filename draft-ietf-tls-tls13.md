@@ -2296,9 +2296,10 @@ significant reduction in overall security. The following considerations should
 be taken into account when designing new extensions:
 
 - Some cases where a server does not agree to an extension are error
-  conditions, and some are simply refusals to support particular features. In
-  general, error alerts should be used for the former and a field in the
-  server extension response for the latter.
+  conditions (e.g., the handshake cannot continue), and some are
+  simply refusals to support particular features. In general, error
+  alerts should be used for the former and a field in the server
+  extension response for the latter.
 
 - Extensions should, as far as possible, be designed to prevent any attack that
   forces use (or non-use) of a particular feature by manipulation of handshake
