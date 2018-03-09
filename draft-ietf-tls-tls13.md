@@ -536,6 +536,9 @@ This document specifies version 1.3 of the Transport Layer Security
 (TLS) protocol.  TLS allows client/server applications to
 communicate over the Internet in a way that is designed to prevent eavesdropping,
 tampering, and message forgery.
+
+This document updates RFCs 4492, 5705, and 6066 and it obsoletes
+RFCs 5077, 5246, and 6961.
 --- middle
 
 
