@@ -6476,6 +6476,7 @@ Archives of the list can be found at:
 
 * Jonathan Hoyland \\
   Royal Holloway, University of London
+  jonathan.hoyland@gmail.com
 
 * Subodh Iyengar \\
   Facebook \\
