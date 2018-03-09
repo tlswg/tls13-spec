@@ -2918,7 +2918,7 @@ and alternatively in Section 5.6.2.3 of {{?KEYAGREEMENT=DOI.10.6028/NIST.SP.800-
 This process consists of three steps: (1) verify that Y is not the point at
 infinity (O), (2) verify that for Y = (x, y) both integers are in the correct
 interval, (3) ensure that (x, y) is a correct solution to the elliptic curve equation.
-For these curves, implementers do not need to verify membership in the correct subgroup.
+For these curves, implementors do not need to verify membership in the correct subgroup.
 
 For X25519 and X448, the contents of the public value are the byte string inputs and outputs of the
 corresponding functions defined in {{RFC7748}}, 32 bytes for X25519 and 56
@@ -4944,7 +4944,7 @@ For X25519 and X448, implementations SHOULD use the approach specified
 in {{RFC7748}} to calculate the Diffie-Hellman shared secret.
 Implementations MUST check whether the computed Diffie-Hellman
 shared secret is the all-zero value and abort if so, as described in
-Section 6 of {{RFC7748}}. If implementers use an alternative
+Section 6 of {{RFC7748}}. If implementors use an alternative
 implementation of these elliptic curves, they SHOULD perform the
 additional checks specified in Section 7 of {{RFC7748}}.
 
