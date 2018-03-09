@@ -2908,7 +2908,7 @@ value of the following struct:
            opaque Y[coordinate_length];
        } UncompressedPointRepresentation;
 
-X and Y respectively are the binary representations of the X and Y
+X and Y respectively are the binary representations of the x and y
 values in network byte order.  There are no internal length markers,
 so each number representation occupies as many octets as implied by
 the curve parameters.  For P-256 this means that each of X and Y use
@@ -2916,14 +2916,16 @@ the curve parameters.  For P-256 this means that each of X and Y use
 take 48 octets each, and for P-521 they take 66 octets each.
 
 For the curves secp256r1, secp384r1 and secp521r1,
-peers MUST validate each other's public value Y by ensuring
+peers MUST validate each other's public value Q by ensuring
 that the point is a valid point on the elliptic curve.
 The appropriate validation procedures are defined in Section 4.3.7 of {{X962}}
 and alternatively in Section 5.6.2.3 of {{?KEYAGREEMENT=DOI.10.6028/NIST.SP.800-56Ar2}}.
-This process consists of three steps: (1) verify that the point (X, Y) is not the point at
-infinity (O), (2) verify that both X and Y are integers in the correct
-interval, (3) ensure that (X, Y) is a correct solution to the elliptic curve equation.
-For these curves, implementors do not need to verify membership in the correct subgroup.
+This process consists of three
+steps: (1) verify that Q is not the point at infinity (O), (2) verify
+that for Q = (x, y) both integers are in the correct interval, (3)
+ensure that (x, y) is a correct solution to the elliptic curve
+equation.  For these curves, implementers do not need to verify
+membership in the correct subgroup.
 
 For X25519 and X448, the contents of the public value are the byte string inputs and outputs of the
 corresponding functions defined in {{RFC7748}}, 32 bytes for X25519 and 56
