@@ -1357,6 +1357,7 @@ described in the following sections.
 Although TLS PSKs can be established out of band,
 PSKs can also be established in a previous connection and
 then used to establish a new connection ("session resumption" or "resuming" with a PSK).
+Once a handshake has completed, the server can
 send to the client a PSK identity that corresponds to a unique key derived from
 the initial handshake (see {{NSTMessage}}). The client
 can then use that PSK identity in future handshakes to negotiate the use
@@ -3602,7 +3603,7 @@ The following rules apply to the certificates sent by the server:
   extension, clients SHOULD send this extension, when applicable.
 
 All certificates provided by the server MUST be signed by a
-signature algorithm advertised by the client, if it are able to provide such
+signature algorithm advertised by the client, if it is able to provide such
 a chain (see {{signature-algorithms}}).
 Certificates that are self-signed
 or certificates that are expected to be trust anchors are not validated as
@@ -4227,7 +4228,7 @@ by an encrypted body, which itself contains a type and optional padding.
            opaque encrypted_record[TLSCiphertext.length];
        } TLSCiphertext;
 
-fragment.
+content
 : The TLSPLaintext.fragment value, containing the byte encoding of a
   handshake or an alert message, or the raw bytes of the application's
   data to send.
@@ -4424,7 +4425,7 @@ specified by the current connection state.
 
 Alert messages convey a description of the alert and a legacy field
 that conveyed the severity of the message in previous versions of
-TLS. I think at this point you want to insert "Alerts are divided into
+TLS. Alerts are divided into
 two classes: closure alerts and error alerts.  In TLS 1.3, the
 severity is implicit in the type of alert
 being sent, and the 'level' field can safely be ignored. The "close_notify" alert
@@ -4436,10 +4437,10 @@ Error alerts indicate abortive closure of the
 connection (see {{error-alerts}}). Upon receiving an error alert,
 the TLS implementation SHOULD indicate an error to the application and
 MUST NOT allow any further data to be sent or received on the
-connection.  Servers and clients MUST forget keys and secrets
-used with failed connection. Stateful implementations of
-tickets (as in many clients) SHOULD discard tickets established on
-with failed connections.
+connection.  Servers and clients MUST the secret values and
+keys established in failed connections, with the exception of
+the PSKs associated with session tickets, which SHOULD be discarded if
+possible.
 
 All the alerts listed in {{error-alerts}} MUST be sent with
 AlertLevel=fatal and MUST be treated as error alerts
@@ -5105,7 +5106,7 @@ I.e., if the
 client sends PSKs A and B but the server prefers A, then the
 attacker can change the binder for B without affecting the binder
 for A. If the binder for B is part of the storage key,
-then this ClientHello, will not appear as a duplicate,
+then this ClientHello will not appear as a duplicate,
 which will cause the ClientHello to be accepted, and may
 cause side effects such as replay cache pollution, although any
 0-RTT data will not be decryptable because it will use different
@@ -5182,7 +5183,7 @@ There are several potential sources of error that might cause
 mismatches between the expected arrival time and the measured
 time. Variations in client and server clock
 rates are likely to be minimal, though potentially the absolute
-times may of off by large values.
+times may be off by large values.
 Network propagation delays are the most likely causes of
 a mismatch in legitimate values for elapsed time.  Both the
 NewSessionTicket and ClientHello messages might be retransmitted and
