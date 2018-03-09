@@ -6537,7 +6537,7 @@ Archives of the list can be found at:
 
 * Bodo Moeller (co-author of [RFC4492]) \\
   Google \\
-  bodo@openssl.org
+  bodo@acm.org
 
 * Kyle Nekritz \\
   Facebook \\
