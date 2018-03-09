@@ -5342,7 +5342,7 @@ registry follow:
   with any extension not listed there marked as "-" to indicate that
   it is not used by TLS 1.3.
 
-In addition, this document defines a new registry to be maintained
+In addition, this document defines two new registries to be maintained
 by IANA:
 
 - TLS SignatureScheme Registry: Values with the first byte in the range
@@ -5358,7 +5358,7 @@ by IANA:
   rsa_pss_rsae_sha256, rsa_pss_rsae_sha384, rsa_pss_rsae_sha512,
   rsa_pss_pss_sha256, rsa_pss_pss_sha384, rsa_pss_pss_sha512, and ed25519.
 
- - TLS PskKeyExchangeMode Registry: Values with the first byte in the
+ - TLS PskKeyExchangeMode Registry: Values in the
    range 0-253 (decimal) are assigned via Specification Required
    [RFC8126].  Values with the first byte 254 or 255 (decimal) are
    reserved for Private Use [RFC8126].  This registry SHALL have a
