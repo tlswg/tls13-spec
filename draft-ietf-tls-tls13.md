@@ -44,6 +44,7 @@ normative:
   RFC8017:
   RFC8126:
   RFC8174:
+  RFC5116:
   X690:
        title: "Information technology - ASN.1 encoding Rules: Specification of Basic Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished Encoding Rules (DER)"
        date: 2002
@@ -79,7 +80,6 @@ informative:
   RFC4366:
   RFC4492:
   RFC5077:
-  RFC5116:
   RFC5246:
   RFC5764:
   RFC5929:
@@ -533,12 +533,13 @@ informative:
 --- abstract
 
 This document specifies version 1.3 of the Transport Layer Security
-(TLS) protocol.  TLS allows client/server applications to
-communicate over the Internet in a way that is designed to prevent eavesdropping,
+(TLS) protocol.  TLS allows client/server applications to communicate
+over the Internet in a way that is designed to prevent eavesdropping,
 tampering, and message forgery.
 
 This document updates RFCs 4492, 5705, and 6066 and it obsoletes
-RFCs 5077, 5246, and 6961.
+RFCs 5077, 5246, and 6961. This document also specifies new
+requirements for TLS 1.2 implementations.
 --- middle
 
 
@@ -1134,8 +1135,9 @@ are many minor differences.
 
 ## Updates Affecting TLS 1.2
 
-This document defines several changes that optionally affect implementations of
-TLS 1.2:
+This document defines several changes that optionally affect
+implementations of TLS 1.2, including those which do not also
+support TLS 1.3:
 
 * A version downgrade protection mechanism is described in {{server-hello}}.
 
@@ -1147,10 +1149,6 @@ TLS 1.2:
 
 * The "signature_algorithms_cert" extension allows a client to indicate
   which signature algorithms it can validate in X.509 certificates
-
-An implementation of TLS 1.3 that also supports TLS 1.2 might need to include
-changes to support these changes even when TLS 1.3 is not in use.  See the
-referenced sections for more details.
 
 Additionally, this document clarifies some compliance requirements for earlier
 versions of TLS; see {{protocol-invariants}}.
@@ -2524,8 +2522,8 @@ RSASSA-PSS RSAE algorithms
   generation function 1. The
   digest used in the mask generation function and the digest being signed are
   both the corresponding hash algorithm as defined in {{!SHS}}.
-  The length of the salt MUST be equal to the length of the digest
-  algorithm. If the public key is carried
+  The length of the salt MUST be equal to the length of the output of the
+  digest algorithm. If the public key is carried
   in an X.509 certificate, it MUST use the rsaEncryption OID {{!RFC5280}}.
 
 EdDSA algorithms
@@ -3023,10 +3021,11 @@ A server which receives an "early_data" extension
 MUST behave in one of three ways:
 
 - Ignore the extension and return a regular 1-RTT response.  The server then
-  ignores early data by attempting to decrypt received records in the handshake traffic
-  keys until it is able to receive the
-  client's second flight and complete an ordinary 1-RTT handshake, skipping
-  records that fail to decrypt, up to the configured max_early_data_size.
+  skips past early data by attempting to deprotect received records using the handshake traffic
+  keys, discarding records which fail deprotection (up to the configured max_early_data_size).
+  Once a record is deprotected
+  successfully, it is treated as the start of the client's second flight
+  and the the server proceeds as with an ordinary 1-RTT handshake.
 
 - Request that the client send another ClientHello by responding with a
   HelloRetryRequest.  A client MUST NOT include the "early_data" extension in
@@ -4197,7 +4196,9 @@ follow the procedure and requirements in {{backward-compatibility}}.
 When record protection has not yet been engaged, TLSPlaintext
 structures are written directly onto the wire. Once record protection
 has started, TLSPlaintext records are protected and sent as
-described in the following section.
+described in the following section. Note that application data
+records MUST NOT be written to the wire unprotected (see
+{{protocol-overview}} for details).
 
 ## Record Payload Protection
 
