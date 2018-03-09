@@ -2918,7 +2918,7 @@ that the point is a valid point on the elliptic curve.
 The appropriate validation procedures are defined in Section 4.3.7 of {{X962}}
 and alternatively in Section 5.6.2.3 of {{?KEYAGREEMENT=DOI.10.6028/NIST.SP.800-56Ar2}}.
 This process consists of three steps: (1) verify that the point (X, Y) is not the point at
-infinity (O), (2) verify that for both X and Y integers are in the correct
+infinity (O), (2) verify that both X and Y are integers in the correct
 interval, (3) ensure that (X, Y) is a correct solution to the elliptic curve equation.
 For these curves, implementers do not need to verify membership in the correct subgroup.
 
