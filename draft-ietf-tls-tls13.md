@@ -1836,7 +1836,7 @@ a "handshake_failure" or "insufficient_security" fatal alert
 ###  Client Hello
 
 When a client first connects to a server, it is REQUIRED to send the
-ClientHello as its first message. The client will also send a
+ClientHello as its first TLS message. The client will also send a
 ClientHello when the server has responded to its ClientHello with a
 HelloRetryRequest. In that case, the client MUST send the same
 ClientHello (without modification) except:
