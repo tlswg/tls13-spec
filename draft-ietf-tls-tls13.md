@@ -6402,7 +6402,7 @@ Archives of the list can be found at:
 
 * Antoine Delignat-Lavaud (co-author of [RFC7627]) \\
   INRIA \\
-  antoine.delignat-lavaud@inria.fr
+  antdl@microsoft.com
 
 * Tim Dierks (co-editor of TLS 1.0, 1.1, and 1.2) \\
   Independent \\
