@@ -5358,6 +5358,14 @@ by IANA:
   rsa_pss_rsae_sha256, rsa_pss_rsae_sha384, rsa_pss_rsae_sha512,
   rsa_pss_pss_sha256, rsa_pss_pss_sha384, rsa_pss_pss_sha512, and ed25519.
 
+ - TLS PskKeyExchangeMode Registry: Values with the first byte in the
+   range 0-253 (decimal) are assigned via Specification Required
+   [RFC8126].  Values with the first byte 254 or 255 (decimal) are
+   reserved for Private Use [RFC8126].  This registry SHALL have a
+   "Recommended" column.  The registry [shall be/ has been] initially
+   populated psk_ke (0) and psk_dhe_ke (1).  Both SHALL be marked as
+   "Recommended".
+
 --- back
 
 
