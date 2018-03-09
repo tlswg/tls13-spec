@@ -5233,7 +5233,7 @@ follow. It also applies to earlier versions, which assumed these rules but did
 not document them.
 
 TLS is designed to be securely and compatibly extensible. Newer clients or
-servers, when communicating with newer peers, SHOULD negotiate the
+servers, when communicating with newer peers, should negotiate the
 most preferred common parameters. The TLS handshake provides downgrade
 protection: Middleboxes passing traffic between a newer client and
 newer server without terminating TLS should be unable to influence the
