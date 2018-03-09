@@ -3022,7 +3022,7 @@ MUST behave in one of three ways:
 
 - Ignore the extension and return a regular 1-RTT response.  The server then
   skips past early data by attempting to deprotect received records using the handshake traffic
-  keys, discarding records which fail deprotection (up to the configured max_early_data_size).
+  key, discarding records which fail deprotection (up to the configured max_early_data_size).
   Once a record is deprotected
   successfully, it is treated as the start of the client's second flight
   and the the server proceeds as with an ordinary 1-RTT handshake.
