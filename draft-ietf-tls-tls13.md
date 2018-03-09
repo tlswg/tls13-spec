@@ -2866,7 +2866,7 @@ isn't forcing the local system into a small subgroup.
 #### ECDHE Parameters {#ecdhe-param}
 
 ECDHE parameters for both clients and servers are encoded in the
-the opaque key_exchange field of a KeyShareEntry in a KeyShare structure.
+opaque key_exchange field of a KeyShareEntry in a KeyShare structure.
 
 For secp256r1, secp384r1 and secp521r1, the contents are the serialized
 value of the following struct:
@@ -5686,7 +5686,7 @@ endpoints potentially supporting different versions of TLS.
 
 TLS 1.x and SSL 3.0 use compatible ClientHello messages. Servers can also handle
 clients trying to use future versions of TLS as long as the ClientHello format
-remains compatible and and there is at least one protocol version supported by
+remains compatible and there is at least one protocol version supported by
 both the client and the server.
 
 Prior versions of TLS used the record layer version number for various
@@ -6245,7 +6245,7 @@ to see if the two requests address the same resource.
 
 If data can be replayed a large number of times, additional attacks
 become possible, such as making repeated measurements of the
-the speed of cryptographic operations. In addition, they may
+speed of cryptographic operations. In addition, they may
 be able to overload rate-limiting systems. For further description of
 these attacks, see {{Mac17}}.
 
