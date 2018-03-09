@@ -2142,8 +2142,9 @@ HelloRetryRequest MUST NOT contain any extensions that were not first
 offered by the client in its ClientHello, with the exception of
 optionally the "cookie" (see {{cookie}}) extension.
 
-Upon receipt of a HelloRetryRequest, the client MUST perform the
-checks specified in {{server-hello}} and then process the
+Upon receipt of a HelloRetryRequest, the client MUST check
+the legacy_version, legacy_session_id_echo, cipher_suite,
+and legacy_compression_method as specified in {{server-hello}} and then process the
 extensions, starting with determining the version using
 "supported_versions". Clients MUST abort the handshake with
 an "illegal_parameter" alert if the HelloRetryRequest would not result in
