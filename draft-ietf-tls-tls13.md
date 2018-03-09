@@ -1938,7 +1938,8 @@ legacy_compression_methods
   received with any other value in this field, the server MUST
   abort the handshake with an "illegal_parameter" alert. Note that TLS 1.3
   servers might receive TLS 1.2 or prior ClientHellos which contain
-  other compression methods and MUST follow the procedures for
+  other compression methods and (if negotiating such a prior version)
+  MUST follow the procedures for
   the appropriate prior version of TLS.  TLS 1.3 ClientHellos are identified
   as having a legacy_version of 0x0303 and a supported_versions extension
   present with 0x0304 as the highest version indicated therein.
