@@ -4440,7 +4440,7 @@ Error alerts indicate abortive closure of the
 connection (see {{error-alerts}}). Upon receiving an error alert,
 the TLS implementation SHOULD indicate an error to the application and
 MUST NOT allow any further data to be sent or received on the
-connection.  Servers and clients MUST the secret values and
+connection.  Servers and clients MUST forget the secret values and
 keys established in failed connections, with the exception of
 the PSKs associated with session tickets, which SHOULD be discarded if
 possible.
