@@ -3428,7 +3428,7 @@ ClientHello with a HelloRetryRequest, the value of ClientHello1 is
 replaced with a special synthetic handshake message of handshake
 type "message_hash" containing Hash(ClientHello1). I.e.,
 
-     Transcript-Hash(ClientHello1, HelloRetryRequest, ... Mn =
+     Transcript-Hash(ClientHello1, HelloRetryRequest, ... Mn) =
          Hash(message_hash ||        /* Handshake type */
               00 00 Hash.length ||   /* Handshake message length (bytes) */
               Hash(ClientHello1) ||  /* Hash of ClientHello1 */
