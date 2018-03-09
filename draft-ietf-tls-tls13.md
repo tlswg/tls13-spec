@@ -4964,7 +4964,9 @@ Where Secret is either the early_exporter_master_secret or the
 exporter_master_secret.  Implementations MUST use the exporter_master_secret unless
 explicitly specified by the application. The early_exporter_master_secret is
 defined for use in settings where an exporter is needed for 0-RTT data.
-A separate interface for the early exporter is RECOMMENDED.
+A separate interface for the early exporter is RECOMMENDED; this avoids
+the exporter user accidentally using an early exporter when a regular
+one is desired or vice versa.
 
 If no context is provided, the context_value is zero-length. Consequently,
 providing no context computes the same value as providing an empty context.
