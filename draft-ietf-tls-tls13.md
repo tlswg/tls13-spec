@@ -2922,7 +2922,7 @@ The appropriate validation procedures are defined in Section 4.3.7 of {{X962}}
 and alternatively in Section 5.6.2.3 of {{?KEYAGREEMENT=DOI.10.6028/NIST.SP.800-56Ar2}}.
 This process consists of three
 steps: (1) verify that Q is not the point at infinity (O), (2) verify
-that for Q = (x, y) both integers are in the correct interval, (3)
+that for Q = (x, y) both integers x and y are in the correct interval, (3)
 ensure that (x, y) is a correct solution to the elliptic curve
 equation.  For these curves, implementers do not need to verify
 membership in the correct subgroup.
