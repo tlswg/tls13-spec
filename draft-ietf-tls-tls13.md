@@ -5279,8 +5279,7 @@ lacking a "server_name" extension by terminating the connection with a
 ## Protocol Invariants
 
 This section describes invariants that TLS endpoints and middleboxes MUST
-follow. It also applies to earlier versions, which assumed these rules but did
-not document them.
+follow. It also applies to earlier versions of TLS.
 
 TLS is designed to be securely and compatibly extensible. Newer clients or
 servers, when communicating with newer peers, should negotiate the
