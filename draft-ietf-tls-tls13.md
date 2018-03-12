@@ -2658,7 +2658,8 @@ filters
   some of the required certificate extension OIDs and supplied a certificate
   that does not satisfy the request, the server MAY at its discretion either
   continue the connection without client authentication, or abort the handshake
-  with an "unsupported_certificate" alert.
+  with an "unsupported_certificate" alert. Any given OID MUST NOT appear
+  more than once in the filters list.
 
 PKIX RFCs define a variety of certificate extension OIDs and their corresponding
 value types. Depending on the type, matching certificate extension values are
