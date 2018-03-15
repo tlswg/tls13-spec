@@ -1462,7 +1462,6 @@ as for a 1-RTT handshake with PSK resumption.
                                  <--------       [Application Data*]
          (EndOfEarlyData)
          {Finished}              -------->
-
          [Application Data]      <------->        [Application Data]
 
                +  Indicates noteworthy extensions sent in the
