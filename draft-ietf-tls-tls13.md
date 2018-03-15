@@ -1322,9 +1322,8 @@ the server MUST abort the handshake with an appropriate alert.
 
          ClientHello
          + key_share             -------->
-                                 <--------         HelloRetryRequest
-                                                         + key_share
-
+                                                   HelloRetryRequest
+                                 <--------               + key_share
          ClientHello
          + key_share             -------->
                                                          ServerHello
