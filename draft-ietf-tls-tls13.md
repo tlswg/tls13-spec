@@ -6375,7 +6375,7 @@ application traffic keys only in the client-to-server direction.
 Because implementations respond to an invalid PSK binder by aborting
 the handshake, it may be possible for an attacker to verify whether
 a given PSK identity is valid. Specifically, if a server accepts
-both external PSK and certificate-based handshakes, a valid identity
+both external PSK and certificate-based handshakes, a valid PSK identity
 will result in a failed handshake, whereas an invalid identity will
 just be skipped and result in a successful certificate handshake.
 Servers which solely support PSK handshakes may be able to resist
