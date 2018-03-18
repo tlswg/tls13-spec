@@ -6370,6 +6370,20 @@ server-to-client encryption keys because that would entail
 the reuse of those keys. This parallels the use of the early
 application traffic keys only in the client-to-server direction.
 
+## PSK Identity Exposure
+
+Because implementations respond to an invalid PSK binder by aborting
+the handshake, it may be possible for an attacker to verify whether
+a given PSK identity is valid. Specifically, if a server accepts
+both external PSK and certificate-based handshakes, a valid identity
+will result in a failed handshake, whereas an invalid identity will
+just be skipped and result in a successful certificate handshake.
+Servers which solely support PSK handshakes may be able to resist
+this form of attack by treating the cases where there is no
+valid PSK identity and where there is an identity but it has an
+invalid binder identically.
+
+
 ## Attacks on Static RSA
 
 Although TLS 1.3 does not use RSA key transport and so is not
