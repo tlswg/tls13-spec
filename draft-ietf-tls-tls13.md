@@ -1322,9 +1322,8 @@ the server MUST abort the handshake with an appropriate alert.
 
          ClientHello
          + key_share             -------->
-                                 <--------         HelloRetryRequest
-                                                         + key_share
-
+                                                   HelloRetryRequest
+                                 <--------               + key_share
          ClientHello
          + key_share             -------->
                                                          ServerHello
@@ -1463,7 +1462,6 @@ as for a 1-RTT handshake with PSK resumption.
                                  <--------       [Application Data*]
          (EndOfEarlyData)
          {Finished}              -------->
-
          [Application Data]      <------->        [Application Data]
 
                +  Indicates noteworthy extensions sent in the
