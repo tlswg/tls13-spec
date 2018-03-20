@@ -3191,8 +3191,8 @@ not present or does not validate, the server MUST abort the handshake.
 Servers SHOULD NOT attempt to validate multiple binders; rather they
 SHOULD select a single PSK and validate solely the binder that
 corresponds to that PSK.
-See \[{{client-hello-recording}}] for the security rationale for this
-requirement.
+See \[{{client-hello-recording}}] and \[{{psk-identity-exposure}}] for the
+security rationale for this requirement.
 In order to accept PSK key establishment, the
 server sends a "pre_shared_key" extension indicating the selected
 identity.
