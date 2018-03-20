@@ -648,6 +648,17 @@ RFC EDITOR PLEASE DELETE THIS SECTION.
 (*) indicates changes to the wire protocol which may require implementations
     to update.
 
+draft-28
+
+Add a section on exposure of PSK identities.
+
+draft-27
+
+- SHOULD->MUST for being able to process "supported_versions" without
+  0x0304.
+
+- Much editorial cleanup. 
+
 draft-26
 
 - Clarify that you can't negotiate pre-TLS 1.3 with supported_versions.
