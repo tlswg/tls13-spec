@@ -3884,7 +3884,7 @@ appropriate application traffic key.
 At any time after the server has received the client Finished message,
 it MAY send a NewSessionTicket message. This message creates a unique
 association between the ticket value and a secret PSK
-derived from the resumption master secret (see {{cryptographic-computations}}.
+derived from the resumption master secret (see {{cryptographic-computations}}).
 
 The client MAY use this PSK for future handshakes by including the
 ticket value in the "pre_shared_key" extension in its ClientHello
