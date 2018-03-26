@@ -4245,7 +4245,7 @@ by an encrypted body, which itself contains a type and optional padding.
        } TLSCiphertext;
 
 content
-: The TLSPLaintext.fragment value, containing the byte encoding of a
+: The TLSPlaintext.fragment value, containing the byte encoding of a
   handshake or an alert message, or the raw bytes of the application's
   data to send.
 
