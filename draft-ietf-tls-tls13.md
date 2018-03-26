@@ -3042,7 +3042,7 @@ MUST behave in one of three ways:
   key, discarding records which fail deprotection (up to the configured max_early_data_size).
   Once a record is deprotected
   successfully, it is treated as the start of the client's second flight
-  and the the server proceeds as with an ordinary 1-RTT handshake.
+  and the server proceeds as with an ordinary 1-RTT handshake.
 
 - Request that the client send another ClientHello by responding with a
   HelloRetryRequest.  A client MUST NOT include the "early_data" extension in
