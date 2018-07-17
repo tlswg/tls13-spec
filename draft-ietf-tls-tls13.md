@@ -595,7 +595,7 @@ TLS is application protocol independent; higher-level protocols can
 layer on top of TLS transparently. The TLS standard, however, does not
 specify how protocols add security with TLS; how to
 initiate TLS handshaking and how to interpret the authentication
-certificates exchanged are left to the judgment of the designers and
+certificates exchanged are left to the judgement of the designers and
 implementors of protocols that run on top of TLS.
 
 This document defines TLS version 1.3. While TLS 1.3 is not directly
@@ -1820,7 +1820,7 @@ options are entirely orthogonal: the server independently selects a
 cipher suite, an (EC)DHE group and key share for key establishment,
 and a signature algorithm/certificate pair to authenticate itself to
 the client. If there is no overlap between the received "supported_groups"
-and the groups supported by the server then the server MUST abort the
+and the groups supported by the server, then the server MUST abort the
 handshake with a "handshake_failure" or an "insufficient_security" alert.
 
 If the server selects a PSK, then it MUST also select a key
@@ -3159,7 +3159,7 @@ identities
 
 binders
 : A series of HMAC values, one for
-  each PSK offered in the "pre_shared_keys" extension and in the same
+  each PSK offered in the "pre_shared_key" extension and in the same
   order, computed as described below.
 
 selected_identity
@@ -4059,7 +4059,7 @@ After sending a KeyUpdate message, the sender SHALL send all its traffic using t
 next generation of keys, computed as described in {{updating-traffic-keys}}.
 Upon receiving a KeyUpdate, the receiver MUST update its receiving keys.
 
-If the request_update field is set to "update_requested" then the receiver MUST
+If the request_update field is set to "update_requested", then the receiver MUST
 send a KeyUpdate of its own with request_update set to "update_not_requested" prior
 to sending its next application data record. This mechanism allows either side to force an update to the
 entire connection, but causes an implementation which
@@ -5338,7 +5338,7 @@ For this to work, implementations MUST correctly handle extensible fields:
   might change.
 
 The design of TLS 1.3 was constrained by widely-deployed non-compliant TLS
-middleboxes (see {{middlebox}}), however it does not relax the invariants.
+middleboxes (see {{middlebox}}), however, it does not relax the invariants.
 Those middleboxes continue to be non-compliant.
 
 #  Security Considerations
