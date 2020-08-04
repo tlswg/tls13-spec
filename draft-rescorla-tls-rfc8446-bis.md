@@ -2318,9 +2318,9 @@ ensure that (x, y) is a correct solution to the elliptic curve
 equation.  For these curves, implementors do not need to verify
 membership in the correct subgroup.
 
-For X25519 and X448, the contents of the public value are the byte string inputs and outputs of the
-corresponding functions defined in {{RFC7748}}: 32 bytes for X25519 and 56
-bytes for X448.
+For X25519 and X448, the contents of the public value is the K_A
+or K_B value described in Section 6 of {{RFC7748}}.
+This is 32 bytes for X25519 and 56 bytes for X448.
 
 Note: Versions of TLS prior to 1.3 permitted point format negotiation;
 TLS 1.3 removes this feature in favor of a single point format
