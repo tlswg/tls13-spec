@@ -760,7 +760,7 @@ described in the following sections.
 
 ## Resumption and Pre-Shared Key (PSK) {#resumption-and-psk}
 
-Although TLS PSKs can be established out of band,
+Although TLS PSKs can be established externally,
 PSKs can also be established in a previous connection and
 then used to establish a new connection ("session resumption" or "resuming" with a PSK).
 Once a handshake has completed, the server can
@@ -826,12 +826,12 @@ extension to negotiate the use of PSK key establishment and can (as shown here)
 respond with a "key_share" extension to do (EC)DHE key establishment, thus
 providing forward secrecy.
 
-When PSKs are provisioned out of band, the PSK identity and the KDF hash
+When PSKs are provisioned externally, the PSK identity and the KDF hash
 algorithm to
 be used with the PSK MUST also be provisioned.
 
 Note:
-: When using an out-of-band provisioned pre-shared secret, a critical
+: When using an externally provisioned pre-shared secret, a critical
   consideration is using sufficient entropy during the key generation, as
   discussed in [RFC4086]. Deriving a shared secret from a password or other
   low-entropy sources is not secure. A low-entropy secret, or password, is
