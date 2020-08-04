@@ -28,12 +28,15 @@ for l in sys.stdin:
         if m is not None:
             IN_APPENDIX = m.group(1)
         else:
-            m = re.match('%%(#+|!) (.*)$', l)
+            m = re.match('%%(#+|!) ([^{]*)({.*)? *$', l)
             if m is not None:
                 if m.group(1) != '!':
-                    print("%s %s" % (m.group(1), m.group(2)))
-                print_syntax(APPENDICES[m.group(2)])
-                del APPENDICES[m.group(2)]
+                    if m.group(3) is None:
+                        print("%s %s" % (m.group(1), m.group(2)))
+                    else:
+                        print("%s %s %s" % (m.group(1), m.group(2), m.group(3)))
+                print_syntax(APPENDICES[m.group(2).strip()])
+                del APPENDICES[m.group(2).strip()]
                 print()
             else:
                 print(l, end='')
