@@ -3102,7 +3102,7 @@ content that is covered under the signature is the hash output as described in
 The digital signature is then computed over the concatenation of:
 
 - A string that consists of octet 32 (0x20) repeated 64 times
-- The context string
+- The context string (defined below)
 - A single 0 byte which serves as the separator
 - The content to be signed
 
