@@ -3954,7 +3954,7 @@ parties MUST immediately close the connection.
 
 Whenever an implementation encounters a fatal error condition, it
 SHOULD send an appropriate fatal alert and MUST close the connection
-without sending or receiving any additional data. In the rest of this
+without sending or receiving any additional data. Throughout this
 specification, when the phrases "terminate the connection" and "abort the
 handshake" are used without a specific alert it means that the
 implementation SHOULD send the alert indicated by the descriptions
