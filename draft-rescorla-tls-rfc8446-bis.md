@@ -512,7 +512,7 @@ are many minor differences.
   previously sent in the clear in the ServerHello to also enjoy
   confidentiality protection.
 
-- The key derivation functions have been redesigned. The new design allows
+- The key derivation function has been redesigned. The new design allows
   easier analysis by cryptographers due to their improved key separation
   properties. The HMAC-based Extract-and-Expand Key Derivation Function (HKDF)
   is used as an underlying primitive.
