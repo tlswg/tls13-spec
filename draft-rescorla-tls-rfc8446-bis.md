@@ -2994,7 +2994,7 @@ The following rules apply to the certificates sent by the server:
 
 - The "server_name" {{RFC6066}} and "certificate_authorities" extensions are used to
   guide certificate selection. As servers MAY require the presence of the "server_name"
-  extension, clients SHOULD send this extension, when applicable.
+  extension, clients SHOULD send this extension, when the server is identified by name.
 
 All certificates provided by the server MUST be signed by a
 signature algorithm advertised by the client, if it is able to provide such
