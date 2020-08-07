@@ -2753,11 +2753,15 @@ extensions. The latter is
 expressed by sending the "certificate_authorities" extension
 (see {{certificate-authorities}}).
 
-Servers which are authenticating with a PSK MUST NOT send the
+Servers which are authenticating with a resumption PSK MUST NOT send the
 CertificateRequest message in the main handshake, though they
 MAY send it in post-handshake authentication (see {{post-handshake-authentication}})
 provided that the client has sent the "post_handshake_auth"
 extension (see {{post_handshake_auth}}).
+Servers which are authenticating with an external PSK
+MUST NOT send the CertificateRequest message either in the main handshake
+or request post-handshake authentication. Future specifications MAY
+provide an extension to permit this.
 
 
 ## Authentication Messages
