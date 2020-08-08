@@ -2368,13 +2368,15 @@ extension but do not include 0x0304 in the list of versions.
 
 A server which negotiates a version of TLS prior to TLS 1.3 MUST
 set ServerHello.version and MUST NOT send the "supported_versions"
-extension.
-A server which negotiates TLS 1.3 MUST respond by sending a
+extension. A server which negotiates TLS 1.3 MUST respond by sending a
 "supported_versions" extension containing the selected version value
 (0x0304). It MUST set the ServerHello.legacy_version field to 0x0303 (TLS
-1.2). Clients MUST check for this extension prior to processing
-the rest of the ServerHello (although they will have to parse the
-ServerHello in order to read the extension).
+1.2).
+
+After checking ServerHello.random to determine if the server handshake message
+is a ServerHello or HelloRetryRequest, clients MUST check for the "supported_versions"
+extension prior to processing the rest of the ServerHello. This will require clients to
+parse the ServerHello in order to read the extension.
 If this extension is present, clients MUST ignore the
 ServerHello.legacy_version value and MUST use only the
 "supported_versions" extension to determine the selected version. If the
