@@ -1573,7 +1573,7 @@ equivalent to the decimal value 16909060.
 
 ##  Vectors
 
-A vector (single-dimensioned array, or list) is a stream of homogeneous data elements.
+A vector (single-dimensioned array) is a stream of homogeneous data elements.
 The size of the vector may be specified at documentation time or left
 unspecified until runtime. In either case, the length declares the number of
 bytes, not the number of elements, in the vector. The syntax for specifying a
@@ -1946,10 +1946,10 @@ legacy_session_id
   zero byte length field).
 
 cipher_suites
-: This is a vector of the symmetric cipher options supported by the
+: This is a list of the symmetric cipher options supported by the
   client, specifically the record protection algorithm (including
   secret key length) and a hash to be used with HKDF, in descending
-  order of client preference. If the vector contains cipher suites that
+  order of client preference. If the list contains cipher suites that
   the server does not recognize, support or wish to use, the server
   MUST ignore those cipher suites and process the remaining ones as
   usual. Values are defined in {{cipher-suites}}. If the client is
@@ -2056,8 +2056,8 @@ legacy_session_id_echo
   alert.
 
 cipher_suite
-: The single cipher suite selected by the server from the ClientHello.cipher_suites
-  vector. A client which receives a cipher suite
+: The single cipher suite selected by the server from the list in
+  ClientHello.cipher_suites. A client which receives a cipher suite
   that was not offered MUST abort the handshake with an "illegal_parameter"
   alert.
 
@@ -2065,7 +2065,7 @@ legacy_compression_method
 : A single byte which MUST have the value 0.
 
 extensions
-: A vector of extensions.  The ServerHello MUST only include extensions
+: A list of extensions.  The ServerHello MUST only include extensions
   which are required to establish the cryptographic context and negotiate
   the protocol version. All TLS 1.3 ServerHello messages MUST contain the
   "supported_versions" extension.  Current ServerHello messages additionally contain
@@ -2237,7 +2237,7 @@ Here:
 - "extension_data" contains information specific to the particular
   extension type.
 
-IANA maintains the extension type list as described in
+The list of extension types is maintained by IANA as described in
 {{iana-considerations}}.
 
 Extensions are generally structured in a request/response fashion, though
@@ -2339,7 +2339,7 @@ be taken into account when designing new extensions:
 
 The "supported_versions" extension is used by the client to indicate
 which versions of TLS it supports and by the server to indicate
-which version it is using. The extension contains a vector of
+which version it is using. The extension contains a list of
 supported versions in preference order, with the most preferred
 version first. Implementations of this specification MUST send this
 extension in the ClientHello containing all versions of TLS which they are
@@ -2364,7 +2364,7 @@ mechanism makes it possible to negotiate a version prior to TLS 1.2 if
 one side supports a sparse range. Implementations of TLS 1.3 which choose
 to support prior versions of TLS SHOULD support TLS 1.2.
 Servers MUST be prepared to receive ClientHellos that include this
-extension but do not include 0x0304 in the vector of versions.
+extension but do not include 0x0304 in the list of versions.
 
 A server which negotiates a version of TLS prior to TLS 1.3 MUST
 set ServerHello.version and MUST NOT send the "supported_versions"
@@ -2621,7 +2621,7 @@ CertificateAuthoritiesExtension structure.
        } CertificateAuthoritiesExtension;
 
 authorities
-: A vector of the distinguished names {{X501}} of acceptable
+: A list of the distinguished names {{X501}} of acceptable
   certificate authorities, represented in DER-encoded {{X690}} format.  These
   distinguished names specify a desired distinguished name for trust anchor
   or subordinate CA; thus, this message can be used to
@@ -2638,7 +2638,7 @@ offering prior versions of TLS).
 
 ### OID Filters
 
-The "oid_filters" extension allows servers to provide a list of OID/value
+The "oid_filters" extension allows servers to provide a set of OID/value
 pairs which it would like the client's certificate to match. This
 extension, if provided by the server, MUST only be sent in the CertificateRequest message.
 
@@ -2655,10 +2655,10 @@ extension, if provided by the server, MUST only be sent in the CertificateReques
 
 filters
 
-: A vector of certificate extension OIDs {{RFC5280}} with their allowed value(s) and
+: A list of certificate extension OIDs {{RFC5280}} with their allowed value(s) and
   represented in DER-encoded {{X690}} format. Some certificate extension OIDs
   allow multiple values (e.g., Extended Key Usage).  If the server has included
-  a non-empty filters vector, the client certificate included in
+  a non-empty filters list, the client certificate included in
   the response MUST contain all of the specified extension OIDs that the client
   recognizes. For each extension OID recognized by the client, all of the
   specified values MUST be present in the client certificate (but the
@@ -2668,7 +2668,7 @@ filters
   that does not satisfy the request, the server MAY at its discretion either
   continue the connection without client authentication, or abort the handshake
   with an "unsupported_certificate" alert. Any given OID MUST NOT appear
-  more than once in the filters vector.
+  more than once in the filters list.
 
 PKIX RFCs define a variety of certificate extension OIDs and their corresponding
 value types. Depending on the type, matching certificate extension values are
@@ -2757,7 +2757,7 @@ Finite Field Groups (DHE)
   Values 0x01FC through 0x01FF are reserved for private use.
 {:br }
 
-Items in "named_group_list" are ordered according to the client's
+Items in named_group_list are ordered according to the client's
 preferences (most preferred choice first).
 
 As of TLS 1.3, servers are permitted to send the "supported_groups"
@@ -2810,7 +2810,7 @@ contains a "KeyShareClientHello" value:
        } KeyShareClientHello;
 
 client_shares
-: A vector of offered KeyShareEntry values in descending order of client preference.
+: A list of offered KeyShareEntry values in descending order of client preference.
 {:br }
 
 This vector MAY be empty if the client is requesting a HelloRetryRequest.
@@ -2828,7 +2828,7 @@ client might offer shares for several elliptic curves or multiple
 FFDHE groups.  The key_exchange values for each KeyShareEntry MUST be
 generated independently.  Clients MUST NOT offer multiple
 KeyShareEntry values for the same group.  Clients MUST NOT offer any
-KeyShareEntry values for groups not in the client's
+KeyShareEntry values for groups not listed in the client's
 "supported_groups" extension.  Servers MAY check for violations of
 these rules and abort the handshake with an "illegal_parameter" alert
 if one is violated.
@@ -3152,7 +3152,7 @@ obfuscated_ticket_age
   SHOULD be used, and servers MUST ignore the value.
 
 identities
-: A vector of the identities that the client is willing
+: A list of the identities that the client is willing
   to negotiate with the server. If sent alongside the "early_data"
   extension (see {{early-data-indication}}), the first identity is the
   one used for 0-RTT data.
@@ -3164,7 +3164,7 @@ binders
 
 selected_identity
 : The server's chosen identity expressed as a (0-based) index into
-  the identities in the client's "OfferedPsks.identities" vector.
+  the identities in the client's list.
 {: br}
 
 Each PSK is associated with a single Hash algorithm. For PSKs established
@@ -3247,10 +3247,10 @@ age, even in milliseconds.
 The PSK binder value forms a binding between a PSK and the current
 handshake, as well as a binding between the handshake in which the PSK was
 generated (if via a NewSessionTicket message) and the current handshake.
-Each entry in the binders vector is computed as an HMAC
+Each entry in the binders list is computed as an HMAC
 over a transcript hash (see {{the-transcript-hash}}) containing a partial ClientHello
 up to and including the PreSharedKeyExtension.identities field. That
-is, it includes all of the ClientHello but not the binders vector
+is, it includes all of the ClientHello but not the binders list
 itself. The length fields for the message (including the overall
 length, the length of the extensions block, and the length of the
 "pre_shared_key" extension) are all set as if binders of the correct
@@ -3268,7 +3268,7 @@ binder will be computed over:
 
        Transcript-Hash(Truncate(ClientHello1))
 
-Where Truncate() removes the binders vector from the ClientHello.
+Where Truncate() removes the binders list from the ClientHello.
 
 If the server responds with HelloRetryRequest, and the client then sends
 ClientHello2, its binder will be computed over:
@@ -3323,7 +3323,7 @@ Structure of this message:
        } EncryptedExtensions;
 
 extensions
-: A vector of extensions. For more information, see the table in {{extensions}}.
+: A list of extensions. For more information, see the table in {{extensions}}.
 {:br }
 
 ###  Certificate Request
@@ -3356,7 +3356,7 @@ certificate_request_context
   pre-computing valid CertificateVerify messages.
 
 extensions
-: A vector of extensions describing the parameters of the
+: A set of extensions describing the parameters of the
   certificate being requested. The "signature_algorithms"
   extension MUST be specified, and other extensions may optionally be
   included if defined for this message.
@@ -3364,7 +3364,7 @@ extensions
 {:br}
 
 In prior versions of TLS, the CertificateRequest message
-carried a vector of signature algorithms and certificate authorities
+carried a list of signature algorithms and certificate authorities
 which the server would accept. In TLS 1.3 the former is expressed
 by sending the "signature_algorithms" and optionally "signature_algorithms_cert"
 extensions. The latter is
@@ -3515,11 +3515,11 @@ certificate_request_context
   (in the case of server authentication), this field SHALL be zero length.
 
 certificate_list
-: This is a vector (chain) of CertificateEntry structures, each
-  containing a single certificate and vector of extensions.
+: This is a sequence (chain) of CertificateEntry structures, each
+  containing a single certificate and set of extensions.
 
 extensions:
-: A vector of extension values for the CertificateEntry. The "Extension"
+: A set of extension values for the CertificateEntry. The "Extension"
   format is defined in {{extensions}}. Valid extensions for server certificates
   at present include OCSP Status extension ({{RFC6066}}) and
   SignedCertificateTimestamps ({{!RFC6962}}); future extensions may
@@ -3535,7 +3535,7 @@ If the corresponding certificate type extension
 ("server_certificate_type" or "client_certificate_type") was not negotiated
 in Encrypted Extensions, or the X.509 certificate type was negotiated, then each
 CertificateEntry contains a DER-encoded X.509 certificate. The sender's
-certificate MUST come in the first CertificateEntry in the vector.  Each
+certificate MUST come in the first CertificateEntry in the list.  Each
 following certificate SHOULD directly certify the one immediately preceding it.
 Because certificate validation requires that trust anchors be
 distributed independently, a certificate that specifies a trust anchor
@@ -3967,7 +3967,7 @@ ticket
   4 of {{RFC5077}} describes a recommended ticket construction mechanism.
 
 extensions
-: A vector of extension values for the ticket. The "Extension"
+: A set of extension values for the ticket. The "Extension"
   format is defined in {{extensions}}. Clients MUST ignore
   unrecognized extensions.
 {:br }
