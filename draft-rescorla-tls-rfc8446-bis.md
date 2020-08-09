@@ -1912,7 +1912,7 @@ ECDSA algorithms:
 : Indicates a signature algorithm using ECDSA {{ECDSA}}, the corresponding
   curve as defined in ANSI X9.62 {{ECDSA}} and FIPS 186-4 {{?DSS=DOI.10.6028/NIST.FIPS.186-4}}, and the
   corresponding hash algorithm as defined in {{!SHS}}. The signature is
-  represented as a DER-encoded {{X690}} ECDSA-Sig-Value structure.
+  represented as a DER-encoded {{X690}} ECDSA-Sig-Value structure as defined in {{RFC4492}}.
 
 RSASSA-PSS RSAE algorithms:
 : Indicates a signature algorithm using RSASSA-PSS {{RFC8017}} with mask
