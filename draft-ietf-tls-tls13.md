@@ -657,7 +657,7 @@ draft-27
 - SHOULD->MUST for being able to process "supported_versions" without
   0x0304.
 
-- Much editorial cleanup.
+- Much editorial cleanup. 
 
 draft-26
 
@@ -3068,7 +3068,10 @@ PSK:
 - The selected ALPN {{RFC7301}} protocol, if any
 
 These requirements are a superset of those needed to perform a 1-RTT
-handshake using the PSK in question.
+handshake using the PSK in question.  For externally established PSKs, the
+associated values are those provisioned along with the key.  For PSKs
+established via a NewSessionTicket message, the associated values are those
+negotiated in the connection during which the ticket was established.
 
 Future extensions MUST define their interaction with 0-RTT.
 
