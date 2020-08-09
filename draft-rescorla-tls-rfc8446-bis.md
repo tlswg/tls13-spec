@@ -4971,7 +4971,7 @@ currently deployed and properly configured TLS implementations.
 
 ## Cipher Suites
 
-A symmetric cipher suite defines the pair of the AEAD algorithm and hash
+A cipher suite defines the pair of the AEAD algorithm and hash
 algorithm to be used with HKDF.
 Cipher suite names follow the naming convention:
 
