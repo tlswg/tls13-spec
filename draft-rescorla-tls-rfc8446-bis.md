@@ -2440,11 +2440,10 @@ MUST behave in one of three ways:
   Even though the server sends a message accepting early data, the actual early
   data itself may already be in flight by the time the server generates this message.
 
-In order to accept early data, the server MUST have accepted a
-PSK cipher suite and selected the first key offered in the
-client's "pre_shared_key" extension. In addition, it MUST verify that
-the following values are the same as those associated with the selected
-PSK:
+In order to accept early data, the server MUST have selected the first
+key offered in the client's "pre_shared_key" extension. In addition,
+it MUST verify that the following values are the same as those
+associated with the selected PSK:
 
 - The TLS version number
 - The selected cipher suite
