@@ -4176,10 +4176,9 @@ In this diagram, the following formatting conventions apply:
   generating the client_early_traffic_secret.
 - "0" indicates a string of Hash.length bytes set to zero.
 
-Note: the key derivation labels use the string "master" even
-though the values are referred to as the "main secret"
-or "resumption main secret". This mismatch is a result of
-renaming the values while retaining compatibility.
+Note: the key derivation labels use the string "master" even though
+the values are referred to as the "main secret".  This mismatch is a
+result of renaming the values while retaining compatibility.
 
 [[OPEN ISSUE: Replace the strings with hex value]]
 ~~~~
