@@ -2371,7 +2371,7 @@ in the ServerHello.
 ### Early Data Indication
 
 When a PSK is used and early data is allowed for that PSK
-(see for instance {{ticket-establishment), the client can send Application Data
+(see for instance {{ticket-establishment}}), the client can send Application Data
 in its first flight of messages. If the client opts to do so, it MUST
 supply both the "pre_shared_key" and "early_data" extensions.
 
