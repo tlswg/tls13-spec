@@ -3323,8 +3323,8 @@ ticket_lifetime:
   network byte order from the time of ticket issuance.
   Servers MUST NOT use any value greater than 604800 seconds (7 days).
   The value of zero indicates that the ticket should be discarded
-  immediately. Clients MUST NOT cache tickets for longer than
-  7 days, regardless of the ticket_lifetime, and MAY delete tickets
+  immediately. Clients MUST NOT use tickets for longer than
+  7 days after issuance, regardless of the ticket_lifetime, and MAY delete tickets
   earlier based on local policy. A server MAY treat a ticket as valid
   for a shorter period of time than what is stated in the
   ticket_lifetime.
