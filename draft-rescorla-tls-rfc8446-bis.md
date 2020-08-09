@@ -2446,7 +2446,7 @@ key offered in the client's "pre_shared_key" extension. In addition,
 it MUST verify that the following values are the same as those
 associated with the selected PSK:
 
-- The TLS version number
+- The selected TLS version number
 - The selected cipher suite
 - The selected ALPN {{!RFC7301}} protocol, if any
 
