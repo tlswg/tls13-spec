@@ -2451,10 +2451,7 @@ associated with the selected PSK:
 - The selected ALPN {{!RFC7301}} protocol, if any
 
 These requirements are a superset of those needed to perform a 1-RTT
-handshake using the PSK in question.  For externally established PSKs, the
-associated values are those provisioned along with the key.  For PSKs
-established via a NewSessionTicket message, the associated values are those
-negotiated in the connection during which the ticket was established.
+handshake using the PSK in question.
 
 Future extensions MUST define their interaction with 0-RTT.
 
