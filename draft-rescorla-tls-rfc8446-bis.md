@@ -903,7 +903,7 @@ provided via the server's Random value, but 0-RTT data does not depend
 on the ServerHello and therefore has weaker guarantees.  This is especially
 relevant if the data is authenticated either with TLS client
 authentication or inside the application protocol. The same warnings
-apply to any use of the early_exporter_master_secret.
+apply to any use of the early_exporter_main_secret.
 
 0-RTT data cannot be duplicated within a connection (i.e., the server will
 not process the same data twice for the same connection), and an
@@ -3265,7 +3265,7 @@ appropriate application traffic key.
 At any time after the server has received the client Finished message,
 it MAY send a NewSessionTicket message. This message creates a unique
 association between the ticket value and a secret PSK
-derived from the resumption master secret (see {{cryptographic-computations}}).
+derived from the resumption main secret (see {{cryptographic-computations}}).
 
 The client MAY use this PSK for future handshakes by including the
 ticket value in the "pre_shared_key" extension in its ClientHello
@@ -3300,7 +3300,7 @@ than the value sent in the previous session. Note that if a server
 implementation declines all PSK identities with different SNI values, these two
 values are always the same.
 
-Note: Although the resumption master secret depends on the client's second
+Note: Although the resumption main secret depends on the client's second
 flight, a servers which does not request client authentication MAY compute
 the remainder of the transcript independently and then send a
 NewSessionTicket immediately upon sending its Finished rather than
@@ -3370,7 +3370,7 @@ max_early_data_size:
 The PSK associated with the ticket is computed as:
 
 ~~~~
-    HKDF-Expand-Label(resumption_master_secret,
+    HKDF-Expand-Label(resumption_main_secret,
                      "resumption", ticket_nonce, Hash.length)
 ~~~~
 
@@ -4161,7 +4161,7 @@ secret to be added. In this version of TLS 1.3, the two
 input secrets are:
 
 - PSK (a pre-shared key established externally or derived from
-  the resumption_master_secret value from a previous connection)
+  the resumption_main_secret value from a previous connection)
 - (EC)DHE shared secret ({{ecdhe-shared-secret-calculation}})
 
 This produces a full key derivation schedule shown in the diagram below.
@@ -4176,6 +4176,12 @@ In this diagram, the following formatting conventions apply:
   generating the client_early_traffic_secret.
 - "0" indicates a string of Hash.length bytes set to zero.
 
+Note: the key derivation labels use the string "master" even
+though the values are referred to as the "main secret"
+or "resumption main secret". This mismatch is a result of
+renaming the values while retaining compatibility.
+
+[[OPEN ISSUE: Replace the strings with hex value]]
 ~~~~
                  0
                  |
@@ -4194,7 +4200,7 @@ In this diagram, the following formatting conventions apply:
                  |
                  +-----> Derive-Secret(., "e exp master",
                  |                     ClientHello)
-                 |                     = early_exporter_master_secret
+                 |                     = early_exporter_main_secret
                  v
            Derive-Secret(., "derived", "")
                  |
@@ -4212,7 +4218,7 @@ In this diagram, the following formatting conventions apply:
            Derive-Secret(., "derived", "")
                  |
                  v
-      0 -> HKDF-Extract = Master Secret
+      0 -> HKDF-Extract = Main Secret
                  |
                  +-----> Derive-Secret(., "c ap traffic",
                  |                     ClientHello...server Finished)
@@ -4224,11 +4230,11 @@ In this diagram, the following formatting conventions apply:
                  |
                  +-----> Derive-Secret(., "exp master",
                  |                     ClientHello...server Finished)
-                 |                     = exporter_master_secret
+                 |                     = exporter_main_secret
                  |
                  +-----> Derive-Secret(., "res master",
                                        ClientHello...client Finished)
-                                       = resumption_master_secret
+                                       = resumption_main_secret
 ~~~~
 
 The general pattern here is that the secrets shown down the left side
@@ -4247,7 +4253,7 @@ rounds, so if PSK is not in use, Early Secret will still be
 HKDF-Extract(0, 0). For the computation of the binder_key, the label is
 "ext binder" for external PSKs (those provisioned outside of TLS)
 and "res binder" for resumption PSKs (those provisioned as the resumption
-master secret of a previous handshake). The different labels prevent
+main secret of a previous handshake). The different labels prevent
 the substitution of one type of PSK for the other.
 
 There are multiple potential Early Secret values, depending on
@@ -4373,9 +4379,9 @@ The exporter value is computed as:
         HKDF-Expand-Label(Derive-Secret(Secret, label, ""),
                           "exporter", Hash(context_value), key_length)
 
-Where Secret is either the early_exporter_master_secret or the
-exporter_master_secret.  Implementations MUST use the exporter_master_secret unless
-explicitly specified by the application. The early_exporter_master_secret is
+Where Secret is either the early_exporter_main_secret or the
+exporter_main_secret.  Implementations MUST use the exporter_main_secret unless
+explicitly specified by the application. The early_exporter_main_secret is
 defined for use in settings where an exporter is needed for 0-RTT data.
 A separate interface for the early exporter is RECOMMENDED; this avoids
 the exporter user accidentally using an early exporter when a regular
@@ -5194,10 +5200,10 @@ based on the expectations in this document, even when handling prior TLS version
 handshakes (see {{server-certificate-selection}}).
 
 TLS 1.2 and prior supported an "Extended Master Secret" {{RFC7627}} extension
-which digested large parts of the handshake transcript into the master secret.
-Because TLS 1.3 always hashes in the transcript up to the server Finished,
+which digested large parts of the handshake transcript into the secret and
+hence keys. Because TLS 1.3 always hashes in the transcript up to the server Finished,
 implementations which support both TLS 1.3 and earlier versions SHOULD
-indicate the use of the Extended Master Secret extension in their APIs
+indicate the use of the Extended Main Secret extension in their APIs
 whenever TLS 1.3 is used.
 
 
@@ -5354,7 +5360,7 @@ is intended to provide both one-way authenticated (server-only) and
 mutually authenticated (client and server) functionality. At the completion
 of the handshake, each side outputs its view of the following values:
 
-- A set of "session keys" (the various secrets derived from the master secret)
+- A set of "session keys" (the various secrets derived from the main secret)
   from which can be derived a set of working keys.
 - A set of cryptographic parameters (algorithms, etc.).
 - The identities of the communicating parties.
@@ -5428,7 +5434,7 @@ secret into a unique per-connection set of short-term session keys. This
 secret may have been established in a previous handshake. If
 PSK with (EC)DHE key establishment is used, these session keys will also be forward
 secret. The resumption PSK has been designed so that the
-resumption master secret computed by connection N and needed to form
+resumption main secret computed by connection N and needed to form
 connection N+1 is separate from the traffic keys used by connection N,
 thus providing forward secrecy between the connections.
 In addition, if multiple tickets are established on the same
@@ -5443,8 +5449,8 @@ and the current handshake, as well as between the session where the
 PSK was established and the current session. This binding
 transitively includes the original handshake transcript, because that
 transcript is digested into the values which produce the resumption
-master secret. This requires that both the KDF used to produce the
-resumption master secret and the MAC used to compute the binder be collision
+main secret. This requires that both the KDF used to produce the
+resumption main secret and the MAC used to compute the binder be collision
 resistant. See {{key-derivation-and-hkdf}} for more on this.
 Note: The binder does not cover the binder values from other
 PSKs, though they are included in the Finished MAC.
@@ -5515,7 +5521,7 @@ long as these are differentiated via the key and/or the labels.
 
 Note that HKDF-Expand implements a pseudorandom function (PRF) with both inputs and
 outputs of variable length. In some of the uses of HKDF in this document
-(e.g., for generating exporters and the resumption_master_secret), it is necessary
+(e.g., for generating exporters and the resumption_main_secret), it is necessary
 that the application of HKDF-Expand be collision resistant, namely, it should
 be infeasible to find two different inputs to HKDF-Expand that output the same
 value. This requires the underlying hash function to be collision resistant
@@ -5549,7 +5555,7 @@ the exposure to replay.
 
 ### Exporter Independence
 
-The exporter_master_secret and early_exporter_master_secret are
+The exporter_main_secret and early_exporter_main_secret are
 derived to be independent of the traffic keys and therefore do
 not represent a threat to the security of traffic encrypted with
 those keys. However, because these secrets can be used to
@@ -5557,7 +5563,7 @@ compute any exporter value, they SHOULD be erased as soon as
 possible. If the total set of exporter labels is known, then
 implementations SHOULD pre-compute the inner Derive-Secret
 stage of the exporter computation for all those labels,
-then erase the \[early_]exporter_master_secret, followed by
+then erase the \[early_]exporter_main_secret, followed by
 each inner values as soon as it is known that it will not be
 needed again.
 
