@@ -2557,7 +2557,7 @@ PSK is established or default to SHA-256 if no such algorithm
 is defined. The server MUST ensure that it selects a compatible
 PSK (if any) and cipher suite.
 
-In TLS versions prior to TLS 1.3, the Server Name Identification (SNI) value was
+In TLS versions prior to TLS 1.3, the Server Name Indication (SNI) value was
 intended to be associated with the session (Section 3 of {{RFC6066}}), with the
 server being required to enforce that the SNI value associated with the session
 matches the one specified in the resumption handshake.  However, in reality the
