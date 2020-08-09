@@ -4180,7 +4180,7 @@ Note: the key derivation labels use the string "master" even though
 the values are referred to as the "main secret".  This mismatch is a
 result of renaming the values while retaining compatibility.
 
-[[OPEN ISSUE: Replace the strings with hex value]]
+[[OPEN ISSUE: Replace the strings with hex value?]]
 ~~~~
                  0
                  |
