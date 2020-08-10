@@ -640,8 +640,8 @@ in the diagram above):
 In the Key Exchange phase, the client sends the ClientHello
 ({{client-hello}}) message, which contains a random nonce
 (ClientHello.random); its offered protocol versions; a list of
-symmetric cipher/HKDF hash pairs; either a set of Diffie-Hellman key shares (in the
-"key_share" ({{key-share}}) extension), a set of pre-shared key labels (in the
+symmetric cipher/HKDF hash pairs; either a list of Diffie-Hellman key shares (in the
+"key_share" ({{key-share}}) extension), a list of pre-shared key labels (in the
 "pre_shared_key" ({{pre-shared-key-extension}}) extension), or both; and
 potentially additional extensions.  Additional fields and/or messages
 may also be present for middlebox compatibility.
@@ -972,6 +972,7 @@ equivalent to the decimal value 16909060.
 ##  Vectors
 
 A vector (single-dimensioned array) is a stream of homogeneous data elements.
+For presentation purposes, this specification refers to vectors as lists.
 The size of the vector may be specified at documentation time or left
 unspecified until runtime. In either case, the length declares the number of
 bytes, not the number of elements, in the vector. The syntax for specifying a
@@ -1070,7 +1071,7 @@ like that of C.
            Tn fn;
        } T;
 
-Fixed- and variable-length vector fields are allowed using the standard vector
+Fixed- and variable-length list (vector) fields are allowed using the standard list
 syntax. Structures V1 and V2 in the variants example ({{variants}}) demonstrate this.
 
 The fields within a structure may be qualified using the type's name, with a
@@ -1226,7 +1227,7 @@ and the groups supported by the server, then the server MUST abort the
 handshake with a "handshake_failure" or an "insufficient_security" alert.
 
 If the server selects a PSK, then it MUST also select a key
-establishment mode from the set indicated by the client's
+establishment mode from the list indicated by the client's
 "psk_key_exchange_modes" extension (at present, PSK alone or with (EC)DHE). Note
 that if the PSK can be used without (EC)DHE, then non-overlap in the
 "supported_groups" parameters need not be fatal, as it is in the
@@ -1347,7 +1348,7 @@ legacy_session_id:
   new 32-byte value. This value need not be random but SHOULD be
   unpredictable to avoid implementations fixating on a specific value
   (also known as ossification).
-  Otherwise, it MUST be set as a zero-length vector (i.e., a
+  Otherwise, it MUST be set as a zero-length list (i.e., a
   zero-valued single byte length field).
 
 cipher_suites:
@@ -1365,7 +1366,7 @@ cipher_suites:
 legacy_compression_methods:
 : Versions of TLS before 1.3 supported compression with the list of
   supported compression methods being sent in this field. For every TLS 1.3
-  ClientHello, this vector MUST contain exactly one byte, set to
+  ClientHello, this list MUST contain exactly one byte, set to
   zero, which corresponds to the "null" compression method in
   prior versions of TLS. If a TLS 1.3 ClientHello is
   received with any other value in this field, the server MUST
@@ -1460,8 +1461,8 @@ legacy_session_id_echo:
   alert.
 
 cipher_suite:
-: The single cipher suite selected by the server from the list in
-  ClientHello.cipher_suites. A client which receives a cipher suite
+: The single cipher suite selected by the server from the ClientHello.cipher_suites
+  list. A client which receives a cipher suite
   that was not offered MUST abort the handshake with an "illegal_parameter"
   alert.
 
@@ -1634,7 +1635,7 @@ Here:
 - "extension_data" contains information specific to the particular
   extension type.
 
-The list of extension types is maintained by IANA as described in
+IANA maintains the extension type list as described in
 {{iana-considerations}}.
 
 Extensions are generally structured in a request/response fashion, though
@@ -2026,7 +2027,7 @@ offering prior versions of TLS).
 
 ### OID Filters
 
-The "oid_filters" extension allows servers to provide a set of OID/value
+The "oid_filters" extension allows servers to provide a list of OID/value
 pairs which it would like the client's certificate to match. This
 extension, if provided by the server, MUST only be sent in the CertificateRequest message.
 
@@ -2144,7 +2145,7 @@ Finite Field Groups (DHE):
   Values 0x01FC through 0x01FF are reserved for Private Use.
 {:br }
 
-Items in named_group_list are ordered according to the sender's
+Items in "named_group_list" are ordered according to the sender's
 preferences (most preferred choice first).
 
 As of TLS 1.3, servers are permitted to send the "supported_groups"
@@ -2164,7 +2165,7 @@ supported by the client.
 
 The "key_share" extension contains the endpoint's cryptographic parameters.
 
-Clients MAY send an empty client_shares vector in order to request
+Clients MAY send an empty client_shares list in order to request
 group selection from the server, at the cost of an additional round trip
 (see {{hello-retry-request}}).
 
@@ -2200,7 +2201,7 @@ c:lient_shares:
 : A list of offered KeyShareEntry values in descending order of client preference.
 {:br }
 
-This vector MAY be empty if the client is requesting a HelloRetryRequest.
+This list MAY be empty if the client is requesting a HelloRetryRequest.
 Each KeyShareEntry value MUST correspond to a group offered in the
 "supported_groups" extension and MUST appear in the same order.  However, the
 values MAY be a non-contiguous subset of the "supported_groups" extension and
@@ -2547,7 +2548,7 @@ binders:
 
 selected_identity:
 : The server's chosen identity expressed as a (0-based) index into
-  the identities in the client's list.
+  the identities in the client's "OfferedPsks.identities" list.
 {: br}
 
 Each PSK is associated with a single Hash algorithm. For PSKs established
@@ -2739,7 +2740,7 @@ certificate_request_context:
   pre-computing valid CertificateVerify messages.
 
 extensions:
-: A set of extensions describing the parameters of the
+: A list of extensions describing the parameters of the
   certificate being requested. The "signature_algorithms"
   extension MUST be specified, and other extensions may optionally be
   included if defined for this message.
@@ -2783,7 +2784,7 @@ The computations for the Authentication messages all uniformly
 take the following inputs:
 
 - The certificate and signing key to be used.
-- A Handshake Context consisting of the set of messages to be
+- A Handshake Context consisting of the list of messages to be
   included in the transcript hash.
 - A Base Key to be used to compute a MAC key.
 
@@ -2902,11 +2903,11 @@ certificate_request_context:
   (in the case of server authentication), this field SHALL be zero length.
 
 certificate_list:
-: A sequence (chain) of CertificateEntry structures, each
-  containing a single certificate and set of extensions.
+: A list (chain) of CertificateEntry structures, each
+  containing a single certificate and list of extensions.
 
 extensions:
-: A set of extension values for the CertificateEntry. The "Extension"
+: A list of extension values for the CertificateEntry. The "Extension"
   format is defined in {{extensions}}. Valid extensions for server certificates
   at present include the OCSP Status extension {{RFC6066}} and the
   SignedCertificateTimestamp extension {{!RFC6962}}; future extensions may
@@ -3347,7 +3348,7 @@ ticket:
   lookup key or a self-encrypted and self-authenticated value.
 
 extensions:
-: A set of extension values for the ticket. The "Extension"
+: A list of extension values for the ticket. The "Extension"
   format is defined in {{extensions}}. Clients MUST ignore
   unrecognized extensions.
 {:br }
@@ -4661,7 +4662,7 @@ Such a ClientHello message MUST meet the following requirements:
    a "signature_algorithms" extension and a "supported_groups" extension.
  - If containing a "supported_groups" extension, it MUST also contain a
    "key_share" extension, and vice versa. An empty KeyShare.client_shares
-   vector is permitted.
+   list is permitted.
 
 Servers receiving a ClientHello which does not conform to these
 requirements MUST abort the handshake with a "missing_extension"
