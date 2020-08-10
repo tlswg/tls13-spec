@@ -4,7 +4,7 @@ abbrev: TLS
 docname: draft-ietf-tls-tls13-latest
 category: std
 updates: 4492, 5705, 6066
-obsoletes: 5077, 5246, 6961
+obsoletes: 5077, 5246, 6961, 8446
 
 ipr: pre5378Trust200902
 area: General
@@ -383,7 +383,7 @@ This document specifies version 1.3 of the Transport Layer Security
 over the Internet in a way that is designed to prevent eavesdropping,
 tampering, and message forgery.
 
-This document updates RFCs 5705, and 6066 and obsoletes
+This document updates RFCs 5705 and 6066 and obsoletes
 RFCs 5077, 5246, and 6961. This document also specifies new
 requirements for TLS 1.2 implementations.
 --- middle
@@ -2205,7 +2205,7 @@ contains a "KeyShareClientHello" value:
            KeyShareEntry client_shares<0..2^16-1>;
        } KeyShareClientHello;
 
-c:lient_shares:
+client_shares:
 : A list of offered KeyShareEntry values in descending order of client preference.
 {:br }
 
@@ -4190,6 +4190,7 @@ the values are referred to as "main" secrets.  This mismatch is a
 result of renaming the values while retaining compatibility.
 
 [[OPEN ISSUE: Replace the strings with hex value?]]
+
 ~~~~
                  0
                  |
@@ -4747,6 +4748,10 @@ Security issues are discussed throughout this memo, especially in
 
 #  IANA Considerations
 
+[[OPEN ISSUE: Should we remove this? I am reluctant to create a situation
+where one needs to read 8446 to process this document.]]
+
+
 This document uses several registries that were originally created in
 {{RFC4346}} and updated in {{?RFC8447}}. IANA has updated these to reference this document.
 The registries and their allocation policies are below:
@@ -4955,7 +4960,7 @@ here                  +--------+--------+
 
 This appendix provides the normative protocol types and the definitions
 for constants.  Values listed as
-_RESERVED were used in previous versions of TLS and are listed here
+"_RESERVED" were used in previous versions of TLS and are listed here
 for completeness. TLS 1.3 implementations MUST NOT send them but
 might receive them from older TLS implementations.
 
