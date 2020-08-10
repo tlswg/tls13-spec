@@ -5202,7 +5202,7 @@ TLS 1.2 and prior supported an "Extended Master Secret" {{RFC7627}} extension
 which digested large parts of the handshake transcript into the secret and
 derived keys. Because TLS 1.3 always hashes in the transcript up to the server Finished,
 implementations which support both TLS 1.3 and earlier versions SHOULD
-indicate the use of the Extended Main Secret extension in their APIs
+indicate the use of the Extended Master Secret extension in their APIs
 whenever TLS 1.3 is used.
 
 
