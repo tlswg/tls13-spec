@@ -4177,7 +4177,7 @@ In this diagram, the following formatting conventions apply:
 - "0" indicates a string of Hash.length bytes set to zero.
 
 Note: the key derivation labels use the string "master" even though
-the values are referred to as the "main secret".  This mismatch is a
+the values are referred to as "main" secrets.  This mismatch is a
 result of renaming the values while retaining compatibility.
 
 [[OPEN ISSUE: Replace the strings with hex value?]]
