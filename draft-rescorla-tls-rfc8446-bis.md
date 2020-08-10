@@ -1635,7 +1635,7 @@ Here:
 - "extension_data" contains information specific to the particular
   extension type.
 
-IANA maintains the extension type list as described in
+The list of extension types is maintained by IANA as described in
 {{iana-considerations}}.
 
 Extensions are generally structured in a request/response fashion, though
