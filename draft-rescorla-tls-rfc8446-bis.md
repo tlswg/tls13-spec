@@ -2721,7 +2721,7 @@ Structure of this message:
 
        struct {
            opaque certificate_request_context<0..2^8-1>;
-           Extension extensions<2..2^16-1>;
+           Extension extensions<0..2^16-1>;
        } CertificateRequest;
 
 certificate_request_context:
