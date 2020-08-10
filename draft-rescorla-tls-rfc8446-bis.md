@@ -4791,7 +4791,8 @@ This document updates an entry in the TLS Certificate Types registry
 originally created in {{RFC6091}} and updated in {{RFC8447}}.  IANA has
 updated the entry for value 1 to have the name "OpenPGP_RESERVED",
 "Recommended" value "N", and comment "Used in TLS versions prior
-to 1.3."
+to 1.3."  IANA has updated the entry for value 0 to have the name
+"X509", "Recommended" value "Y", and comment "Was X.509 before TLS 1.3".
 
 This document updates an entry in the TLS Certificate Status Types
 registry originally created in {{RFC6961}}.  IANA has updated the entry
