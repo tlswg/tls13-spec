@@ -394,9 +394,8 @@ requirements for TLS 1.2 implementations.
 RFC EDITOR: PLEASE REMOVE THE FOLLOWING PARAGRAPH
 The source for this draft is maintained in GitHub. Suggested changes
 should be submitted as pull requests at
-https://github.com/tlswg/tls13-spec. Instructions are on that page as
-well. Editorial changes can be managed in GitHub, but any substantive
-change should be discussed on the TLS mailing list.
+https://github.com/ekr/tls13-spec. Instructions are on that page as
+well.
 
 The primary goal of TLS is to provide a secure channel between two
 communicating peers; the only requirement from the underlying
@@ -486,6 +485,15 @@ sender:  An endpoint that is transmitting records.
 
 server:  The endpoint that did not initiate the TLS connection.
 
+
+##  Relationship to RFC 8446
+
+TLS 1.3 was originally specified in {{?RFC8446}}. This document is
+solely an editorial update. It contains updated text in areas which
+were found to be unclear as well as other editorial improvements.
+In addition, it removes the use of the term "master" as applied
+to secrets in favor of the term "main".
+     
 
 ##  Major Differences from TLS 1.2
 
@@ -1635,7 +1643,7 @@ Here:
 - "extension_data" contains information specific to the particular
   extension type.
 
-IANA maintains the extension type list as described in
+The list of extension types is maintained by IANA as described in
 {{iana-considerations}}.
 
 Extensions are generally structured in a request/response fashion, though
