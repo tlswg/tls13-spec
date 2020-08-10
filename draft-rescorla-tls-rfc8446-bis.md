@@ -569,8 +569,8 @@ The cryptographic parameters used by the secure channel are produced by the
 TLS handshake protocol. This sub-protocol of TLS is used by the client
 and server when first communicating with each other.
 The handshake protocol allows peers to negotiate a protocol version,
-select cryptographic algorithms, optionally authenticate each other,
-and establish shared secret keying material.
+select cryptographic algorithms, authenticate each other (with
+client authentication being optional), and establish shared secret keying material.
 Once the handshake is complete, the peers use the established keys
 to protect the application-layer traffic.
 
