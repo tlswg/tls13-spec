@@ -1166,10 +1166,10 @@ processed and transmitted as specified by the current active connection state.
            server_hello_done_RESERVED(14),
            certificate_verify(15),
            client_key_exchange_RESERVED(16), 
+           finished(20),
            certificate_url_RESERVED(21),	
 		   certificate_status_RESERVED(22),	
 		   supplemental_data_RESERVED(23),          
-           finished(20),
            key_update(24),
            message_hash(254),
            (255)
@@ -1339,7 +1339,7 @@ legacy_version:
   a legacy_version of 0x0303 and a supported_versions extension
   present with 0x0304 as the highest version indicated therein.
   (See {{backward-compatibility}} for details about backward compatibility.)
-  A client which receives a legacy_version value not equal to 0x0303 MUST abort
+  A server which receives a legacy_version value not equal to 0x0303 MUST abort
   the handshake with an "illegal_parameter" alert.
 
 random:
@@ -1694,6 +1694,7 @@ appears, it MUST abort the handshake with an "illegal_parameter" alert.
 | oid_filters (RFC 8446)          |          CR |
 | post_handshake_auth (RFC 8446)  |          CH |
 | signature_algorithms_cert (RFC 8446)|      CH, CR |
+{: #extensions-list title="TLS Extensions"}
 
 When multiple extensions of different types are present, the
 extensions MAY appear in any order, with the exception of
@@ -2020,7 +2021,7 @@ CertificateAuthoritiesExtension structure.
 authorities:
 : A list of the distinguished names {{X501}} of acceptable
   certificate authorities, represented in DER-encoded {{X690}} format.  These
-  distinguished names specify a desired distinguished name for trust anchor
+  distinguished names specify a desired distinguished name for a trust anchor
   or subordinate CA; thus, this message can be used to
   describe known trust anchors as well as a desired authorization space.
 {:br}
@@ -2798,7 +2799,7 @@ take the following inputs:
 
 Based on these inputs, the messages then contain:
 
-CertificateL
+Certificate
 : The certificate to be used for authentication, and any
   supporting certificates in the chain. Note that certificate-based
   client authentication is not available in PSK handshake flows
@@ -2821,6 +2822,7 @@ for each scenario:
 | Server | ClientHello ... later of EncryptedExtensions/CertificateRequest | server_handshake_traffic_secret |
 | Client | ClientHello ... later of server Finished/EndOfEarlyData | client_handshake_traffic_secret |
 | Post-Handshake | ClientHello ... client Finished + CertificateRequest | client_application_traffic_secret_N |
+{: #hs-ctx-and-keys title="Authentication Inputs"}
 
 ### The Transcript Hash
 
@@ -3310,7 +3312,7 @@ implementation declines all PSK identities with different SNI values, these two
 values are always the same.
 
 Note: Although the resumption main secret depends on the client's second
-flight, a servers which does not request client authentication MAY compute
+flight, a server which does not request client authentication MAY compute
 the remainder of the transcript independently and then send a
 NewSessionTicket immediately upon sending its Finished rather than
 waiting for the client Finished.  This might be appropriate in cases
@@ -4320,6 +4322,7 @@ is shown in the table below.
 | 0-RTT Application | client_early_traffic_secret |
 | Handshake         | \[sender]_handshake_traffic_secret |
 | Application Data  | \[sender]_application_traffic_secret_N |
+{: #traffic-key-table title="Secrets for Traffic Keys"}
 
 All the traffic keying material is recomputed whenever the
 underlying Secret changes (e.g., when changing from the handshake to
@@ -5007,6 +5010,7 @@ Cipher suite names follow the naming convention:
 | AEAD      | The AEAD algorithm used for record protection |
 | HASH      | The hash algorithm used with HKDF |
 | VALUE     | The two byte ID assigned for this cipher suite |
+{: #cs-components title="Cipher Suite Name Structure"}
 
 This specification defines the following cipher suites for use with TLS 1.3.
 
@@ -5017,6 +5021,7 @@ This specification defines the following cipher suites for use with TLS 1.3.
 | TLS_CHACHA20_POLY1305_SHA256    | {0x13,0x03} |
 | TLS_AES_128_CCM_SHA256          | {0x13,0x04} |
 | TLS_AES_128_CCM_8_SHA256        | {0x13,0x05} |
+{: #cs-list title="Cipher Suite List"}
 
 The corresponding AEAD algorithms AEAD_AES_128_GCM, AEAD_AES_256_GCM, and
 AEAD_AES_128_CCM are defined in {{RFC5116}}. AEAD_CHACHA20_POLY1305 is defined
@@ -5407,7 +5412,7 @@ Uniqueness of the session keys:
   keys. Individual session keys produced by a handshake should also be distinct
   and independent.
 
-Downgrade protection.
+Downgrade Protection:
 : The cryptographic parameters should be the same on both sides and
   should be the same as if the peers had been communicating in the
   absence of an attack (see {{?BBFGKZ16=DOI.10.1109/SP.2016.37}}; Definitions 8 and 9).
@@ -5502,7 +5507,7 @@ to define a new exporter that includes the full handshake
 transcript.
 
 For all handshake modes, the Finished MAC (and, where present, the
-signature), prevents downgrade attacks. In addition, the use of
+signature) prevents downgrade attacks. In addition, the use of
 certain bytes in the random nonces as described in {{server-hello}}
 allows the detection of downgrade to previous TLS versions.
 See {{BBFGKZ16}} for more details on TLS 1.3 and downgrade.
@@ -5536,7 +5541,7 @@ long as these are differentiated via the key and/or the labels.
 Note that HKDF-Expand implements a pseudorandom function (PRF) with both inputs and
 outputs of variable length. In some of the uses of HKDF in this document
 (e.g., for generating exporters and the resumption_main_secret), it is necessary
-that the application of HKDF-Expand be collision resistant, namely, it should
+that the application of HKDF-Expand be collision resistant; namely, it should
 be infeasible to find two different inputs to HKDF-Expand that output the same
 value. This requires the underlying hash function to be collision resistant
 and the output length from HKDF-Expand to be of size at least 256 bits (or as
@@ -5560,7 +5565,7 @@ that the traffic key has not been compromised).
 ### 0-RTT
 
 The 0-RTT mode of operation generally provides security
-properties similar to those as 1-RTT data, with the two exceptions that the 0-RTT
+properties similar to those of 1-RTT data, with the two exceptions that the 0-RTT
 encryption keys do not provide full forward secrecy and that the
 server is not able to guarantee uniqueness of the handshake
 (non-replayability) without keeping potentially undue amounts of
@@ -5865,7 +5870,7 @@ and many clients do not enforce this restriction.
 
 
 # Contributors
-
+{:numbered="false"}
 ~~~~
       Martin Abadi
       University of California, Santa Cruz
