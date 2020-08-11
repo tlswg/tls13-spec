@@ -1168,8 +1168,8 @@ processed and transmitted as specified by the current active connection state.
            client_key_exchange_RESERVED(16), 
            finished(20),
            certificate_url_RESERVED(21),	
-		   certificate_status_RESERVED(22),	
-		   supplemental_data_RESERVED(23),          
+           certificate_status_RESERVED(22),
+           supplemental_data_RESERVED(23),
            key_update(24),
            message_hash(254),
            (255)
