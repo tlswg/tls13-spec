@@ -1,6 +1,7 @@
 name: 'Internet-Draft CI'
 description: 'Tool for building Internet-Drafts as GitHub Actions'
 author: 'Martin Thomson <mt@lowentropy.net>'
+on: [push]
 
 inputs:
   make:
