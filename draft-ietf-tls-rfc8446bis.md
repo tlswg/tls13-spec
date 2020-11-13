@@ -492,7 +492,8 @@ TLS 1.3 was originally specified in {{?RFC8446}}. This document is
 solely an editorial update. It contains updated text in areas which
 were found to be unclear as well as other editorial improvements.
 In addition, it removes the use of the term "master" as applied
-to secrets in favor of the term "main".
+to secrets in favor of the term "main" or shorter names where no
+term was neccessary.
      
 
 ##  Major Differences from TLS 1.2
@@ -911,7 +912,7 @@ provided via the server's Random value, but 0-RTT data does not depend
 on the ServerHello and therefore has weaker guarantees.  This is especially
 relevant if the data is authenticated either with TLS client
 authentication or inside the application protocol. The same warnings
-apply to any use of the early_exporter_main_secret.
+apply to any use of the early_exporter_secret.
 
 0-RTT data cannot be duplicated within a connection (i.e., the server will
 not process the same data twice for the same connection), and an
@@ -3276,7 +3277,7 @@ appropriate application traffic key.
 At any time after the server has received the client Finished message,
 it MAY send a NewSessionTicket message. This message creates a unique
 association between the ticket value and a secret PSK
-derived from the resumption main secret (see {{cryptographic-computations}}).
+derived from the resumption secret (see {{cryptographic-computations}}).
 
 The client MAY use this PSK for future handshakes by including the
 ticket value in the "pre_shared_key" extension in its ClientHello
@@ -3311,7 +3312,7 @@ than the value sent in the previous session. Note that if a server
 implementation declines all PSK identities with different SNI values, these two
 values are always the same.
 
-Note: Although the resumption main secret depends on the client's second
+Note: Although the resumption secret depends on the client's second
 flight, a server which does not request client authentication MAY compute
 the remainder of the transcript independently and then send a
 NewSessionTicket immediately upon sending its Finished rather than
@@ -3381,8 +3382,8 @@ max_early_data_size:
 The PSK associated with the ticket is computed as:
 
 ~~~~
-    HKDF-Expand-Label(resumption_main_secret,
-                     "resumption", ticket_nonce, Hash.length)
+    HKDF-Expand-Label(resumption_secret,
+                      "resumption", ticket_nonce, Hash.length)
 ~~~~
 
 Because the ticket_nonce value is distinct for each NewSessionTicket
@@ -4172,7 +4173,7 @@ secret to be added. In this version of TLS 1.3, the two
 input secrets are:
 
 - PSK (a pre-shared key established externally or derived from
-  the resumption_main_secret value from a previous connection)
+  the resumption_secret value from a previous connection)
 - (EC)DHE shared secret ({{ecdhe-shared-secret-calculation}})
 
 This produces a full key derivation schedule shown in the diagram below.
@@ -4211,7 +4212,7 @@ result of renaming the values while retaining compatibility.
                  |
                  +-----> Derive-Secret(., "e exp master",
                  |                     ClientHello)
-                 |                     = early_exporter_main_secret
+                 |                     = early_exporter_secret
                  v
            Derive-Secret(., "derived", "")
                  |
@@ -4241,11 +4242,11 @@ result of renaming the values while retaining compatibility.
                  |
                  +-----> Derive-Secret(., "exp master",
                  |                     ClientHello...server Finished)
-                 |                     = exporter_main_secret
+                 |                     = exporter_secret
                  |
                  +-----> Derive-Secret(., "res master",
                                        ClientHello...client Finished)
-                                       = resumption_main_secret
+                                       = resumption_secret
 ~~~~
 
 The general pattern here is that the secrets shown down the left side
@@ -4264,7 +4265,7 @@ rounds, so if PSK is not in use, Early Secret will still be
 HKDF-Extract(0, 0). For the computation of the binder_key, the label is
 "ext binder" for external PSKs (those provisioned outside of TLS)
 and "res binder" for resumption PSKs (those provisioned as the resumption
-main secret of a previous handshake). The different labels prevent
+secret of a previous handshake). The different labels prevent
 the substitution of one type of PSK for the other.
 
 There are multiple potential Early Secret values, depending on
@@ -4391,9 +4392,9 @@ The exporter value is computed as:
         HKDF-Expand-Label(Derive-Secret(Secret, label, ""),
                           "exporter", Hash(context_value), key_length)
 
-Where Secret is either the early_exporter_main_secret or the
-exporter_main_secret.  Implementations MUST use the exporter_main_secret unless
-explicitly specified by the application. The early_exporter_main_secret is
+Where Secret is either the early_exporter_secret or the
+exporter_secret.  Implementations MUST use the exporter_secret unless
+explicitly specified by the application. The early_exporter_secret is
 defined for use in settings where an exporter is needed for 0-RTT data.
 A separate interface for the early exporter is RECOMMENDED; this avoids
 the exporter user accidentally using an early exporter when a regular
@@ -5453,7 +5454,7 @@ secret into a unique per-connection set of short-term session keys. This
 secret may have been established in a previous handshake. If
 PSK with (EC)DHE key establishment is used, these session keys will also be forward
 secret. The resumption PSK has been designed so that the
-resumption main secret computed by connection N and needed to form
+resumption secret computed by connection N and needed to form
 connection N+1 is separate from the traffic keys used by connection N,
 thus providing forward secrecy between the connections.
 In addition, if multiple tickets are established on the same
@@ -5468,8 +5469,8 @@ and the current handshake, as well as between the session where the
 PSK was established and the current session. This binding
 transitively includes the original handshake transcript, because that
 transcript is digested into the values which produce the resumption
-main secret. This requires that both the KDF used to produce the
-resumption main secret and the MAC used to compute the binder be collision
+secret. This requires that both the KDF used to produce the
+resumption secret and the MAC used to compute the binder be collision
 resistant. See {{key-derivation-and-hkdf}} for more on this.
 Note: The binder does not cover the binder values from other
 PSKs, though they are included in the Finished MAC.
@@ -5540,7 +5541,7 @@ long as these are differentiated via the key and/or the labels.
 
 Note that HKDF-Expand implements a pseudorandom function (PRF) with both inputs and
 outputs of variable length. In some of the uses of HKDF in this document
-(e.g., for generating exporters and the resumption_main_secret), it is necessary
+(e.g., for generating exporters and the resumption_secret), it is necessary
 that the application of HKDF-Expand be collision resistant; namely, it should
 be infeasible to find two different inputs to HKDF-Expand that output the same
 value. This requires the underlying hash function to be collision resistant
@@ -5574,7 +5575,7 @@ the exposure to replay.
 
 ### Exporter Independence
 
-The exporter_main_secret and early_exporter_main_secret are
+The exporter_secret and early_exporter_secret are
 derived to be independent of the traffic keys and therefore do
 not represent a threat to the security of traffic encrypted with
 those keys. However, because these secrets can be used to
@@ -5582,7 +5583,7 @@ compute any exporter value, they SHOULD be erased as soon as
 possible. If the total set of exporter labels is known, then
 implementations SHOULD pre-compute the inner Derive-Secret
 stage of the exporter computation for all those labels,
-then erase the \[early_]exporter_main_secret, followed by
+then erase the \[early_]exporter_secret, followed by
 each inner values as soon as it is known that it will not be
 needed again.
 
