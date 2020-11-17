@@ -3,7 +3,7 @@ title: The Transport Layer Security (TLS) Protocol Version 1.3
 abbrev: TLS
 docname: draft-ietf-tls-rfc8446bis-latest
 category: std
-updates: 4492, 5705, 6066
+updates: 4492, 5705, 6066, 7627
 obsoletes: 5077, 5246, 6961, 8446
 
 ipr: pre5378Trust200902
@@ -38,6 +38,7 @@ normative:
   RFC6066:
   RFC6655:
   RFC8439:
+  RFC7627:
   RFC7748:
   RFC7919:
   RFC8032:
@@ -91,7 +92,6 @@ informative:
   RFC7250:
   RFC7465:
   RFC7568:
-  RFC7627:
   RFC7685:
 
   SSL2:
@@ -566,6 +566,10 @@ support TLS 1.3:
 
 * The "signature_algorithms_cert" extension allows a client to indicate
   which signature algorithms it can validate in X.509 certificates.
+
+* The term "master" as applied to secrets has been removed, and the
+  "extended_master_secret" extension {{RFC7627}} has been renamed to
+  "extended_main_secret".
 
 Additionally, this document clarifies some compliance requirements for earlier
 versions of TLS; see {{protocol-invariants}}.
@@ -4754,6 +4758,9 @@ Security issues are discussed throughout this memo, especially in
 [[OPEN ISSUE: Should we remove this? I am reluctant to create a situation
 where one needs to read 8446 to process this document.]]
 
+[[OPEN ISSUE: Add some text to rename the extended_master_secret entry in
+the extensions registry to extended_main_secret, after the above is resolved.]]
+
 
 This document uses several registries that were originally created in
 {{RFC4346}} and updated in {{?RFC8447}}. IANA has updated these to reference this document.
@@ -5187,6 +5194,30 @@ in such a way absent explicit configuration or a specific application
 profile.
 
 
+# Updates to TLS 1.2 {#update-tls12}
+
+To align with the names used this document, the following terms from
+{{RFC5246}} are renamed:
+
+* The master secret, computed in Section 8.1 of {{RFC5246}}, is renamed to
+  the main secret. It is referred to as main_secret in formulas and
+  structures, instead of master_secret. However, the label parameter to the PRF
+  function is left unchanged for compatibility.
+
+* The premaster secret is renamed to the preliminary secret. It is referred to
+  as preliminary_secret in formulas and structures, instead of
+  pre_master_secret.
+
+* The PreMasterSecret and EncryptedPreMasterSecret structures, defined in
+  Section 7.4.7.1 of {{RFC5246}}, are renamed to PreliminarySecret and
+  EncryptedPreliminarySecret, respectively.
+
+Correspondingly, the extension defined in {{RFC7627}} is renamed to the
+"Extended Main Secret" extension. The extension code point is renamed to
+"extended_main_secret". The label parameter to the PRF function in Section 4 of
+{{RFC7627}} is left unchanged for compatibility.
+
+
 # Backward Compatibility
 
 The TLS protocol provides a built-in mechanism for version negotiation between
@@ -5218,12 +5249,12 @@ deployments, all implementations SHOULD support validation of certification path
 based on the expectations in this document, even when handling prior TLS versions'
 handshakes (see {{server-certificate-selection}}).
 
-TLS 1.2 and prior supported an "Extended Master Secret" {{RFC7627}} extension
+TLS 1.2 and prior supported an "Extended Main Secret" {{RFC7627}} extension
 which digested large parts of the handshake transcript into the secret and
-derived keys. Because TLS 1.3 always hashes in the transcript up to the server Finished,
-implementations which support both TLS 1.3 and earlier versions SHOULD
-indicate the use of the Extended Master Secret extension in their APIs
-whenever TLS 1.3 is used.
+derived keys. Note this extension was renamed in {{update-tls12}}. Because TLS
+1.3 always hashes in the transcript up to the server Finished, implementations
+which support both TLS 1.3 and earlier versions SHOULD indicate the use of the
+Extended Main Secret extension in their APIs whenever TLS 1.3 is used.
 
 
 ## Negotiating with an Older Server
