@@ -376,6 +376,13 @@ informative:
          ins: T. Shrimpton
        target: https://eprint.iacr.org/2018/634
 
+  FETCH:
+       title: "Fetch Standard"
+       date: Living Standard
+       author:
+         org: WHATWG
+       target: https://fetch.spec.whatwg.org/
+
 --- abstract
 
 This document specifies version 1.3 of the Transport Layer Security
@@ -5162,6 +5169,12 @@ as the number of connections that a client might use; for example, a web browser
 using HTTP/1.1 {{RFC7230}} might open six connections to a server. Servers SHOULD
 issue new tickets with every connection. This ensures that clients are
 always able to use a new ticket when creating a new connection.
+
+Offering a ticket to a server additionally allows the server to correlate
+different connections. This is possible independent of ticket reuse. Client
+applications SHOULD NOT offer tickets across connections that are meant to be
+uncorrelated. For example, {{FETCH}} defines network partition keys to separate
+cache lookups in web browsers.
 
 
 ## Unauthenticated Operation
