@@ -5434,8 +5434,9 @@ Key Compromise Impersonation (KCI) resistance:
 
 Protection of endpoint identities:
 : The server's identity (certificate) should be protected against passive
-  attackers. The client's identity should be protected against both passive
-  and active attackers.
+  attackers. The client's identity (certificate) should be protected against
+  both passive and active attackers. This property does not hold for cipher
+  suites without confidentiality.
 {:br}
 
 Informally, the signature-based modes of TLS 1.3 provide for the
