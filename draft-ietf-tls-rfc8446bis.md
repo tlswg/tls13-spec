@@ -5922,8 +5922,7 @@ and many clients do not enforce this restriction.
 
 * Update TLS 1.2 terminology
 * Specify "certificate-based" client authentication
-* Clarify that privacy guarantees don't apply when you have null
-  encryption.
+* Clarify that privacy guarantees don't apply when you have null encryption
 * Shorten some names
 * Address tracking implications of resumption
 
