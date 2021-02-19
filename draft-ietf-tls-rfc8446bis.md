@@ -5916,6 +5916,17 @@ in certificates that do not have the digitalSignature bit set,
 and many clients do not enforce this restriction.
 
 
+# Changes Since -00
+
+[[RFC EDITOR: Please remove in final RFC.]]
+
+* Update TLS 1.2 terminology
+* Specify "certificate-based" client authentication
+* Clarify that privacy guarantees don't apply when you have null encryption
+* Shorten some names
+* Address tracking implications of resumption
+
+  
 # Contributors
 {:numbered="false"}
 ~~~~
