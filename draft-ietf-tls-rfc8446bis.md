@@ -2089,7 +2089,7 @@ defined in {{RFC5280}}:
 Separate specifications may define matching rules for other certificate
 extensions.
 
-### Post-Handshake Client Authentication {#post_handshake_auth}
+### Post-Handshake Certificate-Based Client Authentication {#post_handshake_auth}
 
 The "post_handshake_auth" extension is used to indicate that a client is willing
 to perform post-handshake authentication ({{post-handshake-authentication}}). Servers
@@ -2872,8 +2872,8 @@ key exchange method uses certificates for authentication (this
 includes all key exchange methods defined in this document except PSK).
 
 The client MUST send a Certificate message if and only if the server has
-requested client authentication via a CertificateRequest message
-({{certificate-request}}). If the server requests client authentication
+requested certificate-based client authentication via a CertificateRequest message
+({{certificate-request}}). If the server requests certificate-based client authentication
 but no suitable certificate is available, the client
 MUST send a Certificate message containing no certificates (i.e., with
 the "certificate_list" field having length 0).  A Finished message MUST
@@ -3312,7 +3312,7 @@ implementation declines all PSK identities with different SNI values, these two
 values are always the same.
 
 Note: Although the resumption main secret depends on the client's second
-flight, a server which does not request client authentication MAY compute
+flight, a server which does not request certificate-based client authentication MAY compute
 the remainder of the transcript independently and then send a
 NewSessionTicket immediately upon sending its Finished rather than
 waiting for the client Finished.  This might be appropriate in cases
@@ -3400,7 +3400,7 @@ and the time since the peer's online CertificateVerify signature.
 ### Post-Handshake Authentication
 
 When the client has sent the "post_handshake_auth" extension (see
-{{post_handshake_auth}}), a server MAY request client authentication at any time
+{{post_handshake_auth}}), a server MAY request certificate-based client authentication at any time
 after the handshake has completed by sending a CertificateRequest message. The
 client MUST respond with the appropriate Authentication messages (see
 {{authentication-messages}}). If the client chooses to authenticate, it MUST
@@ -3413,7 +3413,7 @@ A client that receives a CertificateRequest message without having sent
 the "post_handshake_auth" extension MUST send an "unexpected_message" fatal
 alert.
 
-Note: Because client authentication could involve prompting the user, servers
+Note: Because certificate-based client authentication could involve prompting the user, servers
 MUST be prepared for some delay, including receiving an arbitrary number of
 other messages between sending the CertificateRequest and receiving a
 response. In addition, clients which receive multiple CertificateRequests in
@@ -4942,7 +4942,7 @@ here                  +--------+--------+
                       +> WAIT_FLIGHT2 <--------+
                                |
                       +--------+--------+
-              No auth |                 | Client auth
+              No auth |                 | Cert-based client auth
                       |                 |
                       |                 v
                       |             WAIT_CERT
@@ -5547,9 +5547,9 @@ value. This requires the underlying hash function to be collision resistant
 and the output length from HKDF-Expand to be of size at least 256 bits (or as
 much as needed for the hash function to prevent finding collisions).
 
-### Client Authentication
+### Certificate-Based Client Authentication
 
-A client that has sent authentication data to a server, either during
+A client that has sent certificate-based authentication data to a server, either during
 the handshake or in post-handshake authentication, cannot be sure whether
 the server afterwards considers the client to be authenticated or not.
 If the client needs to determine if the server considers the
