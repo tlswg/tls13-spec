@@ -3323,7 +3323,7 @@ than the value sent in the previous session. Note that if a server
 implementation declines all PSK identities with different SNI values, these two
 values are always the same.
 
-Note: Although the resumption ecret depends on the client's second
+Note: Although the resumption secret depends on the client's second
 flight, a server which does not request certificate-based client authentication MAY compute
 the remainder of the transcript independently and then send a
 NewSessionTicket immediately upon sending its Finished rather than
