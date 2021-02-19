@@ -5918,7 +5918,7 @@ and many clients do not enforce this restriction.
 
 # Changes Since -00
 
-[To be removed in final RFC.]
+[[RFC EDITOR: Please remove in final RFC.]]
 
 * Update TLS 1.2 terminology
 * Specify "certificate-based" client authentication
