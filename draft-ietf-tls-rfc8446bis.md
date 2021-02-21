@@ -5159,8 +5159,10 @@ Cryptographic details:
   generator (see {{random-number-generation-and-seeding}}) when generating Diffie-Hellman
   private values, the ECDSA "k" parameter, and other security-critical values?
   It is RECOMMENDED that implementations implement "deterministic ECDSA"
-  as specified in {{!RFC6979}}.
-
+  as specified in {{!RFC6979}}. Note that purely deterministic ECC signatures such as
+  deterministic ECDSA and EdDSA may be vulnerable to certain side-channel and fault
+  injection attacks in easily accessible IoT devices.
+  
 - Do you zero-pad Diffie-Hellman public key values and shared
   secrets to the group size (see {{ffdhe-param}} and {{finite-field-diffie-hellman}})?
 
