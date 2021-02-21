@@ -93,6 +93,7 @@ informative:
   RFC7465:
   RFC7568:
   RFC7685:
+  RFC8937:
 
   SSL2:
        title: "The SSL Protocol"
@@ -5069,7 +5070,8 @@ provides several recommendations to assist implementors.
 
 ## Random Number Generation and Seeding
 
-TLS requires a cryptographically secure pseudorandom number generator (CSPRNG).
+TLS requires a cryptographically secure pseudorandom number generator (CSPRNG)
+or a true random number generator (TRNG).
 In most cases, the operating system provides an appropriate facility such
 as /dev/urandom, which should be used absent other (e.g., performance) concerns.
 It is RECOMMENDED to use an existing CSPRNG implementation in
@@ -5089,6 +5091,10 @@ Implementations can provide extra security against
 this form of attack by using separate CSPRNGs to generate public and
 private values.
 
+{{RFC8937}} describes a RECOMMENDED way for security protocol implementations
+to augment their (pseudo)random number generators using a long-term private key
+and a deterministic signature function. This improves randomness from broken or
+otherwise subverted random number generators.
 
 ## Certificates and Authentication
 
