@@ -1658,9 +1658,11 @@ Here:
 The contents of the "extension_data" field are typically defined by an
 extension-specific structure defined in the TLS presentation language. Unless
 otherwise specified, trailing data is forbidden. That is, senders MUST NOT
-include data after the structure in the "extension_data" field, and receivers
-MUST abort the handshake with a "decode_error" alert if there is data left
-over after parsing the structure.
+include data after the structure in the "extension_data" field. When
+processing an extension, receivers MUST abort the handshake with a
+"decode_error" alert if there is data left over after parsing the structure.
+This does not apply if the receiver does not implement or is configured to
+ignore an extension.
 
 The list of extension types is maintained by IANA as described in
 {{iana-considerations}}.
