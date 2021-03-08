@@ -1658,15 +1658,16 @@ Here:
 The list of extension types is maintained by IANA as described in
 {{iana-considerations}}.
 
-Extensions are generally structured in a request/response fashion, though
-some extensions are just indications with no corresponding response. The client
-sends its extension requests in the ClientHello message, and the server sends
-its extension responses in the ServerHello, EncryptedExtensions,
-HelloRetryRequest, and Certificate messages. The server sends extension requests
-in the CertificateRequest message which a client MAY respond to with
-a Certificate message. The server MAY also send unsolicited
-extensions in the NewSessionTicket, though the client does not respond
-directly to these.
+Extensions are generally structured in a request/response fashion,
+though some extensions are just requests with no corresponding
+response (i.e., indications). The client sends its extension requests
+in the ClientHello message, and the server sends its extension
+responses in the ServerHello, EncryptedExtensions, HelloRetryRequest,
+and Certificate messages. The server sends extension requests in the
+CertificateRequest message which a client MAY respond to with a
+Certificate message. The server MAY also send unsolicited extensions
+in the NewSessionTicket, though the client does not respond directly
+to these.
 
 Implementations MUST NOT send extension responses
 if the remote endpoint did not send the corresponding extension requests,
