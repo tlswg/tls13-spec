@@ -390,10 +390,11 @@ This document specifies version 1.3 of the Transport Layer Security
 over the Internet in a way that is designed to prevent eavesdropping,
 tampering, and message forgery.
 
-This document updates RFCs 5705 and 6066 and obsoletes
-RFCs 5077, 5246, and 6961. This document also specifies new
+This document updates RFCs 4492, 5705, 6066, and 7627 and obsoletes
+RFCs 5077, 5246, 6961, and 8446. This document also specifies new
 requirements for TLS 1.2 implementations.
 --- middle
+
 
 
 #  Introduction
