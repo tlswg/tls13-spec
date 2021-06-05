@@ -48,11 +48,11 @@ normative:
   RFC5116:
   X690:
        title: "Information technology - ASN.1 encoding Rules: Specification of Basic Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished Encoding Rules (DER)"
-       date: November 2015
+       date: February 2021
        author:
          org: ITU-T
        seriesinfo:
-         ISO/IEC: 8825-1:2002
+         ISO/IEC 8824-1:2021
   DH76:
         title: "New Directions in Cryptography"
         author:
@@ -112,9 +112,11 @@ informative:
        date: 2003
   X501:
        title: "Information Technology - Open Systems Interconnection - The Directory: Models"
-       date: 1993
+       date: October 2019
+       author:
+         org: ITU-T
        seriesinfo:
-         ITU-T: X.501
+         ISO/IEC 9594-2:2020
   PSK-FINISHED:
        title: "Revision 10: possible attack if client authentication is allowed during PSK"
        date: 2015
