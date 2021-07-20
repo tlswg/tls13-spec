@@ -2004,7 +2004,7 @@ The signatures on certificates that are self-signed or certificates that are
 trust anchors are not validated, since they begin a certification path (see
 {{RFC5280}}, Section 3.2).  A certificate that begins a certification
 path MAY use a signature algorithm that is not advertised as being supported
-in the "signature_algorithms" extension.
+in the "signature_algorithms" and "signature_algorithms_cert" extensions.
 
 Note that TLS 1.2 defines this extension differently. TLS 1.3 implementations
 willing to negotiate TLS 1.2 MUST behave in accordance with the requirements of
@@ -3033,8 +3033,8 @@ The following rules apply to the certificates sent by the server:
 
 - The certificate MUST allow the key to be used for signing (i.e., the
   digitalSignature bit MUST be set if the Key Usage extension is present) with
-  a signature scheme indicated in the client's "signature_algorithms"/"signature_algorithms_cert"
-  extensions (see {{signature-algorithms}}).
+  a signature scheme indicated in the client's "signature_algorithms"
+  extension (see {{signature-algorithms}}).
 
 - The "server_name" {{RFC6066}} and "certificate_authorities" extensions are used to
   guide certificate selection. As servers MAY require the presence of the "server_name"
