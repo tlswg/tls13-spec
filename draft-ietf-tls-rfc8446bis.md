@@ -3011,15 +3011,12 @@ The following rules apply to the certificates sent by the server:
 - The certificate type MUST be X.509v3 {{RFC5280}}, unless explicitly negotiated
   otherwise (e.g., {{RFC7250}}).
 
-- The server's end-entity certificate's public key (and associated
-  restrictions) MUST be compatible with the selected authentication
-  algorithm from the client's "signature_algorithms" extension
-  (currently RSA, ECDSA, or EdDSA).
-
-- The certificate MUST allow the key to be used for signing (i.e., the
-  digitalSignature bit MUST be set if the Key Usage extension is present) with
+- The end-entity certificate MUST allow the key to be used for signing with
   a signature scheme indicated in the client's "signature_algorithms"
-  extension (see {{signature-algorithms}}).
+  extension (see {{signature-algorithms}}). That is, the digitalSignature bit
+  MUST be set if the Key Usage extension is present, and the public key (with
+  associated resistrictions) MUST be compatible with some supported signature
+  scheme.
 
 - The "server_name" {{RFC6066}} and "certificate_authorities" extensions are used to
   guide certificate selection. As servers MAY require the presence of the "server_name"
