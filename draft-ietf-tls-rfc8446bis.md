@@ -914,8 +914,8 @@ as for a 1-RTT handshake with PSK resumption.
 IMPORTANT NOTE: The security properties for 0-RTT data are weaker than
 those for other kinds of TLS data.  Specifically:
 
-1. This data is not forward secret, as it is encrypted solely under
-keys derived using the offered PSK.
+1. This data is not necessarily forward secret, as it is encrypted solely under
+keys derived using the offered PSK; see {{single-use-tickets}}.
 
 2. There are no guarantees of non-replay between connections.
 Protection against replay for ordinary TLS 1.3 1-RTT data is
@@ -4479,7 +4479,7 @@ clients implement any kind of retry behavior already needs to
 implement some sort of anti-replay defense.
 
 
-## Single-Use Tickets
+## Single-Use Tickets {#single-use-tickets}
 
 The simplest form of anti-replay defense is for the server to only
 allow each session ticket to be used once. For instance, the server
@@ -4489,8 +4489,9 @@ provided, the server would then fall back to a full handshake.
 
 If the tickets are not self-contained but rather are database keys,
 and the corresponding PSKs are deleted upon use, then connections established
-using PSKs enjoy forward secrecy. This improves security for
-all 0-RTT data and PSK usage when PSK is used without (EC)DHE.
+using PSKs enjoy not only anti-replay protection, but also forward secrecy.
+This mechanism also improves security for PSK usage when PSK is used without
+(EC)DHE.
 
 Because this mechanism requires sharing the session database between
 server nodes in environments with multiple distributed servers,
