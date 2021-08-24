@@ -914,10 +914,12 @@ as for a 1-RTT handshake with PSK resumption.
 IMPORTANT NOTE: The security properties for 0-RTT data are weaker than
 those for other kinds of TLS data.  Specifically:
 
-1. This data is not necessarily forward secret. In some circumstances,
-depending on server behavior, some level of forward secrecy may be provided for
-this data. Absent out-of-band knowledge of the server's behavior, the client
-should assume that this data is not forward secret; see {{single-use-tickets}}.
+1. The protocol does not provide any forward secrecy guarantees for this data.
+The server's behavior determines what forward secrecy guarantees, if any, apply
+(see {{single-use-tickets}}). This behavior is not communicated to the client
+as part of the protocol. Therefore, absent out-of-band knowledge of the
+server's behavior, the client should assume that this data is not forward
+secret.
 
 2. There are no guarantees of non-replay between connections.
 Protection against replay for ordinary TLS 1.3 1-RTT data is
