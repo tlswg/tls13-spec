@@ -5141,6 +5141,8 @@ TLS protocol issues:
   you fragment handshake messages that exceed the maximum fragment
   size? In particular, the Certificate and CertificateRequest
   handshake messages can be large enough to require fragmentation.
+  Certificate compression as defined in {{?RFC8879}} can be used
+  to reduce the risk of fragmentation.
 
 - Do you ignore the TLS record layer version number in all unencrypted TLS
   records (see {{backward-compatibility}})?
