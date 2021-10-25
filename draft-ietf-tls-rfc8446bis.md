@@ -1721,6 +1721,7 @@ appears, it MUST abort the handshake with an "illegal_parameter" alert.
 | client_certificate_type [RFC7250]        |      CH, EE |
 | server_certificate_type [RFC7250]        |      CH, EE |
 | padding [RFC7685]                        |          CH |
+| cached_info [RFC7924]                    | CH, EE |
 | key_share (RFC 8446)            | CH, SH, HRR |
 | pre_shared_key (RFC 8446)       |      CH, SH |
 | psk_key_exchange_modes (RFC 8446)|          CH |
