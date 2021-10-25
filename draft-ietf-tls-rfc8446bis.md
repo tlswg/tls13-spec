@@ -385,6 +385,14 @@ informative:
        author:
          org: WHATWG
        target: https://fetch.spec.whatwg.org/
+       
+  DSA-1571-1:
+       title: "openssl -- predictable random number generator"
+       author:
+         org: The Debian Project
+       date: May 2008
+       target: https://www.debian.org/security/2008/dsa-1571
+  
 
 --- abstract
 
@@ -5070,8 +5078,7 @@ provides several recommendations to assist implementors.
 
 ## Random Number Generation and Seeding
 
-TLS requires a cryptographically secure pseudorandom number generator (CSPRNG)
-or a true random number generator (TRNG).
+TLS requires a cryptographically secure pseudorandom number generator (CSPRNG).
 In most cases, the operating system provides an appropriate facility such
 as /dev/urandom, which should be used absent other (e.g., performance) concerns.
 It is RECOMMENDED to use an existing CSPRNG implementation in
@@ -5086,12 +5093,14 @@ does not present a security problem, as it is not feasible to determine
 the CSPRNG state from its output. However, with a broken CSPRNG, it
 may be possible for an attacker to use the public output to determine
 the CSPRNG internal state and thereby predict the keying material, as
-documented in {{?CHECKOWAY=DOI.10.1145/2976749.2978395}}.
+documented in {{?CHECKOWAY=DOI.10.1145/2976749.2978395}} and
+{{DSA-1571-1}}.
+
 Implementations can provide extra security against
 this form of attack by using separate CSPRNGs to generate public and
 private values.
 
-{{RFC8937}} describes a RECOMMENDED way for security protocol implementations
+{{RFC8937}} describes a way way for security protocol implementations
 to augment their (pseudo)random number generators using a long-term private key
 and a deterministic signature function. This improves randomness from broken or
 otherwise subverted random number generators.
