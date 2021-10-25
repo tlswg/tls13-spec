@@ -3030,7 +3030,7 @@ The following rules apply to the certificates sent by the server:
   a signature scheme indicated in the client's "signature_algorithms"
   extension (see {{signature-algorithms}}). That is, the digitalSignature bit
   MUST be set if the Key Usage extension is present, and the public key (with
-  associated resistrictions) MUST be compatible with some supported signature
+  associated restrictions) MUST be compatible with some supported signature
   scheme.
 
 - The "server_name" {{RFC6066}} and "certificate_authorities" extensions are used to
