@@ -93,6 +93,7 @@ informative:
   RFC7465:
   RFC7568:
   RFC7685:
+  RFC8937:
 
   SSL2:
        title: "The SSL Protocol"
@@ -384,6 +385,14 @@ informative:
        author:
          org: WHATWG
        target: https://fetch.spec.whatwg.org/
+       
+  DSA-1571-1:
+       title: "openssl -- predictable random number generator"
+       author:
+         org: The Debian Project
+       date: May 2008
+       target: https://www.debian.org/security/2008/dsa-1571
+  
 
 --- abstract
 
@@ -5090,11 +5099,17 @@ does not present a security problem, as it is not feasible to determine
 the CSPRNG state from its output. However, with a broken CSPRNG, it
 may be possible for an attacker to use the public output to determine
 the CSPRNG internal state and thereby predict the keying material, as
-documented in {{?CHECKOWAY=DOI.10.1145/2976749.2978395}}.
+documented in {{?CHECKOWAY=DOI.10.1145/2976749.2978395}} and
+{{DSA-1571-1}}.
+
 Implementations can provide extra security against
 this form of attack by using separate CSPRNGs to generate public and
 private values.
 
+{{RFC8937}} describes a way way for security protocol implementations
+to augment their (pseudo)random number generators using a long-term private key
+and a deterministic signature function. This improves randomness from broken or
+otherwise subverted random number generators.
 
 ## Certificates and Authentication
 
