@@ -5974,6 +5974,10 @@ and many clients do not enforce this restriction.
       Alacrity Ventures
       ChristopherA@AlacrityManagement.com
    
+      Nimrod Aviram
+      Tel Aviv University
+      nimrod.aviram@gmail.com
+      
       Richard Barnes
       Cisco
       rlb@ipv.sx
