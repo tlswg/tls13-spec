@@ -3315,7 +3315,8 @@ derived from the resumption secret (see {{cryptographic-computations}}).
 
 The client MAY use this PSK for future handshakes by including the
 ticket value in the "pre_shared_key" extension in its ClientHello
-({{pre-shared-key-extension}}). Servers MAY send multiple tickets on a
+({{pre-shared-key-extension}}). Resumption MAY be done while the
+original connection is still open. Servers MAY send multiple tickets on a
 single connection, either immediately after each other or
 after specific events (see {{client-tracking}}).
 For instance, the server might send a new ticket after post-handshake
