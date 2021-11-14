@@ -92,6 +92,7 @@ informative:
   RFC7250:
   RFC7465:
   RFC7568:
+  RFC7624:
   RFC7685:
   RFC8937:
 
@@ -5544,6 +5545,8 @@ the PSK associated with one ticket does not lead to the compromise of
 connections established with PSKs associated with other tickets.
 This property is most interesting if tickets are stored in a database
 (and so can be deleted) rather than if they are self-encrypted.
+
+Forward secrecy limits the effect of key leakage in one direction (compromise at time T2 does not compromise keys at time T1 < T2). Protection in the other direction (compromise at time T1 does not compromise keys at time T2) can be achieved by frequently rerunning EC(DHE). If a key used for authentication has been compromised, rerunning EC(DHE) gives protection against passive attackers. If a traffic key has been compromised, rerunning EC(DHE) gives protection against active attackers. Using the terms in {{RFC7624}}, forward secrecy without rerunning EC(DHE) does not stop an attacker from doing static key exfiltration, frequently rerunning EC(DHE) forces an attacker to do dynamic key exfiltration (or content exfiltration). For non-constrained systems, it is RECOMMENDED to rerun EC(DHE) at least every hour or every 100 GB.
 
 The PSK binder value forms a binding between a PSK
 and the current handshake, as well as between the session where the
