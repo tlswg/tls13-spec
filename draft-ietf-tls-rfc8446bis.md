@@ -3,7 +3,7 @@ title: The Transport Layer Security (TLS) Protocol Version 1.3
 abbrev: TLS
 docname: draft-ietf-tls-rfc8446bis-latest
 category: std
-updates: 4492, 5705, 6066, 7627
+updates: 5705, 6066, 7627, 8422
 obsoletes: 5077, 5246, 6961, 8446
 
 ipr: pre5378Trust200902
@@ -390,7 +390,7 @@ This document specifies version 1.3 of the Transport Layer Security
 over the Internet in a way that is designed to prevent eavesdropping,
 tampering, and message forgery.
 
-This document updates RFCs 4492, 5705, 6066, and 7627 and obsoletes
+This document updates RFCs 5705, 6066, 7627, and 8422 and obsoletes
 RFCs 5077, 5246, 6961, and 8446. This document also specifies new
 requirements for TLS 1.2 implementations.
 --- middle
