@@ -4055,14 +4055,15 @@ unsupported_certificate:
 : A certificate was of an unsupported type.
 
 certificate_revoked:
-: A certificate was revoked by its signer.
+: A certificate or PSK was revoked by its issuer.
 
 certificate_expired:
-: A certificate has expired or is not currently valid.
+: A certificate or PSK has expired or is not currently
+      valid.
 
 certificate_unknown:
 : Some other (unspecified) issue arose in processing the
-  certificate, rendering it unacceptable.
+  certificate or PSK, rendering it unacceptable.
 
 illegal_parameter:
 : A field in the handshake was incorrect or inconsistent with
