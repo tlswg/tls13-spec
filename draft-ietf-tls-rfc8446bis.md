@@ -5430,7 +5430,7 @@ Ciphers with a strength less than 112 bits MUST NOT be offered or
 negotiated for any version of TLS for any reason.
 
 The security of SSL 2.0 {{SSL2}}, SSL 3.0 {{?RFC6101}}, TLS 1.0
-{{RFC2246}}, and TLS 1.1 {{RFC4346}} are considered insufficient for
+{{?RFC2246}}, and TLS 1.1 {{RFC4346}} are considered insufficient for
 the reasons enumerated in {{RFC6176}}, {{RFC7568}}, and {{RFC8996}}
 and they MUST NOT be negotiated for any reason.
 
