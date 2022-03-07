@@ -4362,7 +4362,8 @@ of data is shown in the table below.
 | Post-Handshake and Application Data  | \[sender]_application_traffic_secret_N |
 {: #traffic-key-table title="Secrets for Traffic Keys"}
 
-Alerts are sent with the then current sending key.
+Alerts are sent with the then current sending key (or as
+plaintext if no such key has been established.)
 All the traffic keying material is recomputed whenever the
 underlying Secret changes (e.g., when changing from the handshake to
 Application Data keys or upon a key update).
