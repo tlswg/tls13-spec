@@ -4359,16 +4359,18 @@ The traffic keying material is generated from an input traffic secret value usin
     [sender]_write_iv  = HKDF-Expand-Label(Secret, "iv", "", iv_length)
 ~~~~
 
-\[sender] denotes the sending side. The value of Secret for each record type
-is shown in the table below.
+\[sender] denotes the sending side. The value of Secret for each category
+of data is shown in the table below.
 
-| Record Type | Secret |
+| Data Type | Secret |
 |:------------|--------|
-| 0-RTT Application | client_early_traffic_secret |
-| Handshake         | \[sender]_handshake_traffic_secret |
-| Application Data  | \[sender]_application_traffic_secret_N |
+| 0-RTT Application and EndOfEarlyData | client_early_traffic_secret |
+| Initial Handshake | \[sender]_handshake_traffic_secret |
+| Post-Handshake and Application Data  | \[sender]_application_traffic_secret_N |
 {: #traffic-key-table title="Secrets for Traffic Keys"}
 
+Alerts are sent with the then current sending key (or as
+plaintext if no such key has been established.)
 All the traffic keying material is recomputed whenever the
 underlying Secret changes (e.g., when changing from the handshake to
 Application Data keys or upon a key update).
