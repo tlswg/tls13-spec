@@ -3861,6 +3861,9 @@ safely encrypted under a given set of keys.  {{AEAD-LIMITS}} provides
 an analysis of these limits under the assumption that the underlying
 primitive (AES or ChaCha20) has no weaknesses. Implementations SHOULD
 do a key update as described in {{key-update}} prior to reaching these limits.
+Note that it is not possible to perform a KeyUpdate for early data
+and therefore implementations SHOULD not exceed the limits
+when sending early data.
 
 For AES-GCM, up to 2^24.5 full-size records (about 24 million)
 may be encrypted on a given connection while keeping a safety
