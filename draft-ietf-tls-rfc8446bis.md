@@ -1545,6 +1545,10 @@ bytes:
       44 4F 57 4E 47 52 44 00
 
 
+Note that {{!RFC8996}} and {{backward-compatibility-security}} forbid
+the negotation of TLS versions below 1.2; implementations which do not
+follow that guidance MUST behave as described above.
+
 TLS 1.3 clients receiving a ServerHello indicating TLS 1.2 or below
 MUST check that the last 8 bytes are not equal to either of these values.
 TLS 1.2 clients SHOULD also check that the last 8 bytes are not
@@ -5404,7 +5408,7 @@ but if the client sends a non-empty session ID, the server MUST send
 the change_cipher_spec as described in this appendix.
 
 
-## Security Restrictions Related to Backward Compatibility	
+## Security Restrictions Related to Backward Compatibility {#backward-compatibility-security}
 		 	
 
 Implementations negotiating the use of older versions of TLS SHOULD prefer
@@ -5418,11 +5422,10 @@ Old versions of TLS permitted the use of very low strength ciphers.
 Ciphers with a strength less than 112 bits MUST NOT be offered or
 negotiated for any version of TLS for any reason.
 
-The security of SSL 3.0 {{?RFC6101}} is considered insufficient for the reasons enumerated
-in {{RFC7568}}, and it MUST NOT be negotiated for any reason.
-
-The security of SSL 2.0 {{SSL2}} is considered insufficient for the reasons enumerated
-in {{RFC6176}}, and it MUST NOT be negotiated for any reason.
+The security of SSL 2.0 {{SSL2}}, SSL 3.0 {{?RFC6101}}, TLS 1.0
+{{RFC2246}}, and TLS 1.1 {{RFC4346}} are considered insufficient for
+the reasons enumerated in {{RFC6176}}, {{RFC7568}}, and {{RFC8996}}
+and they MUST NOT be negotiated for any reason.
 
 Implementations MUST NOT send an SSL version 2.0 compatible CLIENT-HELLO.
 Implementations MUST NOT negotiate TLS 1.3 or later using an SSL version 2.0 compatible
