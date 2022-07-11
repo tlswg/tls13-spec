@@ -3950,6 +3950,7 @@ enum) MUST terminate the connection with an "illegal_parameter" alert.
            bad_certificate_hash_value_RESERVED(114),
            unknown_psk_identity(115),
            certificate_required(116),
+           general_error(117),
            no_application_protocol(120),
            (255)
        } AlertDescription;
@@ -4150,6 +4151,12 @@ certificate_required:
 : Sent by servers when a client certificate is desired but none was provided by
   the client.
 
+general_error:
+: Sent to indicate an error condition in cases when either no
+  more specific error is available or the senders wishes to conceal
+  the specific error code. Implementations SHOULD use more specific
+  errors when available.
+  
 no_application_protocol:
 : Sent by servers when a client
   "application_layer_protocol_negotiation" extension advertises
@@ -4825,7 +4832,7 @@ The registries and their allocation policies are below:
   Standards Action {{RFC8126}}.
 
 - TLS Alerts registry: Future values are allocated via Standards
-  Action {{RFC8126}}. IANA has populated this registry
+  Action {{RFC8126}}. IANA [is requested to/has] populated this registry
   with the values from {{alert-messages-appendix}}. The
   "DTLS-OK" column is marked as "Y" for all such values.
   Values marked as "_RESERVED" have comments
