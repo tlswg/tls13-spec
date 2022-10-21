@@ -218,7 +218,7 @@ informative:
       seriesinfo: Proceedings of IEEE Symposium on Security and Privacy (San Jose) 2017
       date: 2016-12
       target: https://eprint.iacr.org/2016/1178
- 
+
   Blei98:
       title: "Chosen Ciphertext Attacks against Protocols Based on RSA Encryption Standard PKCS #1"
       author:
@@ -226,7 +226,7 @@ informative:
         ins: D. Bleichenbacher
       seriesinfo: Proceedings of CRYPTO '98
       date: 1998
- 
+
   BMMRT15:
       title: "Augmented Secure Channels and the Goal of the TLS 1.3 Record Layer"
       author:
@@ -347,7 +347,7 @@ informative:
        title: More compatibility measurement results
        date: 22 December 2017
        target: https://www.ietf.org/mail-archive/web/tls/current/msg25179.html
-       seriesinfo: message to the TLS mailing list       
+       seriesinfo: message to the TLS mailing list
        author:
        -
          ins: E. Rescorla
@@ -386,14 +386,14 @@ informative:
        author:
          org: WHATWG
        target: https://fetch.spec.whatwg.org/
-       
+
   DSA-1571-1:
        title: "openssl -- predictable random number generator"
        author:
          org: The Debian Project
        date: May 2008
        target: https://www.debian.org/security/2008/dsa-1571
-  
+
 
 --- abstract
 
@@ -514,7 +514,7 @@ were found to be unclear as well as other editorial improvements.
 In addition, it removes the use of the term "master" as applied
 to secrets in favor of the term "main" or shorter names where no
 term was neccessary.
-     
+
 
 ##  Major Differences from TLS 1.2
 
@@ -554,9 +554,9 @@ are many minor differences.
   algorithms, such as EdDSA, are included. TLS 1.3 removed point format
   negotiation in favor of a single point format for each curve.
 
-- Other cryptographic improvements were made, including changing the RSA padding to use 
+- Other cryptographic improvements were made, including changing the RSA padding to use
   the RSA Probabilistic Signature Scheme (RSASSA-PSS), and the removal
-  of compression, the Digital Signature Algorithm (DSA), and 
+  of compression, the Digital Signature Algorithm (DSA), and
   custom Ephemeral Diffie-Hellman (DHE) groups.
 
 - The TLS 1.2 version negotiation mechanism has been deprecated in favor
@@ -1194,9 +1194,9 @@ processed and transmitted as specified by the current active connection state.
            certificate_request(13),
            server_hello_done_RESERVED(14),
            certificate_verify(15),
-           client_key_exchange_RESERVED(16), 
+           client_key_exchange_RESERVED(16),
            finished(20),
-           certificate_url_RESERVED(21),	
+           certificate_url_RESERVED(21),
            certificate_status_RESERVED(22),
            supplemental_data_RESERVED(23),
            key_update(24),
@@ -1626,7 +1626,7 @@ In addition, in its updated ClientHello, the client SHOULD NOT offer
 any pre-shared keys associated with a hash other than that of the
 selected cipher suite. This allows the client to avoid having to
 compute partial hash transcripts for multiple hashes in the second
-ClientHello. 
+ClientHello.
 
 The value of selected_version in the HelloRetryRequest "supported_versions"
 extension MUST be retained in the ServerHello, and a client MUST abort the
@@ -4156,7 +4156,7 @@ general_error:
   more specific error is available or the senders wishes to conceal
   the specific error code. Implementations SHOULD use more specific
   errors when available.
-  
+
 no_application_protocol:
 : Sent by servers when a client
   "application_layer_protocol_negotiation" extension advertises
@@ -4826,7 +4826,7 @@ The registries and their allocation policies are below:
   IANA has added the cipher suites listed in {{cipher-suites}} to
   the registry. The "Value" and "Description" columns are taken from the table.
   The "DTLS-OK" and "Recommended" columns are both marked as "Y" for each new
-  cipher suite. 
+  cipher suite.
 
 - TLS ContentType registry: Future values are allocated via
   Standards Action {{RFC8126}}.
@@ -4905,7 +4905,7 @@ by IANA:
   "Recommended" column is assigned a value of "N" unless explicitly
  requested, and adding a value with a "Recommended" value of "Y"
  requires Standards Action {{RFC8126}}.  IESG Approval is REQUIRED
- for a Y->N transition.  
+ for a Y->N transition.
 
  - TLS PskKeyExchangeMode registry: Values in the
    range 0-253 (decimal) are assigned via Specification Required
@@ -5214,7 +5214,7 @@ Cryptographic details:
   as specified in {{!RFC6979}}. Note that purely deterministic ECC signatures such as
   deterministic ECDSA and EdDSA may be vulnerable to certain side-channel and fault
   injection attacks in easily accessible IoT devices.
-  
+
 - Do you zero-pad Diffie-Hellman public key values and shared
   secrets to the group size (see {{ffdhe-param}} and {{finite-field-diffie-hellman}})?
 
@@ -5423,7 +5423,7 @@ the change_cipher_spec as described in this appendix.
 
 
 ## Security Restrictions Related to Backward Compatibility {#backward-compatibility-security}
-		 	
+
 
 Implementations negotiating the use of older versions of TLS SHOULD prefer
 forward secret and AEAD cipher suites, when available.
@@ -6000,372 +6000,372 @@ and many clients do not enforce this restriction.
 * Shorten some names
 * Address tracking implications of resumption
 
-  
+
 # Contributors
 {:numbered="false"}
 ~~~~
       Martin Abadi
       University of California, Santa Cruz
       abadi@cs.ucsc.edu
-   
+
       Christopher Allen
       (co-editor of TLS 1.0)
       Alacrity Ventures
       ChristopherA@AlacrityManagement.com
-   
+
       Nimrod Aviram
       Tel Aviv University
       nimrod.aviram@gmail.com
-      
+
       Richard Barnes
       Cisco
       rlb@ipv.sx
-   
+
       Steven M. Bellovin
       Columbia University
       smb@cs.columbia.edu
-   
+
       David Benjamin
       Google
       davidben@google.com
-   
+
       Benjamin Beurdouche
       INRIA & Microsoft Research
       benjamin.beurdouche@ens.fr
-   
+
       Karthikeyan Bhargavan
       (editor of [RFC7627])
       INRIA
       karthikeyan.bhargavan@inria.fr
-   
+
       Simon Blake-Wilson
       (co-author of [RFC4492])
       BCI
       sblakewilson@bcisse.com
-   
+
       Nelson Bolyard
       (co-author of [RFC4492])
       Sun Microsystems, Inc.
       nelson@bolyard.com
-   
+
       Ran Canetti
       IBM
       canetti@watson.ibm.com
-   
+
       Matt Caswell
       OpenSSL
       matt@openssl.org
-   
+
       Stephen Checkoway
       University of Illinois at Chicago
       sfc@uic.edu
-   
+
       Pete Chown
       Skygate Technology Ltd
       pc@skygate.co.uk
-   
+
       Katriel Cohn-Gordon
       University of Oxford
       me@katriel.co.uk
-   
+
       Cas Cremers
       University of Oxford
       cas.cremers@cs.ox.ac.uk
-   
+
       Antoine Delignat-Lavaud
       (co-author of [RFC7627])
       INRIA
       antdl@microsoft.com
-   
+
       Tim Dierks
       (co-author of TLS 1.0, co-editor of TLS 1.1 and 1.2)
       Independent
       tim@dierks.org
-   
+
       Roelof DuToit
       Symantec Corporation
       roelof_dutoit@symantec.com
-   
+
       Taher Elgamal
       Securify
       taher@securify.com
-   
+
       Pasi Eronen
       Nokia
       pasi.eronen@nokia.com
-   
+
       Cedric Fournet
       Microsoft
       fournet@microsoft.com
-   
+
       Anil Gangolli
       anil@busybuddha.org
-   
+
       David M. Garrett
       dave@nulldereference.com
-   
+
       Illya Gerasymchuk
       Independent
       illya@iluxonchik.me
-   
+
       Alessandro Ghedini
       Cloudflare Inc.
       alessandro@cloudflare.com
-   
+
       Daniel Kahn Gillmor
       ACLU
       dkg@fifthhorseman.net
-   
+
       Matthew Green
       Johns Hopkins University
       mgreen@cs.jhu.edu
-   
+
       Jens Guballa
       ETAS
       jens.guballa@etas.com
-   
+
       Felix Guenther
       TU Darmstadt
       mail@felixguenther.info
-   
+
       Vipul Gupta
       (co-author of [RFC4492])
       Sun Microsystems Laboratories
       vipul.gupta@sun.com
-   
+
       Chris Hawk
       (co-author of [RFC4492])
       Corriente Networks LLC
       chris@corriente.net
-   
+
       Kipp Hickman
-   
+
       Alfred Hoenes
-   
+
       David Hopwood
       Independent Consultant
       david.hopwood@blueyonder.co.uk
-   
+
       Marko Horvat
       MPI-SWS
       mhorvat@mpi-sws.org
-   
+
       Jonathan Hoyland
       Royal Holloway, University of London
       jonathan.hoyland@gmail.com
-   
+
       Subodh Iyengar
       Facebook
       subodh@fb.com
-   
+
       Benjamin Kaduk
       Akamai Technologies
       kaduk@mit.edu
-   
+
       Hubert Kario
       Red Hat Inc.
       hkario@redhat.com
-   
+
       Phil Karlton
       (co-author of SSL 3.0)
-   
+
       Leon Klingele
       Independent
       mail@leonklingele.de
-   
+
       Paul Kocher
       (co-author of SSL 3.0)
       Cryptography Research
       paul@cryptography.com
-   
+
       Hugo Krawczyk
       IBM
       hugokraw@us.ibm.com
-   
+
       Adam Langley
       (co-author of [RFC7627])
       Google
       agl@google.com
-   
+
       Olivier Levillain
       ANSSI
       olivier.levillain@ssi.gouv.fr
-   
+
       Xiaoyin Liu
       University of North Carolina at Chapel Hill
       xiaoyin.l@outlook.com
-   
+
       Ilari Liusvaara
       Independent
       ilariliusvaara@welho.com
-   
+
       Atul Luykx
       K.U. Leuven
       atul.luykx@kuleuven.be
-   
+
       Colm MacCarthaigh
       Amazon Web Services
       colm@allcosts.net
-   
+
       Carl Mehner
       USAA
       carl.mehner@usaa.com
-   
+
       Jan Mikkelsen
       Transactionware
       janm@transactionware.com
-   
+
       Bodo Moeller
       (co-author of [RFC4492])
       Google
       bodo@acm.org
-   
+
       Kyle Nekritz
       Facebook
       knekritz@fb.com
-   
+
       Erik Nygren
       Akamai Technologies
       erik+ietf@nygren.org
-   
+
       Magnus Nystrom
       Microsoft
       mnystrom@microsoft.com
-   
+
       Kazuho Oku
       DeNA Co., Ltd.
       kazuhooku@gmail.com
-   
+
       Kenny Paterson
       Royal Holloway, University of London
       kenny.paterson@rhul.ac.uk
-   
+
       Christopher Patton
       University of Florida
       cjpatton@ufl.edu
-   
+
       Alfredo Pironti
       (co-author of [RFC7627])
       INRIA
       alfredo.pironti@inria.fr
-   
+
       Andrei Popov
       Microsoft
       andrei.popov@microsoft.com
-   
+
       Marsh Ray
       (co-author of [RFC7627])
       Microsoft
       maray@microsoft.com
-   
+
       Robert Relyea
       Netscape Communications
       relyea@netscape.com
-   
+
       Kyle Rose
       Akamai Technologies
       krose@krose.org
-   
+
       Jim Roskind
       Amazon
       jroskind@amazon.com
-   
+
       Michael Sabin
-   
+
       Joe Salowey
       Tableau Software
       joe@salowey.net
-   
+
       Rich Salz
       Akamai
       rsalz@akamai.com
-   
+
       David Schinazi
       Apple Inc.
       dschinazi@apple.com
-   
+
       Sam Scott
       Royal Holloway, University of London
       me@samjs.co.uk
-   
+
       Thomas Shrimpton
       University of Florida
       teshrim@ufl.edu
-   
+
       Dan Simon
       Microsoft, Inc.
       dansimon@microsoft.com
-   
+
       Brian Smith
       Independent
       brian@briansmith.org
-   
+
       Brian Sniffen
       Akamai Technologies
       ietf@bts.evenmere.org
-   
+
       Nick Sullivan
       Cloudflare Inc.
       nick@cloudflare.com
-   
+
       Bjoern Tackmann
       University of California, San Diego
       btackmann@eng.ucsd.edu
-   
+
       Tim Taubert
       Mozilla
       ttaubert@mozilla.com
-   
+
       Martin Thomson
       Mozilla
       mt@mozilla.com
-   
+
       Hannes Tschofenig
       Arm Limited
       Hannes.Tschofenig@arm.com
-   
+
       Sean Turner
       sn3rd
       sean@sn3rd.com
-   
+
       Steven Valdez
       Google
       svaldez@google.com
-   
+
       Filippo Valsorda
       Cloudflare Inc.
       filippo@cloudflare.com
-   
+
       Thyla van der Merwe
       Royal Holloway, University of London
       tjvdmerwe@gmail.com
-   
+
       Victor Vasiliev
       Google
       vasilvv@google.com
-   
+
       Hoeteck Wee
       Ecole Normale Superieure, Paris
       hoeteck@alum.mit.edu
-   
+
       Tom Weinstein
-   
+
       David Wong
       NCC Group
       david.wong@nccgroup.trust
-   
+
       Christopher A. Wood
       Apple Inc.
       cawood@apple.com
-   
+
       Tim Wright
       Vodafone
       timothy.wright@vodafone.com
-   
+
       Peter Wu
       Independent
       peter@lekensteyn.nl
-   
+
       Kazu Yamamoto
       Internet Initiative Japan Inc.
       kazu@iij.ad.jp
