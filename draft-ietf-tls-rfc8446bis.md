@@ -3532,6 +3532,16 @@ a KeyUpdate with the old key is received before accepting any messages
 encrypted with the new key. Failure to do so may allow message truncation
 attacks.
 
+With a 128-bit key as in AES-128, rekeying 2^64 times has a high
+probability of key reuse within a given connection.  Note that even
+if the key repeats, the IV is also independently generated.  In order
+to provide an extra margin of security, sending implementations MUST
+NOT allow the epoch to exceed 2^48-1.  In order to allow this value
+to be changed later, receiving implementations MUST NOT enforce this
+rule.  If a sending implementation receives a KeyUpdate with
+request_update set to "update_requested", it MUST NOT send its own
+KeyUpdate if that would cause it to exceed these limits and SHOULD
+instead ignore the "update_requested" flag. 
 
 #  Record Protocol
 
@@ -3878,13 +3888,14 @@ primitive (AES or ChaCha20) has no weaknesses. Implementations SHOULD
 do a key update as described in {{key-update}} prior to reaching these limits.
 Note that it is not possible to perform a KeyUpdate for early data
 and therefore implementations SHOULD not exceed the limits
-when sending early data.
+when sending early data. 
 
 For AES-GCM, up to 2^24.5 full-size records (about 24 million)
 may be encrypted on a given connection while keeping a safety
 margin of approximately 2^-57 for Authenticated Encryption (AE) security.
 For ChaCha20/Poly1305, the record sequence number would wrap before the
 safety limit is reached.
+
 
 #  Alert Protocol
 
