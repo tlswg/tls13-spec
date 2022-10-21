@@ -5872,11 +5872,12 @@ the user.
 reorder them with respect to other messages (e.g., moving
 a delete to after a create).
 
-- Exploiting cache behavior to discover the content of 0-RTT
-messages by replaying a 0-RTT message to a different cache node
-that does not have a resource of interest in cache, and then
-using a separate connection to check whether that resource has
-been added to the cache.
+- Amplifying existing information leaks caused by side effects like
+caching. An attacker could learn information about the content of a
+0-RTT message by replaying it to some cache node that has not cached
+some resource of interest, and then using a separate connection to check
+whether that resource has been added to the cache. This could be repeated
+with different cache nodes as often as the 0-RTT message is replayable.
 
 If data can be replayed a large number of times, additional attacks
 become possible, such as making repeated measurements of the
