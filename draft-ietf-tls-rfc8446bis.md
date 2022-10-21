@@ -5872,10 +5872,11 @@ the user.
 reorder them with respect to other messages (e.g., moving
 a delete to after a create).
 
-- Exploiting cache timing behavior to discover the content of 0-RTT
+- Exploiting cache behavior to discover the content of 0-RTT
 messages by replaying a 0-RTT message to a different cache node
-and then using a separate connection to measure request latency,
-to see if the two requests address the same resource.
+that does not have a resource of interest in cache, and then
+using a separate connection to check whether that resource has
+been added to the cache.
 
 If data can be replayed a large number of times, additional attacks
 become possible, such as making repeated measurements of the
