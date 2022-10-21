@@ -2706,6 +2706,9 @@ binder will be computed over:
        Transcript-Hash(Truncate(ClientHello1))
 
 Where Truncate() removes the binders list from the ClientHello.
+Note that this hash will be computed using the hash associated with
+the PSK, as the client does not know which cipher suite the server
+will select.
 
 If the server responds with a HelloRetryRequest and the client then sends
 ClientHello2, its binder will be computed over:
@@ -2718,6 +2721,10 @@ The full ClientHello1/ClientHello2 is included in all other handshake hash compu
 Note that in the first flight, Truncate(ClientHello1) is hashed directly,
 but in the second flight, ClientHello1 is hashed and then reinjected as a
 "message_hash" message, as described in {{the-transcript-hash}}.
+Note that the "message_hash" will be hashed with the negotiated function,
+which may or may match the hash associated with the PSK. This is
+consistent with how the transcript is calculated for the rest
+of the handshake.
 
 #### Processing Order
 
