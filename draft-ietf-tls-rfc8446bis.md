@@ -3935,6 +3935,7 @@ enum) MUST terminate the connection with an "illegal_parameter" alert.
            access_denied(49),
            decode_error(50),
            decrypt_error(51),
+           ticket_invalid(TBD),
            export_restriction_RESERVED(60),
            protocol_version(70),
            insufficient_security(71),
@@ -4102,6 +4103,13 @@ decrypt_error:
   to correctly verify a signature or validate a Finished message
   or a PSK binder.
 
+ticket_invalid:
+: The server received a ticket that is invalid and is necessary
+to complete the handshake. For instance, the server might
+be configured to require PSK mode. Note that if a ticket
+is being used for session resumption, the server MAY
+ignore the ticket and perform a full handshake instead.
+
 protocol_version:
 : The protocol version the peer has attempted to negotiate is
   recognized but not supported (see {{backward-compatibility}}).
@@ -4162,6 +4170,8 @@ no_application_protocol:
   "application_layer_protocol_negotiation" extension advertises
   only protocols that the server does not support
   (see {{RFC7301}}).
+  
+
 {:br }
 
 New Alert values are assigned by IANA as described in {{iana-considerations}}.
@@ -4836,7 +4846,7 @@ The registries and their allocation policies are below:
   with the values from {{alert-messages-appendix}}. The
   "DTLS-OK" column is marked as "Y" for all such values.
   Values marked as "_RESERVED" have comments
-   describing their previous usage.
+   describing their previous usage
 
 - TLS HandshakeType registry: Future values are allocated via
   Standards Action {{RFC8126}}. IANA has updated this registry
@@ -4886,6 +4896,9 @@ by {{RFC8422}}) and updated by {{RFC7919}} and {{RFC8447}}.  The entries
 for values 29 and 30 (x25519 and x448) have been updated to also
 refer to this document.
 
+This document adds an entry in the TLS Alerts registry to add
+the value "ticket_invalid" with value TBD.
+
 In addition, this document defines two new registries that are maintained
 by IANA:
 
@@ -4905,7 +4918,7 @@ by IANA:
   "Recommended" column is assigned a value of "N" unless explicitly
  requested, and adding a value with a "Recommended" value of "Y"
  requires Standards Action {{RFC8126}}.  IESG Approval is REQUIRED
- for a Y->N transition.  
+ for a Y->N transition.
 
  - TLS PskKeyExchangeMode registry: Values in the
    range 0-253 (decimal) are assigned via Specification Required
