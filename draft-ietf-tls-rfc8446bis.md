@@ -1728,17 +1728,31 @@ appears, it MUST abort the handshake with an "illegal_parameter" alert.
 | server_certificate_type [RFC7250]        |      CH, EE |
 | padding [RFC7685]                        |          CH |
 | cached_info [RFC7924]                    | CH, EE |
-| key_share (RFC 8446)            | CH, SH, HRR |
-| pre_shared_key (RFC 8446)       |      CH, SH |
-| psk_key_exchange_modes (RFC 8446)|          CH |
-| early_data (RFC 8446)           | CH, EE, NST |
-| cookie (RFC 8446)               |     CH, HRR |
-| supported_versions (RFC 8446)   | CH, SH, HRR |
-| certificate_authorities (RFC 8446)|      CH, CR |
-| oid_filters (RFC 8446)          |          CR |
-| post_handshake_auth (RFC 8446)  |          CH |
-| signature_algorithms_cert (RFC 8446)|      CH, CR |
+| compress_certificate [RFC8879]		   | CH, CR |
+| record_size_limit [RFC8849]			   | CH, EE |
+| delegated_credentials [RFC-TBD]		   | CH, CR, CT |
+| supported_ekt_ciphers | 				   | CH, EE |
+| pre_shared_key [RFC 8446]       |      CH, SH |
+| early_data [RFC 8446]           | CH, EE, NST |
+| psk_key_exchange_modes [RFC 8446]|          CH |
+| cookie [RFC 8446]               |     CH, HRR |
+| supported_versions [RFC 8446]   | CH, SH, HRR |
+| certificate_authorities [RFC 8446]|      CH, CR |
+| oid_filters [RFC 8446]          |          CR |
+| post_handshake_auth [RFC 8446]  |          CH |
+| signature_algorithms_cert [RFC 8446]|      CH, CR |
+| key_share [RFC 8446]            | CH, SH, HRR |
+| transparency_info [RFC 9162]	  | CH, CR, CT |
+| connection_id	[RFC 9146]		  | CH, SH |
+| external_id_hash [RFC 8844] 	  | CH, EE |
+| external_session_id [RFC 8844]  | CH, EE |
+| quic_transport_parameters [RFC 9001] | CH, EE |
+| ticket_request [RFC 9149] | CH, EE|
+
 {: #extensions-list title="TLS Extensions"}
+
+Note: this table includes only extensions marked
+"Recommended" at the time of this writing.
 
 When multiple extensions of different types are present, the
 extensions MAY appear in any order, with the exception of
