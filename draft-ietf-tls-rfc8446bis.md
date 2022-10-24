@@ -1713,6 +1713,7 @@ appear, using the following notation: CH (ClientHello), SH
 it recognizes and which is not specified for the message in which it
 appears, it MUST abort the handshake with an "illegal_parameter" alert.
 
+
 | Extension                                |   TLS 1.3   |
 |:-----------------------------------------|------------:|
 | server_name [RFC6066]                    |      CH, EE |
@@ -1748,7 +1749,6 @@ appears, it MUST abort the handshake with an "illegal_parameter" alert.
 | external_session_id [RFC 8844]  | CH, EE |
 | quic_transport_parameters [RFC 9001] | CH, EE |
 | ticket_request [RFC 9149] | CH, EE|
-
 {: #extensions-list title="TLS Extensions"}
 
 Note: this table includes only extensions marked
@@ -6014,10 +6014,23 @@ relies on clients refusing to accept signatures using keys
 in certificates that do not have the digitalSignature bit set,
 and many clients do not enforce this restriction.
 
-
-# Changes Since -00
+# Change Log
 
 [[RFC EDITOR: Please remove in final RFC.]]
+
+Since -04
+
+* Update the extension table (Issue 1241)
+* Clarify user_canceled (Issue 1208)
+* Clarify 0-RTT cache side channels (Issue 1225)
+* Require that message reinjection be done with the current hash.
+  Potentially a clarification and potentially a wire format
+  change depending on previous interpretation (Issue 1227)
+
+Changelog not updated between -00 and -03
+
+Since -00
+
 
 * Update TLS 1.2 terminology
 * Specify "certificate-based" client authentication
