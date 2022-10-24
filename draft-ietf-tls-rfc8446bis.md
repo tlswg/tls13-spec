@@ -3976,12 +3976,14 @@ user_canceled:
   handshake for some reason unrelated to a protocol failure. If a user
   cancels an operation after the handshake is complete, just closing the
   connection by sending a "close_notify" is more appropriate. This alert
-  SHOULD be followed by a "close_notify". This alert generally
-  has AlertLevel=warning.
+  MUST be followed by a "close_notify". This alert generally
+  has AlertLevel=warning. Receiving implementations should
+  continue to read data from the peer until a "close_notify" is received,
+  though they MAY log or otherwise record them.
 {:br }
 
 Either party MAY initiate a close of its write side of the connection by
-sending a "close_notify" alert. Any data received after a closure alert has
+sending a "close_notify" alert. Any data received after a "close_notify" alert has
 been received MUST be ignored. If a transport-level close is received prior
 to a "close_notify", the receiver cannot know that all the data that was sent
 has been received.
