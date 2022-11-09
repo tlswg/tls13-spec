@@ -1987,9 +1987,9 @@ ECDSA algorithms:
   represented as a DER-encoded {{X690}} ECDSA-Sig-Value structure as defined in {{RFC4492}}.
 
 RSASSA-PSS RSAE algorithms:
-: Indicates a signature algorithm using RSASSA-PSS {{RFC8017}} with mask
-  generation function 1. The
-  digest used in the mask generation function and the digest being signed are
+: Indicates a signature algorithm using RSASSA-PSS with a mask
+  generation function of MGF1, as defined in {{RFC8017}}. The
+  digest used in MGF1 and the digest being signed are
   both the corresponding hash algorithm as defined in {{!SHS}}.
   The length of the Salt MUST be equal to the length of the output of the
   digest algorithm. If the public key is carried
@@ -2001,9 +2001,9 @@ EdDSA algorithms:
   "PureEdDSA" algorithms and not the "prehash" variants.
 
 RSASSA-PSS PSS algorithms:
-: Indicates a signature algorithm using RSASSA-PSS {{RFC8017}} with mask
-  generation function 1. The
-  digest used in the mask generation function and the digest being signed are
+: Indicates a signature algorithm using RSASSA-PSS with a mask
+  generation function of MGF1, as defined in {{RFC8017}}. The
+  digest used in MGF1 and the digest being signed are
   both the corresponding hash algorithm as defined in {{!SHS}}.
   The length of the Salt MUST be equal to the length of the digest
   algorithm. If the public key is carried in an X.509 certificate,
