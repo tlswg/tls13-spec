@@ -4348,8 +4348,10 @@ one for each potential PSK; if no PSK is selected, it will then need to
 compute the Early Secret corresponding to the zero PSK.
 
 Once all the values which are to be derived from a given secret have
-been computed, that secret SHOULD be erased.
-
+been computed, that secret SHOULD be erased. After closure of a connection
+the TLS implementation MUST delete all shared secrets and keys derived in the
+TLS Key Schedule except binder_key, resumption_secret, and PSKs derived
+from the resumption_secret.
 
 ## Updating Traffic Secrets  {#updating-traffic-keys}
 
