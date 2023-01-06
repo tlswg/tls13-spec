@@ -4348,10 +4348,7 @@ one for each potential PSK; if no PSK is selected, it will then need to
 compute the Early Secret corresponding to the zero PSK.
 
 Once all the values which are to be derived from a given secret have
-been computed, that secret SHOULD be erased. After closure of a connection
-the TLS implementation MUST delete all shared secrets and keys derived in the
-TLS Key Schedule except binder_key, resumption_secret, and PSKs derived
-from the resumption_secret.
+been computed, that secret SHOULD be erased.
 
 ## Updating Traffic Secrets  {#updating-traffic-keys}
 
@@ -5546,7 +5543,11 @@ Forward secret with respect to long-term keys:
   the handshake is complete, this does not compromise the security of the
   session key (see {{?DOW92=DOI.10.1007/BF00124891}}), as long as the session key itself has
   been erased. The forward secrecy property is not satisfied
-  when PSK is used in the "psk_ke" PskKeyExchangeMode.
+  when PSK is used in the "psk_ke" PskKeyExchangeMode. If key shares, shared secrets,
+  or any keys derived in the TLS Key Schedule except binder_key, resumption_secret,
+  and PSKs derived from the resumption_secret is stored for more than a short-term after
+  closure of a connection this creates additional long-term keys, and the property
+  is no longer satisfied.
 
 Key Compromise Impersonation (KCI) resistance:
 : In a mutually authenticated connection with certificates, compromising the long-term
