@@ -5546,7 +5546,7 @@ Forward secret with respect to long-term keys:
   been erased. The forward secrecy property is not satisfied
   when PSK is used in the "psk_ke" PskKeyExchangeMode. If key shares, shared secrets,
   or any keys derived in the TLS Key Schedule except binder_key, resumption_secret,
-  and PSKs derived from the resumption_secret is not deleted short-term after
+  and PSKs derived from the resumption_secret is not erased short-term after
   closure of a connection this creates additional long-term keys, and the property
   is no longer satisfied.
 
