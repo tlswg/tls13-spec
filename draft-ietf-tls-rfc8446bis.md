@@ -4350,6 +4350,7 @@ compute the Early Secret corresponding to the zero PSK.
 Once all the values which are to be derived from a given secret have
 been computed, that secret SHOULD be erased.
 
+
 ## Updating Traffic Secrets  {#updating-traffic-keys}
 
 Once the handshake is complete, it is possible for either side to
