@@ -5542,8 +5542,8 @@ Forward secret with respect to long-term keys:
 : If the long-term keying material (in this case the signature keys in certificate-based
   authentication modes or the external/resumption PSK in PSK with (EC)DHE modes) is compromised after
   the handshake is complete, this does not compromise the security of the
-  session key (see {{?DOW92=DOI.10.1007/BF00124891}}), as long as the session key itself has
-  been erased. The forward secrecy property is not satisfied
+  session key (see {{?DOW92=DOI.10.1007/BF00124891}}), as long as the session key itself (and all material that could be used to recreate the session key) has
+  been erased. In particular, the key shares, shared secrets, and keys derived in the TLS Key Schedule other than `binder_key`, `resumption_secret`, and PSKs derived from the `resumption_Secret` also need to be erased.  The forward secrecy property is not satisfied
   when PSK is used in the "psk_ke" PskKeyExchangeMode. If key shares, shared secrets,
   or any keys derived in the TLS Key Schedule except binder_key, resumption_secret,
   and PSKs derived from the resumption_secret are not erased short-term after
