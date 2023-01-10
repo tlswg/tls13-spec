@@ -5544,7 +5544,7 @@ Forward secret with respect to long-term keys:
   the handshake is complete, this does not compromise the security of the
   session key (see {{?DOW92=DOI.10.1007/BF00124891}}), as long as the session key itself (and all material that could be used to recreate the session key) has
   been erased. In particular, the key shares, shared secrets, and keys derived in the TLS Key Schedule other than `binder_key`, `resumption_secret`, and PSKs derived from the `resumption_Secret` also need to be erased.  The forward secrecy property is not satisfied
-  when PSK is used in the "psk_ke" PskKeyExchangeMode.  Failing to erase keys or secrets intended to be ephemeral or connection-specific in effect creates additional long-term keys that must be protected, and compromise of those long-term keys (even after the handshake is complete) can result in loss of secrecy of the connection's traffic.
+  when PSK is used in the "psk_ke" PskKeyExchangeMode.  Failing to erase keys or secrets intended to be ephemeral or connection-specific in effect creates additional long-term keys that must be protected. Compromise of those long-term keys (even after the handshake is complete) can result in loss of secrecy of the connection's traffic.
 
 Key Compromise Impersonation (KCI) resistance:
 : In a mutually authenticated connection with certificates, compromising the long-term
