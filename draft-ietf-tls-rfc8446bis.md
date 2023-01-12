@@ -5263,7 +5263,7 @@ cache lookups in web browsers.
 
 Clients and Servers SHOULD NOT reuse a key share for multiple connections. Reuse
 of a key share allows passive observers to correlate different connections. Reuse
-of a client key share additionally allows the server to correlate different connections.
+of a client key share to the same server additionally allows the server to correlate different connections.
 
 
 ## Unauthenticated Operation
