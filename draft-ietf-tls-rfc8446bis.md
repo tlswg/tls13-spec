@@ -5245,7 +5245,7 @@ Cryptographic details:
   key leaks {{FW15}}?
 
 
-## Client Tracking Prevention {#client-tracking}
+## Client and Server Tracking Prevention {#client-tracking}
 
 Clients SHOULD NOT reuse a psk identity such as a ticket for multiple connections. Reuse
 of a psk identity allows passive observers to correlate different connections.
