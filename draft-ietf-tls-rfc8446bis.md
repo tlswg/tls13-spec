@@ -5247,8 +5247,8 @@ Cryptographic details:
 
 ## Client Tracking Prevention {#client-tracking}
 
-Clients SHOULD NOT reuse a ticket for multiple connections. Reuse
-of a ticket allows passive observers to correlate different connections.
+Clients SHOULD NOT reuse a psk identity such as a ticket for multiple connections. Reuse
+of a psk identity allows passive observers to correlate different connections.
 Servers that issue tickets SHOULD offer at least as many tickets
 as the number of connections that a client might use; for example, a web browser
 using HTTP/1.1 {{RFC7230}} might open six connections to a server. Servers SHOULD
