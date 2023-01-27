@@ -5164,8 +5164,8 @@ always be verified to ensure proper signing by a trusted certificate authority
 Users should be able to view information about the certificate and trust anchor.
 Applications SHOULD also enforce minimum and maximum key sizes. For example,
 certification paths containing keys or signatures weaker than 2048-bit RSA or
-224-bit ECDSA are not appropriate for secure applications.
-
+224-bit ECDSA are not appropriate for secure applications. A node MAY use
+the same certificate as both server and client certificate.
 
 ## Implementation Pitfalls
 
