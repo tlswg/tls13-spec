@@ -67,13 +67,6 @@ normative:
           - ins: M. Dworkin
         seriesinfo:
           NIST: Special Publication 800-38D
-  ECDSA:
-       title: "Public Key Cryptography for the Financial Services Industry: The Elliptic Curve Digital Signature Algorithm (ECDSA)"
-       author:
-         org: American National Standards Institute
-       date: 2005-11
-       seriesinfo:
-         ANSI: ANS X9.62-2005
 
 informative:
   RFC4086:
@@ -426,7 +419,7 @@ secure channel should provide the following properties:
   authenticated; the client side is optionally
   authenticated. Authentication can happen via asymmetric cryptography
   (e.g., RSA {{?RSA=DOI.10.1145/359340.359342}}, the Elliptic Curve Digital Signature
-  Algorithm (ECDSA) {{ECDSA}}, or the Edwards-Curve Digital Signature
+  Algorithm (ECDSA) {{?DSS=DOI.10.6028/NIST.FIPS.186-5}}, or the Edwards-Curve Digital Signature
   Algorithm (EdDSA) {{RFC8032}}) or a symmetric pre-shared key
   (PSK).
 
@@ -1981,8 +1974,7 @@ RSASSA-PKCS1-v1_5 algorithms:
   and "signature_algorithms_cert" for backward compatibility with TLS 1.2.
 
 ECDSA algorithms:
-: Indicates a signature algorithm using ECDSA {{ECDSA}}, the corresponding
-  curve as defined in ANSI X9.62 {{ECDSA}} and FIPS 186-4 {{?DSS=DOI.10.6028/NIST.FIPS.186-4}}, and the
+: Indicates a signature algorithm using ECDSA {{DSS}}, the corresponding curve as defined in NIST SP 800-186 {{?ECDP=DOI.10.6028/NIST.SP.800-186}}, and the
   corresponding hash algorithm as defined in {{!SHS}}. The signature is
   represented as a DER-encoded {{X690}} ECDSA-Sig-Value structure as defined in {{RFC4492}}.
 
@@ -2203,7 +2195,7 @@ The "extension_data" field of this extension contains a
 
 Elliptic Curve Groups (ECDHE):
 : Indicates support for the corresponding named curve, defined
-  in either FIPS 186-4 {{DSS}} or in {{RFC7748}}.
+  in either NIST SP 800-186 {{ECDP}} or in {{RFC7748}}.
   Values 0xFE00 through 0xFEFF are reserved for Private Use {{RFC8126}}.
 
 Finite Field Groups (DHE):
@@ -2381,7 +2373,7 @@ take 48 octets each. For P-521, they take 66 octets each.
 For the curves secp256r1, secp384r1, and secp521r1,
 peers MUST validate each other's public value Q by ensuring
 that the point is a valid point on the elliptic curve.
-The appropriate validation procedures are defined in Section 4.3.7 of {{ECDSA}}
+The appropriate validation procedures are defined in Appendix D.1 of {{ECDP}}
 and alternatively in Section 5.6.2.3 of {{?KEYAGREEMENT=DOI.10.6028/NIST.SP.800-56Ar2}}.
 This process consists of three
 steps: (1) verify that Q is not the point at infinity (O), (2) verify
