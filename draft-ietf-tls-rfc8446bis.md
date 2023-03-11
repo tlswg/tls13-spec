@@ -2681,7 +2681,7 @@ each PskIdentity contains an obfuscated version of the ticket age
 formed by taking the age in milliseconds and adding the "ticket_age_add"
 value that was included with the ticket (see {{NSTMessage}}), modulo 2^32.
 This addition prevents passive observers from correlating connections
-unless tickets are reused. Note that the "ticket_lifetime" field in
+unless tickets or key shares are reused. Note that the "ticket_lifetime" field in
 the NewSessionTicket message is in seconds but the "obfuscated_ticket_age"
 is in milliseconds. Because ticket lifetimes are
 restricted to a week, 32 bits is enough to represent any plausible
@@ -5255,6 +5255,10 @@ different connections. This is possible independent of ticket reuse. Client
 applications SHOULD NOT offer tickets across connections that are meant to be
 uncorrelated. For example, {{FETCH}} defines network partition keys to separate
 cache lookups in web browsers.
+
+Clients and Servers SHOULD NOT reuse a key share for multiple connections. Reuse
+of a key share allows passive observers to correlate different connections. Reuse
+of a client key share to the same server additionally allows the server to correlate different connections.
 
 
 ## Unauthenticated Operation
