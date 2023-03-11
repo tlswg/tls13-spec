@@ -1700,6 +1700,8 @@ in the NewSessionTicket, though the client does not respond directly
 to these.
 
 Implementations MUST NOT send extension responses
+(i.e., in the ServerHello, EncryptedExtensions, HelloRetryRequest,
+and Certificate messages)
 if the remote endpoint did not send the corresponding extension requests,
 with the exception of the "cookie" extension in the HelloRetryRequest.
 Upon receiving such an extension, an endpoint MUST abort the handshake with an
