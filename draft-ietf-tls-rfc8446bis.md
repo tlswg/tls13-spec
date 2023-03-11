@@ -3990,7 +3990,8 @@ order to avoid a truncation attack.
 close_notify:
 : This alert notifies the recipient that the sender will not send
   any more messages on this connection. Any data received after a
-  closure alert has been received MUST be ignored.
+  closure alert has been received MUST be ignored. This alert MUST be
+  sent with AlertLevel=warning.
 
 user_canceled:
 : This alert notifies the recipient that the sender is canceling the
