@@ -3336,7 +3336,10 @@ derived from the resumption secret (see {{cryptographic-computations}}).
 
 The client MAY use this PSK for future handshakes by including the
 ticket value in the "pre_shared_key" extension in its ClientHello
-({{pre-shared-key-extension}}). Resumption MAY be done while the
+({{pre-shared-key-extension}}). 
+Clients which receive a NewSessionTicket message but do
+not support resumption MUST silently ignore this message.
+Resumption MAY be done while the
 original connection is still open. Servers MAY send multiple tickets on a
 single connection, either immediately after each other or
 after specific events (see {{client-tracking}}).
@@ -3367,6 +3370,7 @@ implementations MUST use the value sent in the resumption ClientHello rather
 than the value sent in the previous session. Note that if a server
 implementation declines all PSK identities with different SNI values, these two
 values are always the same.
+
 
 Note: Although the resumption secret depends on the client's second
 flight, a server which does not request certificate-based client authentication MAY compute
