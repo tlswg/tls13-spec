@@ -6062,6 +6062,19 @@ and many clients do not enforce this restriction.
 
 [[RFC EDITOR: Please remove in final RFC.]]
 
+Since -05
+
+- Port in text on key update limits from RFC 9147 (Issue 1257)
+- Clarify that you need to ignore NST if you don't do resumption
+  (Issue 1280)
+- Discuss the privacy implications of external key reuse (Issue 1287)
+- Advice on key deletion (PR 1282)
+- Clarify what unsolicited extensions means (PR 1275)
+- close_notify should be warning (PR 1290)
+- Reference RFC 8773 (PR 1296)
+- Add some more information about application bindings and cite
+  6125-bis (PR 1297)
+  
 Since -04
 
 * Update the extension table (Issue 1241)
