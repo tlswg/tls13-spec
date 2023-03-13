@@ -3336,7 +3336,7 @@ derived from the resumption secret (see {{cryptographic-computations}}).
 
 The client MAY use this PSK for future handshakes by including the
 ticket value in the "pre_shared_key" extension in its ClientHello
-({{pre-shared-key-extension}}). 
+({{pre-shared-key-extension}}).
 Clients which receive a NewSessionTicket message but do
 not support resumption MUST silently ignore this message.
 Resumption MAY be done while the
@@ -6307,7 +6307,7 @@ Since -00
       John {{{Preuß Mattsson}}}
       Ericsson
       john.mattsson@ericsson.com
-      
+
       Marsh Ray
       (co-author of [RFC7627])
       Microsoft
