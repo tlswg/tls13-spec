@@ -5244,7 +5244,7 @@ Cryptographic details:
   key leaks {{FW15}}?
 
 
-## Client Tracking Prevention {#client-tracking}
+## Client and Server Tracking Prevention {#client-tracking}
 
 Clients SHOULD NOT reuse a ticket for multiple connections. Reuse
 of a ticket allows passive observers to correlate different connections.
@@ -5263,6 +5263,13 @@ cache lookups in web browsers.
 Clients and Servers SHOULD NOT reuse a key share for multiple connections. Reuse
 of a key share allows passive observers to correlate different connections. Reuse
 of a client key share to the same server additionally allows the server to correlate different connections.
+
+If an external PSK identity is used for multiple connections, then it
+will generally be possible for an external observer to track
+clients and/or servers across connections. Use of the
+Encrypted Client Hello {{?I-D.ietf-tls-esni}} extension can
+mitigate this risk, as can mechanisms external to TLS that
+rotate the PSK identity.
 
 
 ## Unauthenticated Operation
