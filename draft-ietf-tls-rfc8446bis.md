@@ -5655,7 +5655,7 @@ resistant. See {{key-derivation-and-hkdf}} for more on this.
 Note: The binder does not cover the binder values from other
 PSKs, though they are included in the Finished MAC.
 
-Note: TLS does not currently permit the server to send a certificate_request
+Note: This specification does not currently permit the server to send a certificate_request
 message in non-certificate-based handshakes (e.g., PSK).
 If this restriction were to be relaxed in future, the
 client's signature would not cover the server's certificate directly.
@@ -5667,8 +5667,9 @@ the server's certificate (see also {{Kraw16}}). It is unsafe to use certificate-
 authentication when the client might potentially share the same
 PSK/key-id pair with two different endpoints.  Implementations MUST
 NOT combine external PSKs with certificate-based authentication of
-either the client or server. Future specifications MAY provide an
-extension to permit this.
+either the client or server. {{?RFC8773}} provides an extension
+to permit this, but has not received the level of analysis as this
+specification.
 
 If an exporter is used, then it produces values which are unique
 and secret (because they are generated from a unique session key).
