@@ -457,7 +457,12 @@ layer on top of TLS transparently. The TLS standard, however, does not
 specify how protocols add security with TLS; how to
 initiate TLS handshaking and how to interpret the authentication
 certificates exchanged are left to the judgment of the designers and
-implementors of protocols that run on top of TLS.
+implementors of protocols that run on top of TLS. Application
+protocols using TLS MUST specify how TLS works with their
+application protocol, including how and when handshaking
+occurs, and how to do identity verification. {{?I-D.ietf-uta-rfc6125bis}}
+provides useful guidance on integrating TLS with applicaiton
+protocols.
 
 This document defines TLS version 1.3. While TLS 1.3 is not directly
 compatible with previous versions, all versions of TLS incorporate a
