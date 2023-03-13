@@ -457,7 +457,12 @@ layer on top of TLS transparently. The TLS standard, however, does not
 specify how protocols add security with TLS; how to
 initiate TLS handshaking and how to interpret the authentication
 certificates exchanged are left to the judgment of the designers and
-implementors of protocols that run on top of TLS.
+implementors of protocols that run on top of TLS. Application
+protocols using TLS MUST specify how TLS works with their
+application protocol, including how and when handshaking
+occurs, and how to do identity verification. {{?I-D.ietf-uta-rfc6125bis}}
+provides useful guidance on integrating TLS with applicaiton
+protocols.
 
 This document defines TLS version 1.3. While TLS 1.3 is not directly
 compatible with previous versions, all versions of TLS incorporate a
@@ -5665,7 +5670,8 @@ the PSK binder. {{PSK-FINISHED}}
 describes a concrete attack on constructions that do not bind to
 the server's certificate (see also {{Kraw16}}). It is unsafe to use certificate-based client
 authentication when the client might potentially share the same
-PSK/key-id pair with two different endpoints.  Implementations MUST
+PSK/key-id pair with two different endpoints.  In the absence
+of some other specification to the contrary, implementations MUST
 NOT combine external PSKs with certificate-based authentication of
 either the client or server. Future specifications MAY provide an
 extension to permit this.
