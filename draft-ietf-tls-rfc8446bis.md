@@ -3536,6 +3536,22 @@ a KeyUpdate with the old key is received before accepting any messages
 encrypted with the new key. Failure to do so may allow message truncation
 attacks.
 
+With a 128-bit key as in AES-128, rekeying 2^64 times has a high
+probability of key reuse within a given connection.  Note that even
+if the key repeats, the IV is also independently generated, so the
+chance of a joint key/IV collision is much lower.  In order
+to provide an extra margin of security, sending implementations MUST
+NOT allow the epoch -- and hence the number of key updates --
+to exceed 2^48-1.  In order to allow this value to be changed later
+-- for instance for ciphers with more than 128-bit keys --
+receiving implementations MUST NOT enforce this
+rule.  If a sending implementation receives a KeyUpdate with
+request_update set to "update_requested", it MUST NOT send its own
+KeyUpdate if that would cause it to exceed these limits and SHOULD
+instead ignore the "update_requested" flag. This may result in
+an eventual need to terminate the connection when the
+limits in {{limits-on-key-usage}} are reached.
+
 
 #  Record Protocol
 
@@ -3889,6 +3905,7 @@ may be encrypted on a given connection while keeping a safety
 margin of approximately 2^-57 for Authenticated Encryption (AE) security.
 For ChaCha20/Poly1305, the record sequence number would wrap before the
 safety limit is reached.
+
 
 #  Alert Protocol
 
