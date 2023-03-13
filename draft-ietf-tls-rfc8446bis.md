@@ -3534,14 +3534,20 @@ attacks.
 
 With a 128-bit key as in AES-128, rekeying 2^64 times has a high
 probability of key reuse within a given connection.  Note that even
-if the key repeats, the IV is also independently generated.  In order
+if the key repeats, the IV is also independently generated, so the
+chance of a joint key/IV collision is much lower.  In order
 to provide an extra margin of security, sending implementations MUST
-NOT allow the epoch to exceed 2^48-1.  In order to allow this value
-to be changed later, receiving implementations MUST NOT enforce this
+NOT allow the epoch -- and hence the number of key updates --
+to exceed 2^48-1.  In order to allow this value to be changed later
+-- for instance for ciphers with more than 128-bit keys --
+receiving implementations MUST NOT enforce this
 rule.  If a sending implementation receives a KeyUpdate with
 request_update set to "update_requested", it MUST NOT send its own
 KeyUpdate if that would cause it to exceed these limits and SHOULD
-instead ignore the "update_requested" flag. 
+instead ignore the "update_requested" flag. This may result in
+an eventual need to terminate the connection when the
+limits in {{limits-on-key-usage}} are reached.
+
 
 #  Record Protocol
 
@@ -3888,7 +3894,7 @@ primitive (AES or ChaCha20) has no weaknesses. Implementations SHOULD
 do a key update as described in {{key-update}} prior to reaching these limits.
 Note that it is not possible to perform a KeyUpdate for early data
 and therefore implementations SHOULD not exceed the limits
-when sending early data. 
+when sending early data.
 
 For AES-GCM, up to 2^24.5 full-size records (about 24 million)
 may be encrypted on a given connection while keeping a safety
@@ -6314,7 +6320,7 @@ Since -00
       John {{{Preuß Mattsson}}}
       Ericsson
       john.mattsson@ericsson.com
-      
+
       Marsh Ray
       (co-author of [RFC7627])
       Microsoft
