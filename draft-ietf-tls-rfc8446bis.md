@@ -5187,6 +5187,12 @@ Applications SHOULD also enforce minimum and maximum key sizes. For example,
 certification paths containing keys or signatures weaker than 2048-bit RSA or
 224-bit ECDSA are not appropriate for secure applications.
 
+Note that it is common practice in some protocols to use the same
+certificate in both client and server modes. This setting has not been
+extensively analyzed and it is the responsibility of the higher level
+protocol to ensure there is no ambiguity in this case about the
+higher-level semantics.
+
 
 ## Implementation Pitfalls
 
