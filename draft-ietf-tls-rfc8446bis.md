@@ -3899,11 +3899,12 @@ mechanism through TLS extensions or some other means.
 There are cryptographic limits on the amount of plaintext which can be
 safely encrypted under a given set of keys.  {{AEAD-LIMITS}} provides
 an analysis of these limits under the assumption that the underlying
-primitive (AES or ChaCha20) has no weaknesses. Implementations SHOULD
+primitive (AES or ChaCha20) has no weaknesses. Implementations MUST
 do a key update as described in {{key-update}} prior to reaching these limits.
 Note that it is not possible to perform a KeyUpdate for early data
-and therefore implementations SHOULD not exceed the limits
-when sending early data.
+and therefore implementations MUST not exceed the limits
+when sending early data. Receiving implementations SHOULD NOT enforce
+these limits, as future analyses may result in updated values.
 
 For AES-GCM, up to 2^24.5 full-size records (about 24 million)
 may be encrypted on a given connection while keeping a safety
