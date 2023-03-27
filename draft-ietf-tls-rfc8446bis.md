@@ -4855,7 +4855,7 @@ Security issues are discussed throughout this memo, especially in
 
 This document uses several registries that were originally created in
 {{RFC4346}} and updated in {{RFC8446}} and {{?RFC8447}}. The changes
-between {{RFC8446}} and this document are described in {{bis-changes}}.
+between {{RFC8446}} and {{RFC8447}} this document are described in {{bis-changes}}.
 IANA has updated these to reference this document.
 
 The registries and their allocation policies are below:
