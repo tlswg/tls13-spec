@@ -3900,6 +3900,7 @@ There are cryptographic limits on the amount of plaintext which can be
 safely encrypted under a given set of keys.  {{AEAD-LIMITS}} provides
 an analysis of these limits under the assumption that the underlying
 primitive (AES or ChaCha20) has no weaknesses. Implementations MUST
+either close the connection or 
 do a key update as described in {{key-update}} prior to reaching these limits.
 Note that it is not possible to perform a KeyUpdate for early data
 and therefore implementations MUST not exceed the limits
