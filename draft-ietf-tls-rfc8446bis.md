@@ -461,7 +461,7 @@ implementors of protocols that run on top of TLS. Application
 protocols using TLS MUST specify how TLS works with their
 application protocol, including how and when handshaking
 occurs, and how to do identity verification. {{?I-D.ietf-uta-rfc6125bis}}
-provides useful guidance on integrating TLS with applicaiton
+provides useful guidance on integrating TLS with application
 protocols.
 
 This document defines TLS version 1.3. While TLS 1.3 is not directly
@@ -506,12 +506,37 @@ server:  The endpoint that did not initiate the TLS connection.
 
 ##  Relationship to RFC 8446
 
-TLS 1.3 was originally specified in {{?RFC8446}}. This document is
-solely an editorial update. It contains updated text in areas which
-were found to be unclear as well as other editorial improvements.
-In addition, it removes the use of the term "master" as applied
-to secrets in favor of the term "main" or shorter names where no
-term was neccessary.
+TLS 1.3 was originally specified in {{?RFC8446}}. This document is a
+minor update to TLS 1.3 that retains the same version number and is
+backward compatible. It tightens some requirements and contains
+updated text in areas which were found to be unclear as well as other
+editorial improvements.  In addition, it removes the use of the term
+"master" as applied to secrets in favor of the term "main" or shorter
+names where no term was necessary. This document makes the following
+specific technical changes:
+
+- Forbid negotiating TLS 1.0 and 1.1 as they are now deprecated by {{!RFC8996}}.
+
+- Removes ambiguity around which hash is used with PreSharedKeys and 
+  HelloRetryRequest.
+
+- Require that clients ignore NewSessionTicket if they do not
+  support resumption.
+
+- Upgrade the requirement to initiate key update before exceeding
+  key usage limits to MUST.
+
+- Limit the number of permitted KeyUpdate messages.
+
+- Restore text defining the level of "close_notify" to "warning".
+  Clarify behavior around "user_canceled", requiring that
+  "close_notify" be sent and that "user_canceled" should
+  be ignored.
+
+- Add a "general_error" generic alert.
+
+In addition, there have been some improvements to the
+security considerations, especially around privacy.
 
 
 ##  Major Differences from TLS 1.2
@@ -1545,7 +1570,7 @@ bytes:
       44 4F 57 4E 47 52 44 00
 
 
-Note that {{!RFC8996}} and {{backward-compatibility-security}} forbid
+Note that {{RFC8996}} and {{backward-compatibility-security}} forbid
 the negotation of TLS versions below 1.2; implementations which do not
 follow that guidance MUST behave as described above.
 
@@ -2833,11 +2858,12 @@ CertificateRequest message in the main handshake, though they
 MAY send it in post-handshake authentication (see {{post-handshake-authentication}})
 provided that the client has sent the "post_handshake_auth"
 extension (see {{post_handshake_auth}}).
-Servers which are authenticating with an external PSK
+In the absence of some other specification to the contrary,
+servers which are authenticating with an external PSK
 MUST NOT send the CertificateRequest message either in the main handshake
-or request post-handshake authentication. Future specifications MAY
-provide an extension to permit this.
-
+or request post-handshake authentication.
+{{RFC8773}} provides an extension to permit this,
+but has not received the level of analysis as this specification.
 
 ## Authentication Messages
 
@@ -4021,7 +4047,7 @@ user_canceled:
   cancels an operation after the handshake is complete, just closing the
   connection by sending a "close_notify" is more appropriate. This alert
   MUST be followed by a "close_notify". This alert generally
-  has AlertLevel=warning. Receiving implementations should
+  has AlertLevel=warning. Receiving implementations SHOULD
   continue to read data from the peer until a "close_notify" is received,
   though they MAY log or otherwise record them.
 {:br }
@@ -4288,8 +4314,6 @@ In this diagram, the following formatting conventions apply:
 Note: the key derivation labels use the string "master" even though
 the values are referred to as "main" secrets.  This mismatch is a
 result of renaming the values while retaining compatibility.
-
-[[OPEN ISSUE: Replace the strings with hex value?]]
 
 ~~~~
                  0
