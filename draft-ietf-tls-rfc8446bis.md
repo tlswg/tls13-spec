@@ -4853,15 +4853,11 @@ Security issues are discussed throughout this memo, especially in
 
 #  IANA Considerations
 
-[[OPEN ISSUE: Should we remove this? I am reluctant to create a situation
-where one needs to read 8446 to process this document.]]
-
-[[OPEN ISSUE: Add some text to rename the extended_master_secret entry in
-the extensions registry to extended_main_secret, after the above is resolved.]]
-
-
 This document uses several registries that were originally created in
-{{RFC4346}} and updated in {{?RFC8447}}. IANA has updated these to reference this document.
+{{RFC4346}} and updated in {{RFC8446}} and {{?RFC8447}}. The changes
+between {{RFC8446}} and this document are described in {{bis-changes}}.
+IANA has updated these to reference this document.
+
 The registries and their allocation policies are below:
 
 - TLS Cipher Suites registry: values with the first byte in the range
@@ -4965,6 +4961,13 @@ by IANA:
    requires Standards Action {{RFC8126}}.  IESG Approval is REQUIRED
    for a Y->N transition.
 
+## Changes for this RFC {#bis-changes}
+
+IANA [shall rename/has renamed] the "extended_master_secret" value
+in the TLS ExtensionType Values registry to "extended_main_secret".
+
+IANA [shall create/has created] a value for the "general_error"
+alert in the TLS Alerts Registry with the value given in {{alert-protocol}}.
 --- back
 
 
