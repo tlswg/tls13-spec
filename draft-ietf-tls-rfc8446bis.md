@@ -523,10 +523,10 @@ specific technical changes:
 - Require that clients ignore NewSessionTicket if they do not
   support resumption.
 
-- Upgrade the requirement to do KeyUpdates before exceeding
+- Upgrade the requirement to initiate key update before exceeding
   key usage limits to MUST.
 
-- Limit the number of permitted KeyUpdates.
+- Limit the number of permitted KeyUpdate messages.
 
 - Restore text defining the level of "close_notify" to "warning".
   Clarify behavior around "user_canceled", requiring that
