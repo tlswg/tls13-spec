@@ -6096,6 +6096,12 @@ and many clients do not enforce this restriction.
 # Change Log
 
 [[RFC EDITOR: Please remove in final RFC.]]
+Since -06
+- Updated text about differences from RFC 8446.
+- Clarify which parts of IANA considerations are new to this document.
+- Upgrade the requirement to initiate key update before exceeding
+  key usage limits to MUST.
+- Add some text around use of the same cert for client and server.
 
 Since -05
 
