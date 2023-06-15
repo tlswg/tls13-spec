@@ -1570,9 +1570,10 @@ bytes:
       44 4F 57 4E 47 52 44 00
 
 
-Note that {{RFC8996}} and {{backward-compatibility-security}} forbid
-the negotation of TLS versions below 1.2; implementations which do not
-follow that guidance MUST behave as described above.
+In order to provide a secure channel, {{RFC8996}} and {{backward-compatibility-security}}
+forbid the negotiation of TLS versions below 1.2. Nevertheless, earlier TLS
+versions have wire format compatibility requirements, and implementations
+which accept these versions MUST behave as described above.
 
 TLS 1.3 clients receiving a ServerHello indicating TLS 1.2 or below
 MUST check that the last 8 bytes are not equal to either of these values.
