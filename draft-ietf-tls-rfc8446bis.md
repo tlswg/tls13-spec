@@ -5968,20 +5968,21 @@ engineered to be safe under replay
 also require other stronger conditions, such as constant-time
 response). Potential attacks include:
 
-- Duplication of actions which cause side effects (e.g., purchasing an
-item or transferring money) to be duplicated, thus harming the site or
+- Actions which cause side effects (e.g., purchasing an
+item or transferring money) can be duplicated, thus harming the site or
 the user.
 
 - Attackers can store and replay 0-RTT messages in order to
 reorder them with respect to other messages (e.g., moving
 a delete to after a create).
 
-- Amplifying existing information leaks caused by side effects like
-caching. An attacker could learn information about the content of a
-0-RTT message by replaying it to some cache node that has not cached
-some resource of interest, and then using a separate connection to check
-whether that resource has been added to the cache. This could be repeated
-with different cache nodes as often as the 0-RTT message is replayable.
+- Attackers can amplify existing side-channel information leaks from
+caches and other infrastructure. An attacker could learn information
+about the content of a 0-RTT message by replaying it to some cache node
+that has not cached some resource of interest, and then using a separate
+connection to check whether that resource has been added to the cache.
+This could be repeated with different cache nodes as often as the 0-RTT
+message is replayable.
 
 If data can be replayed a large number of times, additional attacks
 become possible, such as making repeated measurements of the
