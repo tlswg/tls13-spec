@@ -5671,7 +5671,7 @@ T1 where T1 < T2). Protection in the other direction (compromise at
 time T1 does not compromise keys at time T2) can be achieved by
 rerunning (EC)DHE. If a long-term authentication key has been
 compromised, a full handshake with (EC)DHE gives protection against
-passive attackers. If the resumption_master_secret has been
+passive attackers. If the resumption_secret has been
 compromised, a resumption handshake with (EC)DHE gives protection
 against passive attackers and a full handshake with (EC)DHE gives
 protection against active attackers. If a traffic secret has been
