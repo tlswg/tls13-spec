@@ -3575,7 +3575,7 @@ to provide an extra margin of security, sending implementations MUST
 NOT allow the epoch to exceed 2^48-1. This requirement constrains
 the number of key updates. Receiving implementations MUST NOT enforce
 this rule, in order to allow this value to be changed later. For
-example, there may be future ciphers with keys exceeding 128-bits.
+example, there may be future ciphers with keys that exceed 128 bits.
 If a sending implementation receives a KeyUpdate with
 request_update set to "update_requested", it MUST NOT send its own
 KeyUpdate if that would cause it to exceed these limits and SHOULD
