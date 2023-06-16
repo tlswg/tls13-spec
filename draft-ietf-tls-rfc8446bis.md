@@ -980,6 +980,9 @@ This document deals with the formatting of data in an external representation.
 The following very basic and somewhat casually defined presentation syntax will
 be used.
 
+In the definitions below, optional components of this syntax are denoted by
+enclosing them in "\[\[ \]\]" (double brackets).
+
 
 ##  Basic Block Size
 
@@ -999,9 +1002,6 @@ or big-endian format.
 ##  Miscellaneous
 
 Comments begin with "/\*" and end with "\*/".
-
-Optional components are denoted by enclosing them in "\[\[ \]\]" (double
-brackets).
 
 Single-byte entities containing uninterpreted data are of type
 opaque.
