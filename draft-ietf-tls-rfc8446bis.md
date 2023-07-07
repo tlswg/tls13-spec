@@ -1563,16 +1563,15 @@ Random value to the bytes:
 
       44 4F 57 4E 47 52 44 01
 
-If negotiating TLS 1.1 or below, TLS 1.3 servers MUST, and TLS 1.2
-servers SHOULD, set the last 8 bytes of their ServerHello.Random value to the
+{{RFC8996}} and {{backward-compatibility-security}} forbid
+the negotation of TLS versions below 1.2. However, server
+implementations which do not follow that guidance MUST
+set the last 8 bytes of their ServerHello.random value to the
 bytes:
 
       44 4F 57 4E 47 52 44 00
 
 
-Note that {{RFC8996}} and {{backward-compatibility-security}} forbid
-the negotation of TLS versions below 1.2; implementations which do not
-follow that guidance MUST behave as described above.
 
 TLS 1.3 clients receiving a ServerHello indicating TLS 1.2 or below
 MUST check that the last 8 bytes are not equal to either of these values.
