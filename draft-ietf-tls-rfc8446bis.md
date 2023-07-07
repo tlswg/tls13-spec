@@ -1564,7 +1564,7 @@ Random value to the bytes:
       44 4F 57 4E 47 52 44 01
 
 {{RFC8996}} and {{backward-compatibility-security}} forbid
-the negotation of TLS versions below 1.2. However, server
+the negotiation of TLS versions below 1.2. However, server
 implementations which do not follow that guidance MUST
 set the last 8 bytes of their ServerHello.random value to the
 bytes:
