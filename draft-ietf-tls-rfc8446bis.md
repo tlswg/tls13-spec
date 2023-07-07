@@ -4,7 +4,7 @@ abbrev: TLS
 docname: draft-ietf-tls-rfc8446bis-latest
 category: std
 updates: 5705, 6066, 7627, 8422
-obsoletes: 5077, 5246, 6961, 8446
+obsoletes: 8446
 
 ipr: pre5378Trust200902
 area: General
