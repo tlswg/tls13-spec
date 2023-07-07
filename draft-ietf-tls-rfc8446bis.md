@@ -517,7 +517,7 @@ specific technical changes:
 
 - Forbid negotiating TLS 1.0 and 1.1 as they are now deprecated by {{!RFC8996}}.
 
-- Removes ambiguity around which hash is used with PreSharedKeys and 
+- Removes ambiguity around which hash is used with PreSharedKeys and
   HelloRetryRequest.
 
 - Require that clients ignore NewSessionTicket if they do not
@@ -3925,7 +3925,7 @@ There are cryptographic limits on the amount of plaintext which can be
 safely encrypted under a given set of keys.  {{AEAD-LIMITS}} provides
 an analysis of these limits under the assumption that the underlying
 primitive (AES or ChaCha20) has no weaknesses. Implementations MUST
-either close the connection or 
+either close the connection or
 do a key update as described in {{key-update}} prior to reaching these limits.
 Note that it is not possible to perform a KeyUpdate for early data
 and therefore implementations MUST not exceed the limits
@@ -6116,7 +6116,7 @@ Since -05
 - Reference RFC 8773 (PR 1296)
 - Add some more information about application bindings and cite
   6125-bis (PR 1297)
-  
+
 Since -04
 
 * Update the extension table (Issue 1241)
@@ -6440,7 +6440,7 @@ Since -00
       Brian Smith
       Independent
       brian@briansmith.org
-      
+
       Ben Smyth
       Ampersand
       www.bensmyth.com
