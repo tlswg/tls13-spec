@@ -412,7 +412,7 @@ well.
 
 The primary goal of TLS is to provide a secure channel between two
 communicating peers; the only requirement from the underlying
-transport is a reliable, in-order, data stream. Specifically, the
+transport is a reliable, in-order data stream. Specifically, the
 secure channel should provide the following properties:
 
 * Authentication: The server side of the channel is always
@@ -5583,7 +5583,7 @@ the protocol consumers' needs.
 Establishing the same session keys:
 : The handshake needs to output the same set of session keys on both sides of
 the handshake, provided that it completes successfully on each endpoint
-(see {{CK01}}; Definition 1, part 1).
+(see {{CK01}}, Definition 1, part 1).
 
 Secrecy of the session keys:
 : The shared session keys should be known only to the communicating
