@@ -535,6 +535,11 @@ specific technical changes:
 
 - Add a "general_error" generic alert.
 
+- Corrected the lower bound on CertificateRequest.extensions
+  to be 0 bytes. This was an error in the syntax as it
+  is possible to send no extensions, which results in
+  length 0.
+
 In addition, there have been some improvements to the
 security considerations, especially around privacy.
 
