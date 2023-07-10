@@ -5330,7 +5330,8 @@ of a client key share to the same server additionally allows the server to corre
 It is RECOMMENDED that the labels for external identities be selected so that they
 do not provide additional information about the identity of the
 user. For instance, if the label includes an e-mail address, then
-this trivially identifies the user. There are a number of potential
+this trivially identifies the user to a passive attacker
+(unlike the client's Certificate, which is encrypted). There are a number of potential
 ways to avoid this risk, including (1) using random identity labels
 (2) pre-encrypting the identity under a key known to the server or (3)
 using the Hello Encrypted Client Hello {{?I-D.ietf-tls-esni}} extension.
