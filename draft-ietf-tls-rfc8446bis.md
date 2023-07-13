@@ -5334,7 +5334,7 @@ this trivially identifies the user to a passive attacker
 (unlike the client's Certificate, which is encrypted). There are a number of potential
 ways to avoid this risk, including (1) using random identity labels
 (2) pre-encrypting the identity under a key known to the server or (3)
-using the Hello Encrypted Client Hello {{?I-D.ietf-tls-esni}} extension.
+using the Encrypted Client Hello {{?I-D.ietf-tls-esni}} extension.
 
 If an external PSK identity is used for multiple connections, then it
 will generally be possible for an external observer to track
