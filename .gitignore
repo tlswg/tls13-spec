@@ -1,8 +1,10 @@
 *~
 .refcache
+.targets.mk
+/node_modules/
+/package-lock.json
+diff-*.html
+draft-*.html
 draft-*.txt
 draft-*.xml
-draft-*.html
-diff-*.html
 lib
-.targets.mk
