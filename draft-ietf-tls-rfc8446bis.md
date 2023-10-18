@@ -404,11 +404,13 @@ requirements for TLS 1.2 implementations.
 
 #  Introduction
 
+<aside markdown="block">
 RFC EDITOR: PLEASE REMOVE THE FOLLOWING PARAGRAPH
 The source for this draft is maintained in GitHub. Suggested changes
 should be submitted as pull requests at
 https://github.com/ekr/tls13-spec. Instructions are on that page as
 well.
+</aside>
 
 The primary goal of TLS is to provide a secure channel between two
 communicating peers; the only requirement from the underlying
@@ -6110,7 +6112,9 @@ and many clients do not enforce this restriction.
 
 # Change Log
 
-[[RFC EDITOR: Please remove in final RFC.]]
+<aside markdown="block">
+  RFC EDITOR: Please remove in final RFC.
+</aside>aside>
 Since -06
 - Updated text about differences from RFC 8446.
 - Clarify which parts of IANA considerations are new to this document.
