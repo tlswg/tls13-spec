@@ -2,13 +2,15 @@
 title: The Transport Layer Security (TLS) Protocol Version 1.3
 abbrev: TLS
 docname: draft-ietf-tls-rfc8446bis-latest
+submissiontype: IETF
 category: std
 updates: 5705, 6066, 7627, 8422
 obsoletes: 8446
 
+v: 3
 ipr: pre5378Trust200902
-area: General
-workgroup:
+area: Security
+workgroup: Transport Layer Security
 keyword: Internet-Draft
 
 stand_alone: yes
@@ -33,7 +35,6 @@ author:
 normative:
   RFC2104:
   RFC2119:
-  RFC5280:
   RFC5869:
   RFC6066:
   RFC6655:
@@ -46,6 +47,8 @@ normative:
   RFC8126:
   RFC8174:
   RFC5116:
+
+
   X690:
        title: "Information technology - ASN.1 encoding Rules: Specification of Basic Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished Encoding Rules (DER)"
        date: February 2021
@@ -53,13 +56,6 @@ normative:
          org: ITU-T
        seriesinfo:
          ISO/IEC 8824-1:2021
-  DH76:
-        title: "New Directions in Cryptography"
-        author:
-          - ins: W. Diffie
-          - ins: M. Hellman
-        date: 1977-06
-        seriesinfo: IEEE Transactions on Information Theory, V.IT-22 n.6
   GCM:
         title: "Recommendation for Block Cipher Modes of Operation: Galois/Counter Mode (GCM) and GMAC"
         date: 2007-11
@@ -88,6 +84,14 @@ informative:
   RFC7624:
   RFC7685:
   RFC8937:
+  RFC8849:
+  RFC9345:
+  RFC8870:
+  RFC9162:
+  RFC9146:
+  RFC8844:
+  RFC9001:
+  RFC9149:
 
   SSL2:
        title: "The SSL Protocol"
@@ -315,7 +319,7 @@ informative:
        date: 2010
        seriesinfo: Proceedings of CRYPTO 2010
        target: https://eprint.iacr.org/2010/264
-       data: August, 2010
+       data: August 2010
        author:
        -
          ins: H. Krawczyk
@@ -1749,7 +1753,7 @@ appears, it MUST abort the handshake with an "illegal_parameter" alert.
 | max_fragment_length [RFC6066]            |      CH, EE |
 | status_request [RFC6066]                 |  CH, CR, CT |
 | supported_groups [RFC7919]               |      CH, EE |
-| signature_algorithms (RFC8446)           |      CH, CR |
+| signature_algorithms [RFC8446]           |      CH, CR |
 | use_srtp [RFC5764]                       |      CH, EE |
 | heartbeat [RFC6520]                      |      CH, EE |
 | application_layer_protocol_negotiation [RFC7301]|      CH, EE |
@@ -1758,26 +1762,26 @@ appears, it MUST abort the handshake with an "illegal_parameter" alert.
 | server_certificate_type [RFC7250]        |      CH, EE |
 | padding [RFC7685]                        |          CH |
 | cached_info [RFC7924]                    | CH, EE |
-| compress_certificate [RFC8879]		   | CH, CR |
-| record_size_limit [RFC8849]			   | CH, EE |
-| delegated_credentials [RFC-TBD]		   | CH, CR, CT |
-| supported_ekt_ciphers | 				   | CH, EE |
-| pre_shared_key [RFC 8446]       |      CH, SH |
-| early_data [RFC 8446]           | CH, EE, NST |
-| psk_key_exchange_modes [RFC 8446]|          CH |
-| cookie [RFC 8446]               |     CH, HRR |
-| supported_versions [RFC 8446]   | CH, SH, HRR |
-| certificate_authorities [RFC 8446]|      CH, CR |
-| oid_filters [RFC 8446]          |          CR |
-| post_handshake_auth [RFC 8446]  |          CH |
-| signature_algorithms_cert [RFC 8446]|      CH, CR |
-| key_share [RFC 8446]            | CH, SH, HRR |
-| transparency_info [RFC 9162]	  | CH, CR, CT |
-| connection_id	[RFC 9146]		  | CH, SH |
-| external_id_hash [RFC 8844] 	  | CH, EE |
-| external_session_id [RFC 8844]  | CH, EE |
-| quic_transport_parameters [RFC 9001] | CH, EE |
-| ticket_request [RFC 9149] | CH, EE|
+| compress_certificate [RFC8879]           | CH, CR |
+| record_size_limit [RFC8849]              | CH, EE |
+| delegated_credentials [RFC9345]          | CH, CR, CT |
+| supported_ekt_ciphers [RFC8870]          | CH, EE |
+| pre_shared_key [RFC8446]       |      CH, SH |
+| early_data [RFC8446]           | CH, EE, NST |
+| psk_key_exchange_modes [RFC8446]|          CH |
+| cookie [RFC8446]               |     CH, HRR |
+| supported_versions [RFC8446]   | CH, SH, HRR |
+| certificate_authorities [RFC8446]|      CH, CR |
+| oid_filters [RFC8446]          |          CR |
+| post_handshake_auth [RFC8446]  |          CH |
+| signature_algorithms_cert [RFC8446]|      CH, CR |
+| key_share [RFC8446]            | CH, SH, HRR |
+| transparency_info [RFC9162]    | CH, CR, CT |
+| connection_id [RFC9146]        | CH, SH |
+| external_id_hash [RFC8844]     | CH, EE |
+| external_session_id [RFC8844]  | CH, EE |
+| quic_transport_parameters [RFC9001] | CH, EE |
+| ticket_request [RFC9149] | CH, EE|
 {: #extensions-list title="TLS Extensions"}
 
 Note: this table includes only extensions marked
@@ -2021,7 +2025,7 @@ RSASSA-PSS RSAE algorithms:
   both the corresponding hash algorithm as defined in {{!SHS}}.
   The length of the Salt MUST be equal to the length of the output of the
   digest algorithm. If the public key is carried
-  in an X.509 certificate, it MUST use the rsaEncryption OID {{!RFC5280}}.
+  in an X.509 certificate, it MUST use the rsaEncryption OID {{!}}.
 
 EdDSA algorithms:
 : Indicates a signature algorithm using EdDSA as defined in
@@ -2060,7 +2064,7 @@ Legacy algorithms:
 
 The signatures on certificates that are self-signed or certificates that are
 trust anchors are not validated, since they begin a certification path (see
-{{RFC5280}}, Section 3.2).  A certificate that begins a certification
+{{}}, Section 3.2).  A certificate that begins a certification
 path MAY use a signature algorithm that is not advertised as being supported
 in the "signature_algorithms" and "signature_algorithms_cert" extensions.
 
@@ -2139,7 +2143,7 @@ extension, if provided by the server, MUST only be sent in the CertificateReques
 
 filters:
 
-: A list of certificate extension OIDs {{RFC5280}} with their allowed value(s) and
+: A list of certificate extension OIDs {{}} with their allowed value(s) and
   represented in DER-encoded {{X690}} format. Some certificate extension OIDs
   allow multiple values (e.g., Extended Key Usage).  If the server has included
   a non-empty filters list, the client certificate included in
@@ -2161,7 +2165,7 @@ on their PKI libraries to perform certificate selection using certificate
 extension OIDs.
 
 This document defines matching rules for two standard certificate extensions
-defined in {{RFC5280}}:
+defined in {{}}:
 
 - The Key Usage extension in a certificate matches the request when all key
   usage bits asserted in the request are also asserted in the Key Usage
@@ -3089,7 +3093,7 @@ CertificateEntry.
 
 The following rules apply to the certificates sent by the server:
 
-- The certificate type MUST be X.509v3 {{RFC5280}}, unless explicitly negotiated
+- The certificate type MUST be X.509v3 {{}}, unless explicitly negotiated
   otherwise (e.g., {{RFC7250}}).
 
 - The end-entity certificate MUST allow the key to be used for signing with
@@ -3130,7 +3134,7 @@ above-mentioned criteria (in addition to other criteria, such as transport-layer
 
 The following rules apply to certificates sent by the client:
 
-- The certificate type MUST be X.509v3 {{RFC5280}}, unless explicitly negotiated
+- The certificate type MUST be X.509v3 {{}}, unless explicitly negotiated
   otherwise (e.g., {{RFC7250}}).
 
 - If the "certificate_authorities" extension in the CertificateRequest
@@ -3149,7 +3153,7 @@ The following rules apply to certificates sent by the client:
 #### Receiving a Certificate Message
 
 In general, detailed certificate validation procedures are out of scope for
-TLS (see {{RFC5280}}). This section provides TLS-specific requirements.
+TLS (see {{}}). This section provides TLS-specific requirements.
 
 If the server supplies an empty Certificate message, the client MUST abort
 the handshake with a "decode_error" alert.
@@ -6096,7 +6100,7 @@ TLS 1.2.
 ## Attacks on Static RSA
 
 Although TLS 1.3 does not use RSA key transport and so is not
-directly susceptible to Bleichenbacher-type attacks {{Blei98}}if TLS 1.3
+directly susceptible to Bleichenbacher-type attacks {{Blei98}} if TLS 1.3
 servers also support static RSA in the context of previous
 versions of TLS, then it may be possible to impersonate the server
 for TLS 1.3 connections {{?JSS15=DOI.10.1145/2810103.2813657}}. TLS
