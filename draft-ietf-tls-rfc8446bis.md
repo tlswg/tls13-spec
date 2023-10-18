@@ -2025,7 +2025,7 @@ RSASSA-PSS RSAE algorithms:
   both the corresponding hash algorithm as defined in {{!SHS}}.
   The length of the Salt MUST be equal to the length of the output of the
   digest algorithm. If the public key is carried
-  in an X.509 certificate, it MUST use the rsaEncryption OID {{!}}.
+  in an X.509 certificate, it MUST use the rsaEncryption OID {{!RFC5280}}.
 
 EdDSA algorithms:
 : Indicates a signature algorithm using EdDSA as defined in
