@@ -2064,7 +2064,7 @@ Legacy algorithms:
 
 The signatures on certificates that are self-signed or certificates that are
 trust anchors are not validated, since they begin a certification path (see
-{{}}, Section 3.2).  A certificate that begins a certification
+{{RFC5280}}, Section 3.2).  A certificate that begins a certification
 path MAY use a signature algorithm that is not advertised as being supported
 in the "signature_algorithms" and "signature_algorithms_cert" extensions.
 
@@ -2143,7 +2143,7 @@ extension, if provided by the server, MUST only be sent in the CertificateReques
 
 filters:
 
-: A list of certificate extension OIDs {{}} with their allowed value(s) and
+: A list of certificate extension OIDs {{RFC5280}} with their allowed value(s) and
   represented in DER-encoded {{X690}} format. Some certificate extension OIDs
   allow multiple values (e.g., Extended Key Usage).  If the server has included
   a non-empty filters list, the client certificate included in
@@ -2165,7 +2165,7 @@ on their PKI libraries to perform certificate selection using certificate
 extension OIDs.
 
 This document defines matching rules for two standard certificate extensions
-defined in {{}}:
+defined in {{RFC5280}}:
 
 - The Key Usage extension in a certificate matches the request when all key
   usage bits asserted in the request are also asserted in the Key Usage
@@ -3093,7 +3093,7 @@ CertificateEntry.
 
 The following rules apply to the certificates sent by the server:
 
-- The certificate type MUST be X.509v3 {{}}, unless explicitly negotiated
+- The certificate type MUST be X.509v3 {{RFC5280}}, unless explicitly negotiated
   otherwise (e.g., {{RFC7250}}).
 
 - The end-entity certificate MUST allow the key to be used for signing with
@@ -3134,7 +3134,7 @@ above-mentioned criteria (in addition to other criteria, such as transport-layer
 
 The following rules apply to certificates sent by the client:
 
-- The certificate type MUST be X.509v3 {{}}, unless explicitly negotiated
+- The certificate type MUST be X.509v3 {{RFC5280}}, unless explicitly negotiated
   otherwise (e.g., {{RFC7250}}).
 
 - If the "certificate_authorities" extension in the CertificateRequest
@@ -3153,7 +3153,7 @@ The following rules apply to certificates sent by the client:
 #### Receiving a Certificate Message
 
 In general, detailed certificate validation procedures are out of scope for
-TLS (see {{}}). This section provides TLS-specific requirements.
+TLS (see {{RFC5280}}). This section provides TLS-specific requirements.
 
 If the server supplies an empty Certificate message, the client MUST abort
 the handshake with a "decode_error" alert.
