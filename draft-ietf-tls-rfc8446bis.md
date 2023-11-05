@@ -653,7 +653,7 @@ TLS supports three basic key exchange modes:
 
 {{tls-full}} below shows the basic full TLS handshake:
 
-~~~
+~~~ aasvg
        Client                                              Server
 
 Key  ^ ClientHello
@@ -791,7 +791,7 @@ the client needs to restart the handshake with an appropriate
 If no common cryptographic parameters can be negotiated,
 the server MUST abort the handshake with an appropriate alert.
 
-~~~
+~~~ aasvg
          Client                                               Server
 
          ClientHello
@@ -846,7 +846,7 @@ cost of losing forward secrecy for the application data.
 {{tls-resumption-psk}} shows a pair of handshakes in which the first handshake establishes
 a PSK and the second handshake uses it:
 
-~~~
+~~~ aasvg
        Client                                               Server
 
 Initial Handshake:
@@ -918,7 +918,7 @@ As shown in {{tls-0-rtt}}, the 0-RTT data is just added to the 1-RTT
 handshake in the first flight. The rest of the handshake uses the same messages
 as for a 1-RTT handshake with PSK resumption.
 
-~~~
+~~~ aasvg
          Client                                               Server
 
          ClientHello
@@ -4323,59 +4323,59 @@ Note: the key derivation labels use the string "master" even though
 the values are referred to as "main" secrets.  This mismatch is a
 result of renaming the values while retaining compatibility.
 
-~~~~
+~~~~ aasvg
                  0
                  |
                  v
-   PSK ->  HKDF-Extract = Early Secret
+     PSK -->  HKDF-Extract = Early Secret
                  |
                  +-----> Derive-Secret(.,
                  |                     "ext binder" |
                  |                     "res binder",
                  |                     "")
-                 |                     = binder_key
+                 |              = binder_key
                  |
                  +-----> Derive-Secret(., "c e traffic",
                  |                     ClientHello)
-                 |                     = client_early_traffic_secret
+                 |              = client_early_traffic_secret
                  |
                  +-----> Derive-Secret(., "e exp master",
                  |                     ClientHello)
-                 |                     = early_exporter_secret
+                 |              = early_exporter_secret
                  v
-           Derive-Secret(., "derived", "")
+            Derive-Secret(., "derived", "")
                  |
                  v
-(EC)DHE -> HKDF-Extract = Handshake Secret
+  (EC)DHE --> HKDF-Extract = Handshake Secret
                  |
                  +-----> Derive-Secret(., "c hs traffic",
                  |                     ClientHello...ServerHello)
-                 |                     = client_handshake_traffic_secret
+                 |              = client_handshake_traffic_secret
                  |
                  +-----> Derive-Secret(., "s hs traffic",
                  |                     ClientHello...ServerHello)
-                 |                     = server_handshake_traffic_secret
+                 |              = server_handshake_traffic_secret
                  v
-           Derive-Secret(., "derived", "")
+            Derive-Secret(., "derived", "")
                  |
                  v
-      0 -> HKDF-Extract = Main Secret
+        0 --> HKDF-Extract = Main Secret
                  |
                  +-----> Derive-Secret(., "c ap traffic",
                  |                     ClientHello...server Finished)
-                 |                     = client_application_traffic_secret_0
+                 |              = client_application_traffic_secret_0
                  |
                  +-----> Derive-Secret(., "s ap traffic",
                  |                     ClientHello...server Finished)
-                 |                     = server_application_traffic_secret_0
+                 |              = server_application_traffic_secret_0
                  |
                  +-----> Derive-Secret(., "exp master",
                  |                     ClientHello...server Finished)
-                 |                     = exporter_secret
+                 |              = exporter_secret
                  |
                  +-----> Derive-Secret(., "res master",
                                        ClientHello...client Finished)
-                                       = resumption_secret
+                                = resumption_secret
 ~~~~
 
 The general pattern here is that the secrets shown down the left side
@@ -5016,31 +5016,31 @@ key to the given key".
 
 ## Client
 
-~~~~
+~~~~ aasvg
                            START <----+
             Send ClientHello |        | Recv HelloRetryRequest
        [K_send = early data] |        |
                              v        |
-        /                 WAIT_SH ----+
+        +->               WAIT_SH ----+
         |                    | Recv ServerHello
         |                    | K_recv = handshake
     Can |                    V
    send |                 WAIT_EE
   early |                    | Recv EncryptedExtensions
-   data |           +--------+--------+
-        |     Using |                 | Using certificate
-        |       PSK |                 v
-        |           |            WAIT_CERT_CR
-        |           |        Recv |       | Recv CertificateRequest
-        |           | Certificate |       v
-        |           |             |    WAIT_CERT
-        |           |             |       | Recv Certificate
-        |           |             v       v
-        |           |              WAIT_CV
-        |           |                 | Recv CertificateVerify
-        |           +> WAIT_FINISHED <+
+   data |          +---------+-------+
+        |    Using |                 | Using certificate
+        |      PSK |                 v
+        |          |            WAIT_CERT_CR
+        |          |        Recv |       | Recv CertificateRequest
+        |          | Certificate |       v
+        |          |             |    WAIT_CERT
+        |          |             |       | Recv Certificate
+        |          |             v       v
+        |          |              WAIT_CV
+        |          |                   | Recv CertificateVerify
+        |          +-> WAIT_FINISHED <-+
         |                  | Recv Finished
-        \                  | [Send EndOfEarlyData]
+        +->                | [Send EndOfEarlyData]
                            | K_send = handshake
                            | [Send Certificate [+ CertificateVerify]]
  Can send                  | Send Finished
@@ -5057,7 +5057,7 @@ first rekey to the handshake keys if possible.
 
 ## Server
 
-~~~~
+~~~~ aasvg
                              START <-----+
               Recv ClientHello |         | Send HelloRetryRequest
                                v         |
@@ -5076,12 +5076,12 @@ here                  +--------+--------+
              No 0-RTT |                 | 0-RTT
                       |                 |
   K_recv = handshake  |                 | K_recv = early data
-[Skip decrypt errors] |    +------> WAIT_EOED -+
-                      |    |       Recv |      | Recv EndOfEarlyData
-                      |    | early data |      | K_recv = handshake
-                      |    +------------+      |
-                      |                        |
-                      +> WAIT_FLIGHT2 <--------+
+[Skip decrypt errors] |    +------> WAIT_EOED --+
+                      |    |       Recv |       | Recv EndOfEarlyData
+                      |    | early data |       | K_recv = handshake
+                      |    +------------+       |
+                      |                         |
+                      +-> WAIT_FLIGHT2 <--------+
                                |
                       +--------+--------+
               No auth |                 | Cert-based client auth
