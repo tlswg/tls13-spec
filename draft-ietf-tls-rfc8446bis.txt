@@ -2,12 +2,12 @@
 
 
 
-Network Working Group                                        E. Rescorla
+Transport Layer Security                                     E. Rescorla
 Internet-Draft                                   Windy Hill Systems, LLC
-Obsoletes: 8446 (if approved)                               27 July 2023
+Obsoletes: 8446 (if approved)                            5 November 2023
 Updates: 5705, 6066, 7627, 8422 (if approved)                           
 Intended status: Standards Track                                        
-Expires: 28 January 2024
+Expires: 8 May 2024
 
 
         The Transport Layer Security (TLS) Protocol Version 1.3
@@ -39,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 28 January 2024.
+   This Internet-Draft will expire on 8 May 2024.
 
 Copyright Notice
 
@@ -1503,82 +1503,77 @@ Auth | {CertificateVerify*}
    which it appears, it MUST abort the handshake with an
    "illegal_parameter" alert.
 
-       +========================================+============+=====+
-       | Extension                              |    TLS 1.3 |     |
-       +========================================+============+=====+
-       | server_name [RFC6066]                  |     CH, EE |     |
-       +----------------------------------------+------------+-----+
-       | max_fragment_length [RFC6066]          |     CH, EE |     |
-       +----------------------------------------+------------+-----+
-       | status_request [RFC6066]               | CH, CR, CT |     |
-       +----------------------------------------+------------+-----+
-       | supported_groups [RFC7919]             |     CH, EE |     |
-       +----------------------------------------+------------+-----+
-       | signature_algorithms (RFC8446)         |     CH, CR |     |
-       +----------------------------------------+------------+-----+
-       | use_srtp [RFC5764]                     |     CH, EE |     |
-       +----------------------------------------+------------+-----+
-       | heartbeat [RFC6520]                    |     CH, EE |     |
-       +----------------------------------------+------------+-----+
-       | application_layer_protocol_negotiation |     CH, EE |     |
-       | [RFC7301]                              |            |     |
-       +----------------------------------------+------------+-----+
-       | signed_certificate_timestamp [RFC6962] | CH, CR, CT |     |
-       +----------------------------------------+------------+-----+
-       | client_certificate_type [RFC7250]      |     CH, EE |     |
-       +----------------------------------------+------------+-----+
-       | server_certificate_type [RFC7250]      |     CH, EE |     |
-       +----------------------------------------+------------+-----+
-       | padding [RFC7685]                      |         CH |     |
-       +----------------------------------------+------------+-----+
-       | cached_info [RFC7924]                  |     CH, EE |     |
-       +----------------------------------------+------------+-----+
-       | compress_certificate [RFC8879]         |     CH, CR |     |
-       +----------------------------------------+------------+-----+
-       | record_size_limit [RFC8849]            |     CH, EE |     |
-       +----------------------------------------+------------+-----+
-       | delegated_credentials [RFC-TBD]        | CH, CR, CT |     |
-       +----------------------------------------+------------+-----+
-       | supported_ekt_ciphers                  |            | CH, |
-       |                                        |            | EE  |
-       +----------------------------------------+------------+-----+
-       | pre_shared_key [RFC 8446]              |     CH, SH |     |
-       +----------------------------------------+------------+-----+
-       | early_data [RFC 8446]                  |    CH, EE, |     |
-       |                                        |        NST |     |
-       +----------------------------------------+------------+-----+
-       | psk_key_exchange_modes [RFC 8446]      |         CH |     |
-       +----------------------------------------+------------+-----+
-       | cookie [RFC 8446]                      |    CH, HRR |     |
-       +----------------------------------------+------------+-----+
-       | supported_versions [RFC 8446]          |    CH, SH, |     |
-       |                                        |        HRR |     |
-       +----------------------------------------+------------+-----+
-       | certificate_authorities [RFC 8446]     |     CH, CR |     |
-       +----------------------------------------+------------+-----+
-       | oid_filters [RFC 8446]                 |         CR |     |
-       +----------------------------------------+------------+-----+
-       | post_handshake_auth [RFC 8446]         |         CH |     |
-       +----------------------------------------+------------+-----+
-       | signature_algorithms_cert [RFC 8446]   |     CH, CR |     |
-       +----------------------------------------+------------+-----+
-       | key_share [RFC 8446]                   |    CH, SH, |     |
-       |                                        |        HRR |     |
-       +----------------------------------------+------------+-----+
-       | transparency_info [RFC 9162]           | CH, CR, CT |     |
-       +----------------------------------------+------------+-----+
-       | connection_id [RFC 9146]               |     CH, SH |     |
-       +----------------------------------------+------------+-----+
-       | external_id_hash [RFC 8844]            |     CH, EE |     |
-       +----------------------------------------+------------+-----+
-       | external_session_id [RFC 8844]         |     CH, EE |     |
-       +----------------------------------------+------------+-----+
-       | quic_transport_parameters [RFC 9001]   |     CH, EE |     |
-       +----------------------------------------+------------+-----+
-       | ticket_request [RFC 9149]              |     CH, EE |     |
-       +----------------------------------------+------------+-----+
+    +==================================================+=============+
+    | Extension                                        |     TLS 1.3 |
+    +==================================================+=============+
+    | server_name [RFC6066]                            |      CH, EE |
+    +--------------------------------------------------+-------------+
+    | max_fragment_length [RFC6066]                    |      CH, EE |
+    +--------------------------------------------------+-------------+
+    | status_request [RFC6066]                         |  CH, CR, CT |
+    +--------------------------------------------------+-------------+
+    | supported_groups [RFC7919]                       |      CH, EE |
+    +--------------------------------------------------+-------------+
+    | signature_algorithms [RFC8446]                   |      CH, CR |
+    +--------------------------------------------------+-------------+
+    | use_srtp [RFC5764]                               |      CH, EE |
+    +--------------------------------------------------+-------------+
+    | heartbeat [RFC6520]                              |      CH, EE |
+    +--------------------------------------------------+-------------+
+    | application_layer_protocol_negotiation [RFC7301] |      CH, EE |
+    +--------------------------------------------------+-------------+
+    | signed_certificate_timestamp [RFC6962]           |  CH, CR, CT |
+    +--------------------------------------------------+-------------+
+    | client_certificate_type [RFC7250]                |      CH, EE |
+    +--------------------------------------------------+-------------+
+    | server_certificate_type [RFC7250]                |      CH, EE |
+    +--------------------------------------------------+-------------+
+    | padding [RFC7685]                                |          CH |
+    +--------------------------------------------------+-------------+
+    | cached_info [RFC7924]                            |      CH, EE |
+    +--------------------------------------------------+-------------+
+    | compress_certificate [RFC8879]                   |      CH, CR |
+    +--------------------------------------------------+-------------+
+    | record_size_limit [RFC8849]                      |      CH, EE |
+    +--------------------------------------------------+-------------+
+    | delegated_credentials [RFC9345]                  |  CH, CR, CT |
+    +--------------------------------------------------+-------------+
+    | supported_ekt_ciphers [RFC8870]                  |      CH, EE |
+    +--------------------------------------------------+-------------+
+    | pre_shared_key [RFC8446]                         |      CH, SH |
+    +--------------------------------------------------+-------------+
+    | early_data [RFC8446]                             | CH, EE, NST |
+    +--------------------------------------------------+-------------+
+    | psk_key_exchange_modes [RFC8446]                 |          CH |
+    +--------------------------------------------------+-------------+
+    | cookie [RFC8446]                                 |     CH, HRR |
+    +--------------------------------------------------+-------------+
+    | supported_versions [RFC8446]                     | CH, SH, HRR |
+    +--------------------------------------------------+-------------+
+    | certificate_authorities [RFC8446]                |      CH, CR |
+    +--------------------------------------------------+-------------+
+    | oid_filters [RFC8446]                            |          CR |
+    +--------------------------------------------------+-------------+
+    | post_handshake_auth [RFC8446]                    |          CH |
+    +--------------------------------------------------+-------------+
+    | signature_algorithms_cert [RFC8446]              |      CH, CR |
+    +--------------------------------------------------+-------------+
+    | key_share [RFC8446]                              | CH, SH, HRR |
+    +--------------------------------------------------+-------------+
+    | transparency_info [RFC9162]                      |  CH, CR, CT |
+    +--------------------------------------------------+-------------+
+    | connection_id [RFC9146]                          |      CH, SH |
+    +--------------------------------------------------+-------------+
+    | external_id_hash [RFC8844]                       |      CH, EE |
+    +--------------------------------------------------+-------------+
+    | external_session_id [RFC8844]                    |      CH, EE |
+    +--------------------------------------------------+-------------+
+    | quic_transport_parameters [RFC9001]              |      CH, EE |
+    +--------------------------------------------------+-------------+
+    | ticket_request [RFC9149]                         |      CH, EE |
+    +--------------------------------------------------+-------------+
 
-                          Table 1: TLS Extensions
+                         Table 1: TLS Extensions
 
    Note: this table includes only extensions marked "Recommended" at the
    time of this writing.
@@ -4023,58 +4018,58 @@ Auth | {CertificateVerify*}
    the values are referred to as "main" secrets.  This mismatch is a
    result of renaming the values while retaining compatibility.
 
-                 0
-                 |
-                 v
-   PSK ->  HKDF-Extract = Early Secret
-                 |
-                 +-----> Derive-Secret(.,
-                 |                     "ext binder" |
-                 |                     "res binder",
-                 |                     "")
-                 |                     = binder_key
-                 |
-                 +-----> Derive-Secret(., "c e traffic",
-                 |                     ClientHello)
-                 |                     = client_early_traffic_secret
-                 |
-                 +-----> Derive-Secret(., "e exp master",
-                 |                     ClientHello)
-                 |                     = early_exporter_secret
-                 v
-           Derive-Secret(., "derived", "")
-                 |
-                 v
-(EC)DHE -> HKDF-Extract = Handshake Secret
-                 |
-                 +-----> Derive-Secret(., "c hs traffic",
-                 |                     ClientHello...ServerHello)
-                 |                     = client_handshake_traffic_secret
-                 |
-                 +-----> Derive-Secret(., "s hs traffic",
-                 |                     ClientHello...ServerHello)
-                 |                     = server_handshake_traffic_secret
-                 v
-           Derive-Secret(., "derived", "")
-                 |
-                 v
-      0 -> HKDF-Extract = Main Secret
-                 |
-                 +-----> Derive-Secret(., "c ap traffic",
-                 |                     ClientHello...server Finished)
-                 |                     = client_application_traffic_secret_0
-                 |
-                 +-----> Derive-Secret(., "s ap traffic",
-                 |                     ClientHello...server Finished)
-                 |                     = server_application_traffic_secret_0
-                 |
-                 +-----> Derive-Secret(., "exp master",
-                 |                     ClientHello...server Finished)
-                 |                     = exporter_secret
-                 |
-                 +-----> Derive-Secret(., "res master",
-                                       ClientHello...client Finished)
-                                       = resumption_secret
+                    0
+                    |
+                    v
+        PSK -->  HKDF-Extract = Early Secret
+                    |
+                    +-----> Derive-Secret(.,
+                    |                     "ext binder" |
+                    |                     "res binder",
+                    |                     "")
+                    |              = binder_key
+                    |
+                    +-----> Derive-Secret(., "c e traffic",
+                    |                     ClientHello)
+                    |              = client_early_traffic_secret
+                    |
+                    +-----> Derive-Secret(., "e exp master",
+                    |                     ClientHello)
+                    |              = early_exporter_secret
+                    v
+               Derive-Secret(., "derived", "")
+                    |
+                    v
+     (EC)DHE --> HKDF-Extract = Handshake Secret
+                    |
+                    +-----> Derive-Secret(., "c hs traffic",
+                    |                     ClientHello...ServerHello)
+                    |              = client_handshake_traffic_secret
+                    |
+                    +-----> Derive-Secret(., "s hs traffic",
+                    |                     ClientHello...ServerHello)
+                    |              = server_handshake_traffic_secret
+                    v
+               Derive-Secret(., "derived", "")
+                    |
+                    v
+           0 --> HKDF-Extract = Main Secret
+                    |
+                    +-----> Derive-Secret(., "c ap traffic",
+                    |                     ClientHello...server Finished)
+                    |              = client_application_traffic_secret_0
+                    |
+                    +-----> Derive-Secret(., "s ap traffic",
+                    |                     ClientHello...server Finished)
+                    |              = server_application_traffic_secret_0
+                    |
+                    +-----> Derive-Secret(., "exp master",
+                    |                     ClientHello...server Finished)
+                    |              = exporter_secret
+                    |
+                    +-----> Derive-Secret(., "res master",
+                                          ClientHello...client Finished)
+                                   = resumption_secret
 
    The general pattern here is that the secrets shown down the left side
    of the diagram are just raw entropy without context, whereas the
@@ -4979,9 +4974,10 @@ Auth | {CertificateVerify*}
               generator", May 2008,
               <https://www.debian.org/security/2008/dsa-1571>.
 
-   [DSS]      Moody, D., "Digital Signature Standard (DSS)", National
-              Institute of Standards and Technology,
-              DOI 10.6028/nist.fips.186-5, 2023,
+   [DSS]      Chen, L., Moody, D., Regenscheid, A., and A. Robinson,
+              "Digital Signature Standard (DSS)", National Institute of
+              Standards and Technology (U.S.),
+              DOI 10.6028/nist.fips.186-5, February 2023,
               <https://doi.org/10.6028/nist.fips.186-5>.
 
    [ECDP]     Moody, D., "Recommendations for Discrete Logarithm-based
@@ -4990,7 +4986,7 @@ Auth | {CertificateVerify*}
               DOI 10.6028/nist.sp.800-186, 2022,
               <https://doi.org/10.6028/nist.sp.800-186>.
 
-   [FETCH]    WHATWG, "Fetch Standard", July 2023,
+   [FETCH]    WHATWG, "Fetch Standard", November 2023,
               <https://fetch.spec.whatwg.org/>.
 
    [FG17]     Fischlin, M. and F. Guenther, "Replay Attacks on Zero
@@ -5022,16 +5018,16 @@ Auth | {CertificateVerify*}
    [I-D.ietf-tls-esni]
               Rescorla, E., Oku, K., Sullivan, N., and C. A. Wood, "TLS
               Encrypted Client Hello", Work in Progress, Internet-Draft,
-              draft-ietf-tls-esni-16, 6 April 2023,
+              draft-ietf-tls-esni-17, 9 October 2023,
               <https://datatracker.ietf.org/doc/html/draft-ietf-tls-
-              esni-16>.
+              esni-17>.
 
    [I-D.ietf-uta-rfc6125bis]
               Saint-Andre, P. and R. Salz, "Service Identity in TLS",
               Work in Progress, Internet-Draft, draft-ietf-uta-
-              rfc6125bis-14, 27 June 2023,
+              rfc6125bis-15, 10 August 2023,
               <https://datatracker.ietf.org/doc/html/draft-ietf-uta-
-              rfc6125bis-14>.
+              rfc6125bis-15>.
 
    [JSS15]    Jager, T., Schwenk, J., and J. Somorovsky, "On the
               Security of TLS 1.3 and QUIC Against Weaknesses in PKCS#1
@@ -5084,7 +5080,7 @@ Auth | {CertificateVerify*}
    [REKEY]    Abdalla, M. and M. Bellare, "Increasing the Lifetime of a
               Key: A Comparative Analysis of the Security of Re-keying
               Techniques", Springer Berlin Heidelberg, Advances in
-              Cryptology - ASIACRYPT 2000 pp. 546-559,
+              Cryptology — ASIACRYPT 2000 pp. 546-559,
               DOI 10.1007/3-540-44448-3_42, ISBN ["9783540414049",
               "9783540444480"], 2000,
               <https://doi.org/10.1007/3-540-44448-3_42>.
@@ -5241,6 +5237,21 @@ Auth | {CertificateVerify*}
               DOI 10.17487/RFC8773, March 2020,
               <https://www.rfc-editor.org/rfc/rfc8773>.
 
+   [RFC8844]  Thomson, M. and E. Rescorla, "Unknown Key-Share Attacks on
+              Uses of TLS with the Session Description Protocol (SDP)",
+              RFC 8844, DOI 10.17487/RFC8844, January 2021,
+              <https://www.rfc-editor.org/rfc/rfc8844>.
+
+   [RFC8849]  Even, R. and J. Lennox, "Mapping RTP Streams to
+              Controlling Multiple Streams for Telepresence (CLUE) Media
+              Captures", RFC 8849, DOI 10.17487/RFC8849, January 2021,
+              <https://www.rfc-editor.org/rfc/rfc8849>.
+
+   [RFC8870]  Jennings, C., Mattsson, J., McGrew, D., Wing, D., and F.
+              Andreasen, "Encrypted Key Transport for DTLS and Secure
+              RTP", RFC 8870, DOI 10.17487/RFC8870, January 2021,
+              <https://www.rfc-editor.org/rfc/rfc8870>.
+
    [RFC8879]  Ghedini, A. and V. Vasiliev, "TLS Certificate
               Compression", RFC 8879, DOI 10.17487/RFC8879, December
               2020, <https://www.rfc-editor.org/rfc/rfc8879>.
@@ -5249,6 +5260,28 @@ Auth | {CertificateVerify*}
               and C. Wood, "Randomness Improvements for Security
               Protocols", RFC 8937, DOI 10.17487/RFC8937, October 2020,
               <https://www.rfc-editor.org/rfc/rfc8937>.
+
+   [RFC9001]  Thomson, M., Ed. and S. Turner, Ed., "Using TLS to Secure
+              QUIC", RFC 9001, DOI 10.17487/RFC9001, May 2021,
+              <https://www.rfc-editor.org/rfc/rfc9001>.
+
+   [RFC9146]  Rescorla, E., Ed., Tschofenig, H., Ed., Fossati, T., and
+              A. Kraus, "Connection Identifier for DTLS 1.2", RFC 9146,
+              DOI 10.17487/RFC9146, March 2022,
+              <https://www.rfc-editor.org/rfc/rfc9146>.
+
+   [RFC9149]  Pauly, T., Schinazi, D., and C.A. Wood, "TLS Ticket
+              Requests", RFC 9149, DOI 10.17487/RFC9149, April 2022,
+              <https://www.rfc-editor.org/rfc/rfc9149>.
+
+   [RFC9162]  Laurie, B., Messeri, E., and R. Stradling, "Certificate
+              Transparency Version 2.0", RFC 9162, DOI 10.17487/RFC9162,
+              December 2021, <https://www.rfc-editor.org/rfc/rfc9162>.
+
+   [RFC9345]  Barnes, R., Iyengar, S., Sullivan, N., and E. Rescorla,
+              "Delegated Credentials for TLS and DTLS", RFC 9345,
+              DOI 10.17487/RFC9345, July 2023,
+              <https://www.rfc-editor.org/rfc/rfc9345>.
 
    [RSA]      Rivest, R., Shamir, A., and L. Adleman, "A method for
               obtaining digital signatures and public-key
@@ -5295,26 +5328,26 @@ A.1.  Client
                Send ClientHello |        | Recv HelloRetryRequest
           [K_send = early data] |        |
                                 v        |
-           /                 WAIT_SH ----+
+           +->               WAIT_SH ----+
            |                    | Recv ServerHello
            |                    | K_recv = handshake
        Can |                    V
       send |                 WAIT_EE
      early |                    | Recv EncryptedExtensions
-      data |           +--------+--------+
-           |     Using |                 | Using certificate
-           |       PSK |                 v
-           |           |            WAIT_CERT_CR
-           |           |        Recv |       | Recv CertificateRequest
-           |           | Certificate |       v
-           |           |             |    WAIT_CERT
-           |           |             |       | Recv Certificate
-           |           |             v       v
-           |           |              WAIT_CV
-           |           |                 | Recv CertificateVerify
-           |           +> WAIT_FINISHED <+
+      data |          +---------+-------+
+           |    Using |                 | Using certificate
+           |      PSK |                 v
+           |          |            WAIT_CERT_CR
+           |          |        Recv |       | Recv CertificateRequest
+           |          | Certificate |       v
+           |          |             |    WAIT_CERT
+           |          |             |       | Recv Certificate
+           |          |             v       v
+           |          |              WAIT_CV
+           |          |                   | Recv CertificateVerify
+           |          +-> WAIT_FINISHED <-+
            |                  | Recv Finished
-           \                  | [Send EndOfEarlyData]
+           +->                | [Send EndOfEarlyData]
                               | K_send = handshake
                               | [Send Certificate [+ CertificateVerify]]
     Can send                  | Send Finished
@@ -5347,12 +5380,12 @@ A.2.  Server
               No 0-RTT |                 | 0-RTT
                        |                 |
    K_recv = handshake  |                 | K_recv = early data
- [Skip decrypt errors] |    +------> WAIT_EOED -+
-                       |    |       Recv |      | Recv EndOfEarlyData
-                       |    | early data |      | K_recv = handshake
-                       |    +------------+      |
-                       |                        |
-                       +> WAIT_FLIGHT2 <--------+
+ [Skip decrypt errors] |    +------> WAIT_EOED --+
+                       |    |       Recv |       | Recv EndOfEarlyData
+                       |    | early data |       | K_recv = handshake
+                       |    +------------+       |
+                       |                         |
+                       +-> WAIT_FLIGHT2 <--------+
                                 |
                        +--------+--------+
                No auth |                 | Cert-based client auth
@@ -6788,7 +6821,7 @@ F.7.  Sharing PSKs
 F.8.  Attacks on Static RSA
 
    Although TLS 1.3 does not use RSA key transport and so is not
-   directly susceptible to Bleichenbacher-type attacks [Blei98]if TLS
+   directly susceptible to Bleichenbacher-type attacks [Blei98] if TLS
    1.3 servers also support static RSA in the context of previous
    versions of TLS, then it may be possible to impersonate the server
    for TLS 1.3 connections [JSS15].  TLS 1.3 implementations can prevent
