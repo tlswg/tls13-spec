@@ -2303,12 +2303,13 @@ values MAY be a non-contiguous subset of the "supported_groups" extension and
 MAY omit the most preferred groups. Such a situation could arise if the most
 preferred groups are new and unlikely to be supported in enough places to
 make pregenerating key shares for them efficient.
-For this reason, the omission of a share for group A and inclusion
-of one for group B does not mean that the client prefers B to A.
-Servers that wish to respect the client's group preferences SHOULD first
-select a group based "supported_groups" and then either complete
-the handshake or send a helloretryrequest depending on the contents
-of keyshareclienthello.
+
+For this reason, the omission of a share for group A and inclusion of
+one for group B does not mean that the client prefers B to A.  Servers
+that wish to respect the client's group preferences SHOULD first
+select a group based "supported_groups" and then either complete the
+handshake or send a HelloRetryRequest depending on the contents of
+KeyshareClienthello.
 
 Clients can offer as many KeyShareEntry values as the number of supported
 groups it is offering, each
