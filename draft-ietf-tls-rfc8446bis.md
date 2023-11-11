@@ -2305,7 +2305,10 @@ preferred groups are new and unlikely to be supported in enough places to
 make pregenerating key shares for them efficient.
 
 For this reason, the omission of a share for group A and inclusion of
-one for group B does not mean that the client prefers B to A.  Servers
+one for group B does not mean that the client prefers B to A.
+Selecting a group based on KeyShareEntry may result in the use of
+a less preferred group than the client and server mutually support,
+though saving the round trip of HelloRetryRequest. Servers
 that wish to respect the client's group preferences SHOULD first
 select a group based "supported_groups" and then either complete the
 handshake or send a HelloRetryRequest depending on the contents of
