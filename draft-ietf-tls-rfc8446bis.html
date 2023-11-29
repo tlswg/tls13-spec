@@ -26,13 +26,13 @@ requirements for TLS 1.2 implementations.
     intervaltree 3.1.0
     Jinja2 3.1.2
     lxml 4.9.3
-    platformdirs 3.11.0
+    platformdirs 4.0.0
     pycountry 22.3.5
     PyYAML 6.0
     requests 2.31.0
     setuptools 67.7.2
     six 1.16.0
-    wcwidth 0.2.9
+    wcwidth 0.2.10
 -->
 <link href="draft-ietf-tls-rfc8446bis.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
@@ -1035,7 +1035,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Rescorla</td>
-<td class="center">Expires 8 May 2024</td>
+<td class="center">Expires 1 June 2024</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1054,12 +1054,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <a href="https://www.rfc-editor.org/rfc/rfc5705" class="eref">5705</a>, <a href="https://www.rfc-editor.org/rfc/rfc6066" class="eref">6066</a>, <a href="https://www.rfc-editor.org/rfc/rfc7627" class="eref">7627</a>, <a href="https://www.rfc-editor.org/rfc/rfc8422" class="eref">8422</a> (if approved)</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2023-11-05" class="published">5 November 2023</time>
+<time datetime="2023-11-29" class="published">29 November 2023</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2024-05-08">8 May 2024</time></dd>
+<dd class="expires"><time datetime="2024-06-01">1 June 2024</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1099,7 +1099,7 @@ requirements for TLS 1.2 implementations.<a href="#section-abstract-2" class="pi
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 8 May 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 1 June 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -4038,7 +4038,16 @@ values MAY be a non-contiguous subset of the "supported_groups" extension and
 MAY omit the most preferred groups. Such a situation could arise if the most
 preferred groups are new and unlikely to be supported in enough places to
 make pregenerating key shares for them efficient.<a href="#section-4.2.8-8" class="pilcrow">¶</a></p>
-<p id="section-4.2.8-9">Clients can offer as many KeyShareEntry values as the number of supported
+<p id="section-4.2.8-9">For this reason, the omission of a share for group A and inclusion of
+one for group B does not mean that the client prefers B to A.
+Selecting a group based on KeyShareEntry may result in the use of
+a less preferred group than the client and server mutually support,
+though saving the round trip of HelloRetryRequest. Servers
+that wish to respect the client's group preferences SHOULD first
+select a group based "supported_groups" and then either send a
+ServerHello or a HelloRetryRequest depending on the contents of
+KeyshareClienthello.<a href="#section-4.2.8-9" class="pilcrow">¶</a></p>
+<p id="section-4.2.8-10">Clients can offer as many KeyShareEntry values as the number of supported
 groups it is offering, each
 representing a single set of key exchange parameters. For instance, a
 client might offer shares for several elliptic curves or multiple
@@ -4048,25 +4057,25 @@ KeyShareEntry values for the same group.  Clients MUST NOT offer any
 KeyShareEntry values for groups not listed in the client's
 "supported_groups" extension.  Servers MAY check for violations of
 these rules and abort the handshake with an "illegal_parameter" alert
-if one is violated.<a href="#section-4.2.8-9" class="pilcrow">¶</a></p>
-<p id="section-4.2.8-10">In a HelloRetryRequest message, the "extension_data" field of this
-extension contains a KeyShareHelloRetryRequest value:<a href="#section-4.2.8-10" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.2.8-11">
+if one is violated.<a href="#section-4.2.8-10" class="pilcrow">¶</a></p>
+<p id="section-4.2.8-11">In a HelloRetryRequest message, the "extension_data" field of this
+extension contains a KeyShareHelloRetryRequest value:<a href="#section-4.2.8-11" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.2.8-12">
 <pre>
    struct {
        NamedGroup selected_group;
    } KeyShareHelloRetryRequest;
-</pre><a href="#section-4.2.8-11" class="pilcrow">¶</a>
+</pre><a href="#section-4.2.8-12" class="pilcrow">¶</a>
 </div>
-<span class="break"></span><dl class="dlParallel" id="section-4.2.8-12">
-            <dt id="section-4.2.8-12.1">selected_group:</dt>
-            <dd style="margin-left: 1.5em" id="section-4.2.8-12.2">
-              <p id="section-4.2.8-12.2.1">The mutually supported group the server intends to negotiate and
-is requesting a retried ClientHello/KeyShare for.<a href="#section-4.2.8-12.2.1" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlParallel" id="section-4.2.8-13">
+            <dt id="section-4.2.8-13.1">selected_group:</dt>
+            <dd style="margin-left: 1.5em" id="section-4.2.8-13.2">
+              <p id="section-4.2.8-13.2.1">The mutually supported group the server intends to negotiate and
+is requesting a retried ClientHello/KeyShare for.<a href="#section-4.2.8-13.2.1" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
 </dl>
-<p id="section-4.2.8-13">Upon receipt of this extension in a HelloRetryRequest, the client MUST
+<p id="section-4.2.8-14">Upon receipt of this extension in a HelloRetryRequest, the client MUST
 verify that (1) the selected_group field corresponds to a group which was provided
 in the "supported_groups" extension in the original ClientHello and (2)
 the selected_group field does not correspond to a group which was
@@ -4075,25 +4084,25 @@ these checks fails, then the client MUST abort the handshake with an
 "illegal_parameter" alert.  Otherwise, when sending the new ClientHello, the
 client MUST replace the original "key_share" extension with one
 containing only a new KeyShareEntry for the group indicated in the
-selected_group field of the triggering HelloRetryRequest.<a href="#section-4.2.8-13" class="pilcrow">¶</a></p>
-<p id="section-4.2.8-14">In a ServerHello message, the "extension_data" field of this
-extension contains a KeyShareServerHello value:<a href="#section-4.2.8-14" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.2.8-15">
+selected_group field of the triggering HelloRetryRequest.<a href="#section-4.2.8-14" class="pilcrow">¶</a></p>
+<p id="section-4.2.8-15">In a ServerHello message, the "extension_data" field of this
+extension contains a KeyShareServerHello value:<a href="#section-4.2.8-15" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.2.8-16">
 <pre>
    struct {
        KeyShareEntry server_share;
    } KeyShareServerHello;
-</pre><a href="#section-4.2.8-15" class="pilcrow">¶</a>
+</pre><a href="#section-4.2.8-16" class="pilcrow">¶</a>
 </div>
-<span class="break"></span><dl class="dlParallel" id="section-4.2.8-16">
-            <dt id="section-4.2.8-16.1">server_share:</dt>
-            <dd style="margin-left: 1.5em" id="section-4.2.8-16.2">
-              <p id="section-4.2.8-16.2.1">A single KeyShareEntry value that is in the same group as one of the
-client's shares.<a href="#section-4.2.8-16.2.1" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlParallel" id="section-4.2.8-17">
+            <dt id="section-4.2.8-17.1">server_share:</dt>
+            <dd style="margin-left: 1.5em" id="section-4.2.8-17.2">
+              <p id="section-4.2.8-17.2.1">A single KeyShareEntry value that is in the same group as one of the
+client's shares.<a href="#section-4.2.8-17.2.1" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
 </dl>
-<p id="section-4.2.8-17">If using (EC)DHE key establishment, servers offer exactly one
+<p id="section-4.2.8-18">If using (EC)DHE key establishment, servers offer exactly one
 KeyShareEntry in the ServerHello. This value MUST be in the same group
 as the KeyShareEntry value offered
 by the client that the server has selected for the negotiated key exchange.
@@ -4104,7 +4113,7 @@ If using (EC)DHE key establishment and a HelloRetryRequest containing a
 "key_share" extension was received by the client, the client MUST verify that the
 selected NamedGroup in the ServerHello is the same as that in the HelloRetryRequest.
 If this check fails, the client MUST abort the handshake with an "illegal_parameter"
-alert.<a href="#section-4.2.8-17" class="pilcrow">¶</a></p>
+alert.<a href="#section-4.2.8-18" class="pilcrow">¶</a></p>
 <div id="ffdhe-param">
 <section id="section-4.2.8.1">
             <h5 id="name-diffie-hellman-parameters">
@@ -7298,7 +7307,7 @@ alert in the TLS Alerts Registry with the value given in <a href="#alert-protoco
 <dd class="break"></dd>
 <dt id="RFC8996">[RFC8996]</dt>
         <dd>
-<span class="refTitle">"*** BROKEN REFERENCE ***"</span>. </dd>
+<span class="refAuthor">Moriarty, K.</span> and <span class="refAuthor">S. Farrell</span>, <span class="refTitle">"Deprecating TLS 1.0 and TLS 1.1"</span>, <span class="seriesInfo">BCP 195</span>, <span class="seriesInfo">RFC 8996</span>, <span class="seriesInfo">DOI 10.17487/RFC8996</span>, <time datetime="2021-03" class="refDate">March 2021</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8996">https://www.rfc-editor.org/rfc/rfc8996</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="SHS">[SHS]</dt>
         <dd>

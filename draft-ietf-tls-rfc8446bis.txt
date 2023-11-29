@@ -4,10 +4,10 @@
 
 Transport Layer Security                                     E. Rescorla
 Internet-Draft                                   Windy Hill Systems, LLC
-Obsoletes: 8446 (if approved)                            5 November 2023
+Obsoletes: 8446 (if approved)                           29 November 2023
 Updates: 5705, 6066, 7627, 8422 (if approved)                           
 Intended status: Standards Track                                        
-Expires: 8 May 2024
+Expires: 1 June 2024
 
 
         The Transport Layer Security (TLS) Protocol Version 1.3
@@ -39,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 8 May 2024.
+   This Internet-Draft will expire on 1 June 2024.
 
 Copyright Notice
 
@@ -2075,6 +2075,15 @@ Auth | {CertificateVerify*}
    groups.  Such a situation could arise if the most preferred groups
    are new and unlikely to be supported in enough places to make
    pregenerating key shares for them efficient.
+
+   For this reason, the omission of a share for group A and inclusion of
+   one for group B does not mean that the client prefers B to A.
+   Selecting a group based on KeyShareEntry may result in the use of a
+   less preferred group than the client and server mutually support,
+   though saving the round trip of HelloRetryRequest.  Servers that wish
+   to respect the client's group preferences SHOULD first select a group
+   based "supported_groups" and then either send a ServerHello or a
+   HelloRetryRequest depending on the contents of KeyshareClienthello.
 
    Clients can offer as many KeyShareEntry values as the number of
    supported groups it is offering, each representing a single set of
@@ -4845,7 +4854,9 @@ Auth | {CertificateVerify*}
               Protocols", RFC 8439, DOI 10.17487/RFC8439, June 2018,
               <https://www.rfc-editor.org/rfc/rfc8439>.
 
-   [RFC8996]  "*** BROKEN REFERENCE ***".
+   [RFC8996]  Moriarty, K. and S. Farrell, "Deprecating TLS 1.0 and TLS
+              1.1", BCP 195, RFC 8996, DOI 10.17487/RFC8996, March 2021,
+              <https://www.rfc-editor.org/rfc/rfc8996>.
 
    [SHS]      Dang, Q., "Secure Hash Standard", National Institute of
               Standards and Technology, DOI 10.6028/nist.fips.180-4,
