@@ -2314,8 +2314,8 @@ Selecting a group based on KeyShareEntry may result in the use of
 a less preferred group than the client and server mutually support,
 though saving the round trip of HelloRetryRequest. Servers
 that wish to respect the client's group preferences SHOULD first
-select a group based "supported_groups" and then either complete the
-handshake or send a HelloRetryRequest depending on the contents of
+select a group based "supported_groups" and then either send a
+ServerHello or a HelloRetryRequest depending on the contents of
 KeyshareClienthello.
 
 Clients can offer as many KeyShareEntry values as the number of supported
