@@ -5337,6 +5337,12 @@ applications SHOULD NOT offer tickets across connections that are meant to be
 uncorrelated. For example, {{FETCH}} defines network partition keys to separate
 cache lookups in web browsers.
 
+The attack described in {{anti-replay}} where a network attacker mounts an attack by
+replaying a flight of 0-RTT data, can also be used to determine that a server,
+located in different locations or utilizing different network addresses,
+is in fact, one and the same. The mitigations outlined in {{anti-replay}} also prevent
+this tracking attack.
+
 Clients and Servers SHOULD NOT reuse a key share for multiple connections. Reuse
 of a key share allows passive observers to correlate different connections. Reuse
 of a client key share to the same server additionally allows the server to correlate different connections.
