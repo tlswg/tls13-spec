@@ -2881,7 +2881,7 @@ servers which are authenticating with an external PSK
 MUST NOT send the CertificateRequest message either in the main handshake
 or request post-handshake authentication.
 {{RFC8773}} provides an extension to permit this,
-but has not received the level of analysis as this specification.
+but has not received the same level of analysis as this specification.
 
 ## Authentication Messages
 
