@@ -5355,7 +5355,7 @@ will generally be possible for an external observer to track
 clients and/or servers across connections. Use of the
 Encrypted Client Hello {{?I-D.ietf-tls-esni}} extension can
 mitigate this risk, as can mechanisms external to TLS that
-rotate the PSK identity.
+rotate or encrypt the PSK identity.
 
 
 ## Unauthenticated Operation
