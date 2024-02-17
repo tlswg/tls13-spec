@@ -6075,7 +6075,7 @@ C.4.  Client and Server Tracking Prevention
    will generally be possible for an external observer to track clients
    and/or servers across connections.  Use of the Encrypted Client Hello
    [I-D.ietf-tls-esni] extension can mitigate this risk, as can
-   mechanisms external to TLS that rotate the PSK identity.
+   mechanisms external to TLS that rotate or encrypt the PSK identity.
 
 C.5.  Unauthenticated Operation
 
