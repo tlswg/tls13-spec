@@ -153,7 +153,7 @@ informative:
          ins: A. Luykx
        -
          ins: K. Paterson
-       target: http://www.isg.rhul.ac.uk/~kp/TLS-AEbounds.pdf
+       target: https://eprint.iacr.org/2024/051.pdf
        date: August 2017
   HGFS15:
        title: "Prying Open Pandora's Box: KCI Attacks against TLS"
