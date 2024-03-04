@@ -5255,7 +5255,7 @@ TLS protocol issues:
 
 - Do you correctly handle handshake messages that are fragmented to
   multiple TLS records (see {{record-layer}})? Do you correctly handle
-  corner cases like a ClientHello that is split into several small fragments? Do
+  corner cases like a ClientHello that is split into several small fragments such as hybrid key exchanges? Do
   you fragment handshake messages that exceed the maximum fragment
   size? In particular, the Certificate and CertificateRequest
   handshake messages can be large enough to require fragmentation.
