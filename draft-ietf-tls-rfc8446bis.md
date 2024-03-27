@@ -2245,7 +2245,8 @@ Finite Field Groups (DHE):
 {:br }
 
 Items in "named_group_list" are ordered according to the sender's
-preferences (most preferred choice first).
+preferences (most preferred choice first). The "named_group_list"
+MUST NOT contain any duplicate entries.
 
 As of TLS 1.3, servers are permitted to send the "supported_groups"
 extension to the client. Clients MUST NOT act upon any information
