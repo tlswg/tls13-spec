@@ -3673,7 +3673,9 @@ type MUST contain exactly one message.
 
 Application Data messages contain data that is opaque to
 TLS. Application Data messages are always protected. Zero-length
-fragments of Application Data MAY be sent, as they are potentially
+fragments of Application Data (i.e., TLSInnerPlaintext records of
+type application_data with zero-length
+content) MAY be sent, as they are potentially
 useful as a traffic analysis countermeasure.  Application Data fragments
 MAY be split across multiple records or coalesced into a single record.
 
