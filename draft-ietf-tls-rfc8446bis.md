@@ -3947,7 +3947,7 @@ primitive (AES or ChaCha20) has no weaknesses. Implementations MUST
 either close the connection or
 do a key update as described in {{key-update}} prior to reaching these limits.
 Note that it is not possible to perform a KeyUpdate for early data
-and therefore implementations MUST not exceed the limits
+and therefore implementations MUST NOT exceed the limits
 when sending early data. Receiving implementations SHOULD NOT enforce
 these limits, as future analyses may result in updated values.
 
