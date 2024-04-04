@@ -4217,8 +4217,7 @@ missing_extension:
 
 unsupported_extension:
 : Sent by endpoints receiving any handshake message containing an extension
-  known to be prohibited for inclusion in the given handshake message, or including
-  any extensions in a ServerHello or Certificate not first offered in the
+  in a ServerHello or Certificate not first offered in the
   corresponding ClientHello or CertificateRequest.
 
 unrecognized_name:
