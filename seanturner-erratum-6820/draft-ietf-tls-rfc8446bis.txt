@@ -4,10 +4,10 @@
 
 Transport Layer Security                                     E. Rescorla
 Internet-Draft                                   Windy Hill Systems, LLC
-Obsoletes: 8446 (if approved)                               4 March 2024
+Obsoletes: 8446 (if approved)                               4 April 2024
 Updates: 5705, 6066, 7627, 8422 (if approved)                           
 Intended status: Standards Track                                        
-Expires: 5 September 2024
+Expires: 6 October 2024
 
 
         The Transport Layer Security (TLS) Protocol Version 1.3
@@ -39,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 5 September 2024.
+   This Internet-Draft will expire on 6 October 2024.
 
 Copyright Notice
 
@@ -3920,10 +3920,9 @@ Auth | {CertificateVerify*}
       the offered TLS version or other negotiated parameters.
 
    unsupported_extension:  Sent by endpoints receiving any handshake
-      message containing an extension known to be prohibited for
-      inclusion in the given handshake message, or including any
-      extensions in a ServerHello or Certificate not first offered in
-      the corresponding ClientHello or CertificateRequest.
+      message containing an extension in a ServerHello or Certificate
+      not first offered in the corresponding ClientHello or
+      CertificateRequest.
 
    unrecognized_name:  Sent by servers when no server exists identified
       by the name provided by the client via the "server_name" extension
@@ -4996,7 +4995,7 @@ Auth | {CertificateVerify*}
               DOI 10.6028/nist.sp.800-186, February 2023,
               <https://doi.org/10.6028/nist.sp.800-186>.
 
-   [FETCH]    WHATWG, "Fetch Standard", March 2024,
+   [FETCH]    WHATWG, "Fetch Standard", April 2024,
               <https://fetch.spec.whatwg.org/>.
 
    [FG17]     Fischlin, M. and F. Guenther, "Replay Attacks on Zero
@@ -5028,9 +5027,9 @@ Auth | {CertificateVerify*}
    [I-D.ietf-tls-esni]
               Rescorla, E., Oku, K., Sullivan, N., and C. A. Wood, "TLS
               Encrypted Client Hello", Work in Progress, Internet-Draft,
-              draft-ietf-tls-esni-17, 9 October 2023,
+              draft-ietf-tls-esni-18, 4 March 2024,
               <https://datatracker.ietf.org/doc/html/draft-ietf-tls-
-              esni-17>.
+              esni-18>.
 
    [I-D.ietf-uta-rfc6125bis]
               Saint-Andre, P. and R. Salz, "Service Identity in TLS",
