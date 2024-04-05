@@ -400,8 +400,8 @@ over the Internet in a way that is designed to prevent eavesdropping,
 tampering, and message forgery.
 
 This document updates RFCs 5705, 6066, 7627, and 8422 and obsoletes
-RFCs 5077, 5246, 6961, and 8446. This document also specifies new
-requirements for TLS 1.2 implementations.
+RFCs 5077, 5246, 6961, 8422, and 8446. This document also specifies
+new requirements for TLS 1.2 implementations.
 --- middle
 
 
