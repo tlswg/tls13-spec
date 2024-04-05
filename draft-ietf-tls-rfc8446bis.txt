@@ -253,8 +253,8 @@ Table of Contents
    of protocols that run on top of TLS.  Application protocols using TLS
    MUST specify how TLS works with their application protocol, including
    how and when handshaking occurs, and how to do identity verification.
-   [I-D.ietf-uta-rfc6125bis] provides useful guidance on integrating TLS
-   with application protocols.
+   [RFC9525] provides useful guidance on integrating TLS with
+   application protocols.
 
    This document defines TLS version 1.3.  While TLS 1.3 is not directly
    compatible with previous versions, all versions of TLS incorporate a
@@ -3419,10 +3419,11 @@ Auth | {CertificateVerify*}
 
    Application Data messages contain data that is opaque to TLS.
    Application Data messages are always protected.  Zero-length
-   fragments of Application Data MAY be sent, as they are potentially
-   useful as a traffic analysis countermeasure.  Application Data
-   fragments MAY be split across multiple records or coalesced into a
-   single record.
+   fragments of Application Data (i.e., TLSInnerPlaintext records of
+   type application_data with zero-length content) MAY be sent, as they
+   are potentially useful as a traffic analysis countermeasure.
+   Application Data fragments MAY be split across multiple records or
+   coalesced into a single record.
 
       enum {
           invalid(0),
@@ -3682,7 +3683,7 @@ Auth | {CertificateVerify*}
    Implementations MUST either close the connection or do a key update
    as described in Section 4.6.3 prior to reaching these limits.  Note
    that it is not possible to perform a KeyUpdate for early data and
-   therefore implementations MUST not exceed the limits when sending
+   therefore implementations MUST NOT exceed the limits when sending
    early data.  Receiving implementations SHOULD NOT enforce these
    limits, as future analyses may result in updated values.
 
@@ -5033,13 +5034,6 @@ Auth | {CertificateVerify*}
               <https://datatracker.ietf.org/doc/html/draft-ietf-tls-
               esni-18>.
 
-   [I-D.ietf-uta-rfc6125bis]
-              Saint-Andre, P. and R. Salz, "Service Identity in TLS",
-              Work in Progress, Internet-Draft, draft-ietf-uta-
-              rfc6125bis-15, 10 August 2023,
-              <https://datatracker.ietf.org/doc/html/draft-ietf-uta-
-              rfc6125bis-15>.
-
    [JSS15]    Jager, T., Schwenk, J., and J. Somorovsky, "On the
               Security of TLS 1.3 and QUIC Against Weaknesses in PKCS#1
               v1.5 Encryption", ACM, Proceedings of the 22nd ACM SIGSAC
@@ -5227,9 +5221,7 @@ Auth | {CertificateVerify*}
               DOI 10.17487/RFC8422, August 2018,
               <https://www.rfc-editor.org/rfc/rfc8422>.
 
-   [RFC8446]  Rescorla, E., "The Transport Layer Security (TLS) Protocol
-              Version 1.3", RFC 8446, DOI 10.17487/RFC8446, August 2018,
-              <https://www.rfc-editor.org/rfc/rfc8446>.
+   [RFC8446]  "*** BROKEN REFERENCE ***".
 
    [RFC8447]  "*** BROKEN REFERENCE ***".
 
@@ -5291,6 +5283,10 @@ Auth | {CertificateVerify*}
               "Delegated Credentials for TLS and DTLS", RFC 9345,
               DOI 10.17487/RFC9345, July 2023,
               <https://www.rfc-editor.org/rfc/rfc9345>.
+
+   [RFC9525]  Saint-Andre, P. and R. Salz, "Service Identity in TLS",
+              RFC 9525, DOI 10.17487/RFC9525, November 2023,
+              <https://www.rfc-editor.org/rfc/rfc9525>.
 
    [RSA]      Rivest, R., Shamir, A., and L. Adleman, "A method for
               obtaining digital signatures and public-key
@@ -6868,8 +6864,8 @@ Appendix G.  Change Log
 
    *  Reference RFC 8773 (PR 1296)
 
-   *  Add some more information about application bindings and cite
-      6125-bis (PR 1297)
+   *  Add some more information about application bindings and cite RFC
+      9525 (PR 1297)
 
    Since -04
 

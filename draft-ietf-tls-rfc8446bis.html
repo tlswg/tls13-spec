@@ -1640,7 +1640,7 @@ certificates exchanged are left to the judgment of the designers and
 implementors of protocols that run on top of TLS. Application
 protocols using TLS MUST specify how TLS works with their
 application protocol, including how and when handshaking
-occurs, and how to do identity verification. <span>[<a href="#I-D.ietf-uta-rfc6125bis" class="cite xref">I-D.ietf-uta-rfc6125bis</a>]</span>
+occurs, and how to do identity verification. <span>[<a href="#RFC9525" class="cite xref">RFC9525</a>]</span>
 provides useful guidance on integrating TLS with application
 protocols.<a href="#section-1-7" class="pilcrow">¶</a></p>
 <p id="section-1-8">This document defines TLS version 1.3. While TLS 1.3 is not directly
@@ -5576,7 +5576,9 @@ single TLSPlaintext record. In other words, a record with an Alert
 type MUST contain exactly one message.<a href="#section-5.1-5" class="pilcrow">¶</a></p>
 <p id="section-5.1-6">Application Data messages contain data that is opaque to
 TLS. Application Data messages are always protected. Zero-length
-fragments of Application Data MAY be sent, as they are potentially
+fragments of Application Data (i.e., TLSInnerPlaintext records of
+type application_data with zero-length
+content) MAY be sent, as they are potentially
 useful as a traffic analysis countermeasure.  Application Data fragments
 MAY be split across multiple records or coalesced into a single record.<a href="#section-5.1-6" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-5.1-7">
@@ -5880,7 +5882,7 @@ primitive (AES or ChaCha20) has no weaknesses. Implementations MUST
 either close the connection or
 do a key update as described in <a href="#key-update" class="auto internal xref">Section 4.6.3</a> prior to reaching these limits.
 Note that it is not possible to perform a KeyUpdate for early data
-and therefore implementations MUST not exceed the limits
+and therefore implementations MUST NOT exceed the limits
 when sending early data. Receiving implementations SHOULD NOT enforce
 these limits, as future analyses may result in updated values.<a href="#section-5.5-1" class="pilcrow">¶</a></p>
 <p id="section-5.5-2">For AES-GCM, up to 2^24.5 full-size records (about 24 million)
@@ -7439,10 +7441,6 @@ alert in the TLS Alerts Registry with the value given in <a href="#alert-protoco
         <dd>
 <span class="refAuthor">Rescorla, E.</span>, <span class="refAuthor">Oku, K.</span>, <span class="refAuthor">Sullivan, N.</span>, and <span class="refAuthor">C. A. Wood</span>, <span class="refTitle">"TLS Encrypted Client Hello"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-tls-esni-18</span>, <time datetime="2024-03-04" class="refDate">4 March 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-tls-esni-18">https://datatracker.ietf.org/doc/html/draft-ietf-tls-esni-18</a>&gt;</span>. </dd>
 <dd class="break"></dd>
-<dt id="I-D.ietf-uta-rfc6125bis">[I-D.ietf-uta-rfc6125bis]</dt>
-        <dd>
-<span class="refAuthor">Saint-Andre, P.</span> and <span class="refAuthor">R. Salz</span>, <span class="refTitle">"Service Identity in TLS"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-uta-rfc6125bis-15</span>, <time datetime="2023-08-10" class="refDate">10 August 2023</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-uta-rfc6125bis-15">https://datatracker.ietf.org/doc/html/draft-ietf-uta-rfc6125bis-15</a>&gt;</span>. </dd>
-<dd class="break"></dd>
 <dt id="JSS15">[JSS15]</dt>
         <dd>
 <span class="refAuthor">Jager, T.</span>, <span class="refAuthor">Schwenk, J.</span>, and <span class="refAuthor">J. Somorovsky</span>, <span class="refTitle">"On the Security of TLS 1.3 and QUIC Against Weaknesses in PKCS#1 v1.5 Encryption"</span>, <span class="refContent">ACM</span>, <span class="seriesInfo">Proceedings of the 22nd ACM SIGSAC Conference on Computer and Communications Security</span>, <span class="seriesInfo">DOI 10.1145/2810103.2813657</span>, <time datetime="2015-10" class="refDate">October 2015</time>, <span>&lt;<a href="https://doi.org/10.1145/2810103.2813657">https://doi.org/10.1145/2810103.2813657</a>&gt;</span>. </dd>
@@ -7589,7 +7587,7 @@ alert in the TLS Alerts Registry with the value given in <a href="#alert-protoco
 <dd class="break"></dd>
 <dt id="RFC8446">[RFC8446]</dt>
         <dd>
-<span class="refAuthor">Rescorla, E.</span>, <span class="refTitle">"The Transport Layer Security (TLS) Protocol Version 1.3"</span>, <span class="seriesInfo">RFC 8446</span>, <span class="seriesInfo">DOI 10.17487/RFC8446</span>, <time datetime="2018-08" class="refDate">August 2018</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8446">https://www.rfc-editor.org/rfc/rfc8446</a>&gt;</span>. </dd>
+<span class="refTitle">"*** BROKEN REFERENCE ***"</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC8447">[RFC8447]</dt>
         <dd>
@@ -7646,6 +7644,10 @@ alert in the TLS Alerts Registry with the value given in <a href="#alert-protoco
 <dt id="RFC9345">[RFC9345]</dt>
         <dd>
 <span class="refAuthor">Barnes, R.</span>, <span class="refAuthor">Iyengar, S.</span>, <span class="refAuthor">Sullivan, N.</span>, and <span class="refAuthor">E. Rescorla</span>, <span class="refTitle">"Delegated Credentials for TLS and DTLS"</span>, <span class="seriesInfo">RFC 9345</span>, <span class="seriesInfo">DOI 10.17487/RFC9345</span>, <time datetime="2023-07" class="refDate">July 2023</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9345">https://www.rfc-editor.org/rfc/rfc9345</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9525">[RFC9525]</dt>
+        <dd>
+<span class="refAuthor">Saint-Andre, P.</span> and <span class="refAuthor">R. Salz</span>, <span class="refTitle">"Service Identity in TLS"</span>, <span class="seriesInfo">RFC 9525</span>, <span class="seriesInfo">DOI 10.17487/RFC9525</span>, <time datetime="2023-11" class="refDate">November 2023</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9525">https://www.rfc-editor.org/rfc/rfc9525</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RSA">[RSA]</dt>
         <dd>
@@ -9657,7 +9659,7 @@ Since -06
 </li>
         <li class="normal" id="appendix-G-3.8">
           <p id="appendix-G-3.8.1">Add some more information about application bindings and cite
-6125-bis (PR 1297)<a href="#appendix-G-3.8.1" class="pilcrow">¶</a></p>
+RFC 9525 (PR 1297)<a href="#appendix-G-3.8.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 <p id="appendix-G-4">Since -04<a href="#appendix-G-4" class="pilcrow">¶</a></p>
