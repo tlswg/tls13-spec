@@ -4,10 +4,10 @@
 
 Transport Layer Security                                     E. Rescorla
 Internet-Draft                                   Windy Hill Systems, LLC
-Obsoletes: 8446 (if approved)                               4 April 2024
+Obsoletes: 8446 (if approved)                               5 April 2024
 Updates: 5705, 6066, 7627, 8422 (if approved)                           
 Intended status: Standards Track                                        
-Expires: 6 October 2024
+Expires: 7 October 2024
 
 
         The Transport Layer Security (TLS) Protocol Version 1.3
@@ -39,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 6 October 2024.
+   This Internet-Draft will expire on 7 October 2024.
 
 Copyright Notice
 
@@ -3920,9 +3920,9 @@ Auth | {CertificateVerify*}
       the offered TLS version or other negotiated parameters.
 
    unsupported_extension:  Sent by endpoints receiving any handshake
-      message containing an extension in a ServerHello or Certificate
-      not first offered in the corresponding ClientHello or
-      CertificateRequest.
+      message containing an extension in a ServerHello,
+      HelloRetryRequest, EncryptedExtensions, or Certificate not first
+      offered in the corresponding ClientHello or CertificateRequest.
 
    unrecognized_name:  Sent by servers when no server exists identified
       by the name provided by the client via the "server_name" extension
@@ -5229,9 +5229,7 @@ Auth | {CertificateVerify*}
               Version 1.3", RFC 8446, DOI 10.17487/RFC8446, August 2018,
               <https://www.rfc-editor.org/rfc/rfc8446>.
 
-   [RFC8447]  Salowey, J. and S. Turner, "IANA Registry Updates for TLS
-              and DTLS", RFC 8447, DOI 10.17487/RFC8447, August 2018,
-              <https://www.rfc-editor.org/rfc/rfc8447>.
+   [RFC8447]  "*** BROKEN REFERENCE ***".
 
    [RFC8448]  Thomson, M., "Example Handshake Traces for TLS 1.3",
               RFC 8448, DOI 10.17487/RFC8448, January 2019,
