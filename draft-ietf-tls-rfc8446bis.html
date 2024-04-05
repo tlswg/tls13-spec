@@ -15,11 +15,11 @@ tampering, and message forgery.
 RFCs 5077, 5246, 6961, and 8446. This document also specifies new
 requirements for TLS 1.2 implementations. 
     " name="description">
-<meta content="xml2rfc 3.20.0" name="generator">
+<meta content="xml2rfc 3.20.1" name="generator">
 <meta content="Internet-Draft" name="keyword">
 <meta content="draft-ietf-tls-rfc8446bis-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.20.0
+  xml2rfc 3.20.1
     Python 3.11.8
     ConfigArgParse 1.7
     google-i18n-address 3.1.0
@@ -1031,11 +1031,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">TLS</td>
-<td class="right">March 2024</td>
+<td class="right">April 2024</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Rescorla</td>
-<td class="center">Expires 4 September 2024</td>
+<td class="center">Expires 7 October 2024</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1054,12 +1054,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <a href="https://www.rfc-editor.org/rfc/rfc5705" class="eref">5705</a>, <a href="https://www.rfc-editor.org/rfc/rfc6066" class="eref">6066</a>, <a href="https://www.rfc-editor.org/rfc/rfc7627" class="eref">7627</a>, <a href="https://www.rfc-editor.org/rfc/rfc8422" class="eref">8422</a> (if approved)</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-03-03" class="published">3 March 2024</time>
+<time datetime="2024-04-05" class="published">5 April 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2024-09-04">4 September 2024</time></dd>
+<dd class="expires"><time datetime="2024-10-07">7 October 2024</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1099,7 +1099,7 @@ requirements for TLS 1.2 implementations.<a href="#section-abstract-2" class="pi
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 4 September 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 7 October 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -2177,25 +2177,25 @@ a PSK and the second handshake uses it:<a href="#section-2.2-3" class="pilcrow">
 <figure id="figure-3">
           <div id="section-2.2-4.1">
             <div class="alignLeft art-svg artwork" id="section-2.2-4.1.1">
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="544" width="536" viewBox="0 0 536 544" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round">
-                <path d="M 64,384 L 64,400" fill="none" stroke="black"></path>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="560" width="536" viewBox="0 0 536 560" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round">
+                <path d="M 64,384 L 64,416" fill="none" stroke="black"></path>
                 <path d="M 272,96 L 336,96" fill="none" stroke="black"></path>
                 <path d="M 272,224 L 336,224" fill="none" stroke="black"></path>
                 <path d="M 272,272 L 336,272" fill="none" stroke="black"></path>
                 <path d="M 272,288 L 336,288" fill="none" stroke="black"></path>
                 <path d="M 272,304 L 336,304" fill="none" stroke="black"></path>
-                <path d="M 272,400 L 336,400" fill="none" stroke="black"></path>
-                <path d="M 272,496 L 336,496" fill="none" stroke="black"></path>
+                <path d="M 272,416 L 336,416" fill="none" stroke="black"></path>
                 <path d="M 272,512 L 336,512" fill="none" stroke="black"></path>
                 <path d="M 272,528 L 336,528" fill="none" stroke="black"></path>
+                <path d="M 272,544 L 336,544" fill="none" stroke="black"></path>
+                <polygon class="arrowhead" points="344,544 332,538.4 332,549.6" fill="black" transform="rotate(0,336,544)"></polygon>
                 <polygon class="arrowhead" points="344,528 332,522.4 332,533.6" fill="black" transform="rotate(0,336,528)"></polygon>
-                <polygon class="arrowhead" points="344,512 332,506.4 332,517.6" fill="black" transform="rotate(0,336,512)"></polygon>
-                <polygon class="arrowhead" points="344,400 332,394.4 332,405.6" fill="black" transform="rotate(0,336,400)"></polygon>
+                <polygon class="arrowhead" points="344,416 332,410.4 332,421.6" fill="black" transform="rotate(0,336,416)"></polygon>
                 <polygon class="arrowhead" points="344,304 332,298.4 332,309.6" fill="black" transform="rotate(0,336,304)"></polygon>
                 <polygon class="arrowhead" points="344,272 332,266.4 332,277.6" fill="black" transform="rotate(0,336,272)"></polygon>
                 <polygon class="arrowhead" points="344,96 332,90.4 332,101.6" fill="black" transform="rotate(0,336,96)"></polygon>
-                <polygon class="arrowhead" points="280,528 268,522.4 268,533.6" fill="black" transform="rotate(180,272,528)"></polygon>
-                <polygon class="arrowhead" points="280,496 268,490.4 268,501.6" fill="black" transform="rotate(180,272,496)"></polygon>
+                <polygon class="arrowhead" points="280,544 268,538.4 268,549.6" fill="black" transform="rotate(180,272,544)"></polygon>
+                <polygon class="arrowhead" points="280,512 268,506.4 268,517.6" fill="black" transform="rotate(180,272,512)"></polygon>
                 <polygon class="arrowhead" points="280,304 268,298.4 268,309.6" fill="black" transform="rotate(180,272,304)"></polygon>
                 <polygon class="arrowhead" points="280,288 268,282.4 268,293.6" fill="black" transform="rotate(180,272,288)"></polygon>
                 <polygon class="arrowhead" points="280,224 268,218.4 268,229.6" fill="black" transform="rotate(180,272,224)"></polygon>
@@ -2229,20 +2229,21 @@ a PSK and the second handshake uses it:<a href="#section-2.2-3" class="pilcrow">
                   <text x="132" y="356">Handshake:</text>
                   <text x="104" y="372">ClientHello</text>
                   <text x="116" y="388">key_share*</text>
-                  <text x="132" y="404">pre_shared_key</text>
-                  <text x="488" y="420">ServerHello</text>
-                  <text x="408" y="436">+</text>
-                  <text x="476" y="436">pre_shared_key</text>
-                  <text x="492" y="452">key_share*</text>
-                  <text x="448" y="468">{EncryptedExtensions}</text>
-                  <text x="492" y="484">{Finished}</text>
-                  <text x="428" y="500">[Application</text>
-                  <text x="508" y="500">Data*]</text>
-                  <text x="100" y="516">{Finished}</text>
-                  <text x="108" y="532">[Application</text>
-                  <text x="184" y="532">Data]</text>
-                  <text x="436" y="532">[Application</text>
-                  <text x="512" y="532">Data]</text>
+                  <text x="164" y="404">psk_key_exchange_modes</text>
+                  <text x="132" y="420">pre_shared_key</text>
+                  <text x="488" y="436">ServerHello</text>
+                  <text x="408" y="452">+</text>
+                  <text x="476" y="452">pre_shared_key</text>
+                  <text x="492" y="468">key_share*</text>
+                  <text x="448" y="484">{EncryptedExtensions}</text>
+                  <text x="492" y="500">{Finished}</text>
+                  <text x="428" y="516">[Application</text>
+                  <text x="508" y="516">Data*]</text>
+                  <text x="100" y="532">{Finished}</text>
+                  <text x="108" y="548">[Application</text>
+                  <text x="184" y="548">Data]</text>
+                  <text x="436" y="548">[Application</text>
+                  <text x="512" y="548">Data]</text>
                 </g>
               </svg><a href="#section-2.2-4.1.1" class="pilcrow">¶</a>
 </div>
@@ -5575,7 +5576,9 @@ single TLSPlaintext record. In other words, a record with an Alert
 type MUST contain exactly one message.<a href="#section-5.1-5" class="pilcrow">¶</a></p>
 <p id="section-5.1-6">Application Data messages contain data that is opaque to
 TLS. Application Data messages are always protected. Zero-length
-fragments of Application Data MAY be sent, as they are potentially
+fragments of Application Data (i.e., TLSInnerPlaintext records of
+type application_data with zero-length
+content) MAY be sent, as they are potentially
 useful as a traffic analysis countermeasure.  Application Data fragments
 MAY be split across multiple records or coalesced into a single record.<a href="#section-5.1-6" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-5.1-7">
@@ -5879,7 +5882,7 @@ primitive (AES or ChaCha20) has no weaknesses. Implementations MUST
 either close the connection or
 do a key update as described in <a href="#key-update" class="auto internal xref">Section 4.6.3</a> prior to reaching these limits.
 Note that it is not possible to perform a KeyUpdate for early data
-and therefore implementations MUST not exceed the limits
+and therefore implementations MUST NOT exceed the limits
 when sending early data. Receiving implementations SHOULD NOT enforce
 these limits, as future analyses may result in updated values.<a href="#section-5.5-1" class="pilcrow">¶</a></p>
 <p id="section-5.5-2">For AES-GCM, up to 2^24.5 full-size records (about 24 million)
@@ -7126,7 +7129,7 @@ with any extension not listed there marked as "-" to indicate that
 it is not used by TLS 1.3.<a href="#section-11-5.3.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-11-6">This document updates an entry in the TLS Certificate Types registry
+<p id="section-11-6">This document updates two entries in the TLS Certificate Types registry
 originally created in <span>[<a href="#RFC6091" class="cite xref">RFC6091</a>]</span> and updated in <span>[<a href="#RFC8447" class="cite xref">RFC8447</a>]</span>.  IANA has
 updated the entry for value 1 to have the name "OpenPGP_RESERVED",
 "Recommended" value "N", and comment "Used in TLS versions prior
@@ -7412,7 +7415,7 @@ alert in the TLS Alerts Registry with the value given in <a href="#alert-protoco
 <dd class="break"></dd>
 <dt id="FETCH">[FETCH]</dt>
         <dd>
-<span class="refAuthor">WHATWG</span>, <span class="refTitle">"Fetch Standard"</span>, <time datetime="2024-03" class="refDate">March 2024</time>, <span>&lt;<a href="https://fetch.spec.whatwg.org/">https://fetch.spec.whatwg.org/</a>&gt;</span>. </dd>
+<span class="refAuthor">WHATWG</span>, <span class="refTitle">"Fetch Standard"</span>, <time datetime="2024-04" class="refDate">April 2024</time>, <span>&lt;<a href="https://fetch.spec.whatwg.org/">https://fetch.spec.whatwg.org/</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="FG17">[FG17]</dt>
         <dd>
@@ -7436,7 +7439,7 @@ alert in the TLS Alerts Registry with the value given in <a href="#alert-protoco
 <dd class="break"></dd>
 <dt id="I-D.ietf-tls-esni">[I-D.ietf-tls-esni]</dt>
         <dd>
-<span class="refAuthor">Rescorla, E.</span>, <span class="refAuthor">Oku, K.</span>, <span class="refAuthor">Sullivan, N.</span>, and <span class="refAuthor">C. A. Wood</span>, <span class="refTitle">"TLS Encrypted Client Hello"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-tls-esni-17</span>, <time datetime="2023-10-09" class="refDate">9 October 2023</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-tls-esni-17">https://datatracker.ietf.org/doc/html/draft-ietf-tls-esni-17</a>&gt;</span>. </dd>
+<span class="refAuthor">Rescorla, E.</span>, <span class="refAuthor">Oku, K.</span>, <span class="refAuthor">Sullivan, N.</span>, and <span class="refAuthor">C. A. Wood</span>, <span class="refTitle">"TLS Encrypted Client Hello"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-tls-esni-18</span>, <time datetime="2024-03-04" class="refDate">4 March 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-tls-esni-18">https://datatracker.ietf.org/doc/html/draft-ietf-tls-esni-18</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.ietf-uta-rfc6125bis">[I-D.ietf-uta-rfc6125bis]</dt>
         <dd>
@@ -7592,7 +7595,7 @@ alert in the TLS Alerts Registry with the value given in <a href="#alert-protoco
 <dd class="break"></dd>
 <dt id="RFC8447">[RFC8447]</dt>
         <dd>
-<span class="refAuthor">Salowey, J.</span> and <span class="refAuthor">S. Turner</span>, <span class="refTitle">"IANA Registry Updates for TLS and DTLS"</span>, <span class="seriesInfo">RFC 8447</span>, <span class="seriesInfo">DOI 10.17487/RFC8447</span>, <time datetime="2018-08" class="refDate">August 2018</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8447">https://www.rfc-editor.org/rfc/rfc8447</a>&gt;</span>. </dd>
+<span class="refTitle">"*** BROKEN REFERENCE ***"</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC8448">[RFC8448]</dt>
         <dd>

@@ -4,10 +4,10 @@
 
 Transport Layer Security                                     E. Rescorla
 Internet-Draft                                   Windy Hill Systems, LLC
-Obsoletes: 8446 (if approved)                               3 March 2024
+Obsoletes: 8446 (if approved)                               5 April 2024
 Updates: 5705, 6066, 7627, 8422 (if approved)                           
 Intended status: Standards Track                                        
-Expires: 4 September 2024
+Expires: 7 October 2024
 
 
         The Transport Layer Security (TLS) Protocol Version 1.3
@@ -39,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 4 September 2024.
+   This Internet-Draft will expire on 7 October 2024.
 
 Copyright Notice
 
@@ -659,6 +659,7 @@ Auth | {CertificateVerify*}
    Subsequent Handshake:
           ClientHello
           + key_share*
+          + psk_key_exchange_modes
           + pre_shared_key          -------->
                                                           ServerHello
                                                      + pre_shared_key
@@ -3418,10 +3419,11 @@ Auth | {CertificateVerify*}
 
    Application Data messages contain data that is opaque to TLS.
    Application Data messages are always protected.  Zero-length
-   fragments of Application Data MAY be sent, as they are potentially
-   useful as a traffic analysis countermeasure.  Application Data
-   fragments MAY be split across multiple records or coalesced into a
-   single record.
+   fragments of Application Data (i.e., TLSInnerPlaintext records of
+   type application_data with zero-length content) MAY be sent, as they
+   are potentially useful as a traffic analysis countermeasure.
+   Application Data fragments MAY be split across multiple records or
+   coalesced into a single record.
 
       enum {
           invalid(0),
@@ -3681,7 +3683,7 @@ Auth | {CertificateVerify*}
    Implementations MUST either close the connection or do a key update
    as described in Section 4.6.3 prior to reaching these limits.  Note
    that it is not possible to perform a KeyUpdate for early data and
-   therefore implementations MUST not exceed the limits when sending
+   therefore implementations MUST NOT exceed the limits when sending
    early data.  Receiving implementations SHOULD NOT enforce these
    limits, as future analyses may result in updated values.
 
@@ -4661,13 +4663,13 @@ Auth | {CertificateVerify*}
       any extension not listed there marked as "-" to indicate that it
       is not used by TLS 1.3.
 
-   This document updates an entry in the TLS Certificate Types registry
-   originally created in [RFC6091] and updated in [RFC8447].  IANA has
-   updated the entry for value 1 to have the name "OpenPGP_RESERVED",
-   "Recommended" value "N", and comment "Used in TLS versions prior to
-   1.3."  IANA has updated the entry for value 0 to have the name
-   "X509", "Recommended" value "Y", and comment "Was X.509 before TLS
-   1.3".
+   This document updates two entries in the TLS Certificate Types
+   registry originally created in [RFC6091] and updated in [RFC8447].
+   IANA has updated the entry for value 1 to have the name
+   "OpenPGP_RESERVED", "Recommended" value "N", and comment "Used in TLS
+   versions prior to 1.3."  IANA has updated the entry for value 0 to
+   have the name "X509", "Recommended" value "Y", and comment "Was X.509
+   before TLS 1.3".
 
    This document updates an entry in the TLS Certificate Status Types
    registry originally created in [RFC6961].  IANA has updated the entry
@@ -4996,7 +4998,7 @@ Auth | {CertificateVerify*}
               DOI 10.6028/nist.sp.800-186, February 2023,
               <https://doi.org/10.6028/nist.sp.800-186>.
 
-   [FETCH]    WHATWG, "Fetch Standard", March 2024,
+   [FETCH]    WHATWG, "Fetch Standard", April 2024,
               <https://fetch.spec.whatwg.org/>.
 
    [FG17]     Fischlin, M. and F. Guenther, "Replay Attacks on Zero
@@ -5028,9 +5030,9 @@ Auth | {CertificateVerify*}
    [I-D.ietf-tls-esni]
               Rescorla, E., Oku, K., Sullivan, N., and C. A. Wood, "TLS
               Encrypted Client Hello", Work in Progress, Internet-Draft,
-              draft-ietf-tls-esni-17, 9 October 2023,
+              draft-ietf-tls-esni-18, 4 March 2024,
               <https://datatracker.ietf.org/doc/html/draft-ietf-tls-
-              esni-17>.
+              esni-18>.
 
    [I-D.ietf-uta-rfc6125bis]
               Saint-Andre, P. and R. Salz, "Service Identity in TLS",
@@ -5230,9 +5232,7 @@ Auth | {CertificateVerify*}
               Version 1.3", RFC 8446, DOI 10.17487/RFC8446, August 2018,
               <https://www.rfc-editor.org/rfc/rfc8446>.
 
-   [RFC8447]  Salowey, J. and S. Turner, "IANA Registry Updates for TLS
-              and DTLS", RFC 8447, DOI 10.17487/RFC8447, August 2018,
-              <https://www.rfc-editor.org/rfc/rfc8447>.
+   [RFC8447]  "*** BROKEN REFERENCE ***".
 
    [RFC8448]  Thomson, M., "Example Handshake Traces for TLS 1.3",
               RFC 8448, DOI 10.17487/RFC8448, January 2019,
