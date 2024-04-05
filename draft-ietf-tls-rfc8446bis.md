@@ -464,7 +464,7 @@ certificates exchanged are left to the judgment of the designers and
 implementors of protocols that run on top of TLS. Application
 protocols using TLS MUST specify how TLS works with their
 application protocol, including how and when handshaking
-occurs, and how to do identity verification. {{?I-D.ietf-uta-rfc6125bis}}
+occurs, and how to do identity verification. {{?RFC9525}}
 provides useful guidance on integrating TLS with application
 protocols.
 
@@ -6146,7 +6146,7 @@ Since -05
 - close_notify should be warning (PR 1290)
 - Reference RFC 8773 (PR 1296)
 - Add some more information about application bindings and cite
-  6125-bis (PR 1297)
+  RFC 9525 (PR 1297)
 
 Since -04
 
