@@ -4952,7 +4952,7 @@ registry follow:
   with any extension not listed there marked as "-" to indicate that
   it is not used by TLS 1.3.
 
-This document updates an entry in the TLS Certificate Types registry
+This document updates two entries in the TLS Certificate Types registry
 originally created in {{RFC6091}} and updated in {{RFC8447}}.  IANA has
 updated the entry for value 1 to have the name "OpenPGP_RESERVED",
 "Recommended" value "N", and comment "Used in TLS versions prior
