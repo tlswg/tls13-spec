@@ -3419,11 +3419,10 @@ Auth | {CertificateVerify*}
 
    Application Data messages contain data that is opaque to TLS.
    Application Data messages are always protected.  Zero-length
-   fragments of Application Data (i.e., TLSInnerPlaintext records of
-   type application_data with zero-length content) MAY be sent, as they
-   are potentially useful as a traffic analysis countermeasure.
-   Application Data fragments MAY be split across multiple records or
-   coalesced into a single record.
+   fragments of Application Data MAY be sent, as they are potentially
+   useful as a traffic analysis countermeasure.  Application Data
+   fragments MAY be split across multiple records or coalesced into a
+   single record.
 
       enum {
           invalid(0),
@@ -3683,7 +3682,7 @@ Auth | {CertificateVerify*}
    Implementations MUST either close the connection or do a key update
    as described in Section 4.6.3 prior to reaching these limits.  Note
    that it is not possible to perform a KeyUpdate for early data and
-   therefore implementations MUST NOT exceed the limits when sending
+   therefore implementations MUST not exceed the limits when sending
    early data.  Receiving implementations SHOULD NOT enforce these
    limits, as future analyses may result in updated values.
 

@@ -5576,9 +5576,7 @@ single TLSPlaintext record. In other words, a record with an Alert
 type MUST contain exactly one message.<a href="#section-5.1-5" class="pilcrow">¶</a></p>
 <p id="section-5.1-6">Application Data messages contain data that is opaque to
 TLS. Application Data messages are always protected. Zero-length
-fragments of Application Data (i.e., TLSInnerPlaintext records of
-type application_data with zero-length
-content) MAY be sent, as they are potentially
+fragments of Application Data MAY be sent, as they are potentially
 useful as a traffic analysis countermeasure.  Application Data fragments
 MAY be split across multiple records or coalesced into a single record.<a href="#section-5.1-6" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-5.1-7">
@@ -5882,7 +5880,7 @@ primitive (AES or ChaCha20) has no weaknesses. Implementations MUST
 either close the connection or
 do a key update as described in <a href="#key-update" class="auto internal xref">Section 4.6.3</a> prior to reaching these limits.
 Note that it is not possible to perform a KeyUpdate for early data
-and therefore implementations MUST NOT exceed the limits
+and therefore implementations MUST not exceed the limits
 when sending early data. Receiving implementations SHOULD NOT enforce
 these limits, as future analyses may result in updated values.<a href="#section-5.5-1" class="pilcrow">¶</a></p>
 <p id="section-5.5-2">For AES-GCM, up to 2^24.5 full-size records (about 24 million)
