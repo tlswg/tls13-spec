@@ -2896,7 +2896,8 @@ flight. The Certificate and CertificateVerify messages are only
 sent under certain circumstances, as defined below. The Finished
 message is always sent as part of the Authentication Block.
 These messages are encrypted under keys derived from the
-\[sender]_handshake_traffic_secret.
+\[sender]_handshake_traffic_secret,
+except for post-handshake authentication.
 
 The computations for the Authentication messages all uniformly
 take the following inputs:
