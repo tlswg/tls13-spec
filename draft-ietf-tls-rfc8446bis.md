@@ -2930,7 +2930,7 @@ for each scenario:
 |------|-------------------|----------|
 | Server | ClientHello ... later of EncryptedExtensions/CertificateRequest | server_handshake_traffic_secret |
 | Client | ClientHello ... later of server Finished/EndOfEarlyData | client_handshake_traffic_secret |
-| Post-Handshake | ClientHello ... client Finished + CertificateRequest | client_application_traffic_secret_N |
+| Post-Handshake | ClientHello ... client Finished + CertificateRequest | [sender]_application_traffic_secret_N |
 {: #hs-ctx-and-keys title="Authentication Inputs"}
 
 ### The Transcript Hash
