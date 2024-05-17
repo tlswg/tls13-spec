@@ -444,7 +444,7 @@ properties.
 TLS consists of two primary components:
 
 * A handshake protocol ({{handshake-protocol}}) that authenticates the communicating parties,
-  negotiates cryptographic modes and parameters, and establishes
+  negotiates cryptographic algorithms and parameters, and establishes
   shared keying material. The handshake protocol is designed to
   resist tampering; an active attacker should not be able to force
   the peers to negotiate different parameters than they would
@@ -705,7 +705,7 @@ in the diagram above):
 In the Key Exchange phase, the client sends the ClientHello
 ({{client-hello}}) message, which contains a random nonce
 (ClientHello.random); its offered protocol versions; a list of
-symmetric cipher/HKDF hash pairs; either a list of Diffie-Hellman key shares (in the
+symmetric cipher/Hash pairs; either a list of Diffie-Hellman key shares (in the
 "key_share" ({{key-share}}) extension), a list of pre-shared key labels (in the
 "pre_shared_key" ({{pre-shared-key-extension}}) extension), or both; and
 potentially additional extensions.  Additional fields and/or messages
@@ -3145,9 +3145,8 @@ cannot produce a certificate chain that is signed only via the
 indicated supported algorithms, then it SHOULD continue the handshake by sending
 a certificate chain of its choice that may include algorithms that are not known
 to be supported by the client.
-This fallback chain SHOULD NOT use the deprecated SHA-1 hash algorithm in general,
-but MAY do so if the client's advertisement permits it,
-and MUST NOT do so otherwise.
+This fallback chain MUST NOT use the deprecated SHA-1 hash,
+except if advertised by the client, in which case it MAY.
 
 If the sender is the client, the client MAY use a fallback chain as above, or
 continue the handshake anonymously.
