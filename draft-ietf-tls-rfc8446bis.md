@@ -1560,7 +1560,7 @@ Random set to the special value of the SHA-256 of
       C2 A2 11 16 7A BB 8C 5E 07 9E 09 E2 C8 A8 33 9C
 
 Upon receiving a message with type server_hello, implementations
-MUST first examine the Random value and, if it matches
+MUST examine the Random value and, if it matches
 this value, process it as described in {{hello-retry-request}}).
 
 TLS 1.3 has a downgrade protection mechanism embedded in the server's
