@@ -4083,8 +4083,10 @@ has been received.
 
 Each party MUST send a "close_notify" alert before closing its write side
 of the connection, unless it has already sent some error alert. This
-does not have any effect on its read side of the connection. Note that this is
-a change from versions of TLS prior to TLS 1.3 in which implementations were
+SHOULD NOT have any effect on the read side of the sender's connection;
+parties SHOULD receive a "close_notify" alert before closing the read
+side of their connection. Note that this is
+a change from versions of TLS prior to TLS 1.3 in which receivers were
 required to react to a "close_notify" by discarding pending writes and
 sending an immediate "close_notify" alert of their own. That previous
 requirement could cause truncation in the read side. Both parties need not
