@@ -77,7 +77,6 @@ informative:
   RFC6091:
   RFC6520:
   RFC8305:
-  RFC7230:
   RFC7250:
   RFC7465:
   RFC7568:
@@ -87,6 +86,7 @@ informative:
   RFC8849:
   RFC9345:
   RFC8870:
+  RFC9112:
   RFC9162:
   RFC9146:
   RFC8844:
@@ -5329,7 +5329,7 @@ Clients SHOULD NOT reuse a ticket for multiple connections. Reuse
 of a ticket allows passive observers to correlate different connections.
 Servers that issue tickets SHOULD offer at least as many tickets
 as the number of connections that a client might use; for example, a web browser
-using HTTP/1.1 {{RFC7230}} might open six connections to a server. Servers SHOULD
+using HTTP/1.1 {{RFC9112}} might open six connections to a server. Servers SHOULD
 issue new tickets with every connection. This ensures that clients are
 always able to use a new ticket when creating a new connection.
 
