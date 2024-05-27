@@ -444,7 +444,7 @@ properties.
 TLS consists of two primary components:
 
 * A handshake protocol ({{handshake-protocol}}) that authenticates the communicating parties,
-  negotiates cryptographic modes and parameters, and establishes
+  negotiates cryptographic algorithms and parameters, and establishes
   shared keying material. The handshake protocol is designed to
   resist tampering; an active attacker should not be able to force
   the peers to negotiate different parameters than they would
@@ -705,7 +705,7 @@ in the diagram above):
 In the Key Exchange phase, the client sends the ClientHello
 ({{client-hello}}) message, which contains a random nonce
 (ClientHello.random); its offered protocol versions; a list of
-symmetric cipher/HKDF hash pairs; either a list of Diffie-Hellman key shares (in the
+symmetric cipher/Hash pairs; either a list of Diffie-Hellman key shares (in the
 "key_share" ({{key-share}}) extension), a list of pre-shared key labels (in the
 "pre_shared_key" ({{pre-shared-key-extension}}) extension), or both; and
 potentially additional extensions.  Additional fields and/or messages
@@ -1560,7 +1560,7 @@ Random set to the special value of the SHA-256 of
       C2 A2 11 16 7A BB 8C 5E 07 9E 09 E2 C8 A8 33 9C
 
 Upon receiving a message with type server_hello, implementations
-MUST first examine the Random value and, if it matches
+MUST examine the Random value and, if it matches
 this value, process it as described in {{hello-retry-request}}).
 
 TLS 1.3 has a downgrade protection mechanism embedded in the server's
@@ -2896,7 +2896,8 @@ flight. The Certificate and CertificateVerify messages are only
 sent under certain circumstances, as defined below. The Finished
 message is always sent as part of the Authentication Block.
 These messages are encrypted under keys derived from the
-\[sender]_handshake_traffic_secret.
+\[sender]_handshake_traffic_secret,
+except for post-handshake authentication.
 
 The computations for the Authentication messages all uniformly
 take the following inputs:
@@ -2930,7 +2931,7 @@ for each scenario:
 |------|-------------------|----------|
 | Server | ClientHello ... later of EncryptedExtensions/CertificateRequest | server_handshake_traffic_secret |
 | Client | ClientHello ... later of server Finished/EndOfEarlyData | client_handshake_traffic_secret |
-| Post-Handshake | ClientHello ... client Finished + CertificateRequest | client_application_traffic_secret_N |
+| Post-Handshake | ClientHello ... client Finished + CertificateRequest | [sender]_application_traffic_secret_N |
 {: #hs-ctx-and-keys title="Authentication Inputs"}
 
 ### The Transcript Hash
@@ -3129,9 +3130,8 @@ If the server cannot produce a certificate chain that is signed only via the
 indicated supported algorithms, then it SHOULD continue the handshake by sending
 the client a certificate chain of its choice that may include algorithms
 that are not known to be supported by the client.
-This fallback chain SHOULD NOT use the deprecated SHA-1 hash algorithm in general,
-but MAY do so if the client's advertisement permits it,
-and MUST NOT do so otherwise.
+This fullback chain MUST NOT use the deprecated SHA-1 hash,
+except if advertised by the client, in which case it MAY.
 
 If the client cannot construct an acceptable chain using the provided
 certificates and decides to abort the handshake, then it MUST abort the
@@ -3379,7 +3379,8 @@ appropriate application traffic key.
 
 ### New Session Ticket Message {#NSTMessage}
 
-At any time after the server has received the client Finished message,
+At any time after the server has received both a "psk_key_exchange_modes" extension
+and the client Finished message,
 it MAY send a NewSessionTicket message. This message creates a unique
 association between the ticket value and a secret PSK
 derived from the resumption secret (see {{cryptographic-computations}}).
@@ -4081,8 +4082,10 @@ has been received.
 
 Each party MUST send a "close_notify" alert before closing its write side
 of the connection, unless it has already sent some error alert. This
-does not have any effect on its read side of the connection. Note that this is
-a change from versions of TLS prior to TLS 1.3 in which implementations were
+SHOULD NOT have any effect on the read side of the sender's connection;
+parties SHOULD receive a "close_notify" alert before closing the read
+side of their connection. Note that this is
+a change from versions of TLS prior to TLS 1.3 in which receivers were
 required to react to a "close_notify" by discarding pending writes and
 sending an immediate "close_notify" alert of their own. That previous
 requirement could cause truncation in the read side. Both parties need not
