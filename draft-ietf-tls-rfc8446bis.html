@@ -12,21 +12,21 @@
 over the Internet in a way that is designed to prevent eavesdropping,
 tampering, and message forgery. 
        This document updates RFCs 5705, 6066, 7627, and 8422 and obsoletes
-RFCs 5077, 5246, 6961, and 8446. This document also specifies new
-requirements for TLS 1.2 implementations. 
+RFCs 5077, 5246, 6961, 8422, and 8446. This document also specifies
+new requirements for TLS 1.2 implementations. 
     " name="description">
-<meta content="xml2rfc 3.20.1" name="generator">
+<meta content="xml2rfc 3.21.0" name="generator">
 <meta content="Internet-Draft" name="keyword">
 <meta content="draft-ietf-tls-rfc8446bis-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.20.1
-    Python 3.11.8
+  xml2rfc 3.21.0
+    Python 3.11.9
     ConfigArgParse 1.7
     google-i18n-address 3.1.0
     intervaltree 3.1.0
     Jinja2 3.1.2
     lxml 4.9.3
-    platformdirs 4.2.0
+    platformdirs 4.2.1
     pycountry 22.3.5
     PyYAML 6.0.1
     requests 2.31.0
@@ -1031,11 +1031,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">TLS</td>
-<td class="right">April 2024</td>
+<td class="right">May 2024</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Rescorla</td>
-<td class="center">Expires 7 October 2024</td>
+<td class="center">Expires 28 November 2024</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1054,12 +1054,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <a href="https://www.rfc-editor.org/rfc/rfc5705" class="eref">5705</a>, <a href="https://www.rfc-editor.org/rfc/rfc6066" class="eref">6066</a>, <a href="https://www.rfc-editor.org/rfc/rfc7627" class="eref">7627</a>, <a href="https://www.rfc-editor.org/rfc/rfc8422" class="eref">8422</a> (if approved)</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-04-05" class="published">5 April 2024</time>
+<time datetime="2024-05-27" class="published">27 May 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2024-10-07">7 October 2024</time></dd>
+<dd class="expires"><time datetime="2024-11-28">28 November 2024</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1077,8 +1077,8 @@ svg :is([fill="white"], [fill^="#fff"]) {
 over the Internet in a way that is designed to prevent eavesdropping,
 tampering, and message forgery.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 <p id="section-abstract-2">This document updates RFCs 5705, 6066, 7627, and 8422 and obsoletes
-RFCs 5077, 5246, 6961, and 8446. This document also specifies new
-requirements for TLS 1.2 implementations.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
+RFCs 5077, 5246, 6961, 8422, and 8446. This document also specifies
+new requirements for TLS 1.2 implementations.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
 </section>
 <div id="status-of-memo">
 <section id="section-boilerplate.1">
@@ -1099,7 +1099,7 @@ requirements for TLS 1.2 implementations.<a href="#section-abstract-2" class="pi
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 7 October 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 28 November 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -6186,8 +6186,7 @@ or other negotiated parameters.<a href="#section-6.2-4.38.1" class="pilcrow">¶<
 <dt id="section-6.2-4.39">unsupported_extension:</dt>
           <dd style="margin-left: 1.5em" id="section-6.2-4.40">
             <p id="section-6.2-4.40.1">Sent by endpoints receiving any handshake message containing an extension
-known to be prohibited for inclusion in the given handshake message, or including
-any extensions in a ServerHello or Certificate not first offered in the
+in a ServerHello, HelloRetryRequest, EncryptedExtensions, or Certificate not first offered in the
 corresponding ClientHello or CertificateRequest.<a href="#section-6.2-4.40.1" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
@@ -7415,7 +7414,7 @@ alert in the TLS Alerts Registry with the value given in <a href="#alert-protoco
 <dd class="break"></dd>
 <dt id="FETCH">[FETCH]</dt>
         <dd>
-<span class="refAuthor">WHATWG</span>, <span class="refTitle">"Fetch Standard"</span>, <time datetime="2024-04" class="refDate">April 2024</time>, <span>&lt;<a href="https://fetch.spec.whatwg.org/">https://fetch.spec.whatwg.org/</a>&gt;</span>. </dd>
+<span class="refAuthor">WHATWG</span>, <span class="refTitle">"Fetch Standard"</span>, <time datetime="2024-05" class="refDate">May 2024</time>, <span>&lt;<a href="https://fetch.spec.whatwg.org/">https://fetch.spec.whatwg.org/</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="FG17">[FG17]</dt>
         <dd>
@@ -7549,10 +7548,6 @@ alert in the TLS Alerts Registry with the value given in <a href="#alert-protoco
         <dd>
 <span class="refAuthor">Seggelmann, R.</span>, <span class="refAuthor">Tuexen, M.</span>, and <span class="refAuthor">M. Williams</span>, <span class="refTitle">"Transport Layer Security (TLS) and Datagram Transport Layer Security (DTLS) Heartbeat Extension"</span>, <span class="seriesInfo">RFC 6520</span>, <span class="seriesInfo">DOI 10.17487/RFC6520</span>, <time datetime="2012-02" class="refDate">February 2012</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc6520">https://www.rfc-editor.org/rfc/rfc6520</a>&gt;</span>. </dd>
 <dd class="break"></dd>
-<dt id="RFC7230">[RFC7230]</dt>
-        <dd>
-<span class="refAuthor">Fielding, R., Ed.</span> and <span class="refAuthor">J. Reschke, Ed.</span>, <span class="refTitle">"Hypertext Transfer Protocol (HTTP/1.1): Message Syntax and Routing"</span>, <span class="seriesInfo">RFC 7230</span>, <span class="seriesInfo">DOI 10.17487/RFC7230</span>, <time datetime="2014-06" class="refDate">June 2014</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7230">https://www.rfc-editor.org/rfc/rfc7230</a>&gt;</span>. </dd>
-<dd class="break"></dd>
 <dt id="RFC7250">[RFC7250]</dt>
         <dd>
 <span class="refAuthor">Wouters, P., Ed.</span>, <span class="refAuthor">Tschofenig, H., Ed.</span>, <span class="refAuthor">Gilmore, J.</span>, <span class="refAuthor">Weiler, S.</span>, and <span class="refAuthor">T. Kivinen</span>, <span class="refTitle">"Using Raw Public Keys in Transport Layer Security (TLS) and Datagram Transport Layer Security (DTLS)"</span>, <span class="seriesInfo">RFC 7250</span>, <span class="seriesInfo">DOI 10.17487/RFC7250</span>, <time datetime="2014-06" class="refDate">June 2014</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7250">https://www.rfc-editor.org/rfc/rfc7250</a>&gt;</span>. </dd>
@@ -7587,11 +7582,11 @@ alert in the TLS Alerts Registry with the value given in <a href="#alert-protoco
 <dd class="break"></dd>
 <dt id="RFC8446">[RFC8446]</dt>
         <dd>
-<span class="refTitle">"*** BROKEN REFERENCE ***"</span>. </dd>
+<span class="refAuthor">Rescorla, E.</span>, <span class="refTitle">"The Transport Layer Security (TLS) Protocol Version 1.3"</span>, <span class="seriesInfo">RFC 8446</span>, <span class="seriesInfo">DOI 10.17487/RFC8446</span>, <time datetime="2018-08" class="refDate">August 2018</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8446">https://www.rfc-editor.org/rfc/rfc8446</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC8447">[RFC8447]</dt>
         <dd>
-<span class="refTitle">"*** BROKEN REFERENCE ***"</span>. </dd>
+<span class="refAuthor">Salowey, J.</span> and <span class="refAuthor">S. Turner</span>, <span class="refTitle">"IANA Registry Updates for TLS and DTLS"</span>, <span class="seriesInfo">RFC 8447</span>, <span class="seriesInfo">DOI 10.17487/RFC8447</span>, <time datetime="2018-08" class="refDate">August 2018</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8447">https://www.rfc-editor.org/rfc/rfc8447</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC8448">[RFC8448]</dt>
         <dd>
@@ -7628,6 +7623,10 @@ alert in the TLS Alerts Registry with the value given in <a href="#alert-protoco
 <dt id="RFC9001">[RFC9001]</dt>
         <dd>
 <span class="refAuthor">Thomson, M., Ed.</span> and <span class="refAuthor">S. Turner, Ed.</span>, <span class="refTitle">"Using TLS to Secure QUIC"</span>, <span class="seriesInfo">RFC 9001</span>, <span class="seriesInfo">DOI 10.17487/RFC9001</span>, <time datetime="2021-05" class="refDate">May 2021</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9001">https://www.rfc-editor.org/rfc/rfc9001</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9112">[RFC9112]</dt>
+        <dd>
+<span class="refAuthor">Fielding, R., Ed.</span>, <span class="refAuthor">Nottingham, M., Ed.</span>, and <span class="refAuthor">J. Reschke, Ed.</span>, <span class="refTitle">"HTTP/1.1"</span>, <span class="seriesInfo">STD 99</span>, <span class="seriesInfo">RFC 9112</span>, <span class="seriesInfo">DOI 10.17487/RFC9112</span>, <time datetime="2022-06" class="refDate">June 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9112">https://www.rfc-editor.org/rfc/rfc9112</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC9146">[RFC9146]</dt>
         <dd>
@@ -8727,7 +8726,7 @@ key leaks <span>[<a href="#FW15" class="cite xref">FW15</a>]</span>?<a href="#ap
 of a ticket allows passive observers to correlate different connections.
 Servers that issue tickets SHOULD offer at least as many tickets
 as the number of connections that a client might use; for example, a web browser
-using HTTP/1.1 <span>[<a href="#RFC7230" class="cite xref">RFC7230</a>]</span> might open six connections to a server. Servers SHOULD
+using HTTP/1.1 <span>[<a href="#RFC9112" class="cite xref">RFC9112</a>]</span> might open six connections to a server. Servers SHOULD
 issue new tickets with every connection. This ensures that clients are
 always able to use a new ticket when creating a new connection.<a href="#appendix-C.4-1" class="pilcrow">¶</a></p>
 <p id="appendix-C.4-2">Offering a ticket to a server additionally allows the server to correlate
