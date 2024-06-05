@@ -4784,7 +4784,7 @@ A TLS-compliant application MUST support digital signatures with
 rsa_pkcs1_sha256 (for certificates), rsa_pss_rsae_sha256 (for
 CertificateVerify and certificates), and ecdsa_secp256r1_sha256. A
 TLS-compliant application MUST support key exchange with secp256r1
-(NIST P-256) and SHOULD support key exchange with X25519 {{RFC7748}}.
+(NIST P-256) and X25519 {{RFC7748}}.
 
 
 ##  Mandatory-to-Implement Extensions {#mti-extensions}
