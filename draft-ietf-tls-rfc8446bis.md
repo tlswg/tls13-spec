@@ -2246,7 +2246,7 @@ Finite Field Groups (DHE):
 
 Items in "named_group_list" are ordered according to the sender's
 preferences (most preferred choice first). The "named_group_list"
-MUST NOT contain any duplicate entries.  A sender MAY abort a connection
+MUST NOT contain any duplicate entries.  A recipient MAY abort a connection
 with a fatal illegal_parameter alert if it detects a duplicate entry.
 
 As of TLS 1.3, servers are permitted to send the "supported_groups"
