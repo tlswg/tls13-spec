@@ -3142,7 +3142,7 @@ indicated supported algorithms, then it SHOULD continue the handshake by sending
 a certificate chain of its choice that may include algorithms that are not known
 to be supported by the peer.
 This fallback chain SHOULD NOT use the deprecated SHA-1 hash algorithm in general,
-but MAY do so if the peers's advertisement permits it,
+but MAY do so if the peer's advertisement permits it,
 and MUST NOT do so otherwise. Clients MAY send a fallback chain as above, or
 continue the handshake anonymously.
 
