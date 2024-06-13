@@ -2010,7 +2010,7 @@ RSASSA-PKCS1-v1_5 algorithms:
 : Indicates a signature algorithm using RSASSA-PKCS1-v1_5 {{RFC8017}}
   with the corresponding hash algorithm as defined in {{!SHS=DOI.10.6028/NIST.FIPS.180-4}}. These values
   refer solely to signatures which appear in certificates (see
-  {{server-certificate-selection}}) and are not defined for use in signed
+  {{certificate-selection}}) and are not defined for use in signed
   TLS handshake messages, although they MAY appear in "signature_algorithms"
   and "signature_algorithms_cert" for backward compatibility with TLS 1.2.
 
@@ -2050,7 +2050,7 @@ Legacy algorithms:
   algorithms with known weaknesses, specifically SHA-1 which is used
   in this context with either (1) RSA using RSASSA-PKCS1-v1_5 or (2) ECDSA.  These values
   refer solely to signatures which appear in certificates (see
-  {{server-certificate-selection}}) and are not defined for use in
+  {{certificate-selection}}) and are not defined for use in
   signed TLS handshake messages, although they MAY appear in "signature_algorithms"
   and "signature_algorithms_cert" for backward compatibility with TLS 1.2.
   Endpoints SHOULD NOT negotiate these algorithms
@@ -2059,7 +2059,7 @@ Legacy algorithms:
   them as the lowest priority (listed after all other algorithms in
   SignatureSchemeList). TLS 1.3 servers MUST NOT offer a SHA-1 signed
   certificate unless no valid certificate chain can be produced
-  without it (see {{server-certificate-selection}}).
+  without it (see {{certificate-selection}}).
 {:br }
 
 
@@ -3100,26 +3100,38 @@ in TLS 1.2 and below.
 In TLS 1.3, the server's SCT information is carried in an extension in the
 CertificateEntry.
 
-#### Server Certificate Selection
+#### Certificate Selection
 
-The following rules apply to the certificates sent by the server:
+The following rules apply to the certificates sent by the client or server:
 
 - The certificate type MUST be X.509v3 {{RFC5280}}, unless explicitly negotiated
   otherwise (e.g., {{RFC7250}}).
 
 - The end-entity certificate MUST allow the key to be used for signing with
-  a signature scheme indicated in the client's "signature_algorithms"
+  a signature scheme indicated in the peer's "signature_algorithms"
   extension (see {{signature-algorithms}}). That is, the digitalSignature bit
   MUST be set if the Key Usage extension is present, and the public key (with
   associated restrictions) MUST be compatible with some supported signature
   scheme.
 
-- The "server_name" {{RFC6066}} and "certificate_authorities" extensions are used to
-  guide certificate selection. As servers MAY require the presence of the "server_name"
-  extension, clients SHOULD send this extension when the server is identified by name.
+- If the peer sent a "certificate_authorities" extension, at least one of the
+  certificates in the certificate chain SHOULD be issued by one of the listed
+  CAs.
 
-All certificates provided by the server MUST be signed by a
-signature algorithm advertised by the client, if it is able to provide such
+The following rules additionally apply to certificates sent by the client:
+
+- If the CertificateRequest message contained a non-empty "oid_filters"
+  extension, the end-entity certificate MUST match the extension OIDs
+  that are recognized by the client, as described in {{oid-filters}}.
+
+The following rules additionally apply to certificates sent by the server:
+
+- The "server_name" {{RFC6066}} extension is used to guide certificate
+  selection. As servers MAY require the presence of the "server_name" extension,
+  clients SHOULD send this extension when the server is identified by name.
+
+All certificates provided by the sender MUST be signed by a
+signature algorithm advertised by the peer, if it is able to provide such
 a chain (see {{signature-algorithms}}).
 Certificates that are self-signed
 or certificates that are expected to be trust anchors are not validated as
@@ -3127,39 +3139,22 @@ part of the chain and therefore MAY be signed with any algorithm.
 
 If the server cannot produce a certificate chain that is signed only via the
 indicated supported algorithms, then it SHOULD continue the handshake by sending
-the client a certificate chain of its choice that may include algorithms
-that are not known to be supported by the client.
+a certificate chain of its choice that may include algorithms that are not known
+to be supported by the peer.
 This fallback chain SHOULD NOT use the deprecated SHA-1 hash algorithm in general,
-but MAY do so if the client's advertisement permits it,
-and MUST NOT do so otherwise.
+but MAY do so if the peers's advertisement permits it,
+and MUST NOT do so otherwise. Clients MAY send a fallback chain as above, or
+continue the handshake anonymously.
 
-If the client cannot construct an acceptable chain using the provided
+If the receiver cannot construct an acceptable chain using the provided
 certificates and decides to abort the handshake, then it MUST abort the
 handshake with an appropriate certificate-related alert (by default,
 "unsupported_certificate"; see {{error-alerts}} for more information).
 
-If the server has multiple certificates, it chooses one of them based on the
+If the sender has multiple certificates, it chooses one of them based on the
 above-mentioned criteria (in addition to other criteria, such as transport-layer endpoint, local configuration, and preferences).
-
-#### Client Certificate Selection
-
-The following rules apply to certificates sent by the client:
-
-- The certificate type MUST be X.509v3 {{RFC5280}}, unless explicitly negotiated
-  otherwise (e.g., {{RFC7250}}).
-
-- If the "certificate_authorities" extension in the CertificateRequest
-  message was present, at least one of the certificates in the certificate
-  chain SHOULD be issued by one of the listed CAs.
-
-- The certificates MUST be signed using an acceptable signature
-  algorithm, as described in {{certificate-request}}.  Note that this
-  relaxes the constraints on certificate-signing algorithms found in
-  prior versions of TLS.
-
-- If the CertificateRequest message contained a non-empty "oid_filters"
-  extension, the end-entity certificate MUST match the extension OIDs
-  that are recognized by the client, as described in {{oid-filters}}.
+Future TLS extensions may extend this criteria to further guide this selection
+process.
 
 #### Receiving a Certificate Message
 
@@ -5436,7 +5431,7 @@ records thereafter.
 For maximum compatibility with previously non-standard behavior and misconfigured
 deployments, all implementations SHOULD support validation of certification paths
 based on the expectations in this document, even when handling prior TLS versions'
-handshakes (see {{server-certificate-selection}}).
+handshakes (see {{certificate-selection}}).
 
 TLS 1.2 and prior supported an "Extended Main Secret" {{RFC7627}} extension
 which digested large parts of the handshake transcript into the secret and
