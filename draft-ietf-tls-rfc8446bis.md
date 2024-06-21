@@ -3137,13 +3137,16 @@ Certificates that are self-signed
 or certificates that are expected to be trust anchors are not validated as
 part of the chain and therefore MAY be signed with any algorithm.
 
-If the server cannot produce a certificate chain that is signed only via the
+If the sender is the server, and the server
+cannot produce a certificate chain that is signed only via the
 indicated supported algorithms, then it SHOULD continue the handshake by sending
 a certificate chain of its choice that may include algorithms that are not known
-to be supported by the peer.
+to be supported by the client.
 This fallback chain SHOULD NOT use the deprecated SHA-1 hash algorithm in general,
-but MAY do so if the peer's advertisement permits it,
-and MUST NOT do so otherwise. Clients MAY send a fallback chain as above, or
+but MAY do so if the client's advertisement permits it,
+and MUST NOT do so otherwise.
+
+If the sender is the client, the client MAY use a fallback chain as above, or
 continue the handshake anonymously.
 
 If the receiver cannot construct an acceptable chain using the provided
@@ -3153,8 +3156,6 @@ handshake with an appropriate certificate-related alert (by default,
 
 If the sender has multiple certificates, it chooses one of them based on the
 above-mentioned criteria (in addition to other criteria, such as transport-layer endpoint, local configuration, and preferences).
-Future TLS extensions may extend this criteria to further guide this selection
-process.
 
 #### Receiving a Certificate Message
 
