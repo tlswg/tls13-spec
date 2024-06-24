@@ -3118,13 +3118,13 @@ The following rules apply to the certificates sent by the client or server:
   certificates in the certificate chain SHOULD be issued by one of the listed
   CAs.
 
-The following rules additionally apply to certificates sent by the client:
+The following rule additionally applies to certificates sent by the client:
 
 - If the CertificateRequest message contained a non-empty "oid_filters"
   extension, the end-entity certificate MUST match the extension OIDs
   that are recognized by the client, as described in {{oid-filters}}.
 
-The following rules additionally apply to certificates sent by the server:
+The following rule additionally applies to certificates sent by the server:
 
 - The "server_name" {{RFC6066}} extension is used to guide certificate
   selection. As servers MAY require the presence of the "server_name" extension,
