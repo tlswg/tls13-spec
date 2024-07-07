@@ -15,23 +15,22 @@ tampering, and message forgery.
 RFCs 5077, 5246, 6961, 8422, and 8446. This document also specifies
 new requirements for TLS 1.2 implementations. 
     " name="description">
-<meta content="xml2rfc 3.21.0" name="generator">
+<meta content="xml2rfc 3.22.0" name="generator">
 <meta content="Internet-Draft" name="keyword">
 <meta content="draft-ietf-tls-rfc8446bis-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.21.0
-    Python 3.11.9
+  xml2rfc 3.22.0
+    Python 3.12.3
     ConfigArgParse 1.7
     google-i18n-address 3.1.0
     intervaltree 3.1.0
-    Jinja2 3.1.2
-    lxml 4.9.3
-    platformdirs 4.2.1
+    Jinja2 3.1.4
+    lxml 4.9.4
+    platformdirs 4.2.2
     pycountry 22.3.5
     PyYAML 6.0.1
-    requests 2.31.0
-    setuptools 68.2.2
-    six 1.16.0
+    requests 2.32.3
+    setuptools 69.5.1
     wcwidth 0.2.13
 -->
 <link href="draft-ietf-tls-rfc8446bis.xml" rel="alternate" type="application/rfc+xml">
@@ -1031,11 +1030,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">TLS</td>
-<td class="right">May 2024</td>
+<td class="right">July 2024</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Rescorla</td>
-<td class="center">Expires 28 November 2024</td>
+<td class="center">Expires 8 January 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1054,12 +1053,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <a href="https://www.rfc-editor.org/rfc/rfc5705" class="eref">5705</a>, <a href="https://www.rfc-editor.org/rfc/rfc6066" class="eref">6066</a>, <a href="https://www.rfc-editor.org/rfc/rfc7627" class="eref">7627</a>, <a href="https://www.rfc-editor.org/rfc/rfc8422" class="eref">8422</a> (if approved)</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-05-27" class="published">27 May 2024</time>
+<time datetime="2024-07-07" class="published">7 July 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2024-11-28">28 November 2024</time></dd>
+<dd class="expires"><time datetime="2025-01-08">8 January 2025</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1099,7 +1098,7 @@ new requirements for TLS 1.2 implementations.<a href="#section-abstract-2" class
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 28 November 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 8 January 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -3696,7 +3695,7 @@ The code point groups listed above have the following meanings:<a href="#section
               <p id="section-4.2.3-7.2.1">Indicates a signature algorithm using RSASSA-PKCS1-v1_5 <span>[<a href="#RFC8017" class="cite xref">RFC8017</a>]</span>
 with the corresponding hash algorithm as defined in <span>[<a href="#SHS" class="cite xref">SHS</a>]</span>. These values
 refer solely to signatures which appear in certificates (see
-<a href="#server-certificate-selection" class="auto internal xref">Section 4.4.2.2</a>) and are not defined for use in signed
+<a href="#certificate-selection" class="auto internal xref">Section 4.4.2.2</a>) and are not defined for use in signed
 TLS handshake messages, although they MAY appear in "signature_algorithms"
 and "signature_algorithms_cert" for backward compatibility with TLS 1.2.<a href="#section-4.2.3-7.2.1" class="pilcrow">¶</a></p>
 </dd>
@@ -3746,7 +3745,7 @@ MUST be identical to those in the public key.<a href="#section-4.2.3-7.10.1" cla
 algorithms with known weaknesses, specifically SHA-1 which is used
 in this context with either (1) RSA using RSASSA-PKCS1-v1_5 or (2) ECDSA.  These values
 refer solely to signatures which appear in certificates (see
-<a href="#server-certificate-selection" class="auto internal xref">Section 4.4.2.2</a>) and are not defined for use in
+<a href="#certificate-selection" class="auto internal xref">Section 4.4.2.2</a>) and are not defined for use in
 signed TLS handshake messages, although they MAY appear in "signature_algorithms"
 and "signature_algorithms_cert" for backward compatibility with TLS 1.2.
 Endpoints SHOULD NOT negotiate these algorithms
@@ -3755,7 +3754,7 @@ offering these values MUST list
 them as the lowest priority (listed after all other algorithms in
 SignatureSchemeList). TLS 1.3 servers MUST NOT offer a SHA-1 signed
 certificate unless no valid certificate chain can be produced
-without it (see <a href="#server-certificate-selection" class="auto internal xref">Section 4.4.2.2</a>).<a href="#section-4.2.3-7.12.1" class="pilcrow">¶</a></p>
+without it (see <a href="#certificate-selection" class="auto internal xref">Section 4.4.2.2</a>).<a href="#section-4.2.3-7.12.1" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
 </dl>
@@ -4934,12 +4933,12 @@ In TLS 1.3, the server's SCT information is carried in an extension in the
 CertificateEntry.<a href="#section-4.4.2.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="server-certificate-selection">
+<div id="certificate-selection">
 <section id="section-4.4.2.2">
-            <h5 id="name-server-certificate-selectio">
-<a href="#section-4.4.2.2" class="section-number selfRef">4.4.2.2. </a><a href="#name-server-certificate-selectio" class="section-name selfRef">Server Certificate Selection</a>
+            <h5 id="name-certificate-selection">
+<a href="#section-4.4.2.2" class="section-number selfRef">4.4.2.2. </a><a href="#name-certificate-selection" class="section-name selfRef">Certificate Selection</a>
             </h5>
-<p id="section-4.4.2.2-1">The following rules apply to the certificates sent by the server:<a href="#section-4.4.2.2-1" class="pilcrow">¶</a></p>
+<p id="section-4.4.2.2-1">The following rules apply to the certificates sent by the client or server:<a href="#section-4.4.2.2-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-4.4.2.2-2.1">
                 <p id="section-4.4.2.2-2.1.1">The certificate type MUST be X.509v3 <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>, unless explicitly negotiated
@@ -4947,99 +4946,88 @@ otherwise (e.g., <span>[<a href="#RFC7250" class="cite xref">RFC7250</a>]</span>
 </li>
               <li class="normal" id="section-4.4.2.2-2.2">
                 <p id="section-4.4.2.2-2.2.1">The end-entity certificate MUST allow the key to be used for signing with
-a signature scheme indicated in the client's "signature_algorithms"
+a signature scheme indicated in the peer's "signature_algorithms"
 extension (see <a href="#signature-algorithms" class="auto internal xref">Section 4.2.3</a>). That is, the digitalSignature bit
 MUST be set if the Key Usage extension is present, and the public key (with
 associated restrictions) MUST be compatible with some supported signature
 scheme.<a href="#section-4.4.2.2-2.2.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-4.4.2.2-2.3">
-                <p id="section-4.4.2.2-2.3.1">The "server_name" <span>[<a href="#RFC6066" class="cite xref">RFC6066</a>]</span> and "certificate_authorities" extensions are used to
-guide certificate selection. As servers MAY require the presence of the "server_name"
-extension, clients SHOULD send this extension when the server is identified by name.<a href="#section-4.4.2.2-2.3.1" class="pilcrow">¶</a></p>
+                <p id="section-4.4.2.2-2.3.1">If the peer sent a "certificate_authorities" extension, at least one of the
+certificates in the certificate chain SHOULD be issued by one of the listed
+CAs.<a href="#section-4.4.2.2-2.3.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
-<p id="section-4.4.2.2-3">All certificates provided by the server MUST be signed by a
-signature algorithm advertised by the client, if it is able to provide such
+<p id="section-4.4.2.2-3">The following rule additionally applies to certificates sent by the client:<a href="#section-4.4.2.2-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-4.4.2.2-4.1">
+                <p id="section-4.4.2.2-4.1.1">If the CertificateRequest message contained a non-empty "oid_filters"
+extension, the end-entity certificate MUST match the extension OIDs
+that are recognized by the client, as described in <a href="#oid-filters" class="auto internal xref">Section 4.2.5</a>.<a href="#section-4.4.2.2-4.1.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+<p id="section-4.4.2.2-5">The following rule additionally applies to certificates sent by the server:<a href="#section-4.4.2.2-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-4.4.2.2-6.1">
+                <p id="section-4.4.2.2-6.1.1">The "server_name" <span>[<a href="#RFC6066" class="cite xref">RFC6066</a>]</span> extension is used to guide certificate
+selection. As servers MAY require the presence of the "server_name" extension,
+clients SHOULD send this extension when the server is identified by name.<a href="#section-4.4.2.2-6.1.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+<p id="section-4.4.2.2-7">All certificates provided by the sender MUST be signed by a
+signature algorithm advertised by the peer, if it is able to provide such
 a chain (see <a href="#signature-algorithms" class="auto internal xref">Section 4.2.3</a>).
 Certificates that are self-signed
 or certificates that are expected to be trust anchors are not validated as
-part of the chain and therefore MAY be signed with any algorithm.<a href="#section-4.4.2.2-3" class="pilcrow">¶</a></p>
-<p id="section-4.4.2.2-4">If the server cannot produce a certificate chain that is signed only via the
+part of the chain and therefore MAY be signed with any algorithm.<a href="#section-4.4.2.2-7" class="pilcrow">¶</a></p>
+<p id="section-4.4.2.2-8">If the sender is the server, and the server
+cannot produce a certificate chain that is signed only via the
 indicated supported algorithms, then it SHOULD continue the handshake by sending
-the client a certificate chain of its choice that may include algorithms
-that are not known to be supported by the client.
+a certificate chain of its choice that may include algorithms that are not known
+to be supported by the client.
 This fallback chain SHOULD NOT use the deprecated SHA-1 hash algorithm in general,
 but MAY do so if the client's advertisement permits it,
-and MUST NOT do so otherwise.<a href="#section-4.4.2.2-4" class="pilcrow">¶</a></p>
-<p id="section-4.4.2.2-5">If the client cannot construct an acceptable chain using the provided
+and MUST NOT do so otherwise.<a href="#section-4.4.2.2-8" class="pilcrow">¶</a></p>
+<p id="section-4.4.2.2-9">If the sender is the client, the client MAY use a fallback chain as above, or
+continue the handshake anonymously.<a href="#section-4.4.2.2-9" class="pilcrow">¶</a></p>
+<p id="section-4.4.2.2-10">If the receiver cannot construct an acceptable chain using the provided
 certificates and decides to abort the handshake, then it MUST abort the
 handshake with an appropriate certificate-related alert (by default,
-"unsupported_certificate"; see <a href="#error-alerts" class="auto internal xref">Section 6.2</a> for more information).<a href="#section-4.4.2.2-5" class="pilcrow">¶</a></p>
-<p id="section-4.4.2.2-6">If the server has multiple certificates, it chooses one of them based on the
-above-mentioned criteria (in addition to other criteria, such as transport-layer endpoint, local configuration, and preferences).<a href="#section-4.4.2.2-6" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="client-certificate-selection">
-<section id="section-4.4.2.3">
-            <h5 id="name-client-certificate-selectio">
-<a href="#section-4.4.2.3" class="section-number selfRef">4.4.2.3. </a><a href="#name-client-certificate-selectio" class="section-name selfRef">Client Certificate Selection</a>
-            </h5>
-<p id="section-4.4.2.3-1">The following rules apply to certificates sent by the client:<a href="#section-4.4.2.3-1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-4.4.2.3-2.1">
-                <p id="section-4.4.2.3-2.1.1">The certificate type MUST be X.509v3 <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>, unless explicitly negotiated
-otherwise (e.g., <span>[<a href="#RFC7250" class="cite xref">RFC7250</a>]</span>).<a href="#section-4.4.2.3-2.1.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-4.4.2.3-2.2">
-                <p id="section-4.4.2.3-2.2.1">If the "certificate_authorities" extension in the CertificateRequest
-message was present, at least one of the certificates in the certificate
-chain SHOULD be issued by one of the listed CAs.<a href="#section-4.4.2.3-2.2.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-4.4.2.3-2.3">
-                <p id="section-4.4.2.3-2.3.1">The certificates MUST be signed using an acceptable signature
-algorithm, as described in <a href="#certificate-request" class="auto internal xref">Section 4.3.2</a>.  Note that this
-relaxes the constraints on certificate-signing algorithms found in
-prior versions of TLS.<a href="#section-4.4.2.3-2.3.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-4.4.2.3-2.4">
-                <p id="section-4.4.2.3-2.4.1">If the CertificateRequest message contained a non-empty "oid_filters"
-extension, the end-entity certificate MUST match the extension OIDs
-that are recognized by the client, as described in <a href="#oid-filters" class="auto internal xref">Section 4.2.5</a>.<a href="#section-4.4.2.3-2.4.1" class="pilcrow">¶</a></p>
-</li>
-            </ul>
+"unsupported_certificate"; see <a href="#error-alerts" class="auto internal xref">Section 6.2</a> for more information).<a href="#section-4.4.2.2-10" class="pilcrow">¶</a></p>
+<p id="section-4.4.2.2-11">If the sender has multiple certificates, it chooses one of them based on the
+above-mentioned criteria (in addition to other criteria, such as transport-layer endpoint, local configuration, and preferences).<a href="#section-4.4.2.2-11" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="receiving-a-certificate-message">
-<section id="section-4.4.2.4">
+<section id="section-4.4.2.3">
             <h5 id="name-receiving-a-certificate-mes">
-<a href="#section-4.4.2.4" class="section-number selfRef">4.4.2.4. </a><a href="#name-receiving-a-certificate-mes" class="section-name selfRef">Receiving a Certificate Message</a>
+<a href="#section-4.4.2.3" class="section-number selfRef">4.4.2.3. </a><a href="#name-receiving-a-certificate-mes" class="section-name selfRef">Receiving a Certificate Message</a>
             </h5>
-<p id="section-4.4.2.4-1">In general, detailed certificate validation procedures are out of scope for
-TLS (see <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>). This section provides TLS-specific requirements.<a href="#section-4.4.2.4-1" class="pilcrow">¶</a></p>
-<p id="section-4.4.2.4-2">If the server supplies an empty Certificate message, the client MUST abort
-the handshake with a "decode_error" alert.<a href="#section-4.4.2.4-2" class="pilcrow">¶</a></p>
-<p id="section-4.4.2.4-3">If the client does not send any certificates (i.e., it sends an empty
+<p id="section-4.4.2.3-1">In general, detailed certificate validation procedures are out of scope for
+TLS (see <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>). This section provides TLS-specific requirements.<a href="#section-4.4.2.3-1" class="pilcrow">¶</a></p>
+<p id="section-4.4.2.3-2">If the server supplies an empty Certificate message, the client MUST abort
+the handshake with a "decode_error" alert.<a href="#section-4.4.2.3-2" class="pilcrow">¶</a></p>
+<p id="section-4.4.2.3-3">If the client does not send any certificates (i.e., it sends an empty
 Certificate message),
 the server MAY at its discretion either continue the handshake without client
 authentication, or abort the handshake with a "certificate_required" alert. Also, if some
 aspect of the certificate chain was unacceptable (e.g., it was not signed by a
 known, trusted CA), the server MAY at its discretion either continue the
-handshake (considering the client unauthenticated) or abort the handshake.<a href="#section-4.4.2.4-3" class="pilcrow">¶</a></p>
-<p id="section-4.4.2.4-4">Any endpoint receiving any certificate which it would need to validate
+handshake (considering the client unauthenticated) or abort the handshake.<a href="#section-4.4.2.3-3" class="pilcrow">¶</a></p>
+<p id="section-4.4.2.3-4">Any endpoint receiving any certificate which it would need to validate
 using any signature algorithm using an MD5 hash MUST abort the
 handshake with a "bad_certificate" alert.  SHA-1 is deprecated and it
 is RECOMMENDED that any endpoint receiving any certificate which it
 would need to validate using any signature algorithm using a SHA-1
 hash abort the handshake with a "bad_certificate" alert. For clarity,
 this means that endpoints can accept these algorithms for
-certificates that are self-signed or are trust anchors.<a href="#section-4.4.2.4-4" class="pilcrow">¶</a></p>
-<p id="section-4.4.2.4-5">All endpoints are RECOMMENDED to transition to SHA-256 or better as soon
+certificates that are self-signed or are trust anchors.<a href="#section-4.4.2.3-4" class="pilcrow">¶</a></p>
+<p id="section-4.4.2.3-5">All endpoints are RECOMMENDED to transition to SHA-256 or better as soon
 as possible to maintain interoperability with implementations
-currently in the process of phasing out SHA-1 support.<a href="#section-4.4.2.4-5" class="pilcrow">¶</a></p>
-<p id="section-4.4.2.4-6">Note that a certificate containing a key for one signature algorithm
+currently in the process of phasing out SHA-1 support.<a href="#section-4.4.2.3-5" class="pilcrow">¶</a></p>
+<p id="section-4.4.2.3-6">Note that a certificate containing a key for one signature algorithm
 MAY be signed using a different signature algorithm (for instance,
-an RSA key signed with an ECDSA key).<a href="#section-4.4.2.4-6" class="pilcrow">¶</a></p>
+an RSA key signed with an ECDSA key).<a href="#section-4.4.2.3-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -7309,7 +7297,7 @@ alert in the TLS Alerts Registry with the value given in <a href="#alert-protoco
 <dd class="break"></dd>
 <dt id="RFC8996">[RFC8996]</dt>
         <dd>
-<span class="refTitle">"*** BROKEN REFERENCE ***"</span>. </dd>
+<span class="refAuthor">Moriarty, K.</span> and <span class="refAuthor">S. Farrell</span>, <span class="refTitle">"Deprecating TLS 1.0 and TLS 1.1"</span>, <span class="seriesInfo">BCP 195</span>, <span class="seriesInfo">RFC 8996</span>, <span class="seriesInfo">DOI 10.17487/RFC8996</span>, <time datetime="2021-03" class="refDate">March 2021</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8996">https://www.rfc-editor.org/rfc/rfc8996</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="SHS">[SHS]</dt>
         <dd>
@@ -7414,7 +7402,7 @@ alert in the TLS Alerts Registry with the value given in <a href="#alert-protoco
 <dd class="break"></dd>
 <dt id="FETCH">[FETCH]</dt>
         <dd>
-<span class="refAuthor">WHATWG</span>, <span class="refTitle">"Fetch Standard"</span>, <time datetime="2024-05" class="refDate">May 2024</time>, <span>&lt;<a href="https://fetch.spec.whatwg.org/">https://fetch.spec.whatwg.org/</a>&gt;</span>. </dd>
+<span class="refAuthor">WHATWG</span>, <span class="refTitle">"Fetch Standard"</span>, <time datetime="2024-07" class="refDate">July 2024</time>, <span>&lt;<a href="https://fetch.spec.whatwg.org/">https://fetch.spec.whatwg.org/</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="FG17">[FG17]</dt>
         <dd>
@@ -8845,7 +8833,7 @@ records thereafter.<a href="#appendix-E-3" class="pilcrow">¶</a></p>
 <p id="appendix-E-4">For maximum compatibility with previously non-standard behavior and misconfigured
 deployments, all implementations SHOULD support validation of certification paths
 based on the expectations in this document, even when handling prior TLS versions'
-handshakes (see <a href="#server-certificate-selection" class="auto internal xref">Section 4.4.2.2</a>).<a href="#appendix-E-4" class="pilcrow">¶</a></p>
+handshakes (see <a href="#certificate-selection" class="auto internal xref">Section 4.4.2.2</a>).<a href="#appendix-E-4" class="pilcrow">¶</a></p>
 <p id="appendix-E-5">TLS 1.2 and prior supported an "Extended Main Secret" <span>[<a href="#RFC7627" class="cite xref">RFC7627</a>]</span> extension
 which digested large parts of the handshake transcript into the secret and
 derived keys. Note this extension was renamed in <a href="#update-tls12" class="auto internal xref">Appendix D</a>. Because TLS
