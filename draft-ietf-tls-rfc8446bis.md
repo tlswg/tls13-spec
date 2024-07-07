@@ -3565,10 +3565,15 @@ send a KeyUpdate of its own with request_update set to "update_not_requested" pr
 to sending its next Application Data record. This mechanism allows either side to force an update to the
 entire connection, but causes an implementation which
 receives multiple KeyUpdates while it is silent to respond with
-a single update. Note that implementations may receive an arbitrary
+a single update. Until receiving a subsequent KeyUpdate from the peer, the
+sender MUST NOT send another KeyUpdate with request_update set to
+"update_requested".
+
+Note that implementations may receive an arbitrary
 number of messages between sending a KeyUpdate with request_update set
 to "update_requested" and receiving the
-peer's KeyUpdate, because those messages may already be in flight.
+peer's KeyUpdate, including unrelated KeyUpdates, because those messages may
+already be in flight.
 However, because send and receive keys are derived from independent
 traffic secrets, retaining the receive traffic secret does not threaten
 the forward secrecy of data sent before the sender changed keys.
