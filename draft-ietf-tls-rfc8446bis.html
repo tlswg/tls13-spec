@@ -5457,23 +5457,27 @@ send a KeyUpdate of its own with request_update set to "update_not_requested" pr
 to sending its next Application Data record. This mechanism allows either side to force an update to the
 entire connection, but causes an implementation which
 receives multiple KeyUpdates while it is silent to respond with
-a single update. Note that implementations may receive an arbitrary
+a single update. Until receiving a subsequent KeyUpdate from the peer, the
+sender MUST NOT send another KeyUpdate with request_update set to
+"update_requested".<a href="#section-4.6.3-4" class="pilcrow">¶</a></p>
+<p id="section-4.6.3-5">Note that implementations may receive an arbitrary
 number of messages between sending a KeyUpdate with request_update set
 to "update_requested" and receiving the
-peer's KeyUpdate, because those messages may already be in flight.
+peer's KeyUpdate, including unrelated KeyUpdates, because those messages may
+already be in flight.
 However, because send and receive keys are derived from independent
 traffic secrets, retaining the receive traffic secret does not threaten
-the forward secrecy of data sent before the sender changed keys.<a href="#section-4.6.3-4" class="pilcrow">¶</a></p>
-<p id="section-4.6.3-5">If implementations independently send their own KeyUpdates with
+the forward secrecy of data sent before the sender changed keys.<a href="#section-4.6.3-5" class="pilcrow">¶</a></p>
+<p id="section-4.6.3-6">If implementations independently send their own KeyUpdates with
 request_update set to "update_requested", and they cross in flight, then each side
 will also send a response, with the result that each side increments
-by two generations.<a href="#section-4.6.3-5" class="pilcrow">¶</a></p>
-<p id="section-4.6.3-6">Both sender and receiver MUST encrypt their KeyUpdate
+by two generations.<a href="#section-4.6.3-6" class="pilcrow">¶</a></p>
+<p id="section-4.6.3-7">Both sender and receiver MUST encrypt their KeyUpdate
 messages with the old keys. Additionally, both sides MUST enforce that
 a KeyUpdate with the old key is received before accepting any messages
 encrypted with the new key. Failure to do so may allow message truncation
-attacks.<a href="#section-4.6.3-6" class="pilcrow">¶</a></p>
-<p id="section-4.6.3-7">With a 128-bit key as in AES-128, rekeying 2^64 times has a high
+attacks.<a href="#section-4.6.3-7" class="pilcrow">¶</a></p>
+<p id="section-4.6.3-8">With a 128-bit key as in AES-128, rekeying 2^64 times has a high
 probability of key reuse within a given connection.  Note that even
 if the key repeats, the IV is also independently generated, so the
 chance of a joint key/IV collision is much lower.  In order
@@ -5487,7 +5491,7 @@ request_update set to "update_requested", it MUST NOT send its own
 KeyUpdate if that would cause it to exceed these limits and SHOULD
 instead ignore the "update_requested" flag. This may result in
 an eventual need to terminate the connection when the
-limits in <a href="#limits-on-key-usage" class="auto internal xref">Section 5.5</a> are reached.<a href="#section-4.6.3-7" class="pilcrow">¶</a></p>
+limits in <a href="#limits-on-key-usage" class="auto internal xref">Section 5.5</a> are reached.<a href="#section-4.6.3-8" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
