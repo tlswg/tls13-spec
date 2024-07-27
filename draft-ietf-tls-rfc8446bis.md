@@ -4093,6 +4093,13 @@ requirement could cause truncation in the read side. Both parties need not
 wait to receive a "close_notify" alert before closing their read side of the
 connection, though doing so would introduce the possibility of truncation.
 
+Application protocols MAY choose to flush their send buffers and immediately
+send a close_notify upon receiving a close_notify, but this allows an attacker
+to influence the data that the peer receives by delaying the close_notify or
+by delaying the transport level delivery of the application's packets. These
+issues can be addressed at the application layer, for instance by ignoring
+packets received after transmitting the close_notify.
+
 If the application protocol using TLS provides that any data may be carried
 over the underlying transport after the TLS connection is closed, the TLS
 implementation MUST receive a "close_notify" alert before indicating
