@@ -3377,8 +3377,8 @@ appropriate application traffic key.
 
 ### New Session Ticket Message {#NSTMessage}
 
-At any time after the server has received both a "psk_key_exchange_modes" extension
-and the client Finished message,
+If the client's hello contained a suitable "psk_key_exchange_modes" extension,
+at any time after the server has received the client Finished message,
 it MAY send a NewSessionTicket message. This message creates a unique
 association between the ticket value and a secret PSK
 derived from the resumption secret (see {{cryptographic-computations}}).
