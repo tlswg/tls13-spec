@@ -444,7 +444,7 @@ properties.
 TLS consists of two primary components:
 
 * A handshake protocol ({{handshake-protocol}}) that authenticates the communicating parties,
-  negotiates cryptographic modes and parameters, and establishes
+  negotiates cryptographic algorithms and parameters, and establishes
   shared keying material. The handshake protocol is designed to
   resist tampering; an active attacker should not be able to force
   the peers to negotiate different parameters than they would
@@ -705,7 +705,7 @@ in the diagram above):
 In the Key Exchange phase, the client sends the ClientHello
 ({{client-hello}}) message, which contains a random nonce
 (ClientHello.random); its offered protocol versions; a list of
-symmetric cipher/HKDF hash pairs; either a list of Diffie-Hellman key shares (in the
+symmetric cipher/hash pairs; either a list of Diffie-Hellman key shares (in the
 "key_share" ({{key-share}}) extension), a list of pre-shared key labels (in the
 "pre_shared_key" ({{pre-shared-key-extension}}) extension), or both; and
 potentially additional extensions.  Additional fields and/or messages
@@ -2898,7 +2898,8 @@ flight. The Certificate and CertificateVerify messages are only
 sent under certain circumstances, as defined below. The Finished
 message is always sent as part of the Authentication Block.
 These messages are encrypted under keys derived from the
-\[sender]_handshake_traffic_secret.
+\[sender]_handshake_traffic_secret,
+except for post-handshake authentication.
 
 The computations for the Authentication messages all uniformly
 take the following inputs:
@@ -2932,7 +2933,7 @@ for each scenario:
 |------|-------------------|----------|
 | Server | ClientHello ... later of EncryptedExtensions/CertificateRequest | server_handshake_traffic_secret |
 | Client | ClientHello ... later of server Finished/EndOfEarlyData | client_handshake_traffic_secret |
-| Post-Handshake | ClientHello ... client Finished + CertificateRequest | client_application_traffic_secret_N |
+| Post-Handshake | ClientHello ... client Finished + CertificateRequest | [sender]_application_traffic_secret_N |
 {: #hs-ctx-and-keys title="Authentication Inputs"}
 
 ### The Transcript Hash
@@ -3144,9 +3145,8 @@ cannot produce a certificate chain that is signed only via the
 indicated supported algorithms, then it SHOULD continue the handshake by sending
 a certificate chain of its choice that may include algorithms that are not known
 to be supported by the client.
-This fallback chain SHOULD NOT use the deprecated SHA-1 hash algorithm in general,
-but MAY do so if the client's advertisement permits it,
-and MUST NOT do so otherwise.
+This fallback chain MUST NOT use the deprecated SHA-1 hash,
+unless the client specifically advertises that it is willing to accept SHA-1.
 
 If the sender is the client, the client MAY use a fallback chain as above, or
 continue the handshake anonymously.
@@ -3377,7 +3377,8 @@ appropriate application traffic key.
 
 ### New Session Ticket Message {#NSTMessage}
 
-At any time after the server has received the client Finished message,
+If the client's hello contained a suitable "psk_key_exchange_modes" extension,
+at any time after the server has received the client Finished message,
 it MAY send a NewSessionTicket message. This message creates a unique
 association between the ticket value and a secret PSK
 derived from the resumption secret (see {{cryptographic-computations}}).
@@ -4091,6 +4092,13 @@ sending an immediate "close_notify" alert of their own. That previous
 requirement could cause truncation in the read side. Both parties need not
 wait to receive a "close_notify" alert before closing their read side of the
 connection, though doing so would introduce the possibility of truncation.
+
+Application protocols MAY choose to flush their send buffers and immediately
+send a close_notify upon receiving a close_notify, but this allows an attacker
+to influence the data that the peer receives by delaying the close_notify or
+by delaying the transport level delivery of the application's packets. These
+issues can be addressed at the application layer, for instance by ignoring
+packets received after transmitting the close_notify.
 
 If the application protocol using TLS provides that any data may be carried
 over the underlying transport after the TLS connection is closed, the TLS
