@@ -705,7 +705,7 @@ in the diagram above):
 In the Key Exchange phase, the client sends the ClientHello
 ({{client-hello}}) message, which contains a random nonce
 (ClientHello.random); its offered protocol versions; a list of
-symmetric cipher/Hash pairs; either a list of Diffie-Hellman key shares (in the
+symmetric cipher/hash pairs; either a list of Diffie-Hellman key shares (in the
 "key_share" ({{key-share}}) extension), a list of pre-shared key labels (in the
 "pre_shared_key" ({{pre-shared-key-extension}}) extension), or both; and
 potentially additional extensions.  Additional fields and/or messages
