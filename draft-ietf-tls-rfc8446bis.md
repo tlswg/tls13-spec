@@ -3146,7 +3146,7 @@ indicated supported algorithms, then it SHOULD continue the handshake by sending
 a certificate chain of its choice that may include algorithms that are not known
 to be supported by the client.
 This fallback chain MUST NOT use the deprecated SHA-1 hash,
-except if advertised by the client, in which case it MAY.
+unless the client specifically advertises that it is willing to accept SHA-1.
 
 If the sender is the client, the client MAY use a fallback chain as above, or
 continue the handshake anonymously.
