@@ -1034,7 +1034,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Rescorla</td>
-<td class="center">Expires 8 January 2025</td>
+<td class="center">Expires 1 February 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1053,12 +1053,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <a href="https://www.rfc-editor.org/rfc/rfc5705" class="eref">5705</a>, <a href="https://www.rfc-editor.org/rfc/rfc6066" class="eref">6066</a>, <a href="https://www.rfc-editor.org/rfc/rfc7627" class="eref">7627</a>, <a href="https://www.rfc-editor.org/rfc/rfc8422" class="eref">8422</a> (if approved)</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-07-07" class="published">7 July 2024</time>
+<time datetime="2024-07-31" class="published">31 July 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-01-08">8 January 2025</time></dd>
+<dd class="expires"><time datetime="2025-02-01">1 February 2025</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1098,7 +1098,7 @@ new requirements for TLS 1.2 implementations.<a href="#section-abstract-2" class
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 8 January 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 1 February 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1617,7 +1617,7 @@ properties.<a href="#section-1-4" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-1-6.1">
           <p id="section-1-6.1.1">A handshake protocol (<a href="#handshake-protocol" class="auto internal xref">Section 4</a>) that authenticates the communicating parties,
-negotiates cryptographic modes and parameters, and establishes
+negotiates cryptographic algorithms and parameters, and establishes
 shared keying material. The handshake protocol is designed to
 resist tampering; an active attacker should not be able to force
 the peers to negotiate different parameters than they would
@@ -1993,7 +1993,7 @@ in the diagram above):<a href="#section-2-7" class="pilcrow">¶</a></p>
 <p id="section-2-9">In the Key Exchange phase, the client sends the ClientHello
 (<a href="#client-hello" class="auto internal xref">Section 4.1.2</a>) message, which contains a random nonce
 (ClientHello.random); its offered protocol versions; a list of
-symmetric cipher/HKDF hash pairs; either a list of Diffie-Hellman key shares (in the
+symmetric cipher/hash pairs; either a list of Diffie-Hellman key shares (in the
 "key_share" (<a href="#key-share" class="auto internal xref">Section 4.2.8</a>) extension), a list of pre-shared key labels (in the
 "pre_shared_key" (<a href="#pre-shared-key-extension" class="auto internal xref">Section 4.2.11</a>) extension), or both; and
 potentially additional extensions.  Additional fields and/or messages
@@ -4689,7 +4689,8 @@ flight. The Certificate and CertificateVerify messages are only
 sent under certain circumstances, as defined below. The Finished
 message is always sent as part of the Authentication Block.
 These messages are encrypted under keys derived from the
-[sender]_handshake_traffic_secret.<a href="#section-4.4-1" class="pilcrow">¶</a></p>
+[sender]_handshake_traffic_secret,
+except for post-handshake authentication.<a href="#section-4.4-1" class="pilcrow">¶</a></p>
 <p id="section-4.4-2">The computations for the Authentication messages all uniformly
 take the following inputs:<a href="#section-4.4-2" class="pilcrow">¶</a></p>
 <ul class="normal">
@@ -4755,7 +4756,7 @@ for each scenario:<a href="#section-4.4-6" class="pilcrow">¶</a></p>
             <tr>
               <td class="text-left" rowspan="1" colspan="1">Post-Handshake</td>
               <td class="text-left" rowspan="1" colspan="1">ClientHello ... client Finished + CertificateRequest</td>
-              <td class="text-left" rowspan="1" colspan="1">client_application_traffic_secret_N</td>
+              <td class="text-left" rowspan="1" colspan="1">[sender]_application_traffic_secret_N</td>
             </tr>
           </tbody>
         </table>
@@ -4987,9 +4988,8 @@ cannot produce a certificate chain that is signed only via the
 indicated supported algorithms, then it SHOULD continue the handshake by sending
 a certificate chain of its choice that may include algorithms that are not known
 to be supported by the client.
-This fallback chain SHOULD NOT use the deprecated SHA-1 hash algorithm in general,
-but MAY do so if the client's advertisement permits it,
-and MUST NOT do so otherwise.<a href="#section-4.4.2.2-8" class="pilcrow">¶</a></p>
+This fallback chain MUST NOT use the deprecated SHA-1 hash,
+unless the client specifically advertises that it is willing to accept SHA-1.<a href="#section-4.4.2.2-8" class="pilcrow">¶</a></p>
 <p id="section-4.4.2.2-9">If the sender is the client, the client MAY use a fallback chain as above, or
 continue the handshake anonymously.<a href="#section-4.4.2.2-9" class="pilcrow">¶</a></p>
 <p id="section-4.4.2.2-10">If the receiver cannot construct an acceptable chain using the provided
@@ -5253,7 +5253,8 @@ appropriate application traffic key.<a href="#section-4.6-1" class="pilcrow">¶<
           <h4 id="name-new-session-ticket-message">
 <a href="#section-4.6.1" class="section-number selfRef">4.6.1. </a><a href="#name-new-session-ticket-message" class="section-name selfRef">New Session Ticket Message</a>
           </h4>
-<p id="section-4.6.1-1">At any time after the server has received the client Finished message,
+<p id="section-4.6.1-1">If the client's hello contained a suitable "psk_key_exchange_modes" extension,
+at any time after the server has received the client Finished message,
 it MAY send a NewSessionTicket message. This message creates a unique
 association between the ticket value and a secret PSK
 derived from the resumption secret (see <a href="#cryptographic-computations" class="auto internal xref">Section 7</a>).<a href="#section-4.6.1-1" class="pilcrow">¶</a></p>
@@ -6010,14 +6011,20 @@ sending an immediate "close_notify" alert of their own. That previous
 requirement could cause truncation in the read side. Both parties need not
 wait to receive a "close_notify" alert before closing their read side of the
 connection, though doing so would introduce the possibility of truncation.<a href="#section-6.1-4" class="pilcrow">¶</a></p>
-<p id="section-6.1-5">If the application protocol using TLS provides that any data may be carried
+<p id="section-6.1-5">Application protocols MAY choose to flush their send buffers and immediately
+send a close_notify upon receiving a close_notify, but this allows an attacker
+to influence the data that the peer receives by delaying the close_notify or
+by delaying the transport level delivery of the application's packets. These
+issues can be addressed at the application layer, for instance by ignoring
+packets received after transmitting the close_notify.<a href="#section-6.1-5" class="pilcrow">¶</a></p>
+<p id="section-6.1-6">If the application protocol using TLS provides that any data may be carried
 over the underlying transport after the TLS connection is closed, the TLS
 implementation MUST receive a "close_notify" alert before indicating
 end-of-data to the application layer. No part of this
 standard should be taken to dictate the manner in which a usage profile for TLS
-manages its data transport, including when connections are opened or closed.<a href="#section-6.1-5" class="pilcrow">¶</a></p>
-<p id="section-6.1-6">Note: It is assumed that closing the write side of a connection reliably
-delivers pending data before destroying the transport.<a href="#section-6.1-6" class="pilcrow">¶</a></p>
+manages its data transport, including when connections are opened or closed.<a href="#section-6.1-6" class="pilcrow">¶</a></p>
+<p id="section-6.1-7">Note: It is assumed that closing the write side of a connection reliably
+delivers pending data before destroying the transport.<a href="#section-6.1-7" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="error-alerts">
@@ -7187,6 +7194,7 @@ alert in the TLS Alerts Registry with the value given in <a href="#alert-protoco
 </div>
 </section>
 </div>
+<div id="sec-combined-references">
 <section id="section-12">
       <h2 id="name-references">
 <a href="#section-12" class="section-number selfRef">12. </a><a href="#name-references" class="section-name selfRef">References</a>
@@ -7303,7 +7311,7 @@ alert in the TLS Alerts Registry with the value given in <a href="#alert-protoco
 <dd class="break"></dd>
 <dt id="RFC8996">[RFC8996]</dt>
         <dd>
-<span class="refAuthor">Moriarty, K.</span> and <span class="refAuthor">S. Farrell</span>, <span class="refTitle">"Deprecating TLS 1.0 and TLS 1.1"</span>, <span class="seriesInfo">BCP 195</span>, <span class="seriesInfo">RFC 8996</span>, <span class="seriesInfo">DOI 10.17487/RFC8996</span>, <time datetime="2021-03" class="refDate">March 2021</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8996">https://www.rfc-editor.org/rfc/rfc8996</a>&gt;</span>. </dd>
+<span class="refTitle">"*** BROKEN REFERENCE ***"</span>. </dd>
 <dd class="break"></dd>
 <dt id="SHS">[SHS]</dt>
         <dd>
@@ -7670,6 +7678,7 @@ alert in the TLS Alerts Registry with the value given in <a href="#alert-protoco
 </section>
 </div>
 </section>
+</div>
 <div id="state-machine">
 <section id="appendix-A">
       <h2 id="name-state-machine">
