@@ -3,7 +3,7 @@
 
 
 Transport Layer Security                                     E. Rescorla
-Internet-Draft                                               Independent
+Internet-Draft                                   Windy Hill Systems, LLC
 Obsoletes: 8446 (if approved)                              5 August 2024
 Updates: 5705, 6066, 7627, 8422 (if approved)                           
 Intended status: Standards Track                                        
@@ -7295,5 +7295,5 @@ Contributors
 Author's Address
 
    Eric Rescorla
-   Independent
+   Windy Hill Systems, LLC
    Email: ekr@rtfm.com
