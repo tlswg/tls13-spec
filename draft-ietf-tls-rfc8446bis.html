@@ -1030,11 +1030,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">TLS</td>
-<td class="right">July 2024</td>
+<td class="right">August 2024</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Rescorla</td>
-<td class="center">Expires 1 February 2025</td>
+<td class="center">Expires 6 February 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1053,17 +1053,17 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <a href="https://www.rfc-editor.org/rfc/rfc5705" class="eref">5705</a>, <a href="https://www.rfc-editor.org/rfc/rfc6066" class="eref">6066</a>, <a href="https://www.rfc-editor.org/rfc/rfc7627" class="eref">7627</a>, <a href="https://www.rfc-editor.org/rfc/rfc8422" class="eref">8422</a> (if approved)</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-07-31" class="published">31 July 2024</time>
+<time datetime="2024-08-05" class="published">5 August 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-02-01">1 February 2025</time></dd>
+<dd class="expires"><time datetime="2025-02-06">6 February 2025</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
       <div class="author-name">E. Rescorla</div>
-<div class="org">Windy Hill Systems, LLC</div>
+<div class="org">Independent</div>
 </div>
 </dd>
 </dl>
@@ -1098,7 +1098,7 @@ new requirements for TLS 1.2 implementations.<a href="#section-abstract-2" class
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 1 February 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 6 February 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -3035,7 +3035,10 @@ In TLS 1.3, the TLS server indicates its version using the
 "supported_versions" extension (<a href="#supported-versions" class="auto internal xref">Section 4.2.1</a>),
 and the legacy_version field MUST
 be set to 0x0303, which is the version number for TLS 1.2.
-(See <a href="#backward-compatibility" class="auto internal xref">Appendix E</a> for details about backward compatibility.)<a href="#section-4.1.3-4.2.1" class="pilcrow">¶</a></p>
+(See <a href="#backward-compatibility" class="auto internal xref">Appendix E</a> for details about backward compatibility.)
+A client which receives a TLS 1.3 Server Hello with a legacy_version
+value not equal to 0x0303 MUST abort the handshake with an
+"illegal_parameter" alert.<a href="#section-4.1.3-4.2.1" class="pilcrow">¶</a></p>
 </dd>
             <dd class="break"></dd>
 <dt id="section-4.1.3-4.3">random:</dt>
@@ -3070,7 +3073,9 @@ alert.<a href="#section-4.1.3-4.8.1" class="pilcrow">¶</a></p>
             <dd class="break"></dd>
 <dt id="section-4.1.3-4.9">legacy_compression_method:</dt>
             <dd style="margin-left: 1.5em" id="section-4.1.3-4.10">
-              <p id="section-4.1.3-4.10.1">A single byte which MUST have the value 0.<a href="#section-4.1.3-4.10.1" class="pilcrow">¶</a></p>
+              <p id="section-4.1.3-4.10.1">A single byte which MUST have the value 0. If a TLS 1.3 ClientHello
+is received with any other value in this field, the server MUST
+abort the handshake with an "illegal_parameter" alert.<a href="#section-4.1.3-4.10.1" class="pilcrow">¶</a></p>
 </dd>
             <dd class="break"></dd>
 <dt id="section-4.1.3-4.11">extensions:</dt>
@@ -7416,7 +7421,7 @@ alert in the TLS Alerts Registry with the value given in <a href="#alert-protoco
 <dd class="break"></dd>
 <dt id="FETCH">[FETCH]</dt>
         <dd>
-<span class="refAuthor">WHATWG</span>, <span class="refTitle">"Fetch Standard"</span>, <time datetime="2024-07" class="refDate">July 2024</time>, <span>&lt;<a href="https://fetch.spec.whatwg.org/">https://fetch.spec.whatwg.org/</a>&gt;</span>. </dd>
+<span class="refAuthor">WHATWG</span>, <span class="refTitle">"Fetch Standard"</span>, <time datetime="2024-08" class="refDate">August 2024</time>, <span>&lt;<a href="https://fetch.spec.whatwg.org/">https://fetch.spec.whatwg.org/</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="FG17">[FG17]</dt>
         <dd>
@@ -7440,7 +7445,7 @@ alert in the TLS Alerts Registry with the value given in <a href="#alert-protoco
 <dd class="break"></dd>
 <dt id="I-D.ietf-tls-esni">[I-D.ietf-tls-esni]</dt>
         <dd>
-<span class="refAuthor">Rescorla, E.</span>, <span class="refAuthor">Oku, K.</span>, <span class="refAuthor">Sullivan, N.</span>, and <span class="refAuthor">C. A. Wood</span>, <span class="refTitle">"TLS Encrypted Client Hello"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-tls-esni-18</span>, <time datetime="2024-03-04" class="refDate">4 March 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-tls-esni-18">https://datatracker.ietf.org/doc/html/draft-ietf-tls-esni-18</a>&gt;</span>. </dd>
+<span class="refAuthor">Rescorla, E.</span>, <span class="refAuthor">Oku, K.</span>, <span class="refAuthor">Sullivan, N.</span>, and <span class="refAuthor">C. A. Wood</span>, <span class="refTitle">"TLS Encrypted Client Hello"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-tls-esni-20</span>, <time datetime="2024-08-04" class="refDate">4 August 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-tls-esni-20">https://datatracker.ietf.org/doc/html/draft-ietf-tls-esni-20</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="JSS15">[JSS15]</dt>
         <dd>
@@ -10093,7 +10098,7 @@ change depending on previous interpretation (Issue 1227)<a href="#appendix-G-5.4
       </h2>
 <address class="vcard">
         <div dir="auto" class="left"><span class="fn nameRole">Eric Rescorla</span></div>
-<div dir="auto" class="left"><span class="org">Windy Hill Systems, LLC</span></div>
+<div dir="auto" class="left"><span class="org">Independent</span></div>
 <div class="email">
 <span>Email:</span>
 <a href="mailto:ekr@rtfm.com" class="email">ekr@rtfm.com</a>
