@@ -391,6 +391,18 @@ informative:
        date: May 2008
        target: https://www.debian.org/security/2008/dsa-1571
 
+  MM24:
+       title: "Misbinding Raw Public Keys to Identities in TLS"
+       date: 2024
+       target: https://arxiv.org/pdf/2411.09770
+       author:
+       -
+         ins: M. Moustafa
+       -
+         ins: M. Sethi
+       -
+         ins: T. Aura
+
 
 --- abstract
 
@@ -6124,6 +6136,11 @@ same PSK might produce related output in both versions, only limited
 analysis has been done.  Implementations can ensure safety from
 cross-protocol related output by not reusing PSKs between TLS 1.3 and
 TLS 1.2.
+
+## Misbinding when using RPKs
+
+When TLS 1.3 is used with raw public keys {{RFC7250}} for peer authentication, it may be vulnerable to misbinding attacks {{MM24}}. To mitigate this risk, if only the TLS server is authenticated using the RawPublicKey certificate type, the server SHOULD enforce strict validation of the "server_name" extension received in the ClientHello to confirm that the client intended to establish a connection with the server. Alternatively, or when both the client and server authenticate using the RawPublicKey certificate type, the endpoints SHOULD perform identity verification using either the "external_id_hash" TLS extension {{RFC8844}}, or at the application layer after the TLS connection is established.
+
 
 ## Attacks on Static RSA
 
