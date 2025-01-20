@@ -3,11 +3,11 @@
 
 
 Transport Layer Security                                     E. Rescorla
-Internet-Draft                                   Windy Hill Systems, LLC
-Obsoletes: 8446 (if approved)                              5 August 2024
+Internet-Draft                                               Independent
+Obsoletes: 8446 (if approved)                            20 January 2025
 Updates: 5705, 6066, 7627, 8422 (if approved)                           
 Intended status: Standards Track                                        
-Expires: 6 February 2025
+Expires: 24 July 2025
 
 
         The Transport Layer Security (TLS) Protocol Version 1.3
@@ -39,11 +39,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 6 February 2025.
+   This Internet-Draft will expire on 24 July 2025.
 
 Copyright Notice
 
-   Copyright (c) 2024 IETF Trust and the persons identified as the
+   Copyright (c) 2025 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -4875,11 +4875,13 @@ Auth | {CertificateVerify*}
               Protocols", RFC 8439, DOI 10.17487/RFC8439, June 2018,
               <https://www.rfc-editor.org/rfc/rfc8439>.
 
-   [RFC8996]  "*** BROKEN REFERENCE ***".
+   [RFC8996]  Moriarty, K. and S. Farrell, "Deprecating TLS 1.0 and TLS
+              1.1", BCP 195, RFC 8996, DOI 10.17487/RFC8996, March 2021,
+              <https://www.rfc-editor.org/rfc/rfc8996>.
 
-   [SHS]      Dang, Q., "Secure Hash Standard", National Institute of
-              Standards and Technology, DOI 10.6028/nist.fips.180-4,
-              July 2015, <https://doi.org/10.6028/nist.fips.180-4>.
+   [SHS]      "Secure hash standard", National Institute of Standards
+              and Technology (U.S.), DOI 10.6028/nist.fips.180-4, 2015,
+              <https://doi.org/10.6028/nist.fips.180-4>.
 
    [X690]     ITU-T, "Information technology - ASN.1 encoding Rules:
               Specification of Basic Encoding Rules (BER), Canonical
@@ -4903,8 +4905,8 @@ Auth | {CertificateVerify*}
    [BBK17]    Bhargavan, K., Blanchet, B., and N. Kobeissi, "Verified
               Models and Reference Implementations for the TLS 1.3
               Standard Candidate", IEEE, 2017 IEEE Symposium on Security
-              and Privacy (SP), DOI 10.1109/sp.2017.26, May 2017,
-              <https://doi.org/10.1109/sp.2017.26>.
+              and Privacy (SP) pp. 483-502, DOI 10.1109/sp.2017.26, May
+              2017, <https://doi.org/10.1109/sp.2017.26>.
 
    [BDFKPPRSZZ16]
               Bhargavan, K., Delignat-Lavaud, A., Fournet, C.,
@@ -4940,7 +4942,7 @@ Auth | {CertificateVerify*}
 
    [CCG16]    Cohn-Gordon, K., Cremers, C., and L. Garratt, "On Post-
               compromise Security", IEEE, 2016 IEEE 29th Computer
-              Security Foundations Symposium (CSF),
+              Security Foundations Symposium (CSF) pp. 164-178,
               DOI 10.1109/csf.2016.19, June 2016,
               <https://doi.org/10.1109/csf.2016.19>.
 
@@ -4949,9 +4951,9 @@ Auth | {CertificateVerify*}
               Cohney, S., Green, M., Heninger, N., Weinmann, R.,
               Rescorla, E., and H. Shacham, "A Systematic Analysis of
               the Juniper Dual EC Incident", ACM, Proceedings of the
-              2016 ACM SIGSAC Conference on Computer and
-              Communications Security, DOI 10.1145/2976749.2978395,
-              October 2016, <https://doi.org/10.1145/2976749.2978395>.
+              2016 ACM SIGSAC Conference on Computer and Communications
+              Security pp. 468-479, DOI 10.1145/2976749.2978395, October
+              2016, <https://doi.org/10.1145/2976749.2978395>.
 
    [CHHSV17]  Cremers, C., Horvat, M., Hoyland, J., van der Merwe, T.,
               and S. Scott, "Awkward Handshake: Possible mismatch of
@@ -4963,7 +4965,7 @@ Auth | {CertificateVerify*}
    [CHSV16]   Cremers, C., Horvat, M., Scott, S., and T. van der Merwe,
               "Automated Analysis and Verification of TLS 1.3: 0-RTT,
               Resumption and Delayed Authentication", IEEE, 2016 IEEE
-              Symposium on Security and Privacy (SP),
+              Symposium on Security and Privacy (SP) pp. 470-485,
               DOI 10.1109/sp.2016.35, May 2016,
               <https://doi.org/10.1109/sp.2016.35>.
 
@@ -4977,7 +4979,7 @@ Auth | {CertificateVerify*}
    [CLINIC]   Miller, B., Huang, L., Joseph, A., and J. Tygar, "I Know
               Why You Went to the Clinic: Risks and Realization of HTTPS
               Traffic Analysis", Springer International Publishing,
-              Privacy Enhancing Technologies pp. 143-163,
+              Lecture Notes in Computer Science pp. 143-163,
               DOI 10.1007/978-3-319-08506-7_8, ISBN ["9783319085050",
               "9783319085067"], 2014,
               <https://doi.org/10.1007/978-3-319-08506-7_8>.
@@ -5004,8 +5006,7 @@ Auth | {CertificateVerify*}
               generator", May 2008,
               <https://www.debian.org/security/2008/dsa-1571>.
 
-   [DSS]      Chen, L., Moody, D., Regenscheid, A., and A. Robinson,
-              "Digital Signature Standard (DSS)", National Institute of
+   [DSS]      "Digital Signature Standard (DSS)", National Institute of
               Standards and Technology (U.S.),
               DOI 10.6028/nist.fips.186-5, February 2023,
               <https://doi.org/10.6028/nist.fips.186-5>.
@@ -5017,7 +5018,7 @@ Auth | {CertificateVerify*}
               DOI 10.6028/nist.sp.800-186, February 2023,
               <https://doi.org/10.6028/nist.sp.800-186>.
 
-   [FETCH]    WHATWG, "Fetch Standard", August 2024,
+   [FETCH]    WHATWG, "Fetch Standard", January 2025,
               <https://fetch.spec.whatwg.org/>.
 
    [FG17]     Fischlin, M. and F. Guenther, "Replay Attacks on Zero
@@ -5049,15 +5050,15 @@ Auth | {CertificateVerify*}
    [I-D.ietf-tls-esni]
               Rescorla, E., Oku, K., Sullivan, N., and C. A. Wood, "TLS
               Encrypted Client Hello", Work in Progress, Internet-Draft,
-              draft-ietf-tls-esni-20, 4 August 2024,
+              draft-ietf-tls-esni-22, 15 September 2024,
               <https://datatracker.ietf.org/doc/html/draft-ietf-tls-
-              esni-20>.
+              esni-22>.
 
    [JSS15]    Jager, T., Schwenk, J., and J. Somorovsky, "On the
               Security of TLS 1.3 and QUIC Against Weaknesses in PKCS#1
               v1.5 Encryption", ACM, Proceedings of the 22nd ACM SIGSAC
-              Conference on Computer and Communications Security,
-              DOI 10.1145/2810103.2813657, October 2015,
+              Conference on Computer and Communications Security pp.
+              1185-1196, DOI 10.1145/2810103.2813657, October 2015,
               <https://doi.org/10.1145/2810103.2813657>.
 
    [KEYAGREEMENT]
@@ -5083,7 +5084,7 @@ Auth | {CertificateVerify*}
 
    [LXZFH16]  Li, X., Xu, J., Zhang, Z., Feng, D., and H. Hu, "Multiple
               Handshakes Security of TLS 1.3 Candidates", IEEE, 2016
-              IEEE Symposium on Security and Privacy (SP),
+              IEEE Symposium on Security and Privacy (SP) pp. 486-505,
               DOI 10.1109/sp.2016.36, May 2016,
               <https://doi.org/10.1109/sp.2016.36>.
 
@@ -5103,8 +5104,8 @@ Auth | {CertificateVerify*}
 
    [REKEY]    Abdalla, M. and M. Bellare, "Increasing the Lifetime of a
               Key: A Comparative Analysis of the Security of Re-keying
-              Techniques", Springer Berlin Heidelberg, Advances in
-              Cryptology — ASIACRYPT 2000 pp. 546-559,
+              Techniques", Springer Berlin Heidelberg, Lecture Notes in
+              Computer Science pp. 546-559,
               DOI 10.1007/3-540-44448-3_42, ISBN ["9783540414049",
               "9783540444480"], 2000,
               <https://doi.org/10.1007/3-540-44448-3_42>.
@@ -5319,8 +5320,8 @@ Auth | {CertificateVerify*}
 
    [SIGMA]    Krawczyk, H., "SIGMA: The ‘SIGn-and-MAc’ Approach to
               Authenticated Diffie-Hellman and Its Use in the IKE
-              Protocols", Springer Berlin Heidelberg, Advances in
-              Cryptology - CRYPTO 2003 pp. 400-425,
+              Protocols", Springer Berlin Heidelberg, Lecture Notes in
+              Computer Science pp. 400-425,
               DOI 10.1007/978-3-540-45146-4_24, ISBN ["9783540406747",
               "9783540451464"], 2003,
               <https://doi.org/10.1007/978-3-540-45146-4_24>.
@@ -7295,5 +7296,5 @@ Contributors
 Author's Address
 
    Eric Rescorla
-   Windy Hill Systems, LLC
+   Independent
    Email: ekr@rtfm.com
