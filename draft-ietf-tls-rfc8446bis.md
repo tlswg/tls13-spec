@@ -64,7 +64,7 @@ normative:
           - ins: M. Dworkin
         seriesinfo:
           NIST: Special Publication 800-38D
-       target: https://doi.org/10.6028/NIST.SP.800-38D
+        target: https://doi.org/10.6028/NIST.SP.800-38D
 
 informative:
   RFC4086:
