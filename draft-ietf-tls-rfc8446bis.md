@@ -63,6 +63,13 @@ normative:
           - ins: M. Dworkin
         seriesinfo:
           NIST: Special Publication 800-38D
+  KEYAGREEMENT:
+        title: "Recommendation for Pair-Wise Key-Establishment Schemes Using Discrete Logarithm Cryptography"
+        date: 2018-04
+        author:
+          - ins: NIST
+        seriesinfo:
+          NIST: Special Publication 800-56Ar3
 
 informative:
   RFC4086:
@@ -2432,7 +2439,7 @@ For the curves secp256r1, secp384r1, and secp521r1,
 peers MUST validate each other's public value Q by ensuring
 that the point is a valid point on the elliptic curve.
 The appropriate validation procedures are defined in Appendix D.1 of {{ECDP}}
-and alternatively in Section 5.6.2.3 of {{?KEYAGREEMENT=DOI.10.6028/NIST.SP.800-56Ar2}}.
+and alternatively in Section 5.6.2.3 of {{KEYAGREEMENT}}.
 This process consists of three
 steps: (1) verify that Q is not the point at infinity (O), (2) verify
 that for Q = (x, y) both integers x and y are in the correct interval, and (3)
@@ -4504,20 +4511,16 @@ leading zeros.
 
 ### Elliptic Curve Diffie-Hellman
 
-For secp256r1, secp384r1 and secp521r1, ECDH calculations (including parameter
-and key generation as well as the shared secret calculation) are
-performed according to {{!IEEE1363=DOI.10.1109/IEEESTD.2000.92292}} using the ECKAS-DH1 scheme with the identity
-map as the key derivation function (KDF), so that the shared secret is the
-x-coordinate of the ECDH shared secret elliptic curve point represented
-as an octet string.  Note that this octet string ("Z" in IEEE 1363 terminology)
-as output by FE2OSP (the Field Element to Octet String Conversion
-Primitive) has constant length for any given field; leading zeros
-found in this octet string MUST NOT be truncated.
-
-(Note that this use of the identity KDF is a technicality.  The
-complete picture is that ECDH is employed with a non-trivial KDF
-because TLS does not directly use this secret for anything
-other than for computing other secrets.)
+   For secp256r1, secp384r1 and secp521r1, ECDH calculations (including key
+   generation and shared secret calculation) are performed according to
+   Sections 5.6.1.2 and 5.7.1.2 of {{KEYAGREEMENT}} using the Elliptic Curve
+   Cryptography Cofactor Diffie-Hellman Primitive. The shared secret Z is
+   the x-coordinate of the ECDH shared secret elliptic curve point represented
+   as an octet string. Note that the octet string Z as output by the
+   Field-Element-to-Byte String Conversion specified in Appendix C.2 of
+   {{KEYAGREEMENT}} has constant length for any given field; leading zeros
+   found in this octet string MUST NOT be truncated. See {{ecdhe-param}} for
+   requirements on public-key validation.
 
 For X25519 and X448, the ECDH calculations are as follows:
 
