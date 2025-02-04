@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-02-02T00:50:18.691583+00:00",
+  "timestamp": "2025-02-04T00:46:53.297824+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -68351,6 +68351,66 @@
       "mergeCommit": {
         "oid": "42bf01c04cab12c579a75d467f36f82aec5ff12a"
       },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 1369,
+      "id": "PR_kwDOASA0os6JwmwS",
+      "title": "Editorial updates to references",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1369",
+      "state": "OPEN",
+      "author": "emanjon",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Editorial updates to references",
+      "createdAt": "2025-02-02T12:20:09Z",
+      "updatedAt": "2025-02-02T12:24:40Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "main",
+      "baseRefOid": "42bf01c04cab12c579a75d467f36f82aec5ff12a",
+      "headRepository": "emanjon/tls13-spec",
+      "headRefName": "patch-26",
+      "headRefOid": "115a4492664c01b5cf32a2b83a364542a2ae6957",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "emanjon",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "- Added links to the normative references [GCM] and [X690].\r\n- Moved [DH76] to informal references and added a open-access link to Stanford University\r\n\r\nI got a compile error, but main itself has has not compiled since August 2024\r\nhttps://github.com/tlswg/tls13-spec/commits/main/draft-ietf-tls-rfc8446bis.md",
+          "createdAt": "2025-02-02T12:24:39Z",
+          "updatedAt": "2025-02-02T12:24:39Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 1370,
+      "id": "PR_kwDOASA0os6J5-DN",
+      "title": "Remove normative references to paywalled crypto",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1370",
+      "state": "OPEN",
+      "author": "emanjon",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Remove normative references to paywalled crypto with the open access SP 800-56A [KEYAGREEMENT], which is already referenced for ECC public key validation.\r\n\r\nPaywalled crypto specifications is a cybersecurity risk and goes against everything the IETF stands for. People should not have to pay to implement or analyze TLS 1.3.\r\n\r\nRemoved text on parameter generation as all the curves are named curves. This is likely a left over from an earlier version of TLS.\r\n\r\nAn alternative/additional open-access reference for ECC key generation and shared secret calculation would be SECG SEC 1.\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n",
+      "createdAt": "2025-02-03T21:27:49Z",
+      "updatedAt": "2025-02-03T21:27:49Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "main",
+      "baseRefOid": "42bf01c04cab12c579a75d467f36f82aec5ff12a",
+      "headRepository": "emanjon/tls13-spec",
+      "headRefName": "patch-27",
+      "headRefOid": "7c2f08dbf1a69ad13b03c282513f403ae7992d4d",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
       "comments": [],
       "reviews": []
     }
