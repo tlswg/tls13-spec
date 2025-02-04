@@ -63,13 +63,6 @@ normative:
           - ins: M. Dworkin
         seriesinfo:
           NIST: Special Publication 800-38D
-  KEYAGREEMENT:
-        title: "Recommendation for Pair-Wise Key-Establishment Schemes Using Discrete Logarithm Cryptography"
-        date: 2018-04
-        author:
-          - ins: NIST
-        seriesinfo:
-          NIST: Special Publication 800-56Ar3
 
 informative:
   RFC4086:
@@ -2439,7 +2432,7 @@ For the curves secp256r1, secp384r1, and secp521r1,
 peers MUST validate each other's public value Q by ensuring
 that the point is a valid point on the elliptic curve.
 The appropriate validation procedures are defined in Appendix D.1 of {{ECDP}}
-and alternatively in Section 5.6.2.3 of {{KEYAGREEMENT}}.
+and alternatively in Section 5.6.2.3 of {{!KEYAGREEMENT=DOI.10.6028/NIST.SP.800-56Ar3}}.
 This process consists of three
 steps: (1) verify that Q is not the point at infinity (O), (2) verify
 that for Q = (x, y) both integers x and y are in the correct interval, and (3)
