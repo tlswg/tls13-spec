@@ -6137,9 +6137,14 @@ analysis has been done.  Implementations can ensure safety from
 cross-protocol related output by not reusing PSKs between TLS 1.3 and
 TLS 1.2.
 
-## Misbinding when using RPKs
+## Misbinding when using Self-Signed Certificates or Raw Public Keys
 
-When TLS 1.3 is used with raw public keys {{RFC7250}} for peer authentication, it may be vulnerable to misbinding attacks {{MM24}}. To mitigate this risk, if only the TLS server is authenticated using the RawPublicKey certificate type, the server SHOULD enforce strict validation of the "server_name" extension received in the ClientHello to confirm that the client intended to establish a connection with the server. Alternatively, or when both the client and server authenticate using the RawPublicKey certificate type, the endpoints SHOULD perform identity verification using either the "external_id_hash" TLS extension {{RFC8844}}, or at the application layer after the TLS connection is established.
+When TLS 1.3 is used with self-signed certificates or raw public keys
+{{RFC7250}} or for peer authentication, it may be vulnerable to
+misbinding attacks {{?MM24}}. This risk can be mitigated by using
+the "external_id_hash" extension {{?RFC8444}} or, if only
+the server is being authenticated, by the server verifying
+that the "server_name" extension matches its expected identity.
 
 
 ## Attacks on Static RSA
