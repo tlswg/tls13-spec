@@ -4310,7 +4310,6 @@ defined below:
                            Transcript-Hash(Messages), Hash.length)
 ~~~~
 
-
 The Hash function used by Transcript-Hash and HKDF is the cipher suite hash
 algorithm.
 Hash.length is its output length in bytes. Messages is the concatenation of the
