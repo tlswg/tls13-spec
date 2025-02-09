@@ -6139,7 +6139,8 @@ TLS 1.2.
 
 ## Misbinding when using Self-Signed Certificates or Raw Public Keys
 
-When TLS 1.3 is used with self-signed certificates or raw public keys
+When TLS 1.3 is used with self-signed certificates without useful
+identities (as in DTLS-SRTP {{?RFC5763}}) or raw public keys
 {{RFC7250}} or for peer authentication, it may be vulnerable to
 misbinding attacks {{MM24}}. This risk can be mitigated by using
 the "external_id_hash" extension {{?RFC8444}} or, if only
