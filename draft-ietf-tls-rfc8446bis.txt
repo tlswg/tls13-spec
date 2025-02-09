@@ -4,10 +4,10 @@
 
 Transport Layer Security                                     E. Rescorla
 Internet-Draft                                               Independent
-Obsoletes: 8446 (if approved)                            20 January 2025
+Obsoletes: 8446 (if approved)                            9 February 2025
 Updates: 5705, 6066, 7627, 8422 (if approved)                           
 Intended status: Standards Track                                        
-Expires: 24 July 2025
+Expires: 13 August 2025
 
 
         The Transport Layer Security (TLS) Protocol Version 1.3
@@ -39,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 24 July 2025.
+   This Internet-Draft will expire on 13 August 2025.
 
 Copyright Notice
 
@@ -4205,20 +4205,16 @@ Auth | {CertificateVerify*}
 7.4.2.  Elliptic Curve Diffie-Hellman
 
    For secp256r1, secp384r1 and secp521r1, ECDH calculations (including
-   parameter and key generation as well as the shared secret
-   calculation) are performed according to [IEEE1363] using the ECKAS-
-   DH1 scheme with the identity map as the key derivation function
-   (KDF), so that the shared secret is the x-coordinate of the ECDH
-   shared secret elliptic curve point represented as an octet string.
-   Note that this octet string ("Z" in IEEE 1363 terminology) as output
-   by FE2OSP (the Field Element to Octet String Conversion Primitive)
-   has constant length for any given field; leading zeros found in this
-   octet string MUST NOT be truncated.
-
-   (Note that this use of the identity KDF is a technicality.  The
-   complete picture is that ECDH is employed with a non-trivial KDF
-   because TLS does not directly use this secret for anything other than
-   for computing other secrets.)
+   key generation and shared secret calculation) are performed according
+   to Sections 5.6.1.2 and 5.7.1.2 of [KEYAGREEMENT] using the Elliptic
+   Curve Cryptography Cofactor Diffie-Hellman Primitive.  The shared
+   secret Z is the x-coordinate of the ECDH shared secret elliptic curve
+   point represented as an octet string.  Note that the octet string Z
+   as output by the Field-Element-to-Byte String Conversion specified in
+   Appendix C.2 of [KEYAGREEMENT] has constant length for any given
+   field; leading zeros found in this octet string MUST NOT be
+   truncated.  See Section 4.2.8.2 for requirements on public-key
+   validation.
 
    For X25519 and X448, the ECDH calculations are as follows:
 
@@ -4758,10 +4754,13 @@ Auth | {CertificateVerify*}
               Operation: Galois/Counter Mode (GCM) and GMAC",
               NIST Special Publication 800-38D, November 2007.
 
-   [IEEE1363] "IEEE Standard Specifications for Public-Key
-              Cryptography", IEEE, DOI 10.1109/ieeestd.2000.92292,
-              ISBN ["9780738119571"], September 2008,
-              <https://doi.org/10.1109/ieeestd.2000.92292>.
+   [KEYAGREEMENT]
+              Barker, E., Chen, L., Roginsky, A., Vassilev, A., and R.
+              Davis, "Recommendation for pair-wise key-establishment
+              schemes using discrete logarithm cryptography", National
+              Institute of Standards and Technology,
+              DOI 10.6028/nist.sp.800-56ar3, April 2018,
+              <https://doi.org/10.6028/nist.sp.800-56ar3>.
 
    [RFC2104]  Krawczyk, H., Bellare, M., and R. Canetti, "HMAC: Keyed-
               Hashing for Message Authentication", RFC 2104,
@@ -5018,7 +5017,7 @@ Auth | {CertificateVerify*}
               DOI 10.6028/nist.sp.800-186, February 2023,
               <https://doi.org/10.6028/nist.sp.800-186>.
 
-   [FETCH]    WHATWG, "Fetch Standard", January 2025,
+   [FETCH]    WHATWG, "Fetch Standard", February 2025,
               <https://fetch.spec.whatwg.org/>.
 
    [FG17]     Fischlin, M. and F. Guenther, "Replay Attacks on Zero
@@ -5060,14 +5059,6 @@ Auth | {CertificateVerify*}
               Conference on Computer and Communications Security pp.
               1185-1196, DOI 10.1145/2810103.2813657, October 2015,
               <https://doi.org/10.1145/2810103.2813657>.
-
-   [KEYAGREEMENT]
-              Barker, E., Chen, L., Roginsky, A., and M. Smid,
-              "Recommendation for Pair-Wise Key Establishment Schemes
-              Using Discrete Logarithm Cryptography", National Institute
-              of Standards and Technology,
-              DOI 10.6028/nist.sp.800-56ar2, May 2013,
-              <https://doi.org/10.6028/nist.sp.800-56ar2>.
 
    [Kraw10]   Krawczyk, H., "Cryptographic Extraction and Key
               Derivation: The HKDF Scheme", Proceedings of CRYPTO 2010 ,
