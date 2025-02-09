@@ -4310,6 +4310,7 @@ defined below:
                            Transcript-Hash(Messages), Hash.length)
 ~~~~
 
+
 The Hash function used by Transcript-Hash and HKDF is the cipher suite hash
 algorithm.
 Hash.length is its output length in bytes. Messages is the concatenation of the
@@ -4318,6 +4319,12 @@ and length fields, but not including record layer headers. Note that
 in some cases a zero-length Context (indicated by "") is passed to
 HKDF-Expand-Label.  The labels specified in this document are all
 ASCII strings and do not include a trailing NUL byte.
+
+Any extensions to TLS which use "HKDF-Expand-Label" use the
+HkdfLabel definition associated with the version of TLS with which
+they are being used. When used with this specification, that means
+using HkdfLabel as defined above; when used with DTLS {{?RFC9147}} that
+means using the version defined in {{RFC9147, Section 5.9}}.
 
 Note: With common hash functions, any label longer than 12 characters
 requires an additional iteration of the hash function to compute.
