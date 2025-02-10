@@ -5213,7 +5213,10 @@ provides several recommendations to assist implementors.
 
 TLS requires a cryptographically secure pseudorandom number generator (CSPRNG).
 In most cases, the operating system provides an appropriate facility such
-as /dev/urandom, which should be used absent other (e.g., performance) concerns.
+as /dev/urandom, which should be used absent other (e.g., performance) concerns. On 
+newer Operating Systems, the getrandom interface SHOULD be used as
+it can be used in sandboxing environments.
+
 It is RECOMMENDED to use an existing CSPRNG implementation in
 preference to crafting a new one. Many adequate cryptographic libraries
 are already available under favorable license terms.  Should those prove
@@ -5223,7 +5226,7 @@ TLS uses random values (1) in public protocol fields such as the
 public Random values in the ClientHello and ServerHello and (2) to
 generate keying material. With a properly functioning CSPRNG, this
 does not present a security problem, as it is not feasible to determine
-the CSPRNG state from its output. However, with a broken CSPRNG, it
+the CSPRNG state from its output. However, with a broken or compromised CSPRNG, it
 may be possible for an attacker to use the public output to determine
 the CSPRNG internal state and thereby predict the keying material, as
 documented in {{?CHECKOWAY=DOI.10.1145/2976749.2978395}} and
