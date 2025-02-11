@@ -5233,7 +5233,7 @@ Implementations can provide extra security against
 this form of attack by using separate CSPRNGs to generate public and
 private values.
 
-{{RFC8937}} describes a way way for security protocol implementations
+{{RFC8937}} describes a way for security protocol implementations
 to augment their (pseudo)random number generators using a long-term private key
 and a deterministic signature function. This improves randomness from broken or
 otherwise subverted random number generators.
