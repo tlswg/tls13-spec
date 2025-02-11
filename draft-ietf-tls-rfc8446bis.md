@@ -4505,7 +4505,7 @@ Application Data keys or upon a key update).
 ###  Finite Field Diffie-Hellman
 
 For finite field groups, a conventional Diffie-Hellman
-{{DH76}} computation is performed.
+{{KEYAGREEMENT}} computation is performed.
 The negotiated key (Z) is converted to a byte string by encoding in big-endian form and
 left-padded with zeros up to the size of the prime. This byte string is used as the
 shared secret in the key schedule as specified above.
