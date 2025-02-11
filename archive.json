@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-02-09T00:51:15.656308+00:00",
+  "timestamp": "2025-02-11T00:47:32.725708+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -13814,7 +13814,7 @@
       "labels": [],
       "body": "This is editorial, and the doc is somewhere between done and published, but it's haunting my notes...\r\n\r\nIn 7.1, \"any label longer than 12 characters\" should be \"any label longer than 21 characters\".\r\n\r\nThis off-by-nine appears to be due to something getting lost in the wash during #964 between @ilaril's budget calculation, @ekr's post of the new set of \"tls13 ...\" labels, and subsequent removal of \"tls13 \" from those label names to replace the \"TLS1.3, \" in HkdfLabel.",
       "createdAt": "2024-10-13T19:56:55Z",
-      "updatedAt": "2024-10-14T11:11:49Z",
+      "updatedAt": "2025-02-09T19:37:22Z",
       "closedAt": null,
       "comments": [
         {
@@ -13837,6 +13837,13 @@
           "body": "Agreed, I neglected the SHA-256 pad and length trailer when checking the original budget calc in #964, and was thrown by the coincidental arithmetic in \"TLS1.3, \" (9) + \"tls ...\" (18) -> \"tls13 \" (6) + published limit (12).\r\n\r\n",
           "createdAt": "2024-10-14T11:11:48Z",
           "updatedAt": "2024-10-14T11:11:48Z"
+        },
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@pkelsey so are you good to close this?",
+          "createdAt": "2025-02-09T19:37:21Z",
+          "updatedAt": "2025-02-09T19:37:21Z"
         }
       ]
     },
@@ -13852,9 +13859,17 @@
       "labels": [],
       "body": "<details>\r\n<summary>Some of the figures are a touch too wide.</summary>\r\n\r\n```\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(418): Warning: Too long line found (L459), 1 characters longer than 72 characters:\r\n                                                       ServerHello  ^ Key\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(418): Warning: Too long line found (L460), 2 characters longer than 72 characters:\r\n                                                      + key_share*  | Exch\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(418): Warning: Too long line found (L462), 5 characters longer than 72 characters:\r\n                                             {EncryptedExtensions}  ^  Server\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(418): Warning: Too long line found (L463), 5 characters longer than 72 characters:\r\n                                             {CertificateRequest*}  v  Params\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(418): Warning: Too long line found (L465), 2 characters longer than 72 characters:\r\n                                              {CertificateVerify*}  | Auth\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2674), 1 characters longer than 72 characters:\r\n   +=========+====================+=====================================+\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2675), 1 characters longer than 72 characters:\r\n   |Mode     |Handshake Context   |Base Key                             |\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2676), 1 characters longer than 72 characters:\r\n   +=========+====================+=====================================+\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2677), 1 characters longer than 72 characters:\r\n   |Server   |ClientHello ...     |server_handshake_traffic_secret      |\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2678), 1 characters longer than 72 characters:\r\n   |         |later of            |                                     |\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2679), 1 characters longer than 72 characters:\r\n   |         |EncryptedExtensions/|                                     |\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2680), 1 characters longer than 72 characters:\r\n   |         |CertificateRequest  |                                     |\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2681), 1 characters longer than 72 characters:\r\n   +---------+--------------------+-------------------------------------+\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2682), 1 characters longer than 72 characters:\r\n   |Client   |ClientHello ...     |client_handshake_traffic_secret      |\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2683), 1 characters longer than 72 characters:\r\n   |         |later of server     |                                     |\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2684), 1 characters longer than 72 characters:\r\n   |         |Finished/           |                                     |\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2685), 1 characters longer than 72 characters:\r\n   |         |EndOfEarlyData      |                                     |\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2686), 1 characters longer than 72 characters:\r\n   +---------+--------------------+-------------------------------------+\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2687), 1 characters longer than 72 characters:\r\n   |Post-    |ClientHello ...     |[sender]_application_traffic_secret_N|\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2688), 1 characters longer than 72 characters:\r\n   |Handshake|client Finished +   |                                     |\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2689), 1 characters longer than 72 characters:\r\n   |         |CertificateRequest  |                                     |\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2690), 1 characters longer than 72 characters:\r\n   +---------+--------------------+-------------------------------------+\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(3885): Warning: Too long line found (L3591), 2 characters longer than 72 characters:\r\n       AEAD-Decrypt(peer_write_key, nonce, additional_data, AEADEncrypted)\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(4624): Warning: Too long line found (L4166), 1 characters longer than 72 characters:\r\n    [sender]_write_key = HKDF-Expand-Label(Secret, \"key\", \"\", key_length)\r\n```\r\n\r\n</details>\r\n",
       "createdAt": "2024-11-24T22:19:59Z",
-      "updatedAt": "2024-11-24T22:19:59Z",
+      "updatedAt": "2025-02-09T19:37:02Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "We can fix this in auth 48",
+          "createdAt": "2025-02-09T19:37:01Z",
+          "updatedAt": "2025-02-09T19:37:01Z"
+        }
+      ]
     }
   ],
   "pulls": [
@@ -68250,7 +68265,7 @@
       "labels": [],
       "body": "",
       "createdAt": "2024-11-18T06:19:09Z",
-      "updatedAt": "2024-12-12T20:06:49Z",
+      "updatedAt": "2025-02-09T20:05:10Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "ebe7722b2b34ad4d824bea8921b044c3d9c33bed",
@@ -68275,6 +68290,13 @@
           "body": "Client has no way to know if SNI is validated by the server, so the SNI check is not reliable.  Only external_id_hash would be a reliable check.\r\n\r\nAlso, the suggestion to use application verification needs to be stronger; HTTP has its \"Host:\" header (which should probably be called out in the text), however the Host header also suffers the same weakness as TLS SNI:  the client has no way to determine if the server is validating the Host header.",
           "createdAt": "2024-12-12T19:59:36Z",
           "updatedAt": "2024-12-12T20:06:49Z"
+        },
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@ms-s @martinthomson @danwing see PR #1371 for proposed revised text.",
+          "createdAt": "2025-02-09T20:05:10Z",
+          "updatedAt": "2025-02-09T20:05:10Z"
         }
       ],
       "reviews": [
@@ -68366,7 +68388,7 @@
       "labels": [],
       "body": "Editorial updates to references",
       "createdAt": "2025-02-02T12:20:09Z",
-      "updatedAt": "2025-02-02T12:24:40Z",
+      "updatedAt": "2025-02-09T19:51:09Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "42bf01c04cab12c579a75d467f36f82aec5ff12a",
@@ -68384,6 +68406,13 @@
           "body": "- Added links to the normative references [GCM] and [X690].\r\n- Moved [DH76] to informal references and added a open-access link to Stanford University\r\n\r\nI got a compile error, but main itself has has not compiled since August 2024\r\nhttps://github.com/tlswg/tls13-spec/commits/main/draft-ietf-tls-rfc8446bis.md",
           "createdAt": "2025-02-02T12:24:39Z",
           "updatedAt": "2025-02-02T12:24:39Z"
+        },
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I agree that the reference to [DH76] is better as informational but I think we do need a normative reference for the shared key computation in that section.. Do you have a proposal?\r\n\r\nFWIW, `main` does compile for me, and it seems to be compiling properly in CI.",
+          "createdAt": "2025-02-09T19:51:08Z",
+          "updatedAt": "2025-02-09T19:51:08Z"
         }
       ],
       "reviews": []
@@ -68393,24 +68422,26 @@
       "id": "PR_kwDOASA0os6J5-DN",
       "title": "Remove normative references to paywalled crypto",
       "url": "https://github.com/tlswg/tls13-spec/pull/1370",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "emanjon",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "Remove normative references to paywalled crypto with the open access SP 800-56A [KEYAGREEMENT], which is already referenced for ECC public key validation.\r\n\r\nPaywalled crypto specifications is a cybersecurity risk and goes against everything the IETF stands for. People should not have to pay to implement or analyze TLS 1.3.\r\n\r\nRemoved text on parameter generation as all the curves are named curves. This is likely a left over from an earlier version of TLS.\r\n\r\nAn alternative/additional open-access reference for ECC key generation and shared secret calculation would be SECG SEC 1.\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n",
       "createdAt": "2025-02-03T21:27:49Z",
-      "updatedAt": "2025-02-04T06:26:40Z",
+      "updatedAt": "2025-02-09T19:39:01Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "42bf01c04cab12c579a75d467f36f82aec5ff12a",
       "headRepository": "emanjon/tls13-spec",
       "headRefName": "patch-27",
       "headRefOid": "ad237865ecdba1274a1893fd32da8bcb70789a29",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2025-02-09T19:39:01Z",
+      "mergedAt": "2025-02-09T19:39:01Z",
+      "mergedBy": "ekr",
+      "mergeCommit": {
+        "oid": "deddc13a533082be308416555971270224408ed7"
+      },
       "comments": [],
       "reviews": [
         {
@@ -68450,6 +68481,252 @@
               "body": "Yes, after all, why not?",
               "createdAt": "2025-02-04T06:26:39Z",
               "updatedAt": "2025-02-04T06:26:40Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6bPKVK",
+          "commit": {
+            "abbreviatedOid": "ad23786"
+          },
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "LGTM",
+          "createdAt": "2025-02-09T19:38:56Z",
+          "updatedAt": "2025-02-09T19:38:56Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 1371,
+      "id": "PR_kwDOASA0os6KkJBP",
+      "title": "Rpk misbinding",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1371",
+      "state": "OPEN",
+      "author": "ekr",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "This is a revised version of the text from @ms-s in #1366 that I think makes the point more sharply.\r\n",
+      "createdAt": "2025-02-09T20:04:22Z",
+      "updatedAt": "2025-02-09T20:08:55Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "main",
+      "baseRefOid": "deddc13a533082be308416555971270224408ed7",
+      "headRepository": "ekr/tls13-spec",
+      "headRefName": "rpk-misbinding",
+      "headRefOid": "f62a80280218f0a80bed022d3ed1e2b68e774de9",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 1372,
+      "id": "PR_kwDOASA0os6KkKFY",
+      "title": "Clarify the use of HKDF-Expand-Label.",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1372",
+      "state": "OPEN",
+      "author": "ekr",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "See: \r\nhttps://github.com/tlswg/draft-ietf-tls-esni/pull/641/files",
+      "createdAt": "2025-02-09T20:16:12Z",
+      "updatedAt": "2025-02-09T21:20:06Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "main",
+      "baseRefOid": "deddc13a533082be308416555971270224408ed7",
+      "headRepository": "tlswg/tls13-spec",
+      "headRefName": "hkdf_label",
+      "headRefOid": "2441a3455332c61279f3eaef70b70064666a6a5d",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOASA0os6bPOpF",
+          "commit": {
+            "abbreviatedOid": "2441a34"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-02-09T21:20:06Z",
+          "updatedAt": "2025-02-09T21:20:06Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 1373,
+      "id": "PR_kwDOASA0os6KmOdL",
+      "title": "Suggest getrandom interface which is available on newer OSes.",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1373",
+      "state": "OPEN",
+      "author": "loganaden",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-02-10T07:14:10Z",
+      "updatedAt": "2025-02-10T20:38:16Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "main",
+      "baseRefOid": "deddc13a533082be308416555971270224408ed7",
+      "headRepository": "loganaden/tls13-spec",
+      "headRefName": "patch-1",
+      "headRefOid": "8e6c1f9d244a5351d7f4a1270a2b14b67d00c859",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOASA0os6bYUKp",
+          "commit": {
+            "abbreviatedOid": "8e6c1f9"
+          },
+          "author": "davidben",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-02-10T18:44:25Z",
+          "updatedAt": "2025-02-10T18:44:26Z",
+          "comments": [
+            {
+              "originalPosition": 7,
+              "body": "Not an objection per se, but I dunno if we want to get into a whole digression in the spec about different APIs to access the PRNG. E.g. getrandom is Linux-specific, then there's getentropy, and then there's the mess about which versions of Linux have which early boot behavior.\r\n\r\nMakes me wonder if we should say anything at all here.",
+              "createdAt": "2025-02-10T18:44:26Z",
+              "updatedAt": "2025-02-10T18:44:26Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6bYmIz",
+          "commit": {
+            "abbreviatedOid": "8e6c1f9"
+          },
+          "author": "tomato42",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-02-10T19:14:42Z",
+          "updatedAt": "2025-02-10T19:14:42Z",
+          "comments": [
+            {
+              "originalPosition": 7,
+              "body": "yes, while the intention is good, I think it's too Linux specific",
+              "createdAt": "2025-02-10T19:14:42Z",
+              "updatedAt": "2025-02-10T19:14:42Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6bYyUF",
+          "commit": {
+            "abbreviatedOid": "8e6c1f9"
+          },
+          "author": "kaduk",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-02-10T19:33:17Z",
+          "updatedAt": "2025-02-10T19:33:17Z",
+          "comments": [
+            {
+              "originalPosition": 7,
+              "body": "I do want to keep the guidance on \"use the OS CSPRNG rather than rolling your own\" (ISTR that I added it in the first place but apparently don't have a checkout on this device to look), and giving one example seems probably reasonable but maybe not necessary.  Going into the details of multiple different interfaces feels a bit overspecific for the protocol spec, though maybe in an \"implementation notes\" section it is still ok?",
+              "createdAt": "2025-02-10T19:33:17Z",
+              "updatedAt": "2025-02-10T19:33:18Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6bY7FS",
+          "commit": {
+            "abbreviatedOid": "8e6c1f9"
+          },
+          "author": "davidben",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-02-10T19:50:40Z",
+          "updatedAt": "2025-02-10T19:50:40Z",
+          "comments": [
+            {
+              "originalPosition": 7,
+              "body": "Oh yeah, +1 to keeping the mention of the OS. Sorry, \"say anything at all\" wasn't right. I was thinking just not saying anything about the specific API, but wrote something broader.",
+              "createdAt": "2025-02-10T19:50:40Z",
+              "updatedAt": "2025-02-10T19:50:40Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6bZJjT",
+          "commit": {
+            "abbreviatedOid": "8e6c1f9"
+          },
+          "author": "loganaden",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-02-10T20:19:06Z",
+          "updatedAt": "2025-02-10T20:19:06Z",
+          "comments": [
+            {
+              "originalPosition": 7,
+              "body": "@davidben @kaduk would something like \"On newer operating systems, other interfaces, which do not require opening a file descriptor and can be used in in sandboxing environment, SHOULD be used\" ?\r\n",
+              "createdAt": "2025-02-10T20:19:06Z",
+              "updatedAt": "2025-02-10T20:19:06Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6bZTDf",
+          "commit": {
+            "abbreviatedOid": "8e6c1f9"
+          },
+          "author": "davidben",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-02-10T20:36:53Z",
+          "updatedAt": "2025-02-10T20:36:53Z",
+          "comments": [
+            {
+              "originalPosition": 7,
+              "body": "I don't think the TLS spec should opine about something as implementation-specific as which Linux-specific APIs are or aren't friendly for sandboxing. _Definitely_ not at the level of a SHOULD.\r\n\r\nI mean, depending on the sandboxing strategy and the TLS stack's structure, `/dev/urandom` might even be _better_ than `getrandom` for a sandbox. Imagine a syscall-filtering sandbox that hasn't been updated for `getrandom`, paired with a [capabilities-heavy](https://en.wikipedia.org/wiki/Capability-based_security) TLS stack that actually happily takes an externally-supplied `/dev/urandom` file descriptor.\r\n\r\n(Though, yes, `getrandom` is probably generally more sandboxing-friendly than `/dev/urandom` in most cases. Certainly we prefer it for Chrome's sandbox. I wouldn't expect most TLS libraries to happily take an externally-supplied fd in lieu of `/dev/urandom`. But it's a plausible enough design to disqualify this guidance IMO. And then you've got Windows, where the APIs and sandboxing considerations are completely different.)",
+              "createdAt": "2025-02-10T20:36:53Z",
+              "updatedAt": "2025-02-10T20:38:46Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6bZT2t",
+          "commit": {
+            "abbreviatedOid": "8e6c1f9"
+          },
+          "author": "davidben",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-02-10T20:38:16Z",
+          "updatedAt": "2025-02-10T20:38:16Z",
+          "comments": [
+            {
+              "originalPosition": 7,
+              "body": "Also, practically speaking, the TLS library is probably calling into its cryptography library's general-purpose PRNG interface, so it's not like it's going to do anything special anyway.",
+              "createdAt": "2025-02-10T20:38:16Z",
+              "updatedAt": "2025-02-10T20:38:16Z"
             }
           ]
         }
