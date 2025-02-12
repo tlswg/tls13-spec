@@ -4,10 +4,10 @@
 
 Transport Layer Security                                     E. Rescorla
 Internet-Draft                                               Independent
-Obsoletes: 8446 (if approved)                            9 February 2025
+Obsoletes: 8446 (if approved)                           12 February 2025
 Updates: 5705, 6066, 7627, 8422 (if approved)                           
 Intended status: Standards Track                                        
-Expires: 13 August 2025
+Expires: 16 August 2025
 
 
         The Transport Layer Security (TLS) Protocol Version 1.3
@@ -39,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 13 August 2025.
+   This Internet-Draft will expire on 16 August 2025.
 
 Copyright Notice
 
@@ -5940,8 +5940,8 @@ C.1.  Random Number Generation and Seeding
    attack by using separate CSPRNGs to generate public and private
    values.
 
-   [RFC8937] describes a way way for security protocol implementations
-   to augment their (pseudo)random number generators using a long-term
+   [RFC8937] describes a way for security protocol implementations to
+   augment their (pseudo)random number generators using a long-term
    private key and a deterministic signature function.  This improves
    randomness from broken or otherwise subverted random number
    generators.
