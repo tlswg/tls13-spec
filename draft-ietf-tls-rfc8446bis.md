@@ -5212,8 +5212,8 @@ provides several recommendations to assist implementors.
 ## Random Number Generation and Seeding
 
 TLS requires a cryptographically secure pseudorandom number generator (CSPRNG).
-In most cases, the operating system provides an appropriate facility such
-as /dev/urandom, which should be used absent other (e.g., performance) concerns.
+A performant and appropriately-secure CSPRNG is provided by most operating
+systems or can be sourced from a cryptographic library.
 It is RECOMMENDED to use an existing CSPRNG implementation in
 preference to crafting a new one. Many adequate cryptographic libraries
 are already available under favorable license terms.  Should those prove
