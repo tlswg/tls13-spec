@@ -391,6 +391,18 @@ informative:
        date: May 2008
        target: https://www.debian.org/security/2008/dsa-1571
 
+  MM24:
+       title: "Misbinding Raw Public Keys to Identities in TLS"
+       date: 2024
+       target: https://arxiv.org/pdf/2411.09770
+       author:
+       -
+         ins: M. Moustafa
+       -
+         ins: M. Sethi
+       -
+         ins: T. Aura
+
 
 --- abstract
 
@@ -6120,6 +6132,17 @@ same PSK might produce related output in both versions, only limited
 analysis has been done.  Implementations can ensure safety from
 cross-protocol related output by not reusing PSKs between TLS 1.3 and
 TLS 1.2.
+
+## Misbinding when using Self-Signed Certificates or Raw Public Keys
+
+When TLS 1.3 is used with self-signed certificates without useful
+identities (as in DTLS-SRTP {{?RFC5763}}) or raw public keys
+{{RFC7250}} or for peer authentication, it may be vulnerable to
+misbinding attacks {{MM24}}. This risk can be mitigated by using
+the "external_id_hash" extension {{?RFC8444}} or, if only
+the server is being authenticated, by the server verifying
+that the "server_name" extension matches its expected identity.
+
 
 ## Attacks on Static RSA
 
