@@ -55,7 +55,8 @@ normative:
        author:
          org: ITU-T
        seriesinfo:
-         ISO/IEC 8824-1:2021
+         ITU-T X.690
+       target: https://www.itu.int/rec/T-REC-X.690-202102-I/en
   GCM:
         title: "Recommendation for Block Cipher Modes of Operation: Galois/Counter Mode (GCM) and GMAC"
         date: 2007-11
@@ -63,6 +64,7 @@ normative:
           - ins: M. Dworkin
         seriesinfo:
           NIST: Special Publication 800-38D
+        target: https://doi.org/10.6028/NIST.SP.800-38D
 
 informative:
   RFC4086:
@@ -93,6 +95,7 @@ informative:
   RFC9001:
   RFC9149:
 
+  DH76: DOI.10.1109/TIT.1976.1055638
   SSL2:
        title: "The SSL Protocol"
        author:
@@ -4506,7 +4509,7 @@ Application Data keys or upon a key update).
 ###  Finite Field Diffie-Hellman
 
 For finite field groups, a conventional Diffie-Hellman
-{{!DH76=DOI.10.1109/TIT.1976.1055638}} computation is performed.
+{{KEYAGREEMENT}} computation is performed.
 The negotiated key (Z) is converted to a byte string by encoding in big-endian form and
 left-padded with zeros up to the size of the prime. This byte string is used as the
 shared secret in the key schedule as specified above.
