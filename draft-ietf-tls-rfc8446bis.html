@@ -6609,7 +6609,7 @@ Application Data keys or upon a key update).<a href="#section-7.3-7" class="pilc
 <a href="#section-7.4.1" class="section-number selfRef">7.4.1. </a><a href="#name-finite-field-diffie-hellman" class="section-name selfRef">Finite Field Diffie-Hellman</a>
           </h4>
 <p id="section-7.4.1-1">For finite field groups, a conventional Diffie-Hellman
-<span>[<a href="#DH76" class="cite xref">DH76</a>]</span> computation is performed.
+<span>[<a href="#KEYAGREEMENT" class="cite xref">KEYAGREEMENT</a>]</span> computation is performed.
 The negotiated key (Z) is converted to a byte string by encoding in big-endian form and
 left-padded with zeros up to the size of the prime. This byte string is used as the
 shared secret in the key schedule as specified above.<a href="#section-7.4.1-1" class="pilcrow">¶</a></p>
@@ -7230,13 +7230,9 @@ alert in the TLS Alerts Registry with the value given in <a href="#alert-protoco
 <a href="#section-12.1" class="section-number selfRef">12.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
         </h3>
 <dl class="references">
-<dt id="DH76">[DH76]</dt>
-        <dd>
-<span class="refAuthor">Diffie, W.</span> and <span class="refAuthor">M. Hellman</span>, <span class="refTitle">"New directions in cryptography"</span>, <span class="refContent">Institute of Electrical and Electronics Engineers (IEEE)</span>, <span class="seriesInfo">IEEE Transactions on Information Theory vol. 22, no. 6, pp. 644-654</span>, <span class="seriesInfo">DOI 10.1109/tit.1976.1055638</span>, <time datetime="1976-11" class="refDate">November 1976</time>, <span>&lt;<a href="https://doi.org/10.1109/tit.1976.1055638">https://doi.org/10.1109/tit.1976.1055638</a>&gt;</span>. </dd>
-<dd class="break"></dd>
 <dt id="GCM">[GCM]</dt>
         <dd>
-<span class="refAuthor">Dworkin, M.</span>, <span class="refTitle">"Recommendation for Block Cipher Modes of Operation: Galois/Counter Mode (GCM) and GMAC"</span>, <span class="seriesInfo">NIST Special Publication 800-38D</span>, <time datetime="2007-11" class="refDate">November 2007</time>. </dd>
+<span class="refAuthor">Dworkin, M.</span>, <span class="refTitle">"Recommendation for Block Cipher Modes of Operation: Galois/Counter Mode (GCM) and GMAC"</span>, <span class="seriesInfo">NIST Special Publication 800-38D</span>, <time datetime="2007-11" class="refDate">November 2007</time>, <span>&lt;<a href="https://doi.org/10.6028/NIST.SP.800-38D">https://doi.org/10.6028/NIST.SP.800-38D</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="KEYAGREEMENT">[KEYAGREEMENT]</dt>
         <dd>
@@ -7344,7 +7340,7 @@ alert in the TLS Alerts Registry with the value given in <a href="#alert-protoco
 <dd class="break"></dd>
 <dt id="X690">[X690]</dt>
       <dd>
-<span class="refAuthor">ITU-T</span>, <span class="refTitle">"Information technology - ASN.1 encoding Rules: Specification of Basic Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished Encoding Rules (DER)"</span>, <span class="seriesInfo">ISO/IEC 8824-1:2021 </span>, <time datetime="2021-02" class="refDate">February 2021</time>. </dd>
+<span class="refAuthor">ITU-T</span>, <span class="refTitle">"Information technology - ASN.1 encoding Rules: Specification of Basic Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished Encoding Rules (DER)"</span>, <span class="seriesInfo">ITU-T X.690 </span>, <time datetime="2021-02" class="refDate">February 2021</time>, <span>&lt;<a href="https://www.itu.int/rec/T-REC-X.690-202102-I/en">https://www.itu.int/rec/T-REC-X.690-202102-I/en</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>
@@ -7422,6 +7418,10 @@ alert in the TLS Alerts Registry with the value given in <a href="#alert-protoco
 <dt id="DFGS16">[DFGS16]</dt>
         <dd>
 <span class="refAuthor">Dowling, B.</span>, <span class="refAuthor">Fischlin, M.</span>, <span class="refAuthor">Guenther, F.</span>, and <span class="refAuthor">D. Stebila</span>, <span class="refTitle">"A Cryptographic Analysis of the TLS 1.3 draft-10 Full and Pre-shared Key Handshake Protocol"</span>, <span class="seriesInfo">TRON 2016 </span>, <time datetime="2016-02" class="refDate">February 2016</time>, <span>&lt;<a href="https://eprint.iacr.org/2016/081">https://eprint.iacr.org/2016/081</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="DH76">[DH76]</dt>
+        <dd>
+<span class="refAuthor">Diffie, W.</span> and <span class="refAuthor">M. Hellman</span>, <span class="refTitle">"New directions in cryptography"</span>, <span class="refContent">Institute of Electrical and Electronics Engineers (IEEE)</span>, <span class="seriesInfo">IEEE Transactions on Information Theory vol. 22, no. 6, pp. 644-654</span>, <span class="seriesInfo">DOI 10.1109/tit.1976.1055638</span>, <time datetime="1976-11" class="refDate">November 1976</time>, <span>&lt;<a href="https://doi.org/10.1109/tit.1976.1055638">https://doi.org/10.1109/tit.1976.1055638</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="DOW92">[DOW92]</dt>
         <dd>

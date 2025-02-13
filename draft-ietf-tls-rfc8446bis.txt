@@ -4195,7 +4195,7 @@ Auth | {CertificateVerify*}
 
 7.4.1.  Finite Field Diffie-Hellman
 
-   For finite field groups, a conventional Diffie-Hellman [DH76]
+   For finite field groups, a conventional Diffie-Hellman [KEYAGREEMENT]
    computation is performed.  The negotiated key (Z) is converted to a
    byte string by encoding in big-endian form and left-padded with zeros
    up to the size of the prime.  This byte string is used as the shared
@@ -4745,16 +4745,10 @@ Auth | {CertificateVerify*}
 
 12.1.  Normative References
 
-   [DH76]     Diffie, W. and M. Hellman, "New directions in
-              cryptography", Institute of Electrical and Electronics
-              Engineers (IEEE), IEEE Transactions on Information
-              Theory vol. 22, no. 6, pp. 644-654,
-              DOI 10.1109/tit.1976.1055638, November 1976,
-              <https://doi.org/10.1109/tit.1976.1055638>.
-
    [GCM]      Dworkin, M., "Recommendation for Block Cipher Modes of
               Operation: Galois/Counter Mode (GCM) and GMAC",
-              NIST Special Publication 800-38D, November 2007.
+              NIST Special Publication 800-38D, November 2007,
+              <https://doi.org/10.6028/NIST.SP.800-38D>.
 
    [KEYAGREEMENT]
               Barker, E., Chen, L., Roginsky, A., Vassilev, A., and R.
@@ -4887,7 +4881,8 @@ Auth | {CertificateVerify*}
    [X690]     ITU-T, "Information technology - ASN.1 encoding Rules:
               Specification of Basic Encoding Rules (BER), Canonical
               Encoding Rules (CER) and Distinguished Encoding Rules
-              (DER)", ISO/IEC 8824-1:2021 , February 2021.
+              (DER)", ITU-T X.690 , February 2021,
+              <https://www.itu.int/rec/T-REC-X.690-202102-I/en>.
 
 12.2.  Informative References
 
@@ -4994,6 +4989,13 @@ Auth | {CertificateVerify*}
               "A Cryptographic Analysis of the TLS 1.3 draft-10 Full and
               Pre-shared Key Handshake Protocol", TRON 2016 , February
               2016, <https://eprint.iacr.org/2016/081>.
+
+   [DH76]     Diffie, W. and M. Hellman, "New directions in
+              cryptography", Institute of Electrical and Electronics
+              Engineers (IEEE), IEEE Transactions on Information
+              Theory vol. 22, no. 6, pp. 644-654,
+              DOI 10.1109/tit.1976.1055638, November 1976,
+              <https://doi.org/10.1109/tit.1976.1055638>.
 
    [DOW92]    Diffie, W., Van Oorschot, P., and M. Wiener,
               "Authentication and authenticated key exchanges", Springer
