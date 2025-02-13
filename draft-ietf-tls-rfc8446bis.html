@@ -1576,7 +1576,10 @@ new requirements for TLS 1.2 implementations.<a href="#section-abstract-2" class
                 <p id="section-toc.1-1.18.2.7.1"><a href="#appendix-F.7" class="auto internal xref">F.7</a>.  <a href="#name-sharing-psks" class="internal xref">Sharing PSKs</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.18.2.8">
-                <p id="section-toc.1-1.18.2.8.1"><a href="#appendix-F.8" class="auto internal xref">F.8</a>.  <a href="#name-attacks-on-static-rsa" class="internal xref">Attacks on Static RSA</a></p>
+                <p id="section-toc.1-1.18.2.8.1"><a href="#appendix-F.8" class="auto internal xref">F.8</a>.  <a href="#name-misbinding-when-using-self-" class="internal xref">Misbinding when using Self-Signed Certificates or Raw Public Keys</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.18.2.9">
+                <p id="section-toc.1-1.18.2.9.1"><a href="#appendix-F.9" class="auto internal xref">F.9</a>.  <a href="#name-attacks-on-static-rsa" class="internal xref">Attacks on Static RSA</a></p>
 </li>
             </ul>
 </li>
@@ -7488,6 +7491,10 @@ alert in the TLS Alerts Registry with the value given in <a href="#alert-protoco
         <dd>
 <span class="refAuthor">MacCarthaigh, C.</span>, <span class="refTitle">"Security Review of TLS1.3 0-RTT"</span>, <time datetime="2017-03" class="refDate">March 2017</time>, <span>&lt;<a href="https://github.com/tlswg/tls13-spec/issues/1001">https://github.com/tlswg/tls13-spec/issues/1001</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="MM24">[MM24]</dt>
+        <dd>
+<span class="refAuthor">Moustafa, M.</span>, <span class="refAuthor">Sethi, M.</span>, and <span class="refAuthor">T. Aura</span>, <span class="refTitle">"Misbinding Raw Public Keys to Identities in TLS"</span>, <time datetime="2024" class="refDate">2024</time>, <span>&lt;<a href="https://arxiv.org/pdf/2411.09770">https://arxiv.org/pdf/2411.09770</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="PS18">[PS18]</dt>
         <dd>
 <span class="refAuthor">Patton, C.</span> and <span class="refAuthor">T. Shrimpton</span>, <span class="refTitle">"Partially specified channels: The TLS 1.3 record layer without elision"</span>, <time datetime="2018" class="refDate">2018</time>, <span>&lt;<a href="https://eprint.iacr.org/2018/634">https://eprint.iacr.org/2018/634</a>&gt;</span>. </dd>
@@ -7539,6 +7546,10 @@ alert in the TLS Alerts Registry with the value given in <a href="#alert-protoco
 <dt id="RFC5246">[RFC5246]</dt>
         <dd>
 <span class="refAuthor">Dierks, T.</span> and <span class="refAuthor">E. Rescorla</span>, <span class="refTitle">"The Transport Layer Security (TLS) Protocol Version 1.2"</span>, <span class="seriesInfo">RFC 5246</span>, <span class="seriesInfo">DOI 10.17487/RFC5246</span>, <time datetime="2008-08" class="refDate">August 2008</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc5246">https://www.rfc-editor.org/rfc/rfc5246</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5763">[RFC5763]</dt>
+        <dd>
+<span class="refAuthor">Fischl, J.</span>, <span class="refAuthor">Tschofenig, H.</span>, and <span class="refAuthor">E. Rescorla</span>, <span class="refTitle">"Framework for Establishing a Secure Real-time Transport Protocol (SRTP) Security Context Using Datagram Transport Layer Security (DTLS)"</span>, <span class="seriesInfo">RFC 5763</span>, <span class="seriesInfo">DOI 10.17487/RFC5763</span>, <time datetime="2010-05" class="refDate">May 2010</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc5763">https://www.rfc-editor.org/rfc/rfc5763</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC5764">[RFC5764]</dt>
         <dd>
@@ -7599,6 +7610,10 @@ alert in the TLS Alerts Registry with the value given in <a href="#alert-protoco
 <dt id="RFC8422">[RFC8422]</dt>
         <dd>
 <span class="refAuthor">Nir, Y.</span>, <span class="refAuthor">Josefsson, S.</span>, and <span class="refAuthor">M. Pegourie-Gonnard</span>, <span class="refTitle">"Elliptic Curve Cryptography (ECC) Cipher Suites for Transport Layer Security (TLS) Versions 1.2 and Earlier"</span>, <span class="seriesInfo">RFC 8422</span>, <span class="seriesInfo">DOI 10.17487/RFC8422</span>, <time datetime="2018-08" class="refDate">August 2018</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8422">https://www.rfc-editor.org/rfc/rfc8422</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8444">[RFC8444]</dt>
+        <dd>
+<span class="refAuthor">Psenak, P., Ed.</span>, <span class="refAuthor">Kumar, N.</span>, <span class="refAuthor">Wijnands, IJ.</span>, <span class="refAuthor">Dolganow, A.</span>, <span class="refAuthor">Przygienda, T.</span>, <span class="refAuthor">Zhang, J.</span>, and <span class="refAuthor">S. Aldrin</span>, <span class="refTitle">"OSPFv2 Extensions for Bit Index Explicit Replication (BIER)"</span>, <span class="seriesInfo">RFC 8444</span>, <span class="seriesInfo">DOI 10.17487/RFC8444</span>, <time datetime="2018-11" class="refDate">November 2018</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8444">https://www.rfc-editor.org/rfc/rfc8444</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC8446">[RFC8446]</dt>
         <dd>
@@ -9620,12 +9635,26 @@ cross-protocol related output by not reusing PSKs between TLS 1.3 and
 TLS 1.2.<a href="#appendix-F.7-1" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="attacks-on-static-rsa">
+<div id="misbinding-when-using-self-signed-certificates-or-raw-public-keys">
 <section id="appendix-F.8">
-        <h3 id="name-attacks-on-static-rsa">
-<a href="#appendix-F.8" class="section-number selfRef">F.8. </a><a href="#name-attacks-on-static-rsa" class="section-name selfRef">Attacks on Static RSA</a>
+        <h3 id="name-misbinding-when-using-self-">
+<a href="#appendix-F.8" class="section-number selfRef">F.8. </a><a href="#name-misbinding-when-using-self-" class="section-name selfRef">Misbinding when using Self-Signed Certificates or Raw Public Keys</a>
         </h3>
-<p id="appendix-F.8-1">Although TLS 1.3 does not use RSA key transport and so is not
+<p id="appendix-F.8-1">When TLS 1.3 is used with self-signed certificates without useful
+identities (as in DTLS-SRTP <span>[<a href="#RFC5763" class="cite xref">RFC5763</a>]</span>) or raw public keys
+<span>[<a href="#RFC7250" class="cite xref">RFC7250</a>]</span> or for peer authentication, it may be vulnerable to
+misbinding attacks <span>[<a href="#MM24" class="cite xref">MM24</a>]</span>. This risk can be mitigated by using
+the "external_id_hash" extension <span>[<a href="#RFC8444" class="cite xref">RFC8444</a>]</span> or, if only
+the server is being authenticated, by the server verifying
+that the "server_name" extension matches its expected identity.<a href="#appendix-F.8-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="attacks-on-static-rsa">
+<section id="appendix-F.9">
+        <h3 id="name-attacks-on-static-rsa">
+<a href="#appendix-F.9" class="section-number selfRef">F.9. </a><a href="#name-attacks-on-static-rsa" class="section-name selfRef">Attacks on Static RSA</a>
+        </h3>
+<p id="appendix-F.9-1">Although TLS 1.3 does not use RSA key transport and so is not
 directly susceptible to Bleichenbacher-type attacks <span>[<a href="#Blei98" class="cite xref">Blei98</a>]</span> if TLS 1.3
 servers also support static RSA in the context of previous
 versions of TLS, then it may be possible to impersonate the server
@@ -9636,7 +9665,7 @@ might also be able to separate certificates with different keyUsage
 bits for static RSA decryption and RSA signature, but this technique
 relies on clients refusing to accept signatures using keys
 in certificates that do not have the digitalSignature bit set,
-and many clients do not enforce this restriction.<a href="#appendix-F.8-1" class="pilcrow">¶</a></p>
+and many clients do not enforce this restriction.<a href="#appendix-F.9-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
