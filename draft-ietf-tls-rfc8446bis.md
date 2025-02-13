@@ -95,15 +95,7 @@ informative:
   RFC9001:
   RFC9149:
 
-  DH76:
-       title: "New directions in cryptography"
-       author:
-       -
-         ins: W. Diffie
-       -
-         ins: M. Hellman
-       target: https://ee.stanford.edu/~hellman/publications/24.pdf
-       date: November 1976
+  DH76: DOI.10.1109/TIT.1976.1055638
   SSL2:
        title: "The SSL Protocol"
        author:
