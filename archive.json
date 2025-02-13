@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-02-11T00:47:32.725708+00:00",
+  "timestamp": "2025-02-13T00:47:58.847754+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -13683,7 +13683,7 @@
       "comments": [
         {
           "author": "loganaden",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "I believe that that x25519 should be MTI.",
           "createdAt": "2024-06-05T14:23:29Z",
           "updatedAt": "2024-06-05T14:23:29Z"
@@ -66979,7 +66979,7 @@
       "url": "https://github.com/tlswg/tls13-spec/pull/1340",
       "state": "CLOSED",
       "author": "loganaden",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "Would it be worth mentioning this specific case https://tldr.fail/, where TLS ClientHello processing is not implemented correctly ? ",
@@ -66988,7 +66988,7 @@
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "3f61f01ce10351670de939d1ff88b17c951c6c7b",
-      "headRepository": "cyberstormdotmu/tls13-spec",
+      "headRepository": null,
       "headRefName": "main",
       "headRefOid": "db1d02130df55714b4c15e4212b9b1489aa3483e",
       "closedAt": "2024-04-05T12:57:51Z",
@@ -67005,7 +67005,7 @@
         },
         {
           "author": "loganaden",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "Thanks for point this out. I will change the PR to have a dedicate line for the tldr issue. Is that ok @davidben ?",
           "createdAt": "2024-03-08T09:25:45Z",
           "updatedAt": "2024-03-08T09:25:45Z"
@@ -67019,7 +67019,7 @@
         },
         {
           "author": "loganaden",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "Understood @ekr . I'm closing it.",
           "createdAt": "2024-04-05T12:57:26Z",
           "updatedAt": "2024-04-05T12:57:26Z"
@@ -67813,7 +67813,7 @@
       "url": "https://github.com/tlswg/tls13-spec/pull/1360",
       "state": "CLOSED",
       "author": "loganaden",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "https://github.com/tlswg/tls13-spec/issues/1359 for discussion.",
@@ -68388,13 +68388,13 @@
       "labels": [],
       "body": "Editorial updates to references",
       "createdAt": "2025-02-02T12:20:09Z",
-      "updatedAt": "2025-02-09T19:51:09Z",
+      "updatedAt": "2025-02-11T06:44:31Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "42bf01c04cab12c579a75d467f36f82aec5ff12a",
       "headRepository": "emanjon/tls13-spec",
       "headRefName": "patch-26",
-      "headRefOid": "115a4492664c01b5cf32a2b83a364542a2ae6957",
+      "headRefOid": "6cba923086295a7ac005039e24162b21ab02964f",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -68413,9 +68413,37 @@
           "body": "I agree that the reference to [DH76] is better as informational but I think we do need a normative reference for the shared key computation in that section.. Do you have a proposal?\r\n\r\nFWIW, `main` does compile for me, and it seems to be compiling properly in CI.",
           "createdAt": "2025-02-09T19:51:08Z",
           "updatedAt": "2025-02-09T19:51:08Z"
+        },
+        {
+          "author": "emanjon",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I think [KEYAGREEMENT] is a good reference for FFDH computation as well. It even refers to the TLS RFC719 groups. I made this change in the PR.\r\n\r\n>FWIW, main does compile for me, and it seems to be compiling properly in CI.\r\nMust have been some temporary CI, problem.",
+          "createdAt": "2025-02-11T05:55:16Z",
+          "updatedAt": "2025-02-11T05:55:16Z"
         }
       ],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOASA0os6bcEjC",
+          "commit": {
+            "abbreviatedOid": "6cba923"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-02-11T06:44:30Z",
+          "updatedAt": "2025-02-11T06:44:31Z",
+          "comments": [
+            {
+              "originalPosition": 30,
+              "body": "```suggestion\r\n  DH76: DOI.10.1109/TIT.1976.1055638\r\n```\r\n\r\nThis works well enough.",
+              "createdAt": "2025-02-11T06:44:30Z",
+              "updatedAt": "2025-02-11T06:44:31Z"
+            }
+          ]
+        }
+      ]
     },
     {
       "number": 1370,
@@ -68511,7 +68539,7 @@
       "labels": [],
       "body": "This is a revised version of the text from @ms-s in #1366 that I think makes the point more sharply.\r\n",
       "createdAt": "2025-02-09T20:04:22Z",
-      "updatedAt": "2025-02-09T20:08:55Z",
+      "updatedAt": "2025-02-12T05:41:21Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "deddc13a533082be308416555971270224408ed7",
@@ -68522,7 +68550,15 @@
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
+      "comments": [
+        {
+          "author": "ms-s",
+          "authorAssociation": "NONE",
+          "body": "Looks good to me!",
+          "createdAt": "2025-02-12T05:41:19Z",
+          "updatedAt": "2025-02-12T05:41:19Z"
+        }
+      ],
       "reviews": []
     },
     {
@@ -68572,12 +68608,12 @@
       "url": "https://github.com/tlswg/tls13-spec/pull/1373",
       "state": "OPEN",
       "author": "loganaden",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "",
       "createdAt": "2025-02-10T07:14:10Z",
-      "updatedAt": "2025-02-10T20:38:16Z",
+      "updatedAt": "2025-02-12T19:34:04Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "deddc13a533082be308416555971270224408ed7",
@@ -68676,7 +68712,7 @@
             "abbreviatedOid": "8e6c1f9"
           },
           "author": "loganaden",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2025-02-10T20:19:06Z",
@@ -68729,8 +68765,289 @@
               "updatedAt": "2025-02-10T20:38:16Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6bawwF",
+          "commit": {
+            "abbreviatedOid": "8e6c1f9"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-02-11T01:06:06Z",
+          "updatedAt": "2025-02-11T01:06:06Z",
+          "comments": [
+            {
+              "originalPosition": 7,
+              "body": "I can't suggest this, but here's what I'd say:\r\n\r\n> A performant and appropriately-secure CSPRNG is provided\r\n> by most operating systems or can be sourced from a cryptographic library.",
+              "createdAt": "2025-02-11T01:06:06Z",
+              "updatedAt": "2025-02-11T01:06:06Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6baw5P",
+          "commit": {
+            "abbreviatedOid": "8e6c1f9"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-02-11T01:06:55Z",
+          "updatedAt": "2025-02-11T01:06:55Z",
+          "comments": [
+            {
+              "originalPosition": 17,
+              "body": "Isn't it true that compromised \\subsetof broken ?",
+              "createdAt": "2025-02-11T01:06:55Z",
+              "updatedAt": "2025-02-11T01:06:55Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6bgwH8",
+          "commit": {
+            "abbreviatedOid": "8e6c1f9"
+          },
+          "author": "seanturner",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-02-11T15:07:23Z",
+          "updatedAt": "2025-02-11T15:07:23Z",
+          "comments": [
+            {
+              "originalPosition": 17,
+              "body": "Broken seems to be sufficient. This sentence is a counterpoint to `properly functioning CSPRNG` in the previous sentence.",
+              "createdAt": "2025-02-11T15:07:23Z",
+              "updatedAt": "2025-02-11T15:07:24Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6bg2sJ",
+          "commit": {
+            "abbreviatedOid": "8e6c1f9"
+          },
+          "author": "loganaden",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-02-11T15:16:20Z",
+          "updatedAt": "2025-02-11T15:16:20Z",
+          "comments": [
+            {
+              "originalPosition": 17,
+              "body": "Understood. Will remove this.",
+              "createdAt": "2025-02-11T15:16:20Z",
+              "updatedAt": "2025-02-11T15:16:20Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6bg3LL",
+          "commit": {
+            "abbreviatedOid": "8e6c1f9"
+          },
+          "author": "loganaden",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-02-11T15:16:57Z",
+          "updatedAt": "2025-02-11T15:16:57Z",
+          "comments": [
+            {
+              "originalPosition": 7,
+              "body": "got it.\r\n",
+              "createdAt": "2025-02-11T15:16:57Z",
+              "updatedAt": "2025-02-11T15:16:57Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6bg3wC",
+          "commit": {
+            "abbreviatedOid": "8e6c1f9"
+          },
+          "author": "loganaden",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-02-11T15:17:45Z",
+          "updatedAt": "2025-02-11T15:17:45Z",
+          "comments": [
+            {
+              "originalPosition": 7,
+              "body": "Would something like this be better @davidben @kaduk : A performant and appropriately-secure CSPRNG is provided by most operating systems or can be sourced from a cryptographic library.",
+              "createdAt": "2025-02-11T15:17:45Z",
+              "updatedAt": "2025-02-11T15:17:45Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6bllpn",
+          "commit": {
+            "abbreviatedOid": "8e6c1f9"
+          },
+          "author": "davidben",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-02-11T23:11:08Z",
+          "updatedAt": "2025-02-11T23:11:08Z",
+          "comments": [
+            {
+              "originalPosition": 7,
+              "body": "SGTM",
+              "createdAt": "2025-02-11T23:11:08Z",
+              "updatedAt": "2025-02-11T23:11:08Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6bnFyh",
+          "commit": {
+            "abbreviatedOid": "8e6c1f9"
+          },
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-02-12T03:08:15Z",
+          "updatedAt": "2025-02-12T03:08:16Z",
+          "comments": [
+            {
+              "originalPosition": 7,
+              "body": "I'm fine with this proposed text if yo want to prepare an appropriate PR.\r\n\r\nIn addition, please send a PR adding yourself to the contributor list.",
+              "createdAt": "2025-02-12T03:08:15Z",
+              "updatedAt": "2025-02-12T03:08:16Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6bnIT8",
+          "commit": {
+            "abbreviatedOid": "8e6c1f9"
+          },
+          "author": "loganaden",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-02-12T03:20:27Z",
+          "updatedAt": "2025-02-12T03:20:27Z",
+          "comments": [
+            {
+              "originalPosition": 7,
+              "body": "working on it.",
+              "createdAt": "2025-02-12T03:20:27Z",
+              "updatedAt": "2025-02-12T03:20:27Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6bv1H4",
+          "commit": {
+            "abbreviatedOid": "8e6c1f9"
+          },
+          "author": "loganaden",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-02-12T19:34:04Z",
+          "updatedAt": "2025-02-12T19:34:04Z",
+          "comments": [
+            {
+              "originalPosition": 7,
+              "body": "@ekr  PR opened: https://github.com/tlswg/tls13-spec/pull/1375",
+              "createdAt": "2025-02-12T19:34:04Z",
+              "updatedAt": "2025-02-12T19:34:04Z"
+            }
+          ]
         }
       ]
+    },
+    {
+      "number": 1374,
+      "id": "PR_kwDOASA0os6K0mlv",
+      "title": "Fix redundant word.",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1374",
+      "state": "MERGED",
+      "author": "loganaden",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-02-11T15:31:32Z",
+      "updatedAt": "2025-02-12T03:07:15Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "main",
+      "baseRefOid": "deddc13a533082be308416555971270224408ed7",
+      "headRepository": null,
+      "headRefName": "loganaden-typo-fix",
+      "headRefOid": "2e1c33c5ff5b93ee5f57e6595e33f5c594687ec9",
+      "closedAt": "2025-02-12T03:07:15Z",
+      "mergedAt": "2025-02-12T03:07:15Z",
+      "mergedBy": "ekr",
+      "mergeCommit": {
+        "oid": "76a191fefbf6633351c6f5183ba9b6ca6c056ae1"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOASA0os6bkr48",
+          "commit": {
+            "abbreviatedOid": "2e1c33c"
+          },
+          "author": "kaduk",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-02-11T21:24:14Z",
+          "updatedAt": "2025-02-11T21:24:14Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOASA0os6bm4aq",
+          "commit": {
+            "abbreviatedOid": "2e1c33c"
+          },
+          "author": "seanturner",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-02-12T02:34:55Z",
+          "updatedAt": "2025-02-12T02:34:55Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 1375,
+      "id": "PR_kwDOASA0os6K5riu",
+      "title": "More generic recommendation for CSPRNG.",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1375",
+      "state": "OPEN",
+      "author": "loganaden",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "(Thanks to Martin Thomson)",
+      "createdAt": "2025-02-12T05:26:23Z",
+      "updatedAt": "2025-02-12T05:26:24Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "main",
+      "baseRefOid": "76a191fefbf6633351c6f5183ba9b6ca6c056ae1",
+      "headRepository": "cyberstormdotmu/tls13-spec",
+      "headRefName": "loganaden-generic-csprng",
+      "headRefOid": "f16bb05d35bfef7f161bd41c5a37fbd6d3073c81",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
