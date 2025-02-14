@@ -6559,7 +6559,7 @@ Since -00
 
       Loganaden Velvindron
       cyberstorm.mu
-      logan@cyberstorm.mu 
+      logan@cyberstorm.mu
 
       Hoeteck Wee
       Ecole Normale Superieure, Paris
