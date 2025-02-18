@@ -15,12 +15,12 @@ tampering, and message forgery.
 RFCs 5077, 5246, 6961, 8422, and 8446. This document also specifies
 new requirements for TLS 1.2 implementations. 
     " name="description">
-<meta content="xml2rfc 3.26.0" name="generator">
+<meta content="xml2rfc 3.27.0" name="generator">
 <meta content="Internet-Draft" name="keyword">
 <meta content="draft-ietf-tls-rfc8446bis-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.26.0
-    Python 3.12.8
+  xml2rfc 3.27.0
+    Python 3.12.9
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
     intervaltree 3.1.0
@@ -1792,7 +1792,7 @@ be more consistent and to remove superfluous messages such as
 ChangeCipherSpec (except when needed for middlebox compatibility).<a href="#section-1.3-2.6.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.3-2.7">
-            <p id="section-1.3-2.7.1">Elliptic curve algorithms are now in the base spec, and new signature
+            <p id="section-1.3-2.7.1">Elliptic curve algorithms are now in the base spec and new signature
 algorithms, such as EdDSA, are included. TLS 1.3 removed point format
 negotiation in favor of a single point format for each curve.<a href="#section-1.3-2.7.1" class="pilcrow">¶</a></p>
 </li>
@@ -4827,7 +4827,7 @@ ClientHello and including only those messages that were sent:
 ClientHello, HelloRetryRequest, ClientHello, ServerHello,
 EncryptedExtensions, server CertificateRequest, server Certificate,
 server CertificateVerify, server Finished, EndOfEarlyData, client
-Certificate, client CertificateVerify, client Finished.<a href="#section-4.4.1-6" class="pilcrow">¶</a></p>
+Certificate, client CertificateVerify, and client Finished.<a href="#section-4.4.1-6" class="pilcrow">¶</a></p>
 <p id="section-4.4.1-7">In general, implementations can implement the transcript by keeping a
 running transcript hash value based on the negotiated hash. Note,
 however, that subsequent post-handshake authentications do not include
