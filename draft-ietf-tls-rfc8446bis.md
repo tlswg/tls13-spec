@@ -597,7 +597,7 @@ are many minor differences.
   be more consistent and to remove superfluous messages such as
   ChangeCipherSpec (except when needed for middlebox compatibility).
 
-- Elliptic curve algorithms are now in the base spec, and new signature
+- Elliptic curve algorithms are now in the base spec and new signature
   algorithms, such as EdDSA, are included. TLS 1.3 removed point format
   negotiation in favor of a single point format for each curve.
 
@@ -2988,7 +2988,7 @@ ClientHello and including only those messages that were sent:
 ClientHello, HelloRetryRequest, ClientHello, ServerHello,
 EncryptedExtensions, server CertificateRequest, server Certificate,
 server CertificateVerify, server Finished, EndOfEarlyData, client
-Certificate, client CertificateVerify, client Finished.
+Certificate, client CertificateVerify, and client Finished.
 
 In general, implementations can implement the transcript by keeping a
 running transcript hash value based on the negotiated hash. Note,
