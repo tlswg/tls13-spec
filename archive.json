@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-02-16T00:52:43.076518+00:00",
+  "timestamp": "2025-02-18T00:47:20.393950+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -68572,24 +68572,26 @@
       "id": "PR_kwDOASA0os6KkKFY",
       "title": "Clarify the use of HKDF-Expand-Label.",
       "url": "https://github.com/tlswg/tls13-spec/pull/1372",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "ekr",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "See: \r\nhttps://github.com/tlswg/draft-ietf-tls-esni/pull/641/files",
       "createdAt": "2025-02-09T20:16:12Z",
-      "updatedAt": "2025-02-09T21:20:06Z",
+      "updatedAt": "2025-02-18T00:20:27Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "deddc13a533082be308416555971270224408ed7",
       "headRepository": "tlswg/tls13-spec",
       "headRefName": "hkdf_label",
       "headRefOid": "2441a3455332c61279f3eaef70b70064666a6a5d",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2025-02-18T00:20:27Z",
+      "mergedAt": "2025-02-18T00:20:27Z",
+      "mergedBy": "ekr",
+      "mergeCommit": {
+        "oid": "d739ae82fb3621e39c8ac3f202dd48226dd833da"
+      },
       "comments": [],
       "reviews": [
         {
