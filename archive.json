@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-02-18T00:47:20.393950+00:00",
+  "timestamp": "2025-02-20T00:48:31.518209+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -13868,6 +13868,30 @@
           "body": "We can fix this in auth 48",
           "createdAt": "2025-02-09T19:37:01Z",
           "updatedAt": "2025-02-09T19:37:01Z"
+        }
+      ]
+    },
+    {
+      "number": 1378,
+      "id": "I_kwDOASA0os6qgtxz",
+      "title": "SVG rendering glitches in diagrams",
+      "url": "https://github.com/tlswg/tls13-spec/issues/1378",
+      "state": "OPEN",
+      "author": "ekr",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "There are two SVG rendering glitches:\n\nNote the vertical bar to the left of ClientHello\n\n![Image](https://github.com/user-attachments/assets/9f8c3304-d262-4b67-b328-96b9c0778a17)\n\n\nNote that the * has been converted into a bullet.\n\n![Image](https://github.com/user-attachments/assets/7684d122-c031-4f89-89e5-9c845319752b)\n\n\n@martinthomson I can investigate these but I thought you might know an easy fix.",
+      "createdAt": "2025-02-18T14:56:10Z",
+      "updatedAt": "2025-02-18T21:48:01Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "There aren't any easy fixes really.\n\nI'm not aware of an easy fix for the vertical line of '+' that you have.  '+' is a line character, so any line of them will be turned into a line.  You could replace it with '\uff0b' (the unicode fullwidth plus sign, U+FF0B) I guess, which won't be recognized.  As a fullwidth character in a monospace font, it should render identically.\n\nThe '*' will be a bullet if it is on its own.  Replacing it with a different character throughout might be an easy fix for that as well.  '\uff0a' (U+FF0A) is an option there, again.",
+          "createdAt": "2025-02-18T21:48:00Z",
+          "updatedAt": "2025-02-18T21:48:00Z"
         }
       ]
     }
@@ -69123,6 +69147,48 @@
           "body": "",
           "createdAt": "2025-02-14T04:46:40Z",
           "updatedAt": "2025-02-14T04:46:40Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 1377,
+      "id": "PR_kwDOASA0os6LnBuM",
+      "title": "Minor edits from Sue Hares's GenArt review:",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1377",
+      "state": "MERGED",
+      "author": "ekr",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "https://datatracker.ietf.org/doc/review-ietf-tls-rfc8446bis-11-genart-lc-hares-2024-11-15/\r\n\r\nSue listed two other categories of text change she suggests:\r\n\r\n1. Semicolons:\r\n\r\n  One confusing nit is the usage of \";\" in the following locations.\r\n  The definition of \";\" according to scholarly writing for the\r\n  usage of (clause-1);(clause-2) is that the clauses are equivalent.\r\n\r\nI believe our usage is correct per CMS 5.89.\r\n\r\n2. --\r\n\r\n   Use of text offset by -- (text) ---\r\n\r\nThese are in place of em-dashes and should be rendered correctly in the final RFC.",
+      "createdAt": "2025-02-18T14:44:38Z",
+      "updatedAt": "2025-02-18T17:38:25Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "main",
+      "baseRefOid": "d739ae82fb3621e39c8ac3f202dd48226dd833da",
+      "headRepository": "ekr/tls13-spec",
+      "headRefName": "genart_review",
+      "headRefOid": "571e77050bdc6c3bb2abd9fc8c61e74783f6a123",
+      "closedAt": "2025-02-18T17:38:24Z",
+      "mergedAt": "2025-02-18T17:38:24Z",
+      "mergedBy": "ekr",
+      "mergeCommit": {
+        "oid": "90ba604f4a441495cea8284bf79bfb9ca9c3e638"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOASA0os6cbQvx",
+          "commit": {
+            "abbreviatedOid": "571e770"
+          },
+          "author": "paulwouters",
+          "authorAssociation": "NONE",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-02-18T17:35:03Z",
+          "updatedAt": "2025-02-18T17:35:03Z",
           "comments": []
         }
       ]
