@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-03-20T00:50:55.901793+00:00",
+  "timestamp": "2025-03-23T00:55:36.305535+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -10862,7 +10862,7 @@
       "title": "Draft Status",
       "url": "https://github.com/tlswg/tls13-spec/issues/1140",
       "state": "CLOSED",
-      "author": "geraldsnm",
+      "author": "heraldodinero",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
