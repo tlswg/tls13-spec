@@ -2251,7 +2251,7 @@ The "extension_data" field of this extension contains a
        } NamedGroup;
 
        struct {
-           NamedGroup named_group_list<2..2^16-1>;
+           NamedGroup named_group_list<2..2^16-2>;
        } NamedGroupList;
 
 Elliptic Curve Groups (ECDHE):
