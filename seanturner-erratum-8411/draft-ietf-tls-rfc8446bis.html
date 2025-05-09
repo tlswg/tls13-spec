@@ -15,18 +15,18 @@ tampering, and message forgery.
 RFCs 5077, 5246, 6961, 8422, and 8446. This document also specifies
 new requirements for TLS 1.2 implementations. 
     " name="description">
-<meta content="xml2rfc 3.26.0" name="generator">
+<meta content="xml2rfc 3.28.1" name="generator">
 <meta content="Internet-Draft" name="keyword">
 <meta content="draft-ietf-tls-rfc8446bis-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.26.0
-    Python 3.12.8
+  xml2rfc 3.28.1
+    Python 3.12.10
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
     intervaltree 3.1.0
-    Jinja2 3.1.5
+    Jinja2 3.1.6
     lxml 5.3.0
-    platformdirs 4.3.6
+    platformdirs 4.3.7
     pycountry 24.6.1
     PyYAML 6.0.2
     requests 2.32.3
@@ -1050,11 +1050,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">TLS</td>
-<td class="right">February 2025</td>
+<td class="right">May 2025</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Rescorla</td>
-<td class="center">Expires 22 August 2025</td>
+<td class="center">Expires 10 November 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1073,12 +1073,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <a href="https://www.rfc-editor.org/rfc/rfc5705" class="eref">5705</a>, <a href="https://www.rfc-editor.org/rfc/rfc6066" class="eref">6066</a>, <a href="https://www.rfc-editor.org/rfc/rfc7627" class="eref">7627</a>, <a href="https://www.rfc-editor.org/rfc/rfc8422" class="eref">8422</a> (if approved)</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-02-18" class="published">18 February 2025</time>
+<time datetime="2025-05-09" class="published">9 May 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-08-22">22 August 2025</time></dd>
+<dd class="expires"><time datetime="2025-11-10">10 November 2025</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1118,7 +1118,7 @@ new requirements for TLS 1.2 implementations.<a href="#section-abstract-2" class
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 22 August 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 10 November 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1792,7 +1792,7 @@ be more consistent and to remove superfluous messages such as
 ChangeCipherSpec (except when needed for middlebox compatibility).<a href="#section-1.3-2.6.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.3-2.7">
-            <p id="section-1.3-2.7.1">Elliptic curve algorithms are now in the base spec, and new signature
+            <p id="section-1.3-2.7.1">Elliptic curve algorithms are now in the base spec and new signature
 algorithms, such as EdDSA, are included. TLS 1.3 removed point format
 negotiation in favor of a single point format for each curve.<a href="#section-1.3-2.7.1" class="pilcrow">¶</a></p>
 </li>
@@ -3973,7 +3973,7 @@ ECDSA curves. Signature algorithms are now negotiated independently (see
    } NamedGroup;
 
    struct {
-       NamedGroup named_group_list&lt;2..2^16-1&gt;;
+       NamedGroup named_group_list&lt;2..2^16-2&gt;;
    } NamedGroupList;
 </pre><a href="#section-4.2.7-4" class="pilcrow">¶</a>
 </div>
@@ -4827,7 +4827,7 @@ ClientHello and including only those messages that were sent:
 ClientHello, HelloRetryRequest, ClientHello, ServerHello,
 EncryptedExtensions, server CertificateRequest, server Certificate,
 server CertificateVerify, server Finished, EndOfEarlyData, client
-Certificate, client CertificateVerify, client Finished.<a href="#section-4.4.1-6" class="pilcrow">¶</a></p>
+Certificate, client CertificateVerify, and client Finished.<a href="#section-4.4.1-6" class="pilcrow">¶</a></p>
 <p id="section-4.4.1-7">In general, implementations can implement the transcript by keeping a
 running transcript hash value based on the negotiated hash. Note,
 however, that subsequent post-handshake authentications do not include
@@ -7446,7 +7446,7 @@ alert in the TLS Alerts Registry with the value given in <a href="#alert-protoco
 <dd class="break"></dd>
 <dt id="FETCH">[FETCH]</dt>
         <dd>
-<span class="refAuthor">WHATWG</span>, <span class="refTitle">"Fetch Standard"</span>, <time datetime="2025-02" class="refDate">February 2025</time>, <span>&lt;<a href="https://fetch.spec.whatwg.org/">https://fetch.spec.whatwg.org/</a>&gt;</span>. </dd>
+<span class="refAuthor">WHATWG</span>, <span class="refTitle">"Fetch Standard"</span>, <time datetime="2025-05" class="refDate">May 2025</time>, <span>&lt;<a href="https://fetch.spec.whatwg.org/">https://fetch.spec.whatwg.org/</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="FG17">[FG17]</dt>
         <dd>
@@ -7470,7 +7470,7 @@ alert in the TLS Alerts Registry with the value given in <a href="#alert-protoco
 <dd class="break"></dd>
 <dt id="I-D.ietf-tls-esni">[I-D.ietf-tls-esni]</dt>
         <dd>
-<span class="refAuthor">Rescorla, E.</span>, <span class="refAuthor">Oku, K.</span>, <span class="refAuthor">Sullivan, N.</span>, and <span class="refAuthor">C. A. Wood</span>, <span class="refTitle">"TLS Encrypted Client Hello"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-tls-esni-22</span>, <time datetime="2024-09-15" class="refDate">15 September 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-tls-esni-22">https://datatracker.ietf.org/doc/html/draft-ietf-tls-esni-22</a>&gt;</span>. </dd>
+<span class="refAuthor">Rescorla, E.</span>, <span class="refAuthor">Oku, K.</span>, <span class="refAuthor">Sullivan, N.</span>, and <span class="refAuthor">C. A. Wood</span>, <span class="refTitle">"TLS Encrypted Client Hello"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-tls-esni-24</span>, <time datetime="2025-03-20" class="refDate">20 March 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-tls-esni-24">https://datatracker.ietf.org/doc/html/draft-ietf-tls-esni-24</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="JSS15">[JSS15]</dt>
         <dd>
@@ -8375,7 +8375,7 @@ might receive them from older TLS implementations.<a href="#appendix-B-1" class=
    } NamedGroup;
 
    struct {
-       NamedGroup named_group_list&lt;2..2^16-1&gt;;
+       NamedGroup named_group_list&lt;2..2^16-2&gt;;
    } NamedGroupList;
 </pre><a href="#appendix-B.3.1.4-1" class="pilcrow">¶</a>
 </div>
