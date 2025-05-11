@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-04-01T00:59:05.304438+00:00",
+  "timestamp": "2025-05-11T00:59:00.394038+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -13894,6 +13894,22 @@
           "updatedAt": "2025-02-18T21:48:00Z"
         }
       ]
+    },
+    {
+      "number": 1379,
+      "id": "I_kwDOASA0os610jdL",
+      "title": "Address Erratum #8411",
+      "url": "https://github.com/tlswg/tls13-spec/issues/1379",
+      "state": "OPEN",
+      "author": "seanturner",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "See [erratum](https://www.rfc-editor.org/errata/eid8411).",
+      "createdAt": "2025-05-09T00:51:24Z",
+      "updatedAt": "2025-05-09T00:51:24Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
@@ -69192,6 +69208,32 @@
           "comments": []
         }
       ]
+    },
+    {
+      "number": 1380,
+      "id": "PR_kwDOASA0os6Vgt4H",
+      "title": "Address Erratum #8411",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1380",
+      "state": "OPEN",
+      "author": "seanturner",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Closes #1379.",
+      "createdAt": "2025-05-09T00:51:56Z",
+      "updatedAt": "2025-05-09T00:51:57Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "main",
+      "baseRefOid": "90ba604f4a441495cea8284bf79bfb9ca9c3e638",
+      "headRepository": "tlswg/tls13-spec",
+      "headRefName": "seanturner-erratum-8411",
+      "headRefOid": "cebac8ef66ab7676dce9864038e6b074d72400ce",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
