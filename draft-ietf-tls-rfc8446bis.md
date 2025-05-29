@@ -767,8 +767,8 @@ Certificate:
   authenticate with a certificate). Note that if raw
   public keys {{RFC7250}} or the cached information extension
   {{?RFC7924}} are in use, then this message will not
-  contain a certificate but rather some other value corresponding to
-  the server's long-term key.  \[{{certificate}}]
+  contain a X.509 certificate but rather some other value corresponding
+  to the server's long-term key.  \[{{certificate}}]
 
 CertificateVerify:
 : A signature over the entire handshake using the private key
@@ -6148,7 +6148,7 @@ TLS 1.2.
 
 When TLS 1.3 is used with self-signed certificates without useful
 identities (as in DTLS-SRTP {{?RFC5763}}) or raw public keys
-{{RFC7250}} or for peer authentication, it may be vulnerable to
+{{RFC7250}} for peer authentication, it may be vulnerable to
 misbinding attacks {{MM24}}. This risk can be mitigated by using
 the "external_id_hash" extension {{?RFC8844}} or, if only
 the server is being authenticated, by the server verifying
@@ -6504,6 +6504,10 @@ Since -00
       Sam Scott
       Royal Holloway, University of London
       me@samjs.co.uk
+
+      Mohit Sethi
+      Aalto University
+      mohit@iki.fi
 
       Thomas Shrimpton
       University of Florida
