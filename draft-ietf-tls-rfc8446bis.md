@@ -75,25 +75,27 @@ informative:
   RFC5246:
   RFC5764:
   RFC5929:
-  RFC6176:
   RFC6091:
+  RFC6176:
   RFC6520:
-  RFC8305:
-  RFC7250:
   RFC7465:
+  RFC7250:
   RFC7568:
   RFC7624:
   RFC7685:
-  RFC8937:
+  RFC8305:
+  RFC8844:
   RFC8849:
-  RFC9345:
   RFC8870:
+  RFC8937:
+  RFC9001:
   RFC9112:
   RFC9162:
   RFC9146:
-  RFC8844:
-  RFC9001:
   RFC9149:
+  RFC9257:
+  RFC9258:
+  RFC9345:
 
   DH76: DOI.10.1109/TIT.1976.1055638
   SSL2:
@@ -414,7 +416,7 @@ informative:
        -
          ins: N. Drucker
        -
-         ins: S. Gueron       
+         ins: S. Gueron
 
 
 --- abstract
@@ -6165,8 +6167,7 @@ unintended ways. This rerouting is a type of identity misbinding
 attack, and the Selfie attack {{Selfie}} is a special case targeting a
 group member that can act as both a TLS client and server. To avoid
 such attacks, {{RFC9257}} provides recommendations for external PSK
-usage, including the use of external PSK importers as defined in {
-{RFC9258}}.
+usage, including the use of external PSK importers as defined in {{RFC9258}}.
 
 ## Misbinding when using Self-Signed Certificates or Raw Public Keys
 
