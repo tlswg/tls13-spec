@@ -548,9 +548,10 @@ specific technical changes:
 - Limit the number of permitted KeyUpdate messages.
 
 - Restore text defining the level of "close_notify" to "warning".
-  Clarify behavior around "user_canceled", requiring that
-  "close_notify" be sent and that "user_canceled" should
-  be ignored.
+
+-  Clarify behavior around "user_canceled", requiring that
+   "close_notify" be sent and that "user_canceled" should
+   be ignored.
 
 - Add a "general_error" generic alert.
 
@@ -2337,7 +2338,7 @@ Selecting a group based on KeyShareEntry may result in the use of
 a less preferred group than the client and server mutually support,
 though saving the round trip of HelloRetryRequest. Servers
 that wish to respect the client's group preferences SHOULD first
-select a group based "supported_groups" and then either send a
+select a group based on "supported_groups" and then either send a
 ServerHello or a HelloRetryRequest depending on the contents of
 KeyshareClienthello.
 
@@ -2455,7 +2456,7 @@ ensure that (x, y) is a correct solution to the elliptic curve
 equation.  For these curves, implementors do not need to verify
 membership in the correct subgroup.
 
-For X25519 and X448, the contents of the public value is the K_A
+For X25519 and X448, the content of the public value is the K_A
 or K_B value described in Section 6 of {{RFC7748}}.
 This is 32 bytes for X25519 and 56 bytes for X448.
 
