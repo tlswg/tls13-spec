@@ -4356,8 +4356,8 @@ input secrets are:
   the resumption_secret value from a previous connection)
 - (EC)DHE shared secret ({{ecdhe-shared-secret-calculation}})
 
-This produces a full key derivation schedule shown in the diagram below.
-In this diagram, the following formatting conventions apply:
+This produces the overall key schedule shown in the diagram below
+({{key-schedule-diagram}}. In this diagram, the following formatting conventions apply:
 
 - HKDF-Extract is drawn as taking the Salt argument from the top and
   the IKM argument from the left, with its output to the bottom and
@@ -4371,6 +4371,10 @@ In this diagram, the following formatting conventions apply:
 Note: the key derivation labels use the string "master" even though
 the values are referred to as "main" secrets.  This mismatch is a
 result of renaming the values while retaining compatibility.
+
+Note: this does not show all the leaf keys such as the separate
+AEAD and IV keys but rather the first set of secrets derived
+from the handshake.
 
 ~~~~ aasvg
                  0
@@ -4426,6 +4430,7 @@ result of renaming the values while retaining compatibility.
                                        ClientHello...client Finished)
                                 = resumption_secret
 ~~~~
+{: #key-schedule-diagram title="Overall TLS 1.3 Key Schedule"}
 
 The general pattern here is that the secrets shown down the left side
 of the diagram are just raw entropy without context, whereas the
