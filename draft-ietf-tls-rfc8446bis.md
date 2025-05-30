@@ -445,7 +445,7 @@ secure channel should provide the following properties:
 * Confidentiality: Data sent over the channel after establishment
   is only visible to the
   endpoints. TLS does not hide the length of the data it transmits,
-  though endpoints are able to pad TLS records in order to obscure lengths
+  though endpoints are able to pad TLS records to obscure lengths
   and improve protection against traffic analysis techniques.
 
 * Integrity: Data sent over the channel after establishment cannot be
@@ -855,7 +855,7 @@ instead of a full handshake.
 In TLS 1.2 and below, this functionality was provided by "session IDs" and
 "session tickets" {{RFC5077}}. Both mechanisms are obsoleted in TLS 1.3.
 
-PSKs can be used with (EC)DHE key exchange in order to provide forward
+PSKs can be used with (EC)DHE key exchange to provide forward
 secrecy in combination with shared keys, or can be used alone, at the
 cost of losing forward secrecy for the application data.
 
@@ -1897,7 +1897,7 @@ extension. A server which negotiates TLS 1.3 MUST respond by sending a
 After checking ServerHello.random to determine if the server handshake message
 is a ServerHello or HelloRetryRequest, clients MUST check for this extension
 prior to processing the rest of the ServerHello. This will require clients to
-parse the ServerHello in order to read the extension.
+parse the ServerHello to read the extension.
 If this extension is present, clients MUST ignore the
 ServerHello.legacy_version value and MUST use only the
 "supported_versions" extension to determine the selected version. If the
@@ -2288,7 +2288,7 @@ supported by the client.
 
 The "key_share" extension contains the endpoint's cryptographic parameters.
 
-Clients MAY send an empty client_shares list in order to request
+Clients MAY send an empty client_shares list to request
 group selection from the server, at the cost of an additional round trip
 (see {{hello-retry-request}}).
 
@@ -2466,7 +2466,7 @@ for each curve.
 
 ### Pre-Shared Key Exchange Modes
 
-In order to use PSKs, clients MUST also send a "psk_key_exchange_modes"
+To use PSKs, clients MUST also send a "psk_key_exchange_modes"
 extension. The semantics of this extension are that the client only
 supports the use of PSKs with these modes, which restricts both the
 use of PSKs offered in this ClientHello and those which the server
@@ -2721,7 +2721,7 @@ SHOULD select a single PSK and validate solely the binder that
 corresponds to that PSK.
 See {{client-hello-recording}} and {{psk-identity-exposure}} for the
 security rationale for this requirement.
-In order to accept PSK key establishment, the
+To accept PSK key establishment, the
 server sends a "pre_shared_key" extension indicating the selected
 identity.
 
@@ -2875,7 +2875,7 @@ certificate_request_context:
   described in {{post-handshake-authentication}}.
   When requesting post-handshake authentication, the server SHOULD
   make the context unpredictable to the client (e.g., by
-  randomly generating it) in order to prevent an attacker who
+  randomly generating it) to prevent an attacker who
   has temporary access to the client's private key from
   pre-computing valid CertificateVerify messages.
 
@@ -3414,7 +3414,7 @@ original connection is still open. Servers MAY send multiple tickets on a
 single connection, either immediately after each other or
 after specific events (see {{client-tracking}}).
 For instance, the server might send a new ticket after post-handshake
-authentication in order to encapsulate the additional client
+authentication thus encapsulating the additional client
 authentication state. Multiple tickets are useful for clients
 for a variety of purposes, including:
 
@@ -3614,8 +3614,8 @@ attacks.
 With a 128-bit key as in AES-128, rekeying 2^64 times has a high
 probability of key reuse within a given connection.  Note that even
 if the key repeats, the IV is also independently generated, so the
-chance of a joint key/IV collision is much lower.  In order
-to provide an extra margin of security, sending implementations MUST
+chance of a joint key/IV collision is much lower.
+To provide an extra margin of security, sending implementations MUST
 NOT allow the epoch -- and hence the number of key updates --
 to exceed 2^48-1.  In order to allow this value to be changed later
 -- for instance for ciphers with more than 128-bit keys --
@@ -3750,7 +3750,7 @@ fragment
 
 This document describes TLS 1.3, which uses the version 0x0304.
 This version value is historical, deriving from the use of 0x0301
-for TLS 1.0 and 0x0300 for SSL 3.0. In order to maximize backward
+for TLS 1.0 and 0x0300 for SSL 3.0. To maximize backward
 compatibility, a record containing an initial ClientHello SHOULD have version
 0x0301 (reflecting TLS 1.0) and a record containing a second ClientHello or
 a ServerHello MUST have version
@@ -3861,7 +3861,7 @@ lengths of plaintext. Symbolically,
 
 The encrypted_record field of TLSCiphertext is set to AEADEncrypted.
 
-In order to decrypt and verify, the cipher takes as input the key, nonce,
+To decrypt and verify, the cipher takes as input the key, nonce,
 additional data, and the AEADEncrypted value. The output is either the plaintext
 or an error indicating that the decryption failed. There is no separate
 integrity check. Symbolically,
@@ -4678,7 +4678,7 @@ to grow without bound, but a server can instead record ClientHellos within
 a given time window and use the "obfuscated_ticket_age" to ensure that
 tickets aren't reused outside that window.
 
-In order to implement this, when a ClientHello is received, the server
+To implement this, when a ClientHello is received, the server
 first verifies the PSK binder as described in
 {{pre-shared-key-extension}}. It then computes the
 expected_arrival_time as described in the next section and rejects
@@ -4754,7 +4754,7 @@ needs to store an unlimited number of ClientHellos, and is a useful optimization
 self-contained single-use tickets because it allows efficient rejection of ClientHellos
 which cannot be used for 0-RTT.
 
-In order to implement this mechanism, a server needs to store the time
+To implement this mechanism, a server needs to store the time
 that the server generated the session ticket, offset by an estimate of
 the round-trip time between client and server. I.e.,
 
@@ -5462,7 +5462,7 @@ or MAY be validated to match the fixed constant value.
 Version negotiation is performed using only the handshake versions
 (ClientHello.legacy_version and ServerHello.legacy_version, as well as the
 ClientHello, HelloRetryRequest, and ServerHello "supported_versions" extensions).
-In order to maximize interoperability with older endpoints, implementations
+To maximize interoperability with older endpoints, implementations
 that negotiate the use of TLS 1.0-1.2 SHOULD set the record layer
 version number to the negotiated version for the ServerHello and all
 records thereafter.
@@ -5503,7 +5503,7 @@ Some legacy server implementations are known to not implement the TLS
 specification properly and might abort connections upon encountering
 TLS extensions or versions which they are not aware of. Interoperability
 with buggy servers is a complex topic beyond the scope of this document.
-Multiple connection attempts may be required in order to negotiate
+Multiple connection attempts may be required to negotiate
 a backward-compatible connection; however, this practice is vulnerable
 to downgrade attacks and is NOT RECOMMENDED.
 
@@ -5599,7 +5599,7 @@ and they MUST NOT be negotiated for any reason.
 Implementations MUST NOT send an SSL version 2.0 compatible CLIENT-HELLO.
 Implementations MUST NOT negotiate TLS 1.3 or later using an SSL version 2.0 compatible
 CLIENT-HELLO. Implementations are NOT RECOMMENDED to accept an SSL version 2.0 compatible
-CLIENT-HELLO in order to negotiate older versions of TLS.
+CLIENT-HELLO to negotiate older versions of TLS.
 
 Implementations MUST NOT send a ClientHello.legacy_version or ServerHello.legacy_version
 set to 0x0300 or less. Any endpoint receiving a Hello message with
@@ -6035,7 +6035,7 @@ response). Potential attacks include:
 item or transferring money) to be duplicated, thus harming the site or
 the user.
 
-- Attackers can store and replay 0-RTT messages in order to
+- Attackers can store and replay 0-RTT messages to
 reorder them with respect to other messages (e.g., moving
 a delete to after a create).
 
