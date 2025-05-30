@@ -2801,7 +2801,7 @@ Note that in the first flight, Truncate(ClientHello1) is hashed directly,
 but in the second flight, ClientHello1 is hashed and then reinjected as a
 "message_hash" message, as described in {{the-transcript-hash}}.
 Note that the "message_hash" will be hashed with the negotiated function,
-which may or may match the hash associated with the PSK. This is
+which may or may not match the hash associated with the PSK. This is
 consistent with how the transcript is calculated for the rest
 of the handshake.
 
