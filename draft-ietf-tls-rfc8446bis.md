@@ -5637,7 +5637,10 @@ mutually authenticated (client and server) functionality. At the completion
 of the handshake, each side outputs its view of the following values:
 
 - A set of "session keys" (the various secrets derived from the main secret)
-  from which can be derived a set of working keys.
+  from which can be derived a set of working keys. Note that when early data
+  is in use, secrets are also derived from the early secret. These enjoy
+  somewhat weaker properties than those derived from the main secret,
+  as detailed below.
 - A set of cryptographic parameters (algorithms, etc.).
 - The identities of the communicating parties.
 
