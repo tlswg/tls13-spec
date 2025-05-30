@@ -4356,7 +4356,7 @@ input secrets are:
   the resumption_secret value from a previous connection)
 - (EC)DHE shared secret ({{ecdhe-shared-secret-calculation}})
 
-This produces a full key derivation schedule shown in the diagram below.
+This produces the first stage of key schedule shown in the diagram below.
 In this diagram, the following formatting conventions apply:
 
 - HKDF-Extract is drawn as taking the Salt argument from the top and
