@@ -5248,12 +5248,6 @@ Auth | {CertificateVerify*}
               DOI 10.17487/RFC8422, August 2018,
               <https://www.rfc-editor.org/rfc/rfc8422>.
 
-   [RFC8444]  Psenak, P., Ed., Kumar, N., Wijnands, IJ., Dolganow, A.,
-              Przygienda, T., Zhang, J., and S. Aldrin, "OSPFv2
-              Extensions for Bit Index Explicit Replication (BIER)",
-              RFC 8444, DOI 10.17487/RFC8444, November 2018,
-              <https://www.rfc-editor.org/rfc/rfc8444>.
-
    [RFC8446]  Rescorla, E., "The Transport Layer Security (TLS) Protocol
               Version 1.3", RFC 8446, DOI 10.17487/RFC8446, August 2018,
               <https://www.rfc-editor.org/rfc/rfc8446>.
@@ -6875,7 +6869,7 @@ F.8.  Misbinding when using Self-Signed Certificates or Raw Public Keys
    identities (as in DTLS-SRTP [RFC5763]) or raw public keys [RFC7250]
    or for peer authentication, it may be vulnerable to misbinding
    attacks [MM24].  This risk can be mitigated by using the
-   "external_id_hash" extension [RFC8444] or, if only the server is
+   "external_id_hash" extension [RFC8844] or, if only the server is
    being authenticated, by the server verifying that the "server_name"
    extension matches its expected identity.
 
