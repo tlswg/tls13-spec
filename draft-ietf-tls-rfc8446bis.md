@@ -6148,7 +6148,7 @@ When TLS 1.3 is used with self-signed certificates without useful
 identities (as in DTLS-SRTP {{?RFC5763}}) or raw public keys
 {{RFC7250}} or for peer authentication, it may be vulnerable to
 misbinding attacks {{MM24}}. This risk can be mitigated by using
-the "external_id_hash" extension {{?RFC8444}} or, if only
+the "external_id_hash" extension {{?RFC8844}} or, if only
 the server is being authenticated, by the server verifying
 that the "server_name" extension matches its expected identity.
 
