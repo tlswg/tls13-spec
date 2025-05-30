@@ -5040,7 +5040,8 @@ by IANA:
 
 ## Changes for this RFC {#bis-changes}
 
-IANA [shall update/has updated] the TLS registries to reference this document.
+IANA [shall update/has updated] all references to RFC 8446 in the IANA
+registries with references to this document.
 
 IANA [shall rename/has renamed] the "extended_master_secret" value
 in the TLS ExtensionType Values registry to "extended_main_secret".
