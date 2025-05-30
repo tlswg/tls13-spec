@@ -1624,7 +1624,7 @@ Algorithm (EdDSA) <span>[<a href="#RFC8032" class="cite xref">RFC8032</a>]</span
           <p id="section-1-3.2.1">Confidentiality: Data sent over the channel after establishment
 is only visible to the
 endpoints. TLS does not hide the length of the data it transmits,
-though endpoints are able to pad TLS records in order to obscure lengths
+though endpoints are able to pad TLS records to obscure lengths
 and improve protection against traffic analysis techniques.<a href="#section-1-3.2.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-1-3.3">
@@ -2192,7 +2192,7 @@ from the initial handshake is used to bootstrap the cryptographic state
 instead of a full handshake.
 In TLS 1.2 and below, this functionality was provided by "session IDs" and
 "session tickets" <span>[<a href="#RFC5077" class="cite xref">RFC5077</a>]</span>. Both mechanisms are obsoleted in TLS 1.3.<a href="#section-2.2-1" class="pilcrow">¶</a></p>
-<p id="section-2.2-2">PSKs can be used with (EC)DHE key exchange in order to provide forward
+<p id="section-2.2-2">PSKs can be used with (EC)DHE key exchange to provide forward
 secrecy in combination with shared keys, or can be used alone, at the
 cost of losing forward secrecy for the application data.<a href="#section-2.2-2" class="pilcrow">¶</a></p>
 <p id="section-2.2-3"><a href="#tls-resumption-psk" class="auto internal xref">Figure 3</a> shows a pair of handshakes in which the first handshake establishes
@@ -3592,7 +3592,7 @@ extension. A server which negotiates TLS 1.3 MUST respond by sending a
 <p id="section-4.2.1-6">After checking ServerHello.random to determine if the server handshake message
 is a ServerHello or HelloRetryRequest, clients MUST check for this extension
 prior to processing the rest of the ServerHello. This will require clients to
-parse the ServerHello in order to read the extension.
+parse the ServerHello to read the extension.
 If this extension is present, clients MUST ignore the
 ServerHello.legacy_version value and MUST use only the
 "supported_versions" extension to determine the selected version. If the
@@ -4019,7 +4019,7 @@ supported by the client.<a href="#section-4.2.7-7" class="pilcrow">¶</a></p>
 <a href="#section-4.2.8" class="section-number selfRef">4.2.8. </a><a href="#name-key-share" class="section-name selfRef">Key Share</a>
           </h4>
 <p id="section-4.2.8-1">The "key_share" extension contains the endpoint's cryptographic parameters.<a href="#section-4.2.8-1" class="pilcrow">¶</a></p>
-<p id="section-4.2.8-2">Clients MAY send an empty client_shares list in order to request
+<p id="section-4.2.8-2">Clients MAY send an empty client_shares list to request
 group selection from the server, at the cost of an additional round trip
 (see <a href="#hello-retry-request" class="auto internal xref">Section 4.1.4</a>).<a href="#section-4.2.8-2" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-4.2.8-3">
@@ -4215,7 +4215,7 @@ for each curve.<a href="#section-4.2.8.2-7" class="pilcrow">¶</a></p>
           <h4 id="name-pre-shared-key-exchange-mod">
 <a href="#section-4.2.9" class="section-number selfRef">4.2.9. </a><a href="#name-pre-shared-key-exchange-mod" class="section-name selfRef">Pre-Shared Key Exchange Modes</a>
           </h4>
-<p id="section-4.2.9-1">In order to use PSKs, clients MUST also send a "psk_key_exchange_modes"
+<p id="section-4.2.9-1">To use PSKs, clients MUST also send a "psk_key_exchange_modes"
 extension. The semantics of this extension are that the client only
 supports the use of PSKs with these modes, which restricts both the
 use of PSKs offered in this ClientHello and those which the server
@@ -4488,7 +4488,7 @@ SHOULD select a single PSK and validate solely the binder that
 corresponds to that PSK.
 See <a href="#client-hello-recording" class="auto internal xref">Section 8.2</a> and <a href="#psk-identity-exposure" class="auto internal xref">Appendix F.6</a> for the
 security rationale for this requirement.
-In order to accept PSK key establishment, the
+To accept PSK key establishment, the
 server sends a "pre_shared_key" extension indicating the selected
 identity.<a href="#section-4.2.11-8" class="pilcrow">¶</a></p>
 <p id="section-4.2.11-9">Clients MUST verify that the server's selected_identity is within the
@@ -4667,7 +4667,7 @@ unless used for the post-handshake authentication exchanges
 described in <a href="#post-handshake-authentication" class="auto internal xref">Section 4.6.2</a>.
 When requesting post-handshake authentication, the server SHOULD
 make the context unpredictable to the client (e.g., by
-randomly generating it) in order to prevent an attacker who
+randomly generating it) to prevent an attacker who
 has temporary access to the client's private key from
 pre-computing valid CertificateVerify messages.<a href="#section-4.3.2-4.2.1" class="pilcrow">¶</a></p>
 </dd>
@@ -5298,7 +5298,7 @@ original connection is still open. Servers MAY send multiple tickets on a
 single connection, either immediately after each other or
 after specific events (see <a href="#client-tracking" class="auto internal xref">Appendix C.4</a>).
 For instance, the server might send a new ticket after post-handshake
-authentication in order to encapsulate the additional client
+authentication thus encapsulating the additional client
 authentication state. Multiple tickets are useful for clients
 for a variety of purposes, including:<a href="#section-4.6.1-2" class="pilcrow">¶</a></p>
 <ul class="normal">
@@ -5511,8 +5511,8 @@ attacks.<a href="#section-4.6.3-7" class="pilcrow">¶</a></p>
 <p id="section-4.6.3-8">With a 128-bit key as in AES-128, rekeying 2^64 times has a high
 probability of key reuse within a given connection.  Note that even
 if the key repeats, the IV is also independently generated, so the
-chance of a joint key/IV collision is much lower.  In order
-to provide an extra margin of security, sending implementations MUST
+chance of a joint key/IV collision is much lower.
+To provide an extra margin of security, sending implementations MUST
 NOT allow the epoch -- and hence the number of key updates --
 to exceed 2^48-1.  In order to allow this value to be changed later
 -- for instance for ciphers with more than 128-bit keys --
@@ -5660,7 +5660,7 @@ specified by the type field.<a href="#section-5.1-8.8.1" class="pilcrow">¶</a><
 </dl>
 <p id="section-5.1-9">This document describes TLS 1.3, which uses the version 0x0304.
 This version value is historical, deriving from the use of 0x0301
-for TLS 1.0 and 0x0300 for SSL 3.0. In order to maximize backward
+for TLS 1.0 and 0x0300 for SSL 3.0. To maximize backward
 compatibility, a record containing an initial ClientHello SHOULD have version
 0x0301 (reflecting TLS 1.0) and a record containing a second ClientHello or
 a ServerHello MUST have version
@@ -5790,7 +5790,7 @@ lengths of plaintext. Symbolically,<a href="#section-5.2-7" class="pilcrow">¶</
 </pre><a href="#section-5.2-8" class="pilcrow">¶</a>
 </div>
 <p id="section-5.2-9">The encrypted_record field of TLSCiphertext is set to AEADEncrypted.<a href="#section-5.2-9" class="pilcrow">¶</a></p>
-<p id="section-5.2-10">In order to decrypt and verify, the cipher takes as input the key, nonce,
+<p id="section-5.2-10">To decrypt and verify, the cipher takes as input the key, nonce,
 additional data, and the AEADEncrypted value. The output is either the plaintext
 or an error indicating that the decryption failed. There is no separate
 integrity check. Symbolically,<a href="#section-5.2-10" class="pilcrow">¶</a></p>
@@ -6795,7 +6795,7 @@ binder) and reject duplicates. Recording all ClientHellos causes state
 to grow without bound, but a server can instead record ClientHellos within
 a given time window and use the "obfuscated_ticket_age" to ensure that
 tickets aren't reused outside that window.<a href="#section-8.2-1" class="pilcrow">¶</a></p>
-<p id="section-8.2-2">In order to implement this, when a ClientHello is received, the server
+<p id="section-8.2-2">To implement this, when a ClientHello is received, the server
 first verifies the PSK binder as described in
 <a href="#pre-shared-key-extension" class="auto internal xref">Section 4.2.11</a>. It then computes the
 expected_arrival_time as described in the next section and rejects
@@ -6867,7 +6867,7 @@ described in <a href="#client-hello-recording" class="auto internal xref">Sectio
 needs to store an unlimited number of ClientHellos, and is a useful optimization for
 self-contained single-use tickets because it allows efficient rejection of ClientHellos
 which cannot be used for 0-RTT.<a href="#section-8.3-1" class="pilcrow">¶</a></p>
-<p id="section-8.3-2">In order to implement this mechanism, a server needs to store the time
+<p id="section-8.3-2">To implement this mechanism, a server needs to store the time
 that the server generated the session ticket, offset by an estimate of
 the round-trip time between client and server. I.e.,<a href="#section-8.3-2" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-8.3-3">
@@ -8881,7 +8881,7 @@ or MAY be validated to match the fixed constant value.
 Version negotiation is performed using only the handshake versions
 (ClientHello.legacy_version and ServerHello.legacy_version, as well as the
 ClientHello, HelloRetryRequest, and ServerHello "supported_versions" extensions).
-In order to maximize interoperability with older endpoints, implementations
+To maximize interoperability with older endpoints, implementations
 that negotiate the use of TLS 1.0-1.2 SHOULD set the record layer
 version number to the negotiated version for the ServerHello and all
 records thereafter.<a href="#appendix-E-3" class="pilcrow">¶</a></p>
@@ -8918,7 +8918,7 @@ acceptable), the client MUST abort the handshake with a "protocol_version" alert
 specification properly and might abort connections upon encountering
 TLS extensions or versions which they are not aware of. Interoperability
 with buggy servers is a complex topic beyond the scope of this document.
-Multiple connection attempts may be required in order to negotiate
+Multiple connection attempts may be required to negotiate
 a backward-compatible connection; however, this practice is vulnerable
 to downgrade attacks and is NOT RECOMMENDED.<a href="#appendix-E.1-4" class="pilcrow">¶</a></p>
 </section>
@@ -9023,7 +9023,7 @@ and they MUST NOT be negotiated for any reason.<a href="#appendix-E.5-4" class="
 <p id="appendix-E.5-5">Implementations MUST NOT send an SSL version 2.0 compatible CLIENT-HELLO.
 Implementations MUST NOT negotiate TLS 1.3 or later using an SSL version 2.0 compatible
 CLIENT-HELLO. Implementations are NOT RECOMMENDED to accept an SSL version 2.0 compatible
-CLIENT-HELLO in order to negotiate older versions of TLS.<a href="#appendix-E.5-5" class="pilcrow">¶</a></p>
+CLIENT-HELLO to negotiate older versions of TLS.<a href="#appendix-E.5-5" class="pilcrow">¶</a></p>
 <p id="appendix-E.5-6">Implementations MUST NOT send a ClientHello.legacy_version or ServerHello.legacy_version
 set to 0x0300 or less. Any endpoint receiving a Hello message with
 ClientHello.legacy_version or ServerHello.legacy_version set to 0x0300 MUST
@@ -9524,7 +9524,7 @@ item or transferring money) to be duplicated, thus harming the site or
 the user.<a href="#appendix-F.5-2.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="appendix-F.5-2.2">
-            <p id="appendix-F.5-2.2.1">Attackers can store and replay 0-RTT messages in order to
+            <p id="appendix-F.5-2.2.1">Attackers can store and replay 0-RTT messages to
 reorder them with respect to other messages (e.g., moving
 a delete to after a create).<a href="#appendix-F.5-2.2.1" class="pilcrow">¶</a></p>
 </li>
