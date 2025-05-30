@@ -4,10 +4,10 @@
 
 Transport Layer Security                                     E. Rescorla
 Internet-Draft                                               Independent
-Obsoletes: 8446 (if approved)                           18 February 2025
+Obsoletes: 8446 (if approved)                                30 May 2025
 Updates: 5705, 6066, 7627, 8422 (if approved)                           
 Intended status: Standards Track                                        
-Expires: 22 August 2025
+Expires: 1 December 2025
 
 
         The Transport Layer Security (TLS) Protocol Version 1.3
@@ -39,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 22 August 2025.
+   This Internet-Draft will expire on 1 December 2025.
 
 Copyright Notice
 
@@ -2539,9 +2539,9 @@ Auth | {CertificateVerify*}
    Truncate(ClientHello1) is hashed directly, but in the second flight,
    ClientHello1 is hashed and then reinjected as a "message_hash"
    message, as described in Section 4.4.1.  Note that the "message_hash"
-   will be hashed with the negotiated function, which may or may match
-   the hash associated with the PSK.  This is consistent with how the
-   transcript is calculated for the rest of the handshake.
+   will be hashed with the negotiated function, which may or may not
+   match the hash associated with the PSK.  This is consistent with how
+   the transcript is calculated for the rest of the handshake.
 
 4.2.11.3.  Processing Order
 
@@ -5027,7 +5027,7 @@ Auth | {CertificateVerify*}
               DOI 10.6028/nist.sp.800-186, February 2023,
               <https://doi.org/10.6028/nist.sp.800-186>.
 
-   [FETCH]    WHATWG, "Fetch Standard", February 2025,
+   [FETCH]    WHATWG, "Fetch Standard", May 2025,
               <https://fetch.spec.whatwg.org/>.
 
    [FG17]     Fischlin, M. and F. Guenther, "Replay Attacks on Zero
@@ -5059,9 +5059,9 @@ Auth | {CertificateVerify*}
    [I-D.ietf-tls-esni]
               Rescorla, E., Oku, K., Sullivan, N., and C. A. Wood, "TLS
               Encrypted Client Hello", Work in Progress, Internet-Draft,
-              draft-ietf-tls-esni-22, 15 September 2024,
+              draft-ietf-tls-esni-24, 20 March 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-tls-
-              esni-22>.
+              esni-24>.
 
    [JSS15]    Jager, T., Schwenk, J., and J. Somorovsky, "On the
               Security of TLS 1.3 and QUIC Against Weaknesses in PKCS#1
