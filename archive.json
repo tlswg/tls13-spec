@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-05-11T00:59:00.394038+00:00",
+  "timestamp": "2025-06-01T01:07:56.843763+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -13908,6 +13908,22 @@
       "body": "See [erratum](https://www.rfc-editor.org/errata/eid8411).",
       "createdAt": "2025-05-09T00:51:24Z",
       "updatedAt": "2025-05-09T00:51:24Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 1386,
+      "id": "I_kwDOASA0os64-_mb",
+      "title": "Address Muhammad Usama Sardar's comments on the key schedule",
+      "url": "https://github.com/tlswg/tls13-spec/issues/1386",
+      "state": "OPEN",
+      "author": "ekr",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "See TLS list. This is just a reminder to me to do this",
+      "createdAt": "2025-05-30T15:14:11Z",
+      "updatedAt": "2025-05-30T15:14:11Z",
       "closedAt": null,
       "comments": []
     }
@@ -69234,6 +69250,428 @@
       "mergeCommit": null,
       "comments": [],
       "reviews": []
+    },
+    {
+      "number": 1381,
+      "id": "PR_kwDOASA0os6YK_94",
+      "title": "external psk selfie attack",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1381",
+      "state": "OPEN",
+      "author": "ms-s",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Acknowledging the Seflie attack when using external PSKs and adding pointers to RFC 9257/9258 for guidance on how to avoid.",
+      "createdAt": "2025-05-29T19:13:39Z",
+      "updatedAt": "2025-05-29T19:29:41Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "main",
+      "baseRefOid": "90ba604f4a441495cea8284bf79bfb9ca9c3e638",
+      "headRepository": "ms-s/tls13-spec",
+      "headRefName": "psk-selfie-text",
+      "headRefOid": "a235d672420ab4398199d83a69b6137b34a83074",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 1382,
+      "id": "PR_kwDOASA0os6YLEQa",
+      "title": "rpk misbinding and clarification",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1382",
+      "state": "OPEN",
+      "author": "ms-s",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Changes in PR:\r\n\r\nSection 2: Protocol Overview: It is technically incorrect to say that if the Certificate message contains a raw public key then the message will not contain a certificate. Especially when we later say \"If the RawPublicKey certificate type was negotiated\". Adding the X.509 makes it explicit what is intended.\r\n\r\nTypo: remove a stray \"or\" in Appendix.\r\n\r\nAdd self as contributor.\r\n",
+      "createdAt": "2025-05-29T19:21:04Z",
+      "updatedAt": "2025-05-29T19:21:05Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "main",
+      "baseRefOid": "90ba604f4a441495cea8284bf79bfb9ca9c3e638",
+      "headRepository": "ms-s/tls13-spec",
+      "headRefName": "rpk-text-fix",
+      "headRefOid": "63589fb63824138b43def5ae75866dc09c425e30",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 1383,
+      "id": "PR_kwDOASA0os6YSFB6",
+      "title": "\"May or may not\" per Erik Kline's comments.",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1383",
+      "state": "MERGED",
+      "author": "ekr",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-05-30T14:12:19Z",
+      "updatedAt": "2025-05-30T16:44:23Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "main",
+      "baseRefOid": "90ba604f4a441495cea8284bf79bfb9ca9c3e638",
+      "headRepository": "ekr/tls13-spec",
+      "headRefName": "ekline_comments",
+      "headRefOid": "d2c01f306b43ce6ecfa95d2487c64ad158d6172f",
+      "closedAt": "2025-05-30T16:44:23Z",
+      "mergedAt": "2025-05-30T16:44:23Z",
+      "mergedBy": "ekr",
+      "mergeCommit": {
+        "oid": "bada78b635a5c0804c0515e68dd313c3138db411"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOASA0os6rwE8T",
+          "commit": {
+            "abbreviatedOid": "d2c01f3"
+          },
+          "author": "seanturner",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-05-30T14:18:18Z",
+          "updatedAt": "2025-05-30T14:18:18Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 1384,
+      "id": "PR_kwDOASA0os6YSKjo",
+      "title": "Remove a bunch of unnecessary uses of \"in order\", both to avoid",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1384",
+      "state": "MERGED",
+      "author": "ekr",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "confusion and to omit needless words.",
+      "createdAt": "2025-05-30T14:22:09Z",
+      "updatedAt": "2025-05-30T16:45:05Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "main",
+      "baseRefOid": "90ba604f4a441495cea8284bf79bfb9ca9c3e638",
+      "headRepository": "ekr/tls13-spec",
+      "headRefName": "fairhurst_in_order",
+      "headRefOid": "ac8fd276da2221319afda0d07e0273b3b0252cc8",
+      "closedAt": "2025-05-30T16:45:05Z",
+      "mergedAt": "2025-05-30T16:45:05Z",
+      "mergedBy": "ekr",
+      "mergeCommit": {
+        "oid": "1a5f9cb4875f0cda06d7300b20b28573fe0f1341"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOASA0os6rwn-T",
+          "commit": {
+            "abbreviatedOid": "ac8fd27"
+          },
+          "author": "seanturner",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-05-30T15:09:39Z",
+          "updatedAt": "2025-05-30T15:09:39Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 1385,
+      "id": "PR_kwDOASA0os6YSb1V",
+      "title": "Mike Bishop text comments (1)",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1385",
+      "state": "MERGED",
+      "author": "ekr",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-05-30T14:52:53Z",
+      "updatedAt": "2025-05-30T16:44:43Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "main",
+      "baseRefOid": "90ba604f4a441495cea8284bf79bfb9ca9c3e638",
+      "headRepository": "ekr/tls13-spec",
+      "headRefName": "bishop_comments",
+      "headRefOid": "d4dc301557f8c41439f39307a05c12fc055842fa",
+      "closedAt": "2025-05-30T16:44:43Z",
+      "mergedAt": "2025-05-30T16:44:43Z",
+      "mergedBy": "ekr",
+      "mergeCommit": {
+        "oid": "fa48c6c6866659a26788cc30962708e7db84b6fc"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOASA0os6rwnm7",
+          "commit": {
+            "abbreviatedOid": "d4dc301"
+          },
+          "author": "seanturner",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-05-30T15:09:02Z",
+          "updatedAt": "2025-05-30T15:09:02Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 1387,
+      "id": "PR_kwDOASA0os6YS4Dz",
+      "title": "Fix reference",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1387",
+      "state": "MERGED",
+      "author": "ekr",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-05-30T15:45:39Z",
+      "updatedAt": "2025-05-30T16:44:53Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "main",
+      "baseRefOid": "90ba604f4a441495cea8284bf79bfb9ca9c3e638",
+      "headRepository": "ekr/tls13-spec",
+      "headRefName": "talaulikar_comments",
+      "headRefOid": "acdd728a1ed4daaa4a591bcaf486ad72247f3876",
+      "closedAt": "2025-05-30T16:44:53Z",
+      "mergedAt": "2025-05-30T16:44:52Z",
+      "mergedBy": "ekr",
+      "mergeCommit": {
+        "oid": "3b8d62caeb5538e3e966a4f6f48d7c863177a80a"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOASA0os6rxXal",
+          "commit": {
+            "abbreviatedOid": "acdd728"
+          },
+          "author": "seanturner",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-05-30T16:29:06Z",
+          "updatedAt": "2025-05-30T16:29:06Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 1388,
+      "id": "PR_kwDOASA0os6YTN6x",
+      "title": "First stage instead of full key schedule",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1388",
+      "state": "CLOSED",
+      "author": "muhammad-usama-sardar",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Figure in Sec. 7.1 is only first stage of key schedule (as discussed on the list)",
+      "createdAt": "2025-05-30T16:33:16Z",
+      "updatedAt": "2025-05-30T19:03:52Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "main",
+      "baseRefOid": "90ba604f4a441495cea8284bf79bfb9ca9c3e638",
+      "headRepository": "muhammad-usama-sardar/tls13-spec",
+      "headRefName": "patch-1",
+      "headRefOid": "3871bb9b18c88ddc02a3ef29620b59549eb92b5b",
+      "closedAt": "2025-05-30T19:03:51Z",
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I addressed this slightly differently in https://github.com/tlswg/tls13-spec/pull/1390/files",
+          "createdAt": "2025-05-30T16:44:09Z",
+          "updatedAt": "2025-05-30T16:44:09Z"
+        },
+        {
+          "author": "muhammad-usama-sardar",
+          "authorAssociation": "NONE",
+          "body": "ok thanks, closing this one then. ",
+          "createdAt": "2025-05-30T19:03:52Z",
+          "updatedAt": "2025-05-30T19:03:52Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 1389,
+      "id": "PR_kwDOASA0os6YTOvI",
+      "title": "Sudar comments",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1389",
+      "state": "CLOSED",
+      "author": "ekr",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "@martinthomson @beurdouche ",
+      "createdAt": "2025-05-30T16:34:36Z",
+      "updatedAt": "2025-05-30T16:43:32Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "main",
+      "baseRefOid": "90ba604f4a441495cea8284bf79bfb9ca9c3e638",
+      "headRepository": "tlswg/tls13-spec",
+      "headRefName": "sudar_comments",
+      "headRefOid": "6822af7162b6f3580d0633a000a233c0f2ea091a",
+      "closedAt": "2025-05-30T16:42:25Z",
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 1390,
+      "id": "PR_kwDOASA0os6YTSlM",
+      "title": "Sardar comments",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1390",
+      "state": "OPEN",
+      "author": "ekr",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "@martinthomson @beurdouche ",
+      "createdAt": "2025-05-30T16:43:02Z",
+      "updatedAt": "2025-05-31T07:11:21Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "main",
+      "baseRefOid": "90ba604f4a441495cea8284bf79bfb9ca9c3e638",
+      "headRepository": "ekr/tls13-spec",
+      "headRefName": "sardar_comments",
+      "headRefOid": "6822af7162b6f3580d0633a000a233c0f2ea091a",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOASA0os6rzB0C",
+          "commit": {
+            "abbreviatedOid": "6822af7"
+          },
+          "author": "muhammad-usama-sardar",
+          "authorAssociation": "NONE",
+          "state": "CHANGES_REQUESTED",
+          "body": "\"Overall\" still does not seem good. ",
+          "createdAt": "2025-05-30T19:06:27Z",
+          "updatedAt": "2025-05-30T19:10:23Z",
+          "comments": [
+            {
+              "originalPosition": 6,
+              "body": "I still have trouble with calling it \"overall\" which gives an impression of completeness. I still propose calling it `first stage of key schedule` because this is exactly what it is. ",
+              "createdAt": "2025-05-30T19:06:27Z",
+              "updatedAt": "2025-05-30T19:10:23Z"
+            },
+            {
+              "originalPosition": 26,
+              "body": "Same as above comment. ",
+              "createdAt": "2025-05-30T19:09:17Z",
+              "updatedAt": "2025-05-30T19:10:23Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6rzGH1",
+          "commit": {
+            "abbreviatedOid": "6822af7"
+          },
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-05-30T19:15:26Z",
+          "updatedAt": "2025-05-30T19:15:26Z",
+          "comments": [
+            {
+              "originalPosition": 26,
+              "body": "I understand your point, but the idea here is that it is a consolidated picture of that first stage, so I don't think that that change is helpful in that respect.",
+              "createdAt": "2025-05-30T19:15:26Z",
+              "updatedAt": "2025-05-30T19:15:26Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6r3_D1",
+          "commit": {
+            "abbreviatedOid": "6822af7"
+          },
+          "author": "muhammad-usama-sardar",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-05-31T07:11:21Z",
+          "updatedAt": "2025-05-31T07:11:21Z",
+          "comments": [
+            {
+              "originalPosition": 26,
+              "body": "> it is a consolidated picture of that first stage\r\n\r\nI agree with this. But this is not what the current caption and text is saying. Unless it says \"first stage\" or something similar in caption, it remains misleading.",
+              "createdAt": "2025-05-31T07:11:21Z",
+              "updatedAt": "2025-05-31T07:11:21Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 1391,
+      "id": "PR_kwDOASA0os6YUOhM",
+      "title": "Clean up IANA text",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1391",
+      "state": "MERGED",
+      "author": "ekr",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-05-30T18:49:46Z",
+      "updatedAt": "2025-05-30T19:14:37Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "main",
+      "baseRefOid": "1a5f9cb4875f0cda06d7300b20b28573fe0f1341",
+      "headRepository": "ekr/tls13-spec",
+      "headRefName": "iana_comments2",
+      "headRefOid": "7a718609cc7aae9f953a390755632588f776f0ae",
+      "closedAt": "2025-05-30T19:14:37Z",
+      "mergedAt": "2025-05-30T19:14:36Z",
+      "mergedBy": "ekr",
+      "mergeCommit": {
+        "oid": "c2624eb7e0ccb3b237d3cf0826c48ae0181ac70f"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOASA0os6rzFAY",
+          "commit": {
+            "abbreviatedOid": "7a71860"
+          },
+          "author": "seanturner",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-05-30T19:13:15Z",
+          "updatedAt": "2025-05-30T19:13:15Z",
+          "comments": []
+        }
+      ]
     }
   ]
 }
