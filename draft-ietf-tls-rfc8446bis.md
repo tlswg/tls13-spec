@@ -2774,14 +2774,14 @@ length, the length of the extensions block, and the length of the
 lengths were present.
 
 The PskBinderEntry is computed in the same way as the Finished
-message ({{finished}}) but with the BaseKey being the binder_key
-derived via the key schedule from the corresponding PSK which
-is being offered (see {{key-schedule}}), i.e.,
+message ({{finished}}) but with the BaseKey being the binder_key, i.e.,
 
 ~~~
-PskBinderEntry =
     HKDF-Expand-Label(binder_key, "finished", "", Hash.length)
 ~~~
+
+binder_key is derived via the key schedule from the corresponding PSK which
+is being offered (see {{key-schedule}}).
 
 If the handshake includes a HelloRetryRequest, the initial ClientHello
 and HelloRetryRequest are included in the transcript along with the
@@ -2917,7 +2917,7 @@ but has received less analysis than this specification.
 As discussed in {{protocol-overview}}, TLS generally uses a common
 set of messages for authentication, key confirmation, and handshake
 integrity: Certificate, CertificateVerify, and Finished.
-(The PSK binders also perform key confirmation and handshake integrity (via PSKBinderEntry), in a
+(The PSK binders also perform key confirmation, in a
 similar fashion.) These three
 messages are always sent as the last messages in their handshake
 flight. The Certificate and CertificateVerify messages are only
