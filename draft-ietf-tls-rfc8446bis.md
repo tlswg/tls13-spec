@@ -767,8 +767,8 @@ Certificate:
   authenticate with a certificate). Note that if raw
   public keys {{RFC7250}} or the cached information extension
   {{?RFC7924}} are in use, then this message will not
-  contain a X.509 certificate but rather some other value corresponding
-  to the server's long-term key.  \[{{certificate}}]
+  contain a certificate but rather some other value corresponding to
+  the server's long-term key.  \[{{certificate}}]
 
 CertificateVerify:
 : A signature over the entire handshake using the private key
