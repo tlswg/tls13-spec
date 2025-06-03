@@ -25,12 +25,12 @@ new requirements for TLS 1.2 implementations.
     google-i18n-address 3.1.1
     intervaltree 3.1.0
     Jinja2 3.1.6
-    lxml 5.3.0
+    lxml 5.3.1
     platformdirs 4.3.8
     pycountry 24.6.1
     PyYAML 6.0.2
     requests 2.32.3
-    setuptools 70.3.0
+    setuptools 80.9.0
     wcwidth 0.2.13
 -->
 <link href="draft-ietf-tls-rfc8446bis.xml" rel="alternate" type="application/rfc+xml">
@@ -1050,11 +1050,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">TLS</td>
-<td class="right">May 2025</td>
+<td class="right">June 2025</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Rescorla</td>
-<td class="center">Expires 1 December 2025</td>
+<td class="center">Expires 5 December 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1073,12 +1073,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <a href="https://www.rfc-editor.org/rfc/rfc5705" class="eref">5705</a>, <a href="https://www.rfc-editor.org/rfc/rfc6066" class="eref">6066</a>, <a href="https://www.rfc-editor.org/rfc/rfc7627" class="eref">7627</a>, <a href="https://www.rfc-editor.org/rfc/rfc8422" class="eref">8422</a> (if approved)</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-05-30" class="published">30 May 2025</time>
+<time datetime="2025-06-03" class="published">3 June 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-12-01">1 December 2025</time></dd>
+<dd class="expires"><time datetime="2025-12-05">5 December 2025</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1118,7 +1118,7 @@ new requirements for TLS 1.2 implementations.<a href="#section-abstract-2" class
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 1 December 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 5 December 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -7449,7 +7449,7 @@ alert in the TLS Alerts Registry with the value given in <a href="#alert-protoco
 <dd class="break"></dd>
 <dt id="FETCH">[FETCH]</dt>
         <dd>
-<span class="refAuthor">WHATWG</span>, <span class="refTitle">"Fetch Standard"</span>, <time datetime="2025-05" class="refDate">May 2025</time>, <span>&lt;<a href="https://fetch.spec.whatwg.org/">https://fetch.spec.whatwg.org/</a>&gt;</span>. </dd>
+<span class="refAuthor">WHATWG</span>, <span class="refTitle">"Fetch Standard"</span>, <time datetime="2025-06" class="refDate">June 2025</time>, <span>&lt;<a href="https://fetch.spec.whatwg.org/">https://fetch.spec.whatwg.org/</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="FG17">[FG17]</dt>
         <dd>
@@ -9650,7 +9650,7 @@ TLS 1.2.<a href="#appendix-F.7-1" class="pilcrow">¶</a></p>
         </h3>
 <p id="appendix-F.8-1">When TLS 1.3 is used with self-signed certificates without useful
 identities (as in DTLS-SRTP <span>[<a href="#RFC5763" class="cite xref">RFC5763</a>]</span>) or raw public keys
-<span>[<a href="#RFC7250" class="cite xref">RFC7250</a>]</span> or for peer authentication, it may be vulnerable to
+<span>[<a href="#RFC7250" class="cite xref">RFC7250</a>]</span> for peer authentication, it may be vulnerable to
 misbinding attacks <span>[<a href="#MM24" class="cite xref">MM24</a>]</span>. This risk can be mitigated by using
 the "external_id_hash" extension <span>[<a href="#RFC8844" class="cite xref">RFC8844</a>]</span> or, if only
 the server is being authenticated, by the server verifying
@@ -10051,6 +10051,10 @@ change depending on previous interpretation (Issue 1227)<a href="#appendix-G-5.4
       Sam Scott
       Royal Holloway, University of London
       me@samjs.co.uk
+
+      Mohit Sethi
+      Aalto University
+      mohit@iki.fi
 
       Thomas Shrimpton
       University of Florida
