@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-06-01T01:07:56.843763+00:00",
+  "timestamp": "2025-06-03T00:57:40.397595+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -69263,7 +69263,7 @@
       "labels": [],
       "body": "Acknowledging the Seflie attack when using external PSKs and adding pointers to RFC 9257/9258 for guidance on how to avoid.",
       "createdAt": "2025-05-29T19:13:39Z",
-      "updatedAt": "2025-05-29T19:29:41Z",
+      "updatedAt": "2025-06-02T19:30:44Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "90ba604f4a441495cea8284bf79bfb9ca9c3e638",
@@ -69275,7 +69275,48 @@
       "mergedBy": null,
       "mergeCommit": null,
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOASA0os6sNiwE",
+          "commit": {
+            "abbreviatedOid": "a235d67"
+          },
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-06-02T16:50:28Z",
+          "updatedAt": "2025-06-02T16:50:33Z",
+          "comments": [
+            {
+              "originalPosition": 57,
+              "body": "```suggestion\r\n## Sharing PSKs Across Protocol Versions\r\n```",
+              "createdAt": "2025-06-02T16:50:28Z",
+              "updatedAt": "2025-06-02T16:50:33Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6sPRng",
+          "commit": {
+            "abbreviatedOid": "a235d67"
+          },
+          "author": "davidben",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-06-02T19:30:43Z",
+          "updatedAt": "2025-06-02T19:30:44Z",
+          "comments": [
+            {
+              "originalPosition": 76,
+              "body": "I'm not sure this is quite right.\r\n\r\nHaving a PSK shared between multiple servers is similar to having a private key shared between multiple servers. If the servers all play the same role, that's fine. Indeed it's quite common for TLS server deployments to be made up of multiple instances, and it *is* possible for a network attacker to rebind you from one server instance to another, at least at the TLS level. We have generally not considered this notable.\r\n\r\nThe Selfie \"attack\" is just a misuse of the TLS + PSK interface to treat it as a way to authenticate individual entities *within* some group, when, like TLS + signing key, it only authenticates the \"group\" itself.\r\n\r\nAnd so the Selfie \"attack\" has one group member act as client and server, and yet somehow its server role is distinct role from other other group members in their server roles, such that it is upset about being rebound back to itself. This is just not what the PSK interface does.\r\n\r\nThat's why the \"fix\" in RFC9258 is not really a protocol change. It's just artificially making it so that every ordered pair of members of the group has a distinct PSK. (But, to the point of the original text being misleading, the distinct PSKs are still \"known\" to all members of the group, which suggests that's not quite the property here.) You could also \"fix\" it by having your application protocol say the identities within the group.\r\n\r\n(But TBH I don't think Selfie is an attack, just a misunderstanding of TLS, and thus doesn't necessarily need to be mentioned if it'll take too long to find the right text.)",
+              "createdAt": "2025-06-02T19:30:43Z",
+              "updatedAt": "2025-06-02T19:30:44Z"
+            }
+          ]
+        }
+      ]
     },
     {
       "number": 1382,
@@ -69289,18 +69330,61 @@
       "labels": [],
       "body": "Changes in PR:\r\n\r\nSection 2: Protocol Overview: It is technically incorrect to say that if the Certificate message contains a raw public key then the message will not contain a certificate. Especially when we later say \"If the RawPublicKey certificate type was negotiated\". Adding the X.509 makes it explicit what is intended.\r\n\r\nTypo: remove a stray \"or\" in Appendix.\r\n\r\nAdd self as contributor.\r\n",
       "createdAt": "2025-05-29T19:21:04Z",
-      "updatedAt": "2025-05-29T19:21:05Z",
+      "updatedAt": "2025-06-02T19:54:46Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "90ba604f4a441495cea8284bf79bfb9ca9c3e638",
       "headRepository": "ms-s/tls13-spec",
       "headRefName": "rpk-text-fix",
-      "headRefOid": "63589fb63824138b43def5ae75866dc09c425e30",
+      "headRefOid": "0a5242167b38a2117437e810bebf38db5f767b08",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
+      "comments": [
+        {
+          "author": "ms-s",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "The pointer external_id_hash extension was incorrect. It was pointing to RFC 8444 and should have pointed to RFC 8844. Pushed another commit to fix it!",
+          "createdAt": "2025-06-02T16:29:24Z",
+          "updatedAt": "2025-06-02T16:29:24Z"
+        },
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I'm not sure I understand the distinction you're drawing here. It won't contain any kind of certificate, X.509 or otherwise. It will contain a raw public key stuffed into a certificate payload.",
+          "createdAt": "2025-06-02T16:51:41Z",
+          "updatedAt": "2025-06-02T16:51:41Z"
+        },
+        {
+          "author": "ms-s",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> I'm not sure I understand the distinction you're drawing here. It won't contain any kind of certificate, X.509 or otherwise. It will contain a raw public key stuffed into a certificate payload.\r\n\r\nFair point. I think calling it a key stuffed in a certificate payload is technically more correct. But then it causes confusion with RPK certificate type. This was discussed in EMU: https://mailarchive.ietf.org/arch/msg/emu/d_IB62rG-T6pHUN5xbE7gSL_FBE/ and https://www.rfc-editor.org/errata/eid8094",
+          "createdAt": "2025-06-02T18:00:49Z",
+          "updatedAt": "2025-06-02T18:00:49Z"
+        },
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> > I'm not sure I understand the distinction you're drawing here. It won't contain any kind of certificate, X.509 or otherwise. It will contain a raw public key stuffed into a certificate payload.\r\n> \r\n> Fair point. I think calling it a key stuffed in a certificate payload is technically more correct. But then it causes confusion with RPK certificate type. This was discussed in EMU: https://mailarchive.ietf.org/arch/msg/emu/d_IB62rG-T6pHUN5xbE7gSL_FBE/ and https://www.rfc-editor.org/errata/eid8094\r\n\r\nI agree it's a little confusing, but it's technically correct. I'm inclined to leave this as-is.",
+          "createdAt": "2025-06-02T18:12:51Z",
+          "updatedAt": "2025-06-02T18:12:51Z"
+        },
+        {
+          "author": "ms-s",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Sure. We can leave it as-is.",
+          "createdAt": "2025-06-02T19:16:26Z",
+          "updatedAt": "2025-06-02T19:16:26Z"
+        },
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I've fixed the 8444 -> 8844 issue separately. If you want to send a separate PR adding yourself to acknowledgements, I'll add you.",
+          "createdAt": "2025-06-02T19:54:45Z",
+          "updatedAt": "2025-06-02T19:54:45Z"
+        }
+      ],
       "reviews": []
     },
     {
@@ -69524,7 +69608,7 @@
       "labels": [],
       "body": "@martinthomson @beurdouche ",
       "createdAt": "2025-05-30T16:34:36Z",
-      "updatedAt": "2025-05-30T16:43:32Z",
+      "updatedAt": "2025-06-01T11:42:14Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "90ba604f4a441495cea8284bf79bfb9ca9c3e638",
@@ -69536,7 +69620,34 @@
       "mergedBy": null,
       "mergeCommit": null,
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOASA0os6r_X96",
+          "commit": {
+            "abbreviatedOid": "6822af7"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-06-01T11:41:12Z",
+          "updatedAt": "2025-06-01T11:42:14Z",
+          "comments": [
+            {
+              "originalPosition": 38,
+              "body": "want to cite the section?",
+              "createdAt": "2025-06-01T11:41:12Z",
+              "updatedAt": "2025-06-01T11:42:14Z"
+            },
+            {
+              "originalPosition": 7,
+              "body": "you could just say \"in {{key-schedule-diagram}}.\" (I'd suggest, but it won't let me.)",
+              "createdAt": "2025-06-01T11:42:10Z",
+              "updatedAt": "2025-06-01T11:42:14Z"
+            }
+          ]
+        }
+      ]
     },
     {
       "number": 1390,
@@ -69550,7 +69661,7 @@
       "labels": [],
       "body": "@martinthomson @beurdouche ",
       "createdAt": "2025-05-30T16:43:02Z",
-      "updatedAt": "2025-05-31T07:11:21Z",
+      "updatedAt": "2025-06-02T20:25:29Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "90ba604f4a441495cea8284bf79bfb9ca9c3e638",
@@ -69628,6 +69739,126 @@
               "updatedAt": "2025-05-31T07:11:21Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6sNh_V",
+          "commit": {
+            "abbreviatedOid": "6822af7"
+          },
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-06-02T16:49:31Z",
+          "updatedAt": "2025-06-02T16:49:31Z",
+          "comments": [
+            {
+              "originalPosition": 26,
+              "body": "I don't think it's misleading, but I'd be willing to use \"main\".\r\n",
+              "createdAt": "2025-06-02T16:49:31Z",
+              "updatedAt": "2025-06-02T16:49:31Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6sPexI",
+          "commit": {
+            "abbreviatedOid": "6822af7"
+          },
+          "author": "muhammad-usama-sardar",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-06-02T19:52:47Z",
+          "updatedAt": "2025-06-02T19:52:47Z",
+          "comments": [
+            {
+              "originalPosition": 26,
+              "body": "I thought you agreed already to call it \"first stage\" on the mailing list. ",
+              "createdAt": "2025-06-02T19:52:47Z",
+              "updatedAt": "2025-06-02T19:52:47Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6sPhWn",
+          "commit": {
+            "abbreviatedOid": "6822af7"
+          },
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-06-02T19:56:36Z",
+          "updatedAt": "2025-06-02T19:56:36Z",
+          "comments": [
+            {
+              "originalPosition": 26,
+              "body": "Perhaps. On further reflection, I however, I don't think that's best.",
+              "createdAt": "2025-06-02T19:56:36Z",
+              "updatedAt": "2025-06-02T19:56:36Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6sPoI5",
+          "commit": {
+            "abbreviatedOid": "6822af7"
+          },
+          "author": "muhammad-usama-sardar",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-06-02T20:05:59Z",
+          "updatedAt": "2025-06-02T20:06:00Z",
+          "comments": [
+            {
+              "originalPosition": 26,
+              "body": "You actually agreed ([source](https://mailarchive.ietf.org/arch/msg/tls/h2TfNJ50YgbEDxc1LJRvGX4t8Zo/)). Anyway, I understand that you want to wrap it up. But would you mind sharing the reasoning? I would like to understand your reasoning and may also be fine with \"main\" to wrap it up. But I am obviously against anything -- including \"overall\" -- which gives a sense of completeness. ",
+              "createdAt": "2025-06-02T20:05:59Z",
+              "updatedAt": "2025-06-02T20:06:00Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6sPwOM",
+          "commit": {
+            "abbreviatedOid": "6822af7"
+          },
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-06-02T20:15:36Z",
+          "updatedAt": "2025-06-02T20:15:36Z",
+          "comments": [
+            {
+              "originalPosition": 26,
+              "body": "> You actually agreed ([source](https://mailarchive.ietf.org/arch/msg/tls/h2TfNJ50YgbEDxc1LJRvGX4t8Zo/)). \r\n\r\nI'm not sure what your point is.  Like I said, *on further reflection* I don't think that's best.\r\n\r\n\r\n> Anyway, I understand that you want to wrap it up. But would you mind sharing the reasoning? I would like to understand your reasoning and may also be fine with \"main\" to wrap it up. But I am obviously against anything -- including \"overall\" -- which gives a sense of completeness.\r\n\r\nThe problem with \"first stage\" is it creates additional confusion. For instance, you might think of the first stage as temporal (e.g., just early secret) rather than the depth of the tree. The relevant notion here is that we generate a bunch of secrets and then we generate leaf keys out of those secrets. And you'll note that there are arbitrary confusing stages after that, such as induced by KeyUpdate. \r\n\r\nMore generally, I don't think it's helpful to present every key in TLS as if it's part of one conceptual unit, because it's not. Rather, we have a modular system, and this is one module, albeit with somewhat messy cut points. \r\n\r\n\r\n\r\n\r\n\r\n\r\n",
+              "createdAt": "2025-06-02T20:15:36Z",
+              "updatedAt": "2025-06-02T20:16:17Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6sP1bk",
+          "commit": {
+            "abbreviatedOid": "6822af7"
+          },
+          "author": "muhammad-usama-sardar",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-06-02T20:25:29Z",
+          "updatedAt": "2025-06-02T20:25:29Z",
+          "comments": [
+            {
+              "originalPosition": 26,
+              "body": "Not a very convincing argument. But go ahead with \"main\" to wrap it up. ",
+              "createdAt": "2025-06-02T20:25:29Z",
+              "updatedAt": "2025-06-02T20:25:29Z"
+            }
+          ]
         }
       ]
     },
@@ -69670,6 +69901,208 @@
           "createdAt": "2025-05-30T19:13:15Z",
           "updatedAt": "2025-05-30T19:13:15Z",
           "comments": []
+        }
+      ]
+    },
+    {
+      "number": 1392,
+      "id": "PR_kwDOASA0os6Yp2vW",
+      "title": "Clarify Key for PSKBinderEntry",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1392",
+      "state": "OPEN",
+      "author": "muhammad-usama-sardar",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Based on discussion on the list in the thread \"Key Hierarchy TLS 1.3 RFC8446(bis)\"",
+      "createdAt": "2025-06-02T15:38:53Z",
+      "updatedAt": "2025-06-02T19:52:45Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "main",
+      "baseRefOid": "c2624eb7e0ccb3b237d3cf0826c48ae0181ac70f",
+      "headRepository": "muhammad-usama-sardar/tls13-spec",
+      "headRefName": "patch-2",
+      "headRefOid": "e15f471f6a64f9d666fa57b211dd05606aa75e4b",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "This PR seems like a regression to me. ISTM that the current text is clear enough to provide interoperability.",
+          "createdAt": "2025-06-02T16:41:41Z",
+          "updatedAt": "2025-06-02T16:41:41Z"
+        },
+        {
+          "author": "muhammad-usama-sardar",
+          "authorAssociation": "NONE",
+          "body": "> This PR seems like a regression to me. \r\n\r\nAre you saying that making it explicit makes the spec worse? \r\n",
+          "createdAt": "2025-06-02T17:47:51Z",
+          "updatedAt": "2025-06-02T17:47:51Z"
+        },
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> > This PR seems like a regression to me.\r\n> \r\n> Are you saying that making it explicit makes the spec worse?\r\n\r\nNo, I'm saying it's incorrect. Sorry, I messed up the GitHub UI and failed to publish my review.\r\n",
+          "createdAt": "2025-06-02T17:51:05Z",
+          "updatedAt": "2025-06-02T17:51:05Z"
+        },
+        {
+          "author": "muhammad-usama-sardar",
+          "authorAssociation": "NONE",
+          "body": "I think having it in Table 2 would have been best. But if you are really against calling it Finished key, this is a small clarification which makes it more explicit. ",
+          "createdAt": "2025-06-02T19:48:36Z",
+          "updatedAt": "2025-06-02T19:48:36Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOASA0os6sNaYZ",
+          "commit": {
+            "abbreviatedOid": "c9a53ec"
+          },
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-06-02T16:40:30Z",
+          "updatedAt": "2025-06-02T17:50:37Z",
+          "comments": [
+            {
+              "originalPosition": 10,
+              "body": "This isn't correct. This is the computation for the *key* not for the binder entry.\r\n",
+              "createdAt": "2025-06-02T16:40:30Z",
+              "updatedAt": "2025-06-02T17:50:37Z"
+            },
+            {
+              "originalPosition": 19,
+              "body": "PSKBinderEntry only provides partial handshake integrity and only sometimes. I don't think this helps.",
+              "createdAt": "2025-06-02T16:40:58Z",
+              "updatedAt": "2025-06-02T17:50:37Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6sOSYw",
+          "commit": {
+            "abbreviatedOid": "c9a53ec"
+          },
+          "author": "muhammad-usama-sardar",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-06-02T17:56:30Z",
+          "updatedAt": "2025-06-02T18:05:41Z",
+          "comments": [
+            {
+              "originalPosition": 10,
+              "body": "What is the name of that key in the specs?",
+              "createdAt": "2025-06-02T17:56:30Z",
+              "updatedAt": "2025-06-02T18:05:41Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6sOaNr",
+          "commit": {
+            "abbreviatedOid": "c9a53ec"
+          },
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-06-02T18:10:02Z",
+          "updatedAt": "2025-06-02T18:10:02Z",
+          "comments": [
+            {
+              "originalPosition": 10,
+              "body": "I don't think it has one. I'm not sure any of the Finished keys do. If you consult 4.4.4, you will see:\r\n\r\n```\r\n   The key used to compute the Finished message is computed from the\r\n   Base Key defined in Section 4.4 using HKDF (see Section 7.1).\r\n   Specifically:\r\n\r\n   finished_key =\r\n       HKDF-Expand-Label(BaseKey, \"finished\", \"\", Hash.length)\r\n```\r\n\r\nThis section is the only place that the words `finished_key` appear in the spec and in neither instance do they have a per-context name.",
+              "createdAt": "2025-06-02T18:10:02Z",
+              "updatedAt": "2025-06-02T18:10:02Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6sOl2i",
+          "commit": {
+            "abbreviatedOid": "c9a53ec"
+          },
+          "author": "muhammad-usama-sardar",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-06-02T18:26:41Z",
+          "updatedAt": "2025-06-02T18:26:41Z",
+          "comments": [
+            {
+              "originalPosition": 19,
+              "body": "What exactly does \"in a similar fashion\" mean here? ",
+              "createdAt": "2025-06-02T18:26:41Z",
+              "updatedAt": "2025-06-02T18:26:41Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6sO5oa",
+          "commit": {
+            "abbreviatedOid": "c9a53ec"
+          },
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-06-02T18:51:29Z",
+          "updatedAt": "2025-06-02T18:51:29Z",
+          "comments": [
+            {
+              "originalPosition": 19,
+              "body": "It means that like the Finished, they are a MAC computed over part of the Handshake transcript using a key tied to the PSK (as opposed to the Finished, which is tied to one of the traffic keys.",
+              "createdAt": "2025-06-02T18:51:29Z",
+              "updatedAt": "2025-06-02T18:51:29Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6sPaSb",
+          "commit": {
+            "abbreviatedOid": "c9a53ec"
+          },
+          "author": "muhammad-usama-sardar",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-06-02T19:44:38Z",
+          "updatedAt": "2025-06-02T19:44:39Z",
+          "comments": [
+            {
+              "originalPosition": 19,
+              "body": "This is still confusing for me. PSK binders are computed exactly the same way as Finished message. Finished message itself only provides handshake integrity and not the key confirmation. Key confirmation is provided by CertificateVerify message. So why is the key confirmation being mentioned here? or in other words, for which key is the PSK binder providing the key confirmation?",
+              "createdAt": "2025-06-02T19:44:39Z",
+              "updatedAt": "2025-06-02T19:44:39Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6sPevq",
+          "commit": {
+            "abbreviatedOid": "c9a53ec"
+          },
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-06-02T19:52:45Z",
+          "updatedAt": "2025-06-02T19:52:45Z",
+          "comments": [
+            {
+              "originalPosition": 19,
+              "body": "The PSK binder is providing key confirmation for the PSK for which it is the binder. I.e., that the attacker didn't just attach a captured PSK ID to their ClientHello.\r\n\r\nAs for the Finished and key confirmation, I don't agree with you. The relevant key in this case is the session key, not the signature key. The Finished message is a MAC over the entire handshake using a key derived from the main secret.\r\n\r\n",
+              "createdAt": "2025-06-02T19:52:45Z",
+              "updatedAt": "2025-06-02T19:52:45Z"
+            }
+          ]
         }
       ]
     }
