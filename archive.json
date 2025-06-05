@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-06-03T00:57:40.397595+00:00",
+  "timestamp": "2025-06-05T00:56:41.518411+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -69263,7 +69263,7 @@
       "labels": [],
       "body": "Acknowledging the Seflie attack when using external PSKs and adding pointers to RFC 9257/9258 for guidance on how to avoid.",
       "createdAt": "2025-05-29T19:13:39Z",
-      "updatedAt": "2025-06-02T19:30:44Z",
+      "updatedAt": "2025-06-03T19:15:15Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "90ba604f4a441495cea8284bf79bfb9ca9c3e638",
@@ -69274,7 +69274,15 @@
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
+      "comments": [
+        {
+          "author": "ms-s",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I do think Selfie is an attack but I agree that there is no point spending a long time to find the right text at this stage. I believe a reference to RFC 9258 would be beneficial. Does it work if we remove the reference to Selfie and leave the rest of the appendix as is? (Selfie is reference in RFC9257 in any case):\r\n\r\n`External PSKs in TLS are designed to be known to exactly one client and one server. However, as noted in {{RFC9257}}, there are use cases where PSKs are shared between more than two entities. In such scenarios, in addition to the expected security weakness where a compromised group member can impersonate any other member, a malicious non-member can reroute handshakes between honest group members to connect them in unintended ways. This rerouting is a type of identity misbinding attack and to avoid such attacks, {{RFC9257}} provides recommendations for external PSK\r\nusage, including the use of external PSK importers as defined in {{RFC9258}}.`",
+          "createdAt": "2025-06-03T19:15:14Z",
+          "updatedAt": "2025-06-03T19:15:14Z"
+        }
+      ],
       "reviews": [
         {
           "id": "PRR_kwDOASA0os6sNiwE",
@@ -69323,24 +69331,26 @@
       "id": "PR_kwDOASA0os6YLEQa",
       "title": "rpk misbinding and clarification",
       "url": "https://github.com/tlswg/tls13-spec/pull/1382",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "ms-s",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "Changes in PR:\r\n\r\nSection 2: Protocol Overview: It is technically incorrect to say that if the Certificate message contains a raw public key then the message will not contain a certificate. Especially when we later say \"If the RawPublicKey certificate type was negotiated\". Adding the X.509 makes it explicit what is intended.\r\n\r\nTypo: remove a stray \"or\" in Appendix.\r\n\r\nAdd self as contributor.\r\n",
       "createdAt": "2025-05-29T19:21:04Z",
-      "updatedAt": "2025-06-02T19:54:46Z",
+      "updatedAt": "2025-06-03T21:40:19Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
-      "baseRefOid": "90ba604f4a441495cea8284bf79bfb9ca9c3e638",
+      "baseRefOid": "c2624eb7e0ccb3b237d3cf0826c48ae0181ac70f",
       "headRepository": "ms-s/tls13-spec",
       "headRefName": "rpk-text-fix",
-      "headRefOid": "0a5242167b38a2117437e810bebf38db5f767b08",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "9b50e2a715ba4324ce519543b630bb000655cd08",
+      "closedAt": "2025-06-03T21:40:19Z",
+      "mergedAt": "2025-06-03T21:40:19Z",
+      "mergedBy": "ekr",
+      "mergeCommit": {
+        "oid": "488c569251b942e59de94d978c8cc0b0fceec5b0"
+      },
       "comments": [
         {
           "author": "ms-s",
@@ -69383,9 +69393,30 @@
           "body": "I've fixed the 8444 -> 8844 issue separately. If you want to send a separate PR adding yourself to acknowledgements, I'll add you.",
           "createdAt": "2025-06-02T19:54:45Z",
           "updatedAt": "2025-06-02T19:54:45Z"
+        },
+        {
+          "author": "ms-s",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> I've fixed the 8444 -> 8844 issue separately. If you want to send a separate PR adding yourself to acknowledgements, I'll add you.\r\n\r\nA separate PR is not needed perhaps? I edited the PR such that it still removes the stray \"or\" in the sentence: \"When TLS 1.3 is used with self-signed certificates without useful identities (as in DTLS-SRTP {{?RFC5763}}) or raw public keys {{RFC7250}} **or** for peer authentication\", and adds myself as a contributor.",
+          "createdAt": "2025-06-03T19:06:24Z",
+          "updatedAt": "2025-06-03T19:06:24Z"
         }
       ],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOASA0os6sgeDd",
+          "commit": {
+            "abbreviatedOid": "9b50e2a"
+          },
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-06-03T21:40:13Z",
+          "updatedAt": "2025-06-03T21:40:13Z",
+          "comments": []
+        }
+      ]
     },
     {
       "number": 1383,
