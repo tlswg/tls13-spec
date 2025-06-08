@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-06-05T00:56:41.518411+00:00",
+  "timestamp": "2025-06-08T01:02:21.371374+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -13924,6 +13924,22 @@
       "body": "See TLS list. This is just a reminder to me to do this",
       "createdAt": "2025-05-30T15:14:11Z",
       "updatedAt": "2025-05-30T15:14:11Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 1393,
+      "id": "I_kwDOASA0os66H7CU",
+      "title": "Clarification on Table 3",
+      "url": "https://github.com/tlswg/tls13-spec/issues/1393",
+      "state": "OPEN",
+      "author": "muhammad-usama-sardar",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "**Main issue**: \nIn my understanding, \"Initial handshake\" is a terminology used in order to distinguish it from \"subsequent handshake\" in PSK-based handshakes (e.g., See figure 3). Also, the only two other occurrences of \"initial handshake\" are in Sec. 2.2, which is all about PSK. \n \nIn that sense, Table 3 seems to be missing the case of non-PSK based handshakes. In such case, handshake traffic is still encrypted using `[sender]_handshake_traffic_secret` but because of the change to \"initial handshake\", this case is missing from the table. \n\n---\n\nSo, was \"Initial handshake\" in #1255 meant to be in the sense of comparison with \"post-handshake\"? If so, it is conflicting with other usages of the term. \nOR \nwas \"Initial handshake\" in #1255 meant to be really in the sense of Figure 3? If so, the non-PSK based handshake is missing in the table. \n\n---\n**Minor issue**:\nThe usage of \"data type\" seems inconsistent with the rest of the usages of the word. Perhaps s/data type/data category?\n\n\nPS: I checked #1248 but it does not clarify me. ",
+      "createdAt": "2025-06-05T20:55:20Z",
+      "updatedAt": "2025-06-05T20:55:20Z",
       "closedAt": null,
       "comments": []
     }
