@@ -2963,14 +2963,14 @@ Many of the cryptographic computations in TLS make use of a transcript
 hash. This value is computed by hashing the concatenation of
 each included handshake message, including the handshake
 message header carrying the handshake message type and length fields,
-but not including record layer headers, i.e.,
+but not including record layer headers. I.e.,
 
      Transcript-Hash(M1, M2, ... Mn) = Hash(M1 || M2 || ... || Mn)
 
 As an exception to this general rule, when the server responds to a
 ClientHello with a HelloRetryRequest, the value of ClientHello1 is
 replaced with a special synthetic handshake message of handshake
-type "message_hash" containing Hash(ClientHello1), i.e.,
+type "message_hash" containing Hash(ClientHello1). I.e.,
 
      Transcript-Hash(ClientHello1, HelloRetryRequest, ... Mn) =
          Hash(message_hash ||        /* Handshake type */
