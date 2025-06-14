@@ -2963,14 +2963,14 @@ Many of the cryptographic computations in TLS make use of a transcript
 hash. This value is computed by hashing the concatenation of
 each included handshake message, including the handshake
 message header carrying the handshake message type and length fields,
-but not including record layer headers. I.e.,
+but not including record layer headers, i.e.,
 
      Transcript-Hash(M1, M2, ... Mn) = Hash(M1 || M2 || ... || Mn)
 
 As an exception to this general rule, when the server responds to a
 ClientHello with a HelloRetryRequest, the value of ClientHello1 is
 replaced with a special synthetic handshake message of handshake
-type "message_hash" containing Hash(ClientHello1). I.e.,
+type "message_hash" containing Hash(ClientHello1), i.e.,
 
      Transcript-Hash(ClientHello1, HelloRetryRequest, ... Mn) =
          Hash(message_hash ||        /* Handshake type */
@@ -5197,7 +5197,7 @@ Cipher suite names follow the naming convention:
 |:----------|:---------|
 | TLS       | The string "TLS" |
 | AEAD      | The AEAD algorithm used for record protection |
-| HASH      | The hash algorithm used with HKDF |
+| HASH      | The hash algorithm used with HKDF and Transcript-Hash |
 | VALUE     | The two byte ID assigned for this cipher suite |
 {: #cs-components title="Cipher Suite Name Structure"}
 
