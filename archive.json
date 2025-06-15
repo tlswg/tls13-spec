@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-06-10T00:57:39.573834+00:00",
+  "timestamp": "2025-06-15T01:03:13.048373+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -70174,6 +70174,42 @@
           ]
         }
       ]
+    },
+    {
+      "number": 1394,
+      "id": "PR_kwDOASA0os6ahUHN",
+      "title": "Hash in Transcript-Hash",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1394",
+      "state": "MERGED",
+      "author": "muhammad-usama-sardar",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Hash algorithm negotiated by the peers in cipher suite is also used in Transcript-Hash.",
+      "createdAt": "2025-06-14T10:28:09Z",
+      "updatedAt": "2025-06-14T18:21:44Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "main",
+      "baseRefOid": "488c569251b942e59de94d978c8cc0b0fceec5b0",
+      "headRepository": "muhammad-usama-sardar/tls13-spec",
+      "headRefName": "patch-3",
+      "headRefOid": "fcadbdc8e8831b678b2f0e27c95c9ceeb5f5f789",
+      "closedAt": "2025-06-14T18:20:35Z",
+      "mergedAt": "2025-06-14T18:20:35Z",
+      "mergedBy": "ekr",
+      "mergeCommit": {
+        "oid": "fcadbdc8e8831b678b2f0e27c95c9ceeb5f5f789"
+      },
+      "comments": [
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I accepted the technical change but reverted the i.e., changes. This text was in 8446 and so has already been copy edited. If the RPC feels it needs to change in publication, we can address it then.",
+          "createdAt": "2025-06-14T18:21:44Z",
+          "updatedAt": "2025-06-14T18:21:44Z"
+        }
+      ],
+      "reviews": []
     }
   ]
 }
