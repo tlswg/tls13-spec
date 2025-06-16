@@ -172,7 +172,7 @@ informative:
        seriesinfo: Proceedings of USENIX Workshop on Offensive Technologies
        date: 2015
   FGSW16:
-       title: " in Key Exchange: A Formal Treatment and Implications for TLS 1.3"
+       title: "Key Confirmation in Key Exchange: A Formal Treatment and Implications for TLS 1.3"
        author:
        -
          ins: M. Fischlin
