@@ -778,7 +778,7 @@ CertificateVerify:
 
 Finished:
 : A MAC (Message Authentication Code) over the entire handshake.
-  This message provides key confirmation, binds the endpoint's identity
+  This message provides key confirmation for the shared secrets established in the handshake {{FGSW16}}, binds the endpoint's identity
   to the exchanged keys, and in PSK mode
   also authenticates the handshake. \[{{finished}}]
 {:br }
@@ -2774,8 +2774,13 @@ length, the length of the extensions block, and the length of the
 lengths were present.
 
 The PskBinderEntry is computed in the same way as the Finished
-message ({{finished}}) but with the BaseKey being the binder_key
-derived via the key schedule from the corresponding PSK which
+message ({{finished}}) but with the BaseKey being the binder_key, i.e.,
+
+~~~
+    HKDF-Expand-Label(binder_key, "finished", "", Hash.length)
+~~~
+
+binder_key is derived via the key schedule from the corresponding PSK which
 is being offered (see {{key-schedule}}).
 
 If the handshake includes a HelloRetryRequest, the initial ClientHello
