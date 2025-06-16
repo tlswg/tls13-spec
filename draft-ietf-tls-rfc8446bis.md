@@ -172,7 +172,7 @@ informative:
        seriesinfo: Proceedings of USENIX Workshop on Offensive Technologies
        date: 2015
   FGSW16:
-       title: "Key Confirmation in Key Exchange: A Formal Treatment and Implications for TLS 1.3"
+       title: " in Key Exchange: A Formal Treatment and Implications for TLS 1.3"
        author:
        -
          ins: M. Fischlin
@@ -778,7 +778,7 @@ CertificateVerify:
 
 Finished:
 : A MAC (Message Authentication Code) over the entire handshake.
-  This message provides key confirmation, binds the endpoint's identity
+  This message provides key confirmation for the shared secrets established in the handshake {{FGSW16}}, binds the endpoint's identity
   to the exchanged keys, and in PSK mode
   also authenticates the handshake. \[{{finished}}]
 {:br }
