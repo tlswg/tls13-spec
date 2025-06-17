@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-06-15T01:03:13.048373+00:00",
+  "timestamp": "2025-06-17T00:57:17.842925+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -69980,18 +69980,18 @@
       "url": "https://github.com/tlswg/tls13-spec/pull/1392",
       "state": "OPEN",
       "author": "muhammad-usama-sardar",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "Based on discussion on the list in the thread \"Key Hierarchy TLS 1.3 RFC8446(bis)\"",
       "createdAt": "2025-06-02T15:38:53Z",
-      "updatedAt": "2025-06-02T19:52:45Z",
+      "updatedAt": "2025-06-16T19:29:41Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "c2624eb7e0ccb3b237d3cf0826c48ae0181ac70f",
       "headRepository": "muhammad-usama-sardar/tls13-spec",
       "headRefName": "patch-2",
-      "headRefOid": "e15f471f6a64f9d666fa57b211dd05606aa75e4b",
+      "headRefOid": "1e7d80ca5bb21a8751f83eb15d51e22733952aa6",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -70006,7 +70006,7 @@
         },
         {
           "author": "muhammad-usama-sardar",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "> This PR seems like a regression to me. \r\n\r\nAre you saying that making it explicit makes the spec worse? \r\n",
           "createdAt": "2025-06-02T17:47:51Z",
           "updatedAt": "2025-06-02T17:47:51Z"
@@ -70020,7 +70020,7 @@
         },
         {
           "author": "muhammad-usama-sardar",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "I think having it in Table 2 would have been best. But if you are really against calling it Finished key, this is a small clarification which makes it more explicit. ",
           "createdAt": "2025-06-02T19:48:36Z",
           "updatedAt": "2025-06-02T19:48:36Z"
@@ -70059,7 +70059,7 @@
             "abbreviatedOid": "c9a53ec"
           },
           "author": "muhammad-usama-sardar",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2025-06-02T17:56:30Z",
@@ -70099,7 +70099,7 @@
             "abbreviatedOid": "c9a53ec"
           },
           "author": "muhammad-usama-sardar",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2025-06-02T18:26:41Z",
@@ -70139,7 +70139,7 @@
             "abbreviatedOid": "c9a53ec"
           },
           "author": "muhammad-usama-sardar",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2025-06-02T19:44:38Z",
@@ -70172,6 +70172,66 @@
               "updatedAt": "2025-06-02T19:52:45Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6ulcig",
+          "commit": {
+            "abbreviatedOid": "c9a53ec"
+          },
+          "author": "muhammad-usama-sardar",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-06-15T09:02:08Z",
+          "updatedAt": "2025-06-15T09:02:08Z",
+          "comments": [
+            {
+              "originalPosition": 19,
+              "body": "> The Finished message is a MAC over the entire handshake using a key derived from the main secret.\r\n\r\nI believe that's incorrect. First, the key for Finished is not derived from _main secret_. Doing so would have introduced cyclic dependency because the keys derived from main secret all take serverFinished and clientFinished as input in Derive-Secret. According to specs, the key for Finished is derived from _handshake secret_.\r\n\r\nSecond, MAC is not over _entire handshake_. For example, the Finished message from Server can at best include handshake transcript up to CertificateVerify. It can neither include its own Finished message nor it can \"predict\" what Finished message Client will formulate on receiving this serverFinished message. \r\n\r\n---\r\nWe may be talking past each other. So attempting to disambiguate this discussion: \r\nTaking a step back to the sentence just before the one under discussion (i.e., without PSK) just to explain where I was coming from: \r\n\r\nIn **non-PSK-based handshakes**, my understanding is that the three messages and three properties mentioned in that sentence have one-one relationship, i.e.:\r\n(with LTK = Long-Term Key) \r\n\r\n- Certificate message provides _authentication_ via CA-signed certificate for public part of LTK.\r\n- CertificateVerify message provides _key confirmation_ (proof-of-possession) for LTK (by signing the current handshake transcript with LTK).\r\n- Finished message provides _handshake integrity_ (by performing a MAC over the current handshake transcript with a key derived from handshake secret).\r\n\r\nDo you agree so far?\r\n\r\n--- \r\nAssuming yes to above, let's now move to **PSK-based handshakes**. In the light of above, I find it very confusing to say \r\n\r\n> The PSK binders also perform **key confirmation**, **in a similar fashion**.\r\n\r\nSpecifically:\r\n\r\n- It is not using CertificateVerify message, which was actually providing key confirmation. \r\n- It is not using LTK. \r\n- Unlike key confirmation in CertificateVerify via signature, here it is via MAC.\r\n- Unlike key confirmation in CertificateVerify _directly_ for LTK, I think the argument for PSK key confirmation is _indirect_ here. That is, the peer has `PSK` and thus can compute `binder_key` and thus can compute `key for PSKBinderEntry`, while the attacker hopefully does not have `PSK` and thus cannot compute `binder_key` and thus cannot compute `key for PSKBinderEntry`.  \r\n\r\nWith so many differences, I don't think it is reasonable to say \"**in a similar fashion**\", or at least it needs a better statement than what is currently stated. ",
+              "createdAt": "2025-06-15T09:02:08Z",
+              "updatedAt": "2025-06-15T09:02:08Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6uqWut",
+          "commit": {
+            "abbreviatedOid": "c9a53ec"
+          },
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-06-15T21:22:29Z",
+          "updatedAt": "2025-06-15T21:22:29Z",
+          "comments": [
+            {
+              "originalPosition": 19,
+              "body": "> > The Finished message is a MAC over the entire handshake using a key derived from the main secret.\r\n> \r\n> I believe that's incorrect. First, the key for Finished is not derived from _main secret_. Doing so would have introduced cyclic dependency because the keys derived from main secret all take serverFinished and clientFinished as input in Derive-Secret. According to specs, the key for Finished is derived from _handshake secret_.\r\n\r\nYes, that's correct. My mistake.\r\n\r\n\r\n> Second, MAC is not over _entire handshake_. For example, the Finished message from Server can at best include handshake transcript up to CertificateVerify. It can neither include its own Finished message nor it can \"predict\" what Finished message Client will formulate on receiving this serverFinished message.\r\n\r\nYes, that's correct. I should have said \"the handshake so far\"\r\n\r\n> \r\n> We may be talking past each other. So attempting to disambiguate this discussion: Taking a step back to the sentence just before the one under discussion (i.e., without PSK) just to explain where I was coming from:\r\n> \r\n> In **non-PSK-based handshakes**, my understanding is that the three messages and three properties mentioned in that sentence have one-one relationship, i.e.: (with LTK = Long-Term Key)\r\n> \r\n>     * Certificate message provides _authentication_ via CA-signed certificate for public part of LTK.\r\n\r\nThis is an odd use of \"authentication\", because it doesn't actually authenticate the server at all. It just provides the binding of the LTK to the name.\r\n\r\n>     * CertificateVerify message provides _key confirmation_ (proof-of-possession) for LTK (by signing the current handshake transcript with LTK).\r\n\r\nNo, I don't agree. In this context, \"key confirmation\" refers *not* to the LTK but rather to the shared secrets that were established as part of the handshake. I agree that as above, the Finished is derived from the HS secret, but that has the same underlying entropy as the main secret.\r\n\r\nMoreover, CV provides more than just proof of possession of the LTK. It provides integrity for the handshake up to this point. Note that this is one of the key differences between TLS 1.2 and TLS 1.3\r\n\r\n\r\n>     * Finished message provides _handshake integrity_ (by performing a MAC over the current handshake transcript with a key derived from handshake secret).\r\n\r\nYes, it provides this, but it *also* provides key confirmation for the aforementioned secret. This is all easiest to see if you analyze the handshake with a record layer that doesn't provide integrity or encryption (NULL ciphers). Without the Finished, at the end of the handshake neither side has any way of knowing that the peer has derived the right key. \r\n\r\n> Do you agree so far?\r\n\r\nNo, for the reasons above.\r\n\r\n\r\n\r\n\r\n",
+              "createdAt": "2025-06-15T21:22:29Z",
+              "updatedAt": "2025-06-15T21:23:07Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6us4w1",
+          "commit": {
+            "abbreviatedOid": "c9a53ec"
+          },
+          "author": "muhammad-usama-sardar",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-06-16T07:54:54Z",
+          "updatedAt": "2025-06-16T07:54:54Z",
+          "comments": [
+            {
+              "originalPosition": 19,
+              "body": "To my knowledge, key confirmation is mostly used in the literature to provide proof of possession of LTK. But I see that it is used in section 2 in a way that is consistent with what you are saying. So, I agree with you. Reformulating it to be on the same page to wrap it up: \r\n\r\n> TLS generally uses a common\r\nset of messages for authentication, key confirmation, and handshake\r\nintegrity: Certificate, CertificateVerify, and Finished.\r\n\r\nIs the following correct interpretation of this sentence?\r\n\r\n- Certificate message contributes to _authentication_. \r\n- CertificateVerify message provides _handshake integrity_ up to Certificate message by signing the current transcript hash by its LTK.\r\n- Finished message provides _handshake integrity_ and _key confirmation_ for `finished_key`. \r\n\r\n\r\n\r\n> This is an odd use of \"authentication\", because it doesn't actually authenticate the server at all. It just provides the binding of the LTK to the name.\r\n\r\nAgree, Certificate by itself does not authenticate the peer. It only _contributes_ to authentication. \r\n\r\n> In this context, \"key confirmation\" refers _not_ to the LTK but rather to the shared secrets that were established as part of the handshake.\r\n\r\nThanks. I would appreciate an explicitly mention in Sec. 2. \r\n> I agree that as above, the Finished is derived from the HS secret, but that has the same underlying entropy as the main secret.\r\n\r\nAgree. This is because there is no external secret between Handshake Secret and Main Secret (i.e., the IKM input for HKDF-Extract for Main Secret is 0), right?\r\n\r\n\r\n\r\n> This is all easiest to see if you analyze the handshake with a record layer that doesn't provide integrity or encryption (NULL ciphers).\r\n\r\nThat's very interesting. I am curious where in the spec I can find this case of NULL ciphers for record layer?",
+              "createdAt": "2025-06-16T07:54:54Z",
+              "updatedAt": "2025-06-16T07:54:54Z"
+            }
+          ]
         }
       ]
     },
@@ -70187,7 +70247,7 @@
       "labels": [],
       "body": "Hash algorithm negotiated by the peers in cipher suite is also used in Transcript-Hash.",
       "createdAt": "2025-06-14T10:28:09Z",
-      "updatedAt": "2025-06-14T18:21:44Z",
+      "updatedAt": "2025-06-15T07:52:37Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "488c569251b942e59de94d978c8cc0b0fceec5b0",
@@ -70207,6 +70267,13 @@
           "body": "I accepted the technical change but reverted the i.e., changes. This text was in 8446 and so has already been copy edited. If the RPC feels it needs to change in publication, we can address it then.",
           "createdAt": "2025-06-14T18:21:44Z",
           "updatedAt": "2025-06-14T18:21:44Z"
+        },
+        {
+          "author": "muhammad-usama-sardar",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> I accepted the technical change \r\n\r\nThanks. That's all I care about. \r\n> but reverted the i.e., changes. This text was in 8446 and so has already been copy edited. If the RPC feels it needs to change in publication, we can address it then.\r\n\r\nSure, works for me. I just never happened to see it like that in formal writings before. ",
+          "createdAt": "2025-06-15T07:52:37Z",
+          "updatedAt": "2025-06-15T07:52:37Z"
         }
       ],
       "reviews": []
