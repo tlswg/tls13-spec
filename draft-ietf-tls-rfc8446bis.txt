@@ -4,10 +4,10 @@
 
 Transport Layer Security                                     E. Rescorla
 Internet-Draft                                               Independent
-Obsoletes: 8446 (if approved)                               14 June 2025
+Obsoletes: 8446 (if approved)                               16 July 2025
 Updates: 5705, 6066, 7627, 8422 (if approved)                           
 Intended status: Standards Track                                        
-Expires: 16 December 2025
+Expires: 17 January 2026
 
 
         The Transport Layer Security (TLS) Protocol Version 1.3
@@ -39,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 16 December 2025.
+   This Internet-Draft will expire on 17 January 2026.
 
 Copyright Notice
 
@@ -558,9 +558,10 @@ Auth | {CertificateVerify*}
       authenticating via a certificate.  [Section 4.4.3]
 
    Finished:  A MAC (Message Authentication Code) over the entire
-      handshake.  This message provides key confirmation, binds the
-      endpoint's identity to the exchanged keys, and in PSK mode also
-      authenticates the handshake.  [Section 4.4.4]
+      handshake.  This message provides key confirmation for the shared
+      secrets established in the handshake binds the endpoint's identity
+      to the exchanged keys, and in PSK mode also authenticates the
+      handshake.  [Section 4.4.4]
 
    Upon receiving the server's messages, the client responds with its
    Authentication messages, namely Certificate and CertificateVerify (if
@@ -5027,7 +5028,7 @@ Auth | {CertificateVerify*}
               DOI 10.6028/nist.sp.800-186, February 2023,
               <https://doi.org/10.6028/nist.sp.800-186>.
 
-   [FETCH]    WHATWG, "Fetch Standard", June 2025,
+   [FETCH]    WHATWG, "Fetch Standard", July 2025,
               <https://fetch.spec.whatwg.org/>.
 
    [FG17]     Fischlin, M. and F. Guenther, "Replay Attacks on Zero
@@ -5059,9 +5060,9 @@ Auth | {CertificateVerify*}
    [I-D.ietf-tls-esni]
               Rescorla, E., Oku, K., Sullivan, N., and C. A. Wood, "TLS
               Encrypted Client Hello", Work in Progress, Internet-Draft,
-              draft-ietf-tls-esni-24, 20 March 2025,
+              draft-ietf-tls-esni-25, 14 June 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-tls-
-              esni-24>.
+              esni-25>.
 
    [JSS15]    Jager, T., Schwenk, J., and J. Somorovsky, "On the
               Security of TLS 1.3 and QUIC Against Weaknesses in PKCS#1
