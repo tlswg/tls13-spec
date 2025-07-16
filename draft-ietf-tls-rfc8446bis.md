@@ -75,25 +75,27 @@ informative:
   RFC5246:
   RFC5764:
   RFC5929:
-  RFC6176:
   RFC6091:
+  RFC6176:
   RFC6520:
-  RFC8305:
-  RFC7250:
   RFC7465:
+  RFC7250:
   RFC7568:
   RFC7624:
   RFC7685:
-  RFC8937:
+  RFC8305:
+  RFC8844:
   RFC8849:
-  RFC9345:
   RFC8870:
+  RFC8937:
+  RFC9001:
   RFC9112:
   RFC9162:
   RFC9146:
-  RFC8844:
-  RFC9001:
   RFC9149:
+  RFC9257:
+  RFC9258:
+  RFC9345:
 
   DH76: DOI.10.1109/TIT.1976.1055638
   SSL2:
@@ -405,6 +407,16 @@ informative:
          ins: M. Sethi
        -
          ins: T. Aura
+
+  Selfie:
+       title: "Selfie: reflections on TLS 1.3 with PSK"
+       date: 2019
+       target: https://eprint.iacr.org/2019/347.pdf
+       author:
+       -
+         ins: N. Drucker
+       -
+         ins: S. Gueron
 
 
 --- abstract
@@ -6130,7 +6142,7 @@ this form of attack by treating the cases where there is no
 valid PSK identity and where there is an identity but it has an
 invalid binder identically.
 
-## Sharing PSKs
+## Sharing PSKs across protocol versions
 
 TLS 1.3 takes a conservative approach to PSKs by binding them to a
 specific KDF.  By contrast, TLS 1.2 allows PSKs to be used with any
@@ -6143,6 +6155,19 @@ same PSK might produce related output in both versions, only limited
 analysis has been done.  Implementations can ensure safety from
 cross-protocol related output by not reusing PSKs between TLS 1.3 and
 TLS 1.2.
+
+## External PSKs and Selfie attacks
+External PSKs in TLS are designed to be known to exactly one client and
+one server. However, as noted in {{RFC9257}}, there are use cases where
+PSKs are shared between more than two entities. In such scenarios, in
+addition to the expected security weakness where a compromised group
+member can impersonate any other member, a malicious non-member can
+reroute handshakes between honest group members to connect them in
+unintended ways. This rerouting is a type of identity misbinding
+attack, and the Selfie attack {{Selfie}} is a special case targeting a
+group member that can act as both a TLS client and server. To avoid
+such attacks, {{RFC9257}} provides recommendations for external PSK
+usage, including the use of external PSK importers as defined in {{RFC9258}}.
 
 ## Misbinding when using Self-Signed Certificates or Raw Public Keys
 
