@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-06-17T00:57:17.842925+00:00",
+  "timestamp": "2025-07-17T01:00:59.945906+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -13807,15 +13807,15 @@
       "id": "I_kwDOASA0os6aCEAT",
       "title": "HKDF label budget in 7.1 is off by 9",
       "url": "https://github.com/tlswg/tls13-spec/issues/1365",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "pkelsey",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "This is editorial, and the doc is somewhere between done and published, but it's haunting my notes...\r\n\r\nIn 7.1, \"any label longer than 12 characters\" should be \"any label longer than 21 characters\".\r\n\r\nThis off-by-nine appears to be due to something getting lost in the wash during #964 between @ilaril's budget calculation, @ekr's post of the new set of \"tls13 ...\" labels, and subsequent removal of \"tls13 \" from those label names to replace the \"TLS1.3, \" in HkdfLabel.",
       "createdAt": "2024-10-13T19:56:55Z",
-      "updatedAt": "2025-02-09T19:37:22Z",
-      "closedAt": null,
+      "updatedAt": "2025-07-16T19:33:49Z",
+      "closedAt": "2025-07-16T19:33:49Z",
       "comments": [
         {
           "author": "ekr",
@@ -69275,7 +69275,7 @@
       "labels": [],
       "body": "Closes #1379.",
       "createdAt": "2025-05-09T00:51:56Z",
-      "updatedAt": "2025-05-09T00:51:57Z",
+      "updatedAt": "2025-07-16T19:13:00Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "90ba604f4a441495cea8284bf79bfb9ca9c3e638",
@@ -69286,7 +69286,15 @@
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
+      "comments": [
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I think @davidben is right and we shouldn't make this change. @seanturner unless you feel strongly, I'm going to close this.",
+          "createdAt": "2025-07-16T19:13:00Z",
+          "updatedAt": "2025-07-16T19:13:00Z"
+        }
+      ],
       "reviews": []
     },
     {
@@ -69301,7 +69309,7 @@
       "labels": [],
       "body": "Acknowledging the Seflie attack when using external PSKs and adding pointers to RFC 9257/9258 for guidance on how to avoid.",
       "createdAt": "2025-05-29T19:13:39Z",
-      "updatedAt": "2025-06-03T19:15:15Z",
+      "updatedAt": "2025-07-16T19:44:51Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "90ba604f4a441495cea8284bf79bfb9ca9c3e638",
@@ -69319,6 +69327,20 @@
           "body": "I do think Selfie is an attack but I agree that there is no point spending a long time to find the right text at this stage. I believe a reference to RFC 9258 would be beneficial. Does it work if we remove the reference to Selfie and leave the rest of the appendix as is? (Selfie is reference in RFC9257 in any case):\r\n\r\n`External PSKs in TLS are designed to be known to exactly one client and one server. However, as noted in {{RFC9257}}, there are use cases where PSKs are shared between more than two entities. In such scenarios, in addition to the expected security weakness where a compromised group member can impersonate any other member, a malicious non-member can reroute handshakes between honest group members to connect them in unintended ways. This rerouting is a type of identity misbinding attack and to avoid such attacks, {{RFC9257}} provides recommendations for external PSK\r\nusage, including the use of external PSK importers as defined in {{RFC9258}}.`",
           "createdAt": "2025-06-03T19:15:14Z",
           "updatedAt": "2025-06-03T19:15:14Z"
+        },
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I'm not sure it's a kind of identity misbinding attack. This isn't a question of if it's good or bad, but just of the specific meaning of \"identity misbinding\". How about we strike \"This rerouting is a type of identity misbinding attack and to avoid such attacks\". @davidben ?",
+          "createdAt": "2025-07-16T19:12:24Z",
+          "updatedAt": "2025-07-16T19:12:24Z"
+        },
+        {
+          "author": "kaduk",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Dropping the controversial classification as \"identity misbinding\" seems fine.  We could even say `{{RFC9257}} provides recommendations for external PSK usage, including the use of external PSK importers as defined in {{RFC9258}}, that prevent such malicious rerouting of messages\" (adding the final clause), since limiting a given PSK to a single logical role as client and a distinct single logical role as server will indeed prevent message rerouting from producing a successful handshake.",
+          "createdAt": "2025-07-16T19:44:51Z",
+          "updatedAt": "2025-07-16T19:44:51Z"
         }
       ],
       "reviews": [
@@ -69985,7 +70007,7 @@
       "labels": [],
       "body": "Based on discussion on the list in the thread \"Key Hierarchy TLS 1.3 RFC8446(bis)\"",
       "createdAt": "2025-06-02T15:38:53Z",
-      "updatedAt": "2025-06-16T19:29:41Z",
+      "updatedAt": "2025-07-16T19:10:42Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "c2624eb7e0ccb3b237d3cf0826c48ae0181ac70f",
@@ -70024,6 +70046,13 @@
           "body": "I think having it in Table 2 would have been best. But if you are really against calling it Finished key, this is a small clarification which makes it more explicit. ",
           "createdAt": "2025-06-02T19:48:36Z",
           "updatedAt": "2025-06-02T19:48:36Z"
+        },
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I have merged the specific clarification of which key is confirmed, minus the citation, which I don't think helps.\r\n\r\nI don't think that the explicit derivation of the finished key is that helpful, and as noted above, just having it alone is misleading. I'm open to adding something if there are other people who find this confusing, otherwise I'm inclined to leave it as-is. I'll leave this PR open until after Madrid if others have input.",
+          "createdAt": "2025-07-16T19:10:09Z",
+          "updatedAt": "2025-07-16T19:10:42Z"
         }
       ],
       "reviews": [
@@ -70230,6 +70259,66 @@
               "body": "To my knowledge, key confirmation is mostly used in the literature to provide proof of possession of LTK. But I see that it is used in section 2 in a way that is consistent with what you are saying. So, I agree with you. Reformulating it to be on the same page to wrap it up: \r\n\r\n> TLS generally uses a common\r\nset of messages for authentication, key confirmation, and handshake\r\nintegrity: Certificate, CertificateVerify, and Finished.\r\n\r\nIs the following correct interpretation of this sentence?\r\n\r\n- Certificate message contributes to _authentication_. \r\n- CertificateVerify message provides _handshake integrity_ up to Certificate message by signing the current transcript hash by its LTK.\r\n- Finished message provides _handshake integrity_ and _key confirmation_ for `finished_key`. \r\n\r\n\r\n\r\n> This is an odd use of \"authentication\", because it doesn't actually authenticate the server at all. It just provides the binding of the LTK to the name.\r\n\r\nAgree, Certificate by itself does not authenticate the peer. It only _contributes_ to authentication. \r\n\r\n> In this context, \"key confirmation\" refers _not_ to the LTK but rather to the shared secrets that were established as part of the handshake.\r\n\r\nThanks. I would appreciate an explicitly mention in Sec. 2. \r\n> I agree that as above, the Finished is derived from the HS secret, but that has the same underlying entropy as the main secret.\r\n\r\nAgree. This is because there is no external secret between Handshake Secret and Main Secret (i.e., the IKM input for HKDF-Extract for Main Secret is 0), right?\r\n\r\n\r\n\r\n> This is all easiest to see if you analyze the handshake with a record layer that doesn't provide integrity or encryption (NULL ciphers).\r\n\r\nThat's very interesting. I am curious where in the spec I can find this case of NULL ciphers for record layer?",
               "createdAt": "2025-06-16T07:54:54Z",
               "updatedAt": "2025-06-16T07:54:54Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os60Ylg9",
+          "commit": {
+            "abbreviatedOid": "c9a53ec"
+          },
+          "author": "muhammad-usama-sardar",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-07-16T18:27:31Z",
+          "updatedAt": "2025-07-16T18:27:31Z",
+          "comments": [
+            {
+              "originalPosition": 19,
+              "body": "@ekr could you please check if the above matches your understanding? \r\nIf you have some time, I would like to have a short chat with you in Madrid to wrap up both of my pending PRs. Thank you.",
+              "createdAt": "2025-07-16T18:27:31Z",
+              "updatedAt": "2025-07-16T18:27:31Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os60Y-RM",
+          "commit": {
+            "abbreviatedOid": "1e7d80c"
+          },
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-07-16T19:02:26Z",
+          "updatedAt": "2025-07-16T19:02:26Z",
+          "comments": [
+            {
+              "originalPosition": 19,
+              "body": "This is just the computation of the *key* for the entry, not of the value of the entry. You then need to compute the entry with HMAC over the transcript. \r\n\r\n",
+              "createdAt": "2025-07-16T19:02:26Z",
+              "updatedAt": "2025-07-16T19:02:35Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os60ZAUS",
+          "commit": {
+            "abbreviatedOid": "c9a53ec"
+          },
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-07-16T19:04:37Z",
+          "updatedAt": "2025-07-16T19:04:37Z",
+          "comments": [
+            {
+              "originalPosition": 19,
+              "body": " > Certificate message contributes to authentication.\r\n\r\nI don't know what this means.\r\n\r\n>    CertificateVerify message provides handshake integrity up to Certificate message by signing the current transcript hash by its LTK.\r\n\r\nYes.\r\n\r\n>    Finished message provides handshake integrity and key confirmation for finished_key.\r\n\r\nYes, and transitively for the exchanged secrets.\r\n\r\n\r\nThe spec does not talk about NULL ciphers for the record layer. What I'm saying is that there have been analyses that do not take the handshake encryption into account.\r\n\r\nI will not be in Madrid.",
+              "createdAt": "2025-07-16T19:04:37Z",
+              "updatedAt": "2025-07-16T19:04:55Z"
             }
           ]
         }
