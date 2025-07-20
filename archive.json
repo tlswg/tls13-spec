@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-07-17T01:00:59.945906+00:00",
+  "timestamp": "2025-07-20T01:06:52.091740+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -70007,7 +70007,7 @@
       "labels": [],
       "body": "Based on discussion on the list in the thread \"Key Hierarchy TLS 1.3 RFC8446(bis)\"",
       "createdAt": "2025-06-02T15:38:53Z",
-      "updatedAt": "2025-07-16T19:10:42Z",
+      "updatedAt": "2025-07-17T07:38:56Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "c2624eb7e0ccb3b237d3cf0826c48ae0181ac70f",
@@ -70053,6 +70053,13 @@
           "body": "I have merged the specific clarification of which key is confirmed, minus the citation, which I don't think helps.\r\n\r\nI don't think that the explicit derivation of the finished key is that helpful, and as noted above, just having it alone is misleading. I'm open to adding something if there are other people who find this confusing, otherwise I'm inclined to leave it as-is. I'll leave this PR open until after Madrid if others have input.",
           "createdAt": "2025-07-16T19:10:09Z",
           "updatedAt": "2025-07-16T19:10:42Z"
+        },
+        {
+          "author": "muhammad-usama-sardar",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> I have merged the specific clarification of which key is confirmed, minus the citation, which I don't think helps.\r\n\r\nWorks for me, thanks. \r\n> I don't think that the explicit derivation of the finished key is that helpful, and as noted above, just having it alone is misleading. I'm open to adding something if there are other people who find this confusing, otherwise I'm inclined to leave it as-is. \r\n\r\nMy feeling from 8773bis, draft-fossati-tls-attestation and previous formal analysis efforts was that both authors and verifiers, in general, have trouble with the key schedule. Having it explicit would be helpful for both. But if I am really the only one being confused here, I am okay with leaving it as-is.\r\n\r\n> I'll leave this PR open until after Madrid if others have input.\r\n\r\nFine ",
+          "createdAt": "2025-07-17T07:38:55Z",
+          "updatedAt": "2025-07-17T07:38:55Z"
         }
       ],
       "reviews": [
@@ -70319,6 +70326,26 @@
               "body": " > Certificate message contributes to authentication.\r\n\r\nI don't know what this means.\r\n\r\n>    CertificateVerify message provides handshake integrity up to Certificate message by signing the current transcript hash by its LTK.\r\n\r\nYes.\r\n\r\n>    Finished message provides handshake integrity and key confirmation for finished_key.\r\n\r\nYes, and transitively for the exchanged secrets.\r\n\r\n\r\nThe spec does not talk about NULL ciphers for the record layer. What I'm saying is that there have been analyses that do not take the handshake encryption into account.\r\n\r\nI will not be in Madrid.",
               "createdAt": "2025-07-16T19:04:37Z",
               "updatedAt": "2025-07-16T19:04:55Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os60f6vy",
+          "commit": {
+            "abbreviatedOid": "c9a53ec"
+          },
+          "author": "muhammad-usama-sardar",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-07-17T07:30:25Z",
+          "updatedAt": "2025-07-17T07:30:25Z",
+          "comments": [
+            {
+              "originalPosition": 19,
+              "body": "> > Certificate message contributes to authentication.\r\n> \r\n> I don't know what this means.\r\n\r\nWhat exactly does _authentication_ mean in the following sentence in the spec?\r\n> TLS generally uses a common\r\n> set of messages for authentication, key confirmation, and handshake\r\n> integrity: Certificate, CertificateVerify, and Finished.\r\n\r\nMore specifically, Certificate message has nothing to do with _key confirmation_ and _handshake integrity_. Certificate alone also does not provide authentication. So I summarized it as: it contributes to authentication. \r\n\r\n---\r\n> > Finished message provides handshake integrity and key confirmation for finished_key.\r\n> \r\n> Yes, and transitively for the exchanged secrets.\r\n> \r\n\r\nSure, thanks. \r\n> The spec does not talk about NULL ciphers for the record layer. What I'm saying is that there have been analyses that do not take the handshake encryption into account.\r\n\r\nGot it, thanks.\r\n> I will not be in Madrid.\r\n\r\noh that's a pity. ",
+              "createdAt": "2025-07-17T07:30:25Z",
+              "updatedAt": "2025-07-17T07:30:25Z"
             }
           ]
         }
