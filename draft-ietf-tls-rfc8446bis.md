@@ -6140,7 +6140,7 @@ this form of attack by treating the cases where there is no
 valid PSK identity and where there is an identity but it has an
 invalid binder identically.
 
-## Sharing PSKs across protocol versions
+## Sharing PSKs Across Protocol Versions
 
 TLS 1.3 takes a conservative approach to PSKs by binding them to a
 specific KDF.  By contrast, TLS 1.2 allows PSKs to be used with any
