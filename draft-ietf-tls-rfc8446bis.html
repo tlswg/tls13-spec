@@ -15,11 +15,11 @@ tampering, and message forgery.
 RFCs 5077, 5246, 6961, 8422, and 8446. This document also specifies
 new requirements for TLS 1.2 implementations. 
     " name="description">
-<meta content="xml2rfc 3.29.0" name="generator">
+<meta content="xml2rfc 3.30.0" name="generator">
 <meta content="Internet-Draft" name="keyword">
 <meta content="draft-ietf-tls-rfc8446bis-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.29.0
+  xml2rfc 3.30.0
     Python 3.12.11
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
@@ -1054,7 +1054,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Rescorla</td>
-<td class="center">Expires 17 January 2026</td>
+<td class="center">Expires 22 January 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1073,12 +1073,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <a href="https://www.rfc-editor.org/rfc/rfc5705" class="eref">5705</a>, <a href="https://www.rfc-editor.org/rfc/rfc6066" class="eref">6066</a>, <a href="https://www.rfc-editor.org/rfc/rfc7627" class="eref">7627</a>, <a href="https://www.rfc-editor.org/rfc/rfc8422" class="eref">8422</a> (if approved)</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-07-16" class="published">16 July 2025</time>
+<time datetime="2025-07-21" class="published">21 July 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2026-01-17">17 January 2026</time></dd>
+<dd class="expires"><time datetime="2026-01-22">22 January 2026</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1118,7 +1118,7 @@ new requirements for TLS 1.2 implementations.<a href="#section-abstract-2" class
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 17 January 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 22 January 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1573,13 +1573,16 @@ new requirements for TLS 1.2 implementations.<a href="#section-abstract-2" class
                 <p id="section-toc.1-1.18.2.6.1"><a href="#appendix-F.6" class="auto internal xref">F.6</a>.  <a href="#name-psk-identity-exposure" class="internal xref">PSK Identity Exposure</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.18.2.7">
-                <p id="section-toc.1-1.18.2.7.1"><a href="#appendix-F.7" class="auto internal xref">F.7</a>.  <a href="#name-sharing-psks" class="internal xref">Sharing PSKs</a></p>
+                <p id="section-toc.1-1.18.2.7.1"><a href="#appendix-F.7" class="auto internal xref">F.7</a>.  <a href="#name-sharing-psks-across-protoco" class="internal xref">Sharing PSKs Across Protocol Versions</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.18.2.8">
-                <p id="section-toc.1-1.18.2.8.1"><a href="#appendix-F.8" class="auto internal xref">F.8</a>.  <a href="#name-misbinding-when-using-self-" class="internal xref">Misbinding when using Self-Signed Certificates or Raw Public Keys</a></p>
+                <p id="section-toc.1-1.18.2.8.1"><a href="#appendix-F.8" class="auto internal xref">F.8</a>.  <a href="#name-external-psks-and-rerouting" class="internal xref">External PSKs and Rerouting</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.18.2.9">
-                <p id="section-toc.1-1.18.2.9.1"><a href="#appendix-F.9" class="auto internal xref">F.9</a>.  <a href="#name-attacks-on-static-rsa" class="internal xref">Attacks on Static RSA</a></p>
+                <p id="section-toc.1-1.18.2.9.1"><a href="#appendix-F.9" class="auto internal xref">F.9</a>.  <a href="#name-misbinding-when-using-self-" class="internal xref">Misbinding when using Self-Signed Certificates or Raw Public Keys</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.18.2.10">
+                <p id="section-toc.1-1.18.2.10.1"><a href="#appendix-F.10" class="auto internal xref">F.10</a>. <a href="#name-attacks-on-static-rsa" class="internal xref">Attacks on Static RSA</a></p>
 </li>
             </ul>
 </li>
@@ -7683,6 +7686,14 @@ alert in the TLS Alerts Registry with the value given in <a href="#alert-protoco
         <dd>
 <span class="refAuthor">Laurie, B.</span>, <span class="refAuthor">Messeri, E.</span>, and <span class="refAuthor">R. Stradling</span>, <span class="refTitle">"Certificate Transparency Version 2.0"</span>, <span class="seriesInfo">RFC 9162</span>, <span class="seriesInfo">DOI 10.17487/RFC9162</span>, <time datetime="2021-12" class="refDate">December 2021</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9162">https://www.rfc-editor.org/rfc/rfc9162</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="RFC9257">[RFC9257]</dt>
+        <dd>
+<span class="refAuthor">Housley, R.</span>, <span class="refAuthor">Hoyland, J.</span>, <span class="refAuthor">Sethi, M.</span>, and <span class="refAuthor">C. A. Wood</span>, <span class="refTitle">"Guidance for External Pre-Shared Key (PSK) Usage in TLS"</span>, <span class="seriesInfo">RFC 9257</span>, <span class="seriesInfo">DOI 10.17487/RFC9257</span>, <time datetime="2022-07" class="refDate">July 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9257">https://www.rfc-editor.org/rfc/rfc9257</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9258">[RFC9258]</dt>
+        <dd>
+<span class="refAuthor">Benjamin, D.</span> and <span class="refAuthor">C. A. Wood</span>, <span class="refTitle">"Importing External Pre-Shared Keys (PSKs) for TLS 1.3"</span>, <span class="seriesInfo">RFC 9258</span>, <span class="seriesInfo">DOI 10.17487/RFC9258</span>, <time datetime="2022-07" class="refDate">July 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9258">https://www.rfc-editor.org/rfc/rfc9258</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="RFC9345">[RFC9345]</dt>
         <dd>
 <span class="refAuthor">Barnes, R.</span>, <span class="refAuthor">Iyengar, S.</span>, <span class="refAuthor">Sullivan, N.</span>, and <span class="refAuthor">E. Rescorla</span>, <span class="refTitle">"Delegated Credentials for TLS and DTLS"</span>, <span class="seriesInfo">RFC 9345</span>, <span class="seriesInfo">DOI 10.17487/RFC9345</span>, <time datetime="2023-07" class="refDate">July 2023</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9345">https://www.rfc-editor.org/rfc/rfc9345</a>&gt;</span>. </dd>
@@ -7694,6 +7705,10 @@ alert in the TLS Alerts Registry with the value given in <a href="#alert-protoco
 <dt id="RSA">[RSA]</dt>
         <dd>
 <span class="refAuthor">Rivest, R.</span>, <span class="refAuthor">Shamir, A.</span>, and <span class="refAuthor">L. Adleman</span>, <span class="refTitle">"A method for obtaining digital signatures and public-key cryptosystems"</span>, <span class="refContent">Association for Computing Machinery (ACM)</span>, <span class="seriesInfo">Communications of the ACM vol. 21, no. 2, pp. 120-126</span>, <span class="seriesInfo">DOI 10.1145/359340.359342</span>, <time datetime="1978-02" class="refDate">February 1978</time>, <span>&lt;<a href="https://doi.org/10.1145/359340.359342">https://doi.org/10.1145/359340.359342</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="Selfie">[Selfie]</dt>
+        <dd>
+<span class="refAuthor">Drucker, N.</span> and <span class="refAuthor">S. Gueron</span>, <span class="refTitle">"Selfie: reflections on TLS 1.3 with PSK"</span>, <time datetime="2019" class="refDate">2019</time>, <span>&lt;<a href="https://eprint.iacr.org/2019/347.pdf">https://eprint.iacr.org/2019/347.pdf</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="SIGMA">[SIGMA]</dt>
         <dd>
@@ -9625,10 +9640,10 @@ valid PSK identity and where there is an identity but it has an
 invalid binder identically.<a href="#appendix-F.6-1" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="sharing-psks">
+<div id="sharing-psks-across-protocol-versions">
 <section id="appendix-F.7">
-        <h3 id="name-sharing-psks">
-<a href="#appendix-F.7" class="section-number selfRef">F.7. </a><a href="#name-sharing-psks" class="section-name selfRef">Sharing PSKs</a>
+        <h3 id="name-sharing-psks-across-protoco">
+<a href="#appendix-F.7" class="section-number selfRef">F.7. </a><a href="#name-sharing-psks-across-protoco" class="section-name selfRef">Sharing PSKs Across Protocol Versions</a>
         </h3>
 <p id="appendix-F.7-1">TLS 1.3 takes a conservative approach to PSKs by binding them to a
 specific KDF.  By contrast, TLS 1.2 allows PSKs to be used with any
@@ -9643,26 +9658,43 @@ cross-protocol related output by not reusing PSKs between TLS 1.3 and
 TLS 1.2.<a href="#appendix-F.7-1" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="misbinding-when-using-self-signed-certificates-or-raw-public-keys">
+<div id="external-psks-and-rerouting">
 <section id="appendix-F.8">
-        <h3 id="name-misbinding-when-using-self-">
-<a href="#appendix-F.8" class="section-number selfRef">F.8. </a><a href="#name-misbinding-when-using-self-" class="section-name selfRef">Misbinding when using Self-Signed Certificates or Raw Public Keys</a>
+        <h3 id="name-external-psks-and-rerouting">
+<a href="#appendix-F.8" class="section-number selfRef">F.8. </a><a href="#name-external-psks-and-rerouting" class="section-name selfRef">External PSKs and Rerouting</a>
         </h3>
-<p id="appendix-F.8-1">When TLS 1.3 is used with self-signed certificates without useful
+<p id="appendix-F.8-1">External PSKs in TLS are designed to be known to exactly one client
+and one server. However, as noted in <span>[<a href="#RFC9257" class="cite xref">RFC9257</a>]</span>, there are use cases
+where PSKs are shared between more than two entities. In such
+scenarios, in addition to the expected security weakness where a
+compromised group member can impersonate any other member, a malicious
+non-member can reroute handshakes between honest group members to
+connect them in unintended ways <span>[<a href="#Selfie" class="cite xref">Selfie</a>]</span>. <span>[<a href="#RFC9257" class="cite xref">RFC9257</a>]</span> provides
+recommendations for external PSK usage, including the use of external
+PSK importers as defined in <span>[<a href="#RFC9258" class="cite xref">RFC9258</a>]</span>, that prevent such malicious
+rerouting of messages<a href="#appendix-F.8-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="misbinding-when-using-self-signed-certificates-or-raw-public-keys">
+<section id="appendix-F.9">
+        <h3 id="name-misbinding-when-using-self-">
+<a href="#appendix-F.9" class="section-number selfRef">F.9. </a><a href="#name-misbinding-when-using-self-" class="section-name selfRef">Misbinding when using Self-Signed Certificates or Raw Public Keys</a>
+        </h3>
+<p id="appendix-F.9-1">When TLS 1.3 is used with self-signed certificates without useful
 identities (as in DTLS-SRTP <span>[<a href="#RFC5763" class="cite xref">RFC5763</a>]</span>) or raw public keys
 <span>[<a href="#RFC7250" class="cite xref">RFC7250</a>]</span> for peer authentication, it may be vulnerable to
 misbinding attacks <span>[<a href="#MM24" class="cite xref">MM24</a>]</span>. This risk can be mitigated by using
 the "external_id_hash" extension <span>[<a href="#RFC8844" class="cite xref">RFC8844</a>]</span> or, if only
 the server is being authenticated, by the server verifying
-that the "server_name" extension matches its expected identity.<a href="#appendix-F.8-1" class="pilcrow">¶</a></p>
+that the "server_name" extension matches its expected identity.<a href="#appendix-F.9-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="attacks-on-static-rsa">
-<section id="appendix-F.9">
+<section id="appendix-F.10">
         <h3 id="name-attacks-on-static-rsa">
-<a href="#appendix-F.9" class="section-number selfRef">F.9. </a><a href="#name-attacks-on-static-rsa" class="section-name selfRef">Attacks on Static RSA</a>
+<a href="#appendix-F.10" class="section-number selfRef">F.10. </a><a href="#name-attacks-on-static-rsa" class="section-name selfRef">Attacks on Static RSA</a>
         </h3>
-<p id="appendix-F.9-1">Although TLS 1.3 does not use RSA key transport and so is not
+<p id="appendix-F.10-1">Although TLS 1.3 does not use RSA key transport and so is not
 directly susceptible to Bleichenbacher-type attacks <span>[<a href="#Blei98" class="cite xref">Blei98</a>]</span> if TLS 1.3
 servers also support static RSA in the context of previous
 versions of TLS, then it may be possible to impersonate the server
@@ -9673,7 +9705,7 @@ might also be able to separate certificates with different keyUsage
 bits for static RSA decryption and RSA signature, but this technique
 relies on clients refusing to accept signatures using keys
 in certificates that do not have the digitalSignature bit set,
-and many clients do not enforce this restriction.<a href="#appendix-F.9-1" class="pilcrow">¶</a></p>
+and many clients do not enforce this restriction.<a href="#appendix-F.10-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>

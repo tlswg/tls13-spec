@@ -4,10 +4,10 @@
 
 Transport Layer Security                                     E. Rescorla
 Internet-Draft                                               Independent
-Obsoletes: 8446 (if approved)                               16 July 2025
+Obsoletes: 8446 (if approved)                               21 July 2025
 Updates: 5705, 6066, 7627, 8422 (if approved)                           
 Intended status: Standards Track                                        
-Expires: 17 January 2026
+Expires: 22 January 2026
 
 
         The Transport Layer Security (TLS) Protocol Version 1.3
@@ -39,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 17 January 2026.
+   This Internet-Draft will expire on 22 January 2026.
 
 Copyright Notice
 
@@ -190,10 +190,11 @@ Table of Contents
      F.5.  Replay Attacks on 0-RTT
        F.5.1.  Replay and Exporters
      F.6.  PSK Identity Exposure
-     F.7.  Sharing PSKs
-     F.8.  Misbinding when using Self-Signed Certificates or Raw
-           Public Keys
-     F.9.  Attacks on Static RSA
+     F.7.  Sharing PSKs Across Protocol Versions
+     F.8.  External PSKs and Rerouting
+     F.9.  Misbinding when using Self-Signed Certificates or Raw
+            Public Keys
+     F.10. Attacks on Static RSA
    Appendix G.  Change Log
    Contributors
    Author's Address
@@ -5319,6 +5320,16 @@ Auth | {CertificateVerify*}
               Transparency Version 2.0", RFC 9162, DOI 10.17487/RFC9162,
               December 2021, <https://www.rfc-editor.org/rfc/rfc9162>.
 
+   [RFC9257]  Housley, R., Hoyland, J., Sethi, M., and C. A. Wood,
+              "Guidance for External Pre-Shared Key (PSK) Usage in TLS",
+              RFC 9257, DOI 10.17487/RFC9257, July 2022,
+              <https://www.rfc-editor.org/rfc/rfc9257>.
+
+   [RFC9258]  Benjamin, D. and C. A. Wood, "Importing External Pre-
+              Shared Keys (PSKs) for TLS 1.3", RFC 9258,
+              DOI 10.17487/RFC9258, July 2022,
+              <https://www.rfc-editor.org/rfc/rfc9258>.
+
    [RFC9345]  Barnes, R., Iyengar, S., Sullivan, N., and E. Rescorla,
               "Delegated Credentials for TLS and DTLS", RFC 9345,
               DOI 10.17487/RFC9345, July 2023,
@@ -5334,6 +5345,9 @@ Auth | {CertificateVerify*}
               Communications of the ACM vol. 21, no. 2, pp. 120-126,
               DOI 10.1145/359340.359342, February 1978,
               <https://doi.org/10.1145/359340.359342>.
+
+   [Selfie]   Drucker, N. and S. Gueron, "Selfie: reflections on TLS 1.3
+              with PSK", 2019, <https://eprint.iacr.org/2019/347.pdf>.
 
    [SIGMA]    Krawczyk, H., "SIGMA: The ‘SIGn-and-MAc’ Approach to
               Authenticated Diffie-Hellman and Its Use in the IKE
@@ -6850,7 +6864,7 @@ F.6.  PSK Identity Exposure
    identity and where there is an identity but it has an invalid binder
    identically.
 
-F.7.  Sharing PSKs
+F.7.  Sharing PSKs Across Protocol Versions
 
    TLS 1.3 takes a conservative approach to PSKs by binding them to a
    specific KDF.  By contrast, TLS 1.2 allows PSKs to be used with any
@@ -6864,7 +6878,20 @@ F.7.  Sharing PSKs
    cross-protocol related output by not reusing PSKs between TLS 1.3 and
    TLS 1.2.
 
-F.8.  Misbinding when using Self-Signed Certificates or Raw Public Keys
+F.8.  External PSKs and Rerouting
+
+   External PSKs in TLS are designed to be known to exactly one client
+   and one server.  However, as noted in [RFC9257], there are use cases
+   where PSKs are shared between more than two entities.  In such
+   scenarios, in addition to the expected security weakness where a
+   compromised group member can impersonate any other member, a
+   malicious non-member can reroute handshakes between honest group
+   members to connect them in unintended ways [Selfie].  [RFC9257]
+   provides recommendations for external PSK usage, including the use of
+   external PSK importers as defined in [RFC9258], that prevent such
+   malicious rerouting of messages
+
+F.9.  Misbinding when using Self-Signed Certificates or Raw Public Keys
 
    When TLS 1.3 is used with self-signed certificates without useful
    identities (as in DTLS-SRTP [RFC5763]) or raw public keys [RFC7250]
@@ -6874,7 +6901,7 @@ F.8.  Misbinding when using Self-Signed Certificates or Raw Public Keys
    the server verifying that the "server_name" extension matches its
    expected identity.
 
-F.9.  Attacks on Static RSA
+F.10.  Attacks on Static RSA
 
    Although TLS 1.3 does not use RSA key transport and so is not
    directly susceptible to Bleichenbacher-type attacks [Blei98] if TLS
