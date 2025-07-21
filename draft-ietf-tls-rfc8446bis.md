@@ -4369,7 +4369,7 @@ input secrets are:
   the resumption_secret value from a previous connection)
 - (EC)DHE shared secret ({{ecdhe-shared-secret-calculation}})
 
-This produces the overall key schedule shown in the diagram below
+This produces the key schedule shown in the diagram below
 ({{key-schedule-diagram}}. In this diagram, the following formatting conventions apply:
 
 - HKDF-Extract is drawn as taking the Salt argument from the top and
@@ -4443,7 +4443,7 @@ from the handshake.
                                        ClientHello...client Finished)
                                 = resumption_secret
 ~~~~
-{: #key-schedule-diagram title="Overall TLS 1.3 Key Schedule"}
+{: #key-schedule-diagram title="Main TLS 1.3 Key Schedule (leaf keys not shown)"}
 
 The general pattern here is that the secrets shown down the left side
 of the diagram are just raw entropy without context, whereas the
