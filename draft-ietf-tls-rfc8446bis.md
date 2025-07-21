@@ -4443,7 +4443,7 @@ from the handshake.
                                        ClientHello...client Finished)
                                 = resumption_secret
 ~~~~
-{: #key-schedule-diagram title="Main TLS 1.3 Key Schedule (leaf keys not shown)"}
+{: #key-schedule-diagram title="Main TLS 1.3 Key Schedule"}
 
 The general pattern here is that the secrets shown down the left side
 of the diagram are just raw entropy without context, whereas the
