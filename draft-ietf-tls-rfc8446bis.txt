@@ -4041,8 +4041,8 @@ Auth | {CertificateVerify*}
 
    *  (EC)DHE shared secret (Section 7.4)
 
-   This produces a full key derivation schedule shown in the diagram
-   below.  In this diagram, the following formatting conventions apply:
+   This produces the key schedule shown in the diagram below (Figure 5.
+   In this diagram, the following formatting conventions apply:
 
    *  HKDF-Extract is drawn as taking the Salt argument from the top and
       the IKM argument from the left, with its output to the bottom and
@@ -4057,6 +4057,10 @@ Auth | {CertificateVerify*}
    Note: the key derivation labels use the string "master" even though
    the values are referred to as "main" secrets.  This mismatch is a
    result of renaming the values while retaining compatibility.
+
+   Note: this does not show all the leaf keys such as the separate AEAD
+   and IV keys but rather the first set of secrets derived from the
+   handshake.
 
                     0
                     |
@@ -4110,6 +4114,8 @@ Auth | {CertificateVerify*}
                     +-----> Derive-Secret(., "res master",
                                           ClientHello...client Finished)
                                    = resumption_secret
+
+         Figure 5: Main TLS 1.3 Key Schedule (leaf keys not shown)
 
    The general pattern here is that the secrets shown down the left side
    of the diagram are just raw entropy without context, whereas the
@@ -6375,7 +6381,10 @@ F.1.  Handshake
    following values:
 
    *  A set of "session keys" (the various secrets derived from the main
-      secret) from which can be derived a set of working keys.
+      secret) from which can be derived a set of working keys.  Note
+      that when early data is in use, secrets are also derived from the
+      early secret.  These enjoy somewhat weaker properties than those
+      derived from the main secret, as detailed below.
 
    *  A set of cryptographic parameters (algorithms, etc.).
 

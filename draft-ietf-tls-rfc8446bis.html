@@ -6345,8 +6345,8 @@ the resumption_secret value from a previous connection)<a href="#section-7.1-7.1
             <p id="section-7.1-7.2.1">(EC)DHE shared secret (<a href="#ecdhe-shared-secret-calculation" class="auto internal xref">Section 7.4</a>)<a href="#section-7.1-7.2.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-7.1-8">This produces a full key derivation schedule shown in the diagram below.
-In this diagram, the following formatting conventions apply:<a href="#section-7.1-8" class="pilcrow">¶</a></p>
+<p id="section-7.1-8">This produces the key schedule shown in the diagram below
+(<a href="#key-schedule-diagram" class="auto internal xref">Figure 5</a>. In this diagram, the following formatting conventions apply:<a href="#section-7.1-8" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-7.1-9.1">
             <p id="section-7.1-9.1.1">HKDF-Extract is drawn as taking the Salt argument from the top and
@@ -6365,139 +6365,148 @@ generating the client_early_traffic_secret.<a href="#section-7.1-9.2.1" class="p
 <p id="section-7.1-10">Note: the key derivation labels use the string "master" even though
 the values are referred to as "main" secrets.  This mismatch is a
 result of renaming the values while retaining compatibility.<a href="#section-7.1-10" class="pilcrow">¶</a></p>
-<div id="section-7.1-11">
-          <div class="alignLeft art-svg artwork" id="section-7.1-11.1">
+<p id="section-7.1-11">Note: this does not show all the leaf keys such as the separate
+AEAD and IV keys but rather the first set of secrets derived
+from the handshake.<a href="#section-7.1-11" class="pilcrow">¶</a></p>
+<span id="name-main-tls-13-key-schedule-le"></span><div id="key-schedule-diagram">
+<figure id="figure-5">
+          <div id="section-7.1-12.1">
+            <div class="alignLeft art-svg artwork" id="section-7.1-12.1.1">
 <svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="880" width="544" viewBox="0 0 544 880" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round">
-              <path d="M 128,48 L 128,64" fill="none" stroke="black"></path>
-              <path d="M 128,96 L 128,320" fill="none" stroke="black"></path>
-              <path d="M 128,352 L 128,368" fill="none" stroke="black"></path>
-              <path d="M 128,400 L 128,528" fill="none" stroke="black"></path>
-              <path d="M 128,560 L 128,576" fill="none" stroke="black"></path>
-              <path d="M 128,608 L 128,816" fill="none" stroke="black"></path>
-              <path d="M 64,80 L 80,80" fill="none" stroke="black"></path>
-              <path d="M 128,112 L 176,112" fill="none" stroke="black"></path>
-              <path d="M 128,208 L 176,208" fill="none" stroke="black"></path>
-              <path d="M 128,272 L 176,272" fill="none" stroke="black"></path>
-              <path d="M 72,384 L 88,384" fill="none" stroke="black"></path>
-              <path d="M 128,416 L 176,416" fill="none" stroke="black"></path>
-              <path d="M 128,480 L 176,480" fill="none" stroke="black"></path>
-              <path d="M 72,592 L 88,592" fill="none" stroke="black"></path>
-              <path d="M 128,624 L 176,624" fill="none" stroke="black"></path>
-              <path d="M 128,688 L 176,688" fill="none" stroke="black"></path>
-              <path d="M 128,752 L 176,752" fill="none" stroke="black"></path>
-              <path d="M 128,816 L 176,816" fill="none" stroke="black"></path>
-              <polygon class="arrowhead" points="184,816 172,810.4 172,821.6" fill="black" transform="rotate(0,176,816)"></polygon>
-              <polygon class="arrowhead" points="184,752 172,746.4 172,757.6" fill="black" transform="rotate(0,176,752)"></polygon>
-              <polygon class="arrowhead" points="184,688 172,682.4 172,693.6" fill="black" transform="rotate(0,176,688)"></polygon>
-              <polygon class="arrowhead" points="184,624 172,618.4 172,629.6" fill="black" transform="rotate(0,176,624)"></polygon>
-              <polygon class="arrowhead" points="184,480 172,474.4 172,485.6" fill="black" transform="rotate(0,176,480)"></polygon>
-              <polygon class="arrowhead" points="184,416 172,410.4 172,421.6" fill="black" transform="rotate(0,176,416)"></polygon>
-              <polygon class="arrowhead" points="184,272 172,266.4 172,277.6" fill="black" transform="rotate(0,176,272)"></polygon>
-              <polygon class="arrowhead" points="184,208 172,202.4 172,213.6" fill="black" transform="rotate(0,176,208)"></polygon>
-              <polygon class="arrowhead" points="184,112 172,106.4 172,117.6" fill="black" transform="rotate(0,176,112)"></polygon>
-              <polygon class="arrowhead" points="136,576 124,570.4 124,581.6" fill="black" transform="rotate(90,128,576)"></polygon>
-              <polygon class="arrowhead" points="136,528 124,522.4 124,533.6" fill="black" transform="rotate(90,128,528)"></polygon>
-              <polygon class="arrowhead" points="136,368 124,362.4 124,373.6" fill="black" transform="rotate(90,128,368)"></polygon>
-              <polygon class="arrowhead" points="136,320 124,314.4 124,325.6" fill="black" transform="rotate(90,128,320)"></polygon>
-              <polygon class="arrowhead" points="136,64 124,58.4 124,69.6" fill="black" transform="rotate(90,128,64)"></polygon>
-              <polygon class="arrowhead" points="96,592 84,586.4 84,597.6" fill="black" transform="rotate(0,88,592)"></polygon>
-              <polygon class="arrowhead" points="96,384 84,378.4 84,389.6" fill="black" transform="rotate(0,88,384)"></polygon>
-              <polygon class="arrowhead" points="88,80 76,74.4 76,85.6" fill="black" transform="rotate(0,80,80)"></polygon>
-              <g class="text">
-                <text x="128" y="36">0</text>
-                <text x="40" y="84">PSK</text>
-                <text x="148" y="84">HKDF-Extract</text>
-                <text x="208" y="84">=</text>
-                <text x="240" y="84">Early</text>
-                <text x="292" y="84">Secret</text>
-                <text x="252" y="116">Derive-Secret(.,</text>
-                <text x="316" y="132">"ext</text>
-                <text x="368" y="132">binder"</text>
-                <text x="408" y="132">|</text>
-                <text x="316" y="148">"res</text>
-                <text x="372" y="148">binder",</text>
-                <text x="312" y="164">"")</text>
-                <text x="248" y="180">=</text>
-                <text x="300" y="180">binder_key</text>
-                <text x="252" y="212">Derive-Secret(.,</text>
-                <text x="332" y="212">"c</text>
-                <text x="352" y="212">e</text>
-                <text x="400" y="212">traffic",</text>
-                <text x="348" y="228">ClientHello)</text>
-                <text x="248" y="244">=</text>
-                <text x="368" y="244">client_early_traffic_secret</text>
-                <text x="252" y="276">Derive-Secret(.,</text>
-                <text x="332" y="276">"e</text>
-                <text x="360" y="276">exp</text>
-                <text x="412" y="276">master",</text>
-                <text x="348" y="292">ClientHello)</text>
-                <text x="248" y="308">=</text>
-                <text x="344" y="308">early_exporter_secret</text>
-                <text x="148" y="340">Derive-Secret(.,</text>
-                <text x="260" y="340">"derived",</text>
-                <text x="320" y="340">"")</text>
-                <text x="32" y="388">(EC)DHE</text>
-                <text x="148" y="388">HKDF-Extract</text>
-                <text x="208" y="388">=</text>
-                <text x="256" y="388">Handshake</text>
-                <text x="324" y="388">Secret</text>
-                <text x="252" y="420">Derive-Secret(.,</text>
-                <text x="332" y="420">"c</text>
-                <text x="356" y="420">hs</text>
-                <text x="408" y="420">traffic",</text>
-                <text x="404" y="436">ClientHello...ServerHello)</text>
-                <text x="248" y="452">=</text>
-                <text x="384" y="452">client_handshake_traffic_secret</text>
-                <text x="252" y="484">Derive-Secret(.,</text>
-                <text x="332" y="484">"s</text>
-                <text x="356" y="484">hs</text>
-                <text x="408" y="484">traffic",</text>
-                <text x="404" y="500">ClientHello...ServerHello)</text>
-                <text x="248" y="516">=</text>
-                <text x="384" y="516">server_handshake_traffic_secret</text>
-                <text x="148" y="548">Derive-Secret(.,</text>
-                <text x="260" y="548">"derived",</text>
-                <text x="320" y="548">"")</text>
-                <text x="56" y="596">0</text>
-                <text x="148" y="596">HKDF-Extract</text>
-                <text x="208" y="596">=</text>
-                <text x="236" y="596">Main</text>
-                <text x="284" y="596">Secret</text>
-                <text x="252" y="628">Derive-Secret(.,</text>
-                <text x="332" y="628">"c</text>
-                <text x="356" y="628">ap</text>
-                <text x="408" y="628">traffic",</text>
-                <text x="380" y="644">ClientHello...server</text>
-                <text x="504" y="644">Finished)</text>
-                <text x="248" y="660">=</text>
-                <text x="400" y="660">client_application_traffic_secret_0</text>
-                <text x="252" y="692">Derive-Secret(.,</text>
-                <text x="332" y="692">"s</text>
-                <text x="356" y="692">ap</text>
-                <text x="408" y="692">traffic",</text>
-                <text x="380" y="708">ClientHello...server</text>
-                <text x="504" y="708">Finished)</text>
-                <text x="248" y="724">=</text>
-                <text x="400" y="724">server_application_traffic_secret_0</text>
-                <text x="252" y="756">Derive-Secret(.,</text>
-                <text x="340" y="756">"exp</text>
-                <text x="396" y="756">master",</text>
-                <text x="380" y="772">ClientHello...server</text>
-                <text x="504" y="772">Finished)</text>
-                <text x="248" y="788">=</text>
-                <text x="320" y="788">exporter_secret</text>
-                <text x="252" y="820">Derive-Secret(.,</text>
-                <text x="340" y="820">"res</text>
-                <text x="396" y="820">master",</text>
-                <text x="380" y="836">ClientHello...client</text>
-                <text x="504" y="836">Finished)</text>
-                <text x="248" y="852">=</text>
-                <text x="328" y="852">resumption_secret</text>
-              </g>
-            </svg><a href="#section-7.1-11.1" class="pilcrow">¶</a>
+                <path d="M 128,48 L 128,64" fill="none" stroke="black"></path>
+                <path d="M 128,96 L 128,320" fill="none" stroke="black"></path>
+                <path d="M 128,352 L 128,368" fill="none" stroke="black"></path>
+                <path d="M 128,400 L 128,528" fill="none" stroke="black"></path>
+                <path d="M 128,560 L 128,576" fill="none" stroke="black"></path>
+                <path d="M 128,608 L 128,816" fill="none" stroke="black"></path>
+                <path d="M 64,80 L 80,80" fill="none" stroke="black"></path>
+                <path d="M 128,112 L 176,112" fill="none" stroke="black"></path>
+                <path d="M 128,208 L 176,208" fill="none" stroke="black"></path>
+                <path d="M 128,272 L 176,272" fill="none" stroke="black"></path>
+                <path d="M 72,384 L 88,384" fill="none" stroke="black"></path>
+                <path d="M 128,416 L 176,416" fill="none" stroke="black"></path>
+                <path d="M 128,480 L 176,480" fill="none" stroke="black"></path>
+                <path d="M 72,592 L 88,592" fill="none" stroke="black"></path>
+                <path d="M 128,624 L 176,624" fill="none" stroke="black"></path>
+                <path d="M 128,688 L 176,688" fill="none" stroke="black"></path>
+                <path d="M 128,752 L 176,752" fill="none" stroke="black"></path>
+                <path d="M 128,816 L 176,816" fill="none" stroke="black"></path>
+                <polygon class="arrowhead" points="184,816 172,810.4 172,821.6" fill="black" transform="rotate(0,176,816)"></polygon>
+                <polygon class="arrowhead" points="184,752 172,746.4 172,757.6" fill="black" transform="rotate(0,176,752)"></polygon>
+                <polygon class="arrowhead" points="184,688 172,682.4 172,693.6" fill="black" transform="rotate(0,176,688)"></polygon>
+                <polygon class="arrowhead" points="184,624 172,618.4 172,629.6" fill="black" transform="rotate(0,176,624)"></polygon>
+                <polygon class="arrowhead" points="184,480 172,474.4 172,485.6" fill="black" transform="rotate(0,176,480)"></polygon>
+                <polygon class="arrowhead" points="184,416 172,410.4 172,421.6" fill="black" transform="rotate(0,176,416)"></polygon>
+                <polygon class="arrowhead" points="184,272 172,266.4 172,277.6" fill="black" transform="rotate(0,176,272)"></polygon>
+                <polygon class="arrowhead" points="184,208 172,202.4 172,213.6" fill="black" transform="rotate(0,176,208)"></polygon>
+                <polygon class="arrowhead" points="184,112 172,106.4 172,117.6" fill="black" transform="rotate(0,176,112)"></polygon>
+                <polygon class="arrowhead" points="136,576 124,570.4 124,581.6" fill="black" transform="rotate(90,128,576)"></polygon>
+                <polygon class="arrowhead" points="136,528 124,522.4 124,533.6" fill="black" transform="rotate(90,128,528)"></polygon>
+                <polygon class="arrowhead" points="136,368 124,362.4 124,373.6" fill="black" transform="rotate(90,128,368)"></polygon>
+                <polygon class="arrowhead" points="136,320 124,314.4 124,325.6" fill="black" transform="rotate(90,128,320)"></polygon>
+                <polygon class="arrowhead" points="136,64 124,58.4 124,69.6" fill="black" transform="rotate(90,128,64)"></polygon>
+                <polygon class="arrowhead" points="96,592 84,586.4 84,597.6" fill="black" transform="rotate(0,88,592)"></polygon>
+                <polygon class="arrowhead" points="96,384 84,378.4 84,389.6" fill="black" transform="rotate(0,88,384)"></polygon>
+                <polygon class="arrowhead" points="88,80 76,74.4 76,85.6" fill="black" transform="rotate(0,80,80)"></polygon>
+                <g class="text">
+                  <text x="128" y="36">0</text>
+                  <text x="40" y="84">PSK</text>
+                  <text x="148" y="84">HKDF-Extract</text>
+                  <text x="208" y="84">=</text>
+                  <text x="240" y="84">Early</text>
+                  <text x="292" y="84">Secret</text>
+                  <text x="252" y="116">Derive-Secret(.,</text>
+                  <text x="316" y="132">"ext</text>
+                  <text x="368" y="132">binder"</text>
+                  <text x="408" y="132">|</text>
+                  <text x="316" y="148">"res</text>
+                  <text x="372" y="148">binder",</text>
+                  <text x="312" y="164">"")</text>
+                  <text x="248" y="180">=</text>
+                  <text x="300" y="180">binder_key</text>
+                  <text x="252" y="212">Derive-Secret(.,</text>
+                  <text x="332" y="212">"c</text>
+                  <text x="352" y="212">e</text>
+                  <text x="400" y="212">traffic",</text>
+                  <text x="348" y="228">ClientHello)</text>
+                  <text x="248" y="244">=</text>
+                  <text x="368" y="244">client_early_traffic_secret</text>
+                  <text x="252" y="276">Derive-Secret(.,</text>
+                  <text x="332" y="276">"e</text>
+                  <text x="360" y="276">exp</text>
+                  <text x="412" y="276">master",</text>
+                  <text x="348" y="292">ClientHello)</text>
+                  <text x="248" y="308">=</text>
+                  <text x="344" y="308">early_exporter_secret</text>
+                  <text x="148" y="340">Derive-Secret(.,</text>
+                  <text x="260" y="340">"derived",</text>
+                  <text x="320" y="340">"")</text>
+                  <text x="32" y="388">(EC)DHE</text>
+                  <text x="148" y="388">HKDF-Extract</text>
+                  <text x="208" y="388">=</text>
+                  <text x="256" y="388">Handshake</text>
+                  <text x="324" y="388">Secret</text>
+                  <text x="252" y="420">Derive-Secret(.,</text>
+                  <text x="332" y="420">"c</text>
+                  <text x="356" y="420">hs</text>
+                  <text x="408" y="420">traffic",</text>
+                  <text x="404" y="436">ClientHello...ServerHello)</text>
+                  <text x="248" y="452">=</text>
+                  <text x="384" y="452">client_handshake_traffic_secret</text>
+                  <text x="252" y="484">Derive-Secret(.,</text>
+                  <text x="332" y="484">"s</text>
+                  <text x="356" y="484">hs</text>
+                  <text x="408" y="484">traffic",</text>
+                  <text x="404" y="500">ClientHello...ServerHello)</text>
+                  <text x="248" y="516">=</text>
+                  <text x="384" y="516">server_handshake_traffic_secret</text>
+                  <text x="148" y="548">Derive-Secret(.,</text>
+                  <text x="260" y="548">"derived",</text>
+                  <text x="320" y="548">"")</text>
+                  <text x="56" y="596">0</text>
+                  <text x="148" y="596">HKDF-Extract</text>
+                  <text x="208" y="596">=</text>
+                  <text x="236" y="596">Main</text>
+                  <text x="284" y="596">Secret</text>
+                  <text x="252" y="628">Derive-Secret(.,</text>
+                  <text x="332" y="628">"c</text>
+                  <text x="356" y="628">ap</text>
+                  <text x="408" y="628">traffic",</text>
+                  <text x="380" y="644">ClientHello...server</text>
+                  <text x="504" y="644">Finished)</text>
+                  <text x="248" y="660">=</text>
+                  <text x="400" y="660">client_application_traffic_secret_0</text>
+                  <text x="252" y="692">Derive-Secret(.,</text>
+                  <text x="332" y="692">"s</text>
+                  <text x="356" y="692">ap</text>
+                  <text x="408" y="692">traffic",</text>
+                  <text x="380" y="708">ClientHello...server</text>
+                  <text x="504" y="708">Finished)</text>
+                  <text x="248" y="724">=</text>
+                  <text x="400" y="724">server_application_traffic_secret_0</text>
+                  <text x="252" y="756">Derive-Secret(.,</text>
+                  <text x="340" y="756">"exp</text>
+                  <text x="396" y="756">master",</text>
+                  <text x="380" y="772">ClientHello...server</text>
+                  <text x="504" y="772">Finished)</text>
+                  <text x="248" y="788">=</text>
+                  <text x="320" y="788">exporter_secret</text>
+                  <text x="252" y="820">Derive-Secret(.,</text>
+                  <text x="340" y="820">"res</text>
+                  <text x="396" y="820">master",</text>
+                  <text x="380" y="836">ClientHello...client</text>
+                  <text x="504" y="836">Finished)</text>
+                  <text x="248" y="852">=</text>
+                  <text x="328" y="852">resumption_secret</text>
+                </g>
+              </svg><a href="#section-7.1-12.1.1" class="pilcrow">¶</a>
 </div>
 </div>
-<p id="section-7.1-12">The general pattern here is that the secrets shown down the left side
+<figcaption><a href="#figure-5" class="selfRef">Figure 5</a>:
+<a href="#name-main-tls-13-key-schedule-le" class="selfRef">Main TLS 1.3 Key Schedule (leaf keys not shown)</a>
+          </figcaption></figure>
+</div>
+<p id="section-7.1-13">The general pattern here is that the secrets shown down the left side
 of the diagram are just raw entropy without context, whereas the
 secrets down the right side include Handshake Context and therefore
 can be used to derive working keys without additional context.
@@ -6505,21 +6514,21 @@ Note that the different
 calls to Derive-Secret may take different Messages arguments,
 even with the same secret. In a 0-RTT exchange, Derive-Secret is
 called with four distinct transcripts; in a 1-RTT-only exchange,
-it is called with three distinct transcripts.<a href="#section-7.1-12" class="pilcrow">¶</a></p>
-<p id="section-7.1-13">If a given secret is not available, then the 0-value consisting of
+it is called with three distinct transcripts.<a href="#section-7.1-13" class="pilcrow">¶</a></p>
+<p id="section-7.1-14">If a given secret is not available, then the 0-value consisting of
 a string of Hash.length bytes set to zeros is used.  Note that this does not mean skipping
 rounds, so if PSK is not in use, Early Secret will still be
 HKDF-Extract(0, 0). For the computation of the binder_key, the label is
 "ext binder" for external PSKs (those provisioned outside of TLS)
 and "res binder" for resumption PSKs (those provisioned as the resumption
 secret of a previous handshake). The different labels prevent
-the substitution of one type of PSK for the other.<a href="#section-7.1-13" class="pilcrow">¶</a></p>
-<p id="section-7.1-14">There are multiple potential Early Secret values, depending on
+the substitution of one type of PSK for the other.<a href="#section-7.1-14" class="pilcrow">¶</a></p>
+<p id="section-7.1-15">There are multiple potential Early Secret values, depending on
 which PSK the server ultimately selects. The client will need to compute
 one for each potential PSK; if no PSK is selected, it will then need to
-compute the Early Secret corresponding to the zero PSK.<a href="#section-7.1-14" class="pilcrow">¶</a></p>
-<p id="section-7.1-15">Once all the values which are to be derived from a given secret have
-been computed, that secret SHOULD be erased.<a href="#section-7.1-15" class="pilcrow">¶</a></p>
+compute the Early Secret corresponding to the zero PSK.<a href="#section-7.1-15" class="pilcrow">¶</a></p>
+<p id="section-7.1-16">Once all the values which are to be derived from a given secret have
+been computed, that secret SHOULD be erased.<a href="#section-7.1-16" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="updating-traffic-keys">
@@ -9076,7 +9085,10 @@ of the handshake, each side outputs its view of the following values:<a href="#a
 <ul class="normal">
 <li class="normal" id="appendix-F.1-2.1">
             <p id="appendix-F.1-2.1.1">A set of "session keys" (the various secrets derived from the main secret)
-from which can be derived a set of working keys.<a href="#appendix-F.1-2.1.1" class="pilcrow">¶</a></p>
+from which can be derived a set of working keys. Note that when early data
+is in use, secrets are also derived from the early secret. These enjoy
+somewhat weaker properties than those derived from the main secret,
+as detailed below.<a href="#appendix-F.1-2.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="appendix-F.1-2.2">
             <p id="appendix-F.1-2.2.1">A set of cryptographic parameters (algorithms, etc.).<a href="#appendix-F.1-2.2.1" class="pilcrow">¶</a></p>
