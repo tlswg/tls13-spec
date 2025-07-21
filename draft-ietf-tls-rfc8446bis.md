@@ -6156,18 +6156,18 @@ analysis has been done.  Implementations can ensure safety from
 cross-protocol related output by not reusing PSKs between TLS 1.3 and
 TLS 1.2.
 
-## External PSKs and Selfie attacks
-External PSKs in TLS are designed to be known to exactly one client and
-one server. However, as noted in {{RFC9257}}, there are use cases where
-PSKs are shared between more than two entities. In such scenarios, in
-addition to the expected security weakness where a compromised group
-member can impersonate any other member, a malicious non-member can
-reroute handshakes between honest group members to connect them in
-unintended ways. This rerouting is a type of identity misbinding
-attack, and the Selfie attack {{Selfie}} is a special case targeting a
-group member that can act as both a TLS client and server. To avoid
-such attacks, {{RFC9257}} provides recommendations for external PSK
-usage, including the use of external PSK importers as defined in {{RFC9258}}.
+## External PSKs and Rerouting
+
+External PSKs in TLS are designed to be known to exactly one client
+and one server. However, as noted in {{RFC9257}}, there are use cases
+where PSKs are shared between more than two entities. In such
+scenarios, in addition to the expected security weakness where a
+compromised group member can impersonate any other member, a malicious
+non-member can reroute handshakes between honest group members to
+connect them in unintended ways {{Selfie}}. {{RFC9257}} provides
+recommendations for external PSK usage, including the use of external
+PSK importers as defined in {{RFC9258}}, that prevent such malicious
+rerouting of messages
 
 ## Misbinding when using Self-Signed Certificates or Raw Public Keys
 
