@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-07-20T01:06:52.091740+00:00",
+  "timestamp": "2025-07-22T01:00:52.620070+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -13856,10 +13856,12 @@
       "author": "martinthomson",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "parked"
+      ],
       "body": "<details>\r\n<summary>Some of the figures are a touch too wide.</summary>\r\n\r\n```\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(418): Warning: Too long line found (L459), 1 characters longer than 72 characters:\r\n                                                       ServerHello  ^ Key\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(418): Warning: Too long line found (L460), 2 characters longer than 72 characters:\r\n                                                      + key_share*  | Exch\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(418): Warning: Too long line found (L462), 5 characters longer than 72 characters:\r\n                                             {EncryptedExtensions}  ^  Server\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(418): Warning: Too long line found (L463), 5 characters longer than 72 characters:\r\n                                             {CertificateRequest*}  v  Params\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(418): Warning: Too long line found (L465), 2 characters longer than 72 characters:\r\n                                              {CertificateVerify*}  | Auth\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2674), 1 characters longer than 72 characters:\r\n   +=========+====================+=====================================+\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2675), 1 characters longer than 72 characters:\r\n   |Mode     |Handshake Context   |Base Key                             |\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2676), 1 characters longer than 72 characters:\r\n   +=========+====================+=====================================+\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2677), 1 characters longer than 72 characters:\r\n   |Server   |ClientHello ...     |server_handshake_traffic_secret      |\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2678), 1 characters longer than 72 characters:\r\n   |         |later of            |                                     |\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2679), 1 characters longer than 72 characters:\r\n   |         |EncryptedExtensions/|                                     |\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2680), 1 characters longer than 72 characters:\r\n   |         |CertificateRequest  |                                     |\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2681), 1 characters longer than 72 characters:\r\n   +---------+--------------------+-------------------------------------+\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2682), 1 characters longer than 72 characters:\r\n   |Client   |ClientHello ...     |client_handshake_traffic_secret      |\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2683), 1 characters longer than 72 characters:\r\n   |         |later of server     |                                     |\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2684), 1 characters longer than 72 characters:\r\n   |         |Finished/           |                                     |\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2685), 1 characters longer than 72 characters:\r\n   |         |EndOfEarlyData      |                                     |\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2686), 1 characters longer than 72 characters:\r\n   +---------+--------------------+-------------------------------------+\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2687), 1 characters longer than 72 characters:\r\n   |Post-    |ClientHello ...     |[sender]_application_traffic_secret_N|\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2688), 1 characters longer than 72 characters:\r\n   |Handshake|client Finished +   |                                     |\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2689), 1 characters longer than 72 characters:\r\n   |         |CertificateRequest  |                                     |\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2690), 1 characters longer than 72 characters:\r\n   +---------+--------------------+-------------------------------------+\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(3885): Warning: Too long line found (L3591), 2 characters longer than 72 characters:\r\n       AEAD-Decrypt(peer_write_key, nonce, additional_data, AEADEncrypted)\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(4624): Warning: Too long line found (L4166), 1 characters longer than 72 characters:\r\n    [sender]_write_key = HKDF-Expand-Label(Secret, \"key\", \"\", key_length)\r\n```\r\n\r\n</details>\r\n",
       "createdAt": "2024-11-24T22:19:59Z",
-      "updatedAt": "2025-02-09T19:37:02Z",
+      "updatedAt": "2025-07-21T23:19:36Z",
       "closedAt": null,
       "comments": [
         {
@@ -13880,10 +13882,12 @@
       "author": "ekr",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "parked"
+      ],
       "body": "There are two SVG rendering glitches:\n\nNote the vertical bar to the left of ClientHello\n\n![Image](https://github.com/user-attachments/assets/9f8c3304-d262-4b67-b328-96b9c0778a17)\n\n\nNote that the * has been converted into a bullet.\n\n![Image](https://github.com/user-attachments/assets/7684d122-c031-4f89-89e5-9c845319752b)\n\n\n@martinthomson I can investigate these but I thought you might know an easy fix.",
       "createdAt": "2025-02-18T14:56:10Z",
-      "updatedAt": "2025-02-18T21:48:01Z",
+      "updatedAt": "2025-07-21T23:19:23Z",
       "closedAt": null,
       "comments": [
         {
@@ -13892,6 +13896,13 @@
           "body": "There aren't any easy fixes really.\n\nI'm not aware of an easy fix for the vertical line of '+' that you have.  '+' is a line character, so any line of them will be turned into a line.  You could replace it with '\uff0b' (the unicode fullwidth plus sign, U+FF0B) I guess, which won't be recognized.  As a fullwidth character in a monospace font, it should render identically.\n\nThe '*' will be a bullet if it is on its own.  Replacing it with a different character throughout might be an easy fix for that as well.  '\uff0a' (U+FF0A) is an option there, again.",
           "createdAt": "2025-02-18T21:48:00Z",
           "updatedAt": "2025-02-18T21:48:00Z"
+        },
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Pushing this off for auth48",
+          "createdAt": "2025-07-21T23:18:50Z",
+          "updatedAt": "2025-07-21T23:18:50Z"
         }
       ]
     },
@@ -13900,15 +13911,15 @@
       "id": "I_kwDOASA0os610jdL",
       "title": "Address Erratum #8411",
       "url": "https://github.com/tlswg/tls13-spec/issues/1379",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "seanturner",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "See [erratum](https://www.rfc-editor.org/errata/eid8411).",
       "createdAt": "2025-05-09T00:51:24Z",
-      "updatedAt": "2025-05-09T00:51:24Z",
-      "closedAt": null,
+      "updatedAt": "2025-07-21T23:18:27Z",
+      "closedAt": "2025-07-21T23:18:24Z",
       "comments": []
     },
     {
@@ -13916,15 +13927,15 @@
       "id": "I_kwDOASA0os64-_mb",
       "title": "Address Muhammad Usama Sardar's comments on the key schedule",
       "url": "https://github.com/tlswg/tls13-spec/issues/1386",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "ekr",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "See TLS list. This is just a reminder to me to do this",
       "createdAt": "2025-05-30T15:14:11Z",
-      "updatedAt": "2025-05-30T15:14:11Z",
-      "closedAt": null,
+      "updatedAt": "2025-07-21T23:37:22Z",
+      "closedAt": "2025-07-21T23:37:22Z",
       "comments": []
     },
     {
@@ -13932,19 +13943,19 @@
       "id": "I_kwDOASA0os66H7CU",
       "title": "Clarification on Table 3",
       "url": "https://github.com/tlswg/tls13-spec/issues/1393",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "muhammad-usama-sardar",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "**Main issue**: \nIn my understanding, \"Initial handshake\" is a terminology used in order to distinguish it from \"subsequent handshake\" in PSK-based handshakes (e.g., See figure 3). Also, the only two other occurrences of \"initial handshake\" are in Sec. 2.2, which is all about PSK. \n \nIn that sense, Table 3 seems to be missing the case of non-PSK based handshakes. In such case, handshake traffic is still encrypted using `[sender]_handshake_traffic_secret` but because of the change to \"initial handshake\", this case is missing from the table. \n\n---\n\nSo, was \"Initial handshake\" in #1255 meant to be in the sense of comparison with \"post-handshake\"? If so, it is conflicting with other usages of the term. \nOR \nwas \"Initial handshake\" in #1255 meant to be really in the sense of Figure 3? If so, the non-PSK based handshake is missing in the table. \n\n---\n**Minor issue**:\nThe usage of \"data type\" seems inconsistent with the rest of the usages of the word. Perhaps s/data type/data category?\n\n\nPS: I checked #1248 but it does not clarify me. ",
       "createdAt": "2025-06-05T20:55:20Z",
-      "updatedAt": "2025-06-09T18:33:59Z",
-      "closedAt": null,
+      "updatedAt": "2025-07-21T23:37:22Z",
+      "closedAt": "2025-07-21T23:37:22Z",
       "comments": [
         {
           "author": "muhammad-usama-sardar",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "Somewhat related to this issue: I have a difficult time understanding this argument [here](https://gitlab.inria.fr/chevalvi/echo_tls/-/blob/9fd6b2a0523087d41ba480c6180b9da92833ca50/libraries/key_schedule.pvl#L11-12): \n\n> Note that we do not model the Record Protocol\n   (Section 5 of TLS RFC. Hence we do not need \"iv\" of Section 7.3 TLS RFC\n\nMy understanding was that `[sender]_write_key` is also used in Record Protocol _only_ (i.e., not in Handshake Protocol). So how does the above argument apply for not modeling `[sender]_write_iv` when they have actually modeled `[sender]_write_key`? Hence, my question: \n\nIs there any use of `[sender]_write_key` in the Handshake Protocol? If yes, where exactly is it mentioned in the specs?\n\n",
           "createdAt": "2025-06-08T18:10:15Z",
           "updatedAt": "2025-06-08T18:10:15Z"
@@ -69268,21 +69279,21 @@
       "id": "PR_kwDOASA0os6Vgt4H",
       "title": "Address Erratum #8411",
       "url": "https://github.com/tlswg/tls13-spec/pull/1380",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "seanturner",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "Closes #1379.",
       "createdAt": "2025-05-09T00:51:56Z",
-      "updatedAt": "2025-07-16T19:13:00Z",
+      "updatedAt": "2025-07-21T23:17:55Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "90ba604f4a441495cea8284bf79bfb9ca9c3e638",
       "headRepository": "tlswg/tls13-spec",
       "headRefName": "seanturner-erratum-8411",
       "headRefOid": "cebac8ef66ab7676dce9864038e6b074d72400ce",
-      "closedAt": null,
+      "closedAt": "2025-07-21T23:17:55Z",
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
@@ -69302,21 +69313,21 @@
       "id": "PR_kwDOASA0os6YK_94",
       "title": "external psk selfie attack",
       "url": "https://github.com/tlswg/tls13-spec/pull/1381",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "ms-s",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "Acknowledging the Seflie attack when using external PSKs and adding pointers to RFC 9257/9258 for guidance on how to avoid.",
       "createdAt": "2025-05-29T19:13:39Z",
-      "updatedAt": "2025-07-16T19:44:51Z",
+      "updatedAt": "2025-07-21T23:33:17Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "90ba604f4a441495cea8284bf79bfb9ca9c3e638",
       "headRepository": "ms-s/tls13-spec",
       "headRefName": "psk-selfie-text",
-      "headRefOid": "a235d672420ab4398199d83a69b6137b34a83074",
-      "closedAt": null,
+      "headRefOid": "8634b2bf101e45105c1fd2fa76fec2e1b2fdd982",
+      "closedAt": "2025-07-21T23:33:17Z",
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
@@ -69341,6 +69352,13 @@
           "body": "Dropping the controversial classification as \"identity misbinding\" seems fine.  We could even say `{{RFC9257}} provides recommendations for external PSK usage, including the use of external PSK importers as defined in {{RFC9258}}, that prevent such malicious rerouting of messages\" (adding the final clause), since limiting a given PSK to a single logical role as client and a distinct single logical role as server will indeed prevent message rerouting from producing a successful handshake.",
           "createdAt": "2025-07-16T19:44:51Z",
           "updatedAt": "2025-07-16T19:44:51Z"
+        },
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Updated and merged by hand.",
+          "createdAt": "2025-07-21T23:33:17Z",
+          "updatedAt": "2025-07-21T23:33:17Z"
         }
       ],
       "reviews": [
@@ -69745,25 +69763,33 @@
       "id": "PR_kwDOASA0os6YTSlM",
       "title": "Sardar comments",
       "url": "https://github.com/tlswg/tls13-spec/pull/1390",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "ekr",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "@martinthomson @beurdouche ",
       "createdAt": "2025-05-30T16:43:02Z",
-      "updatedAt": "2025-06-02T20:25:29Z",
+      "updatedAt": "2025-07-21T23:37:02Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "90ba604f4a441495cea8284bf79bfb9ca9c3e638",
       "headRepository": "ekr/tls13-spec",
       "headRefName": "sardar_comments",
       "headRefOid": "6822af7162b6f3580d0633a000a233c0f2ea091a",
-      "closedAt": null,
+      "closedAt": "2025-07-21T23:37:02Z",
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
+      "comments": [
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Cleaned up a a bit and merged by hand",
+          "createdAt": "2025-07-21T23:37:02Z",
+          "updatedAt": "2025-07-21T23:37:02Z"
+        }
+      ],
       "reviews": [
         {
           "id": "PRR_kwDOASA0os6rzB0C",
@@ -69771,7 +69797,7 @@
             "abbreviatedOid": "6822af7"
           },
           "author": "muhammad-usama-sardar",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "CHANGES_REQUESTED",
           "body": "\"Overall\" still does not seem good. ",
           "createdAt": "2025-05-30T19:06:27Z",
@@ -69817,7 +69843,7 @@
             "abbreviatedOid": "6822af7"
           },
           "author": "muhammad-usama-sardar",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2025-05-31T07:11:21Z",
@@ -69857,7 +69883,7 @@
             "abbreviatedOid": "6822af7"
           },
           "author": "muhammad-usama-sardar",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2025-06-02T19:52:47Z",
@@ -69897,7 +69923,7 @@
             "abbreviatedOid": "6822af7"
           },
           "author": "muhammad-usama-sardar",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2025-06-02T20:05:59Z",
@@ -69937,7 +69963,7 @@
             "abbreviatedOid": "6822af7"
           },
           "author": "muhammad-usama-sardar",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2025-06-02T20:25:29Z",
@@ -70004,10 +70030,12 @@
       "author": "muhammad-usama-sardar",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "propose-close"
+      ],
       "body": "Based on discussion on the list in the thread \"Key Hierarchy TLS 1.3 RFC8446(bis)\"",
       "createdAt": "2025-06-02T15:38:53Z",
-      "updatedAt": "2025-07-17T07:38:56Z",
+      "updatedAt": "2025-07-21T23:18:18Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "c2624eb7e0ccb3b237d3cf0826c48ae0181ac70f",
