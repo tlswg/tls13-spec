@@ -790,7 +790,7 @@ CertificateVerify:
 
 Finished:
 : A MAC (Message Authentication Code) over the entire handshake.
-  This message provides key confirmation for the shared secrets established in the handshake
+  This message provides key confirmation for the shared secrets established in the handshake,
   binds the endpoint's identity to the exchanged keys, and in PSK mode
   also authenticates the handshake. \[{{finished}}]
 {:br }
@@ -2785,10 +2785,18 @@ length, the length of the extensions block, and the length of the
 "pre_shared_key" extension) are all set as if binders of the correct
 lengths were present.
 
-The PskBinderEntry is computed in the same way as the Finished
-message ({{finished}}) but with the BaseKey being the binder_key
+The key for PskBinderEntry is computed in the same way as the finished_key
+({{finished}}) but with the BaseKey being the binder_key
 derived via the key schedule from the corresponding PSK which
-is being offered (see {{key-schedule}}).
+is being offered (see {{key-schedule}}), i.e.:
+
+~~~
+    HKDF-Expand-Label(binder_key, "finished", "", Hash.length)
+~~~
+
+The PskBinderEntry value is then generated from this key 
+in the same way as the Finished message ({{finished}}) with the
+Transcript-Hash as explained below.
 
 If the handshake includes a HelloRetryRequest, the initial ClientHello
 and HelloRetryRequest are included in the transcript along with the
