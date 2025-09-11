@@ -1900,7 +1900,7 @@ Servers MUST be prepared to receive ClientHellos that include this
 extension but do not include 0x0304 in the list of versions.
 
 A server which negotiates a version of TLS prior to TLS 1.3 MUST
-set ServerHello.version and MUST NOT send the "supported_versions"
+set ServerHello.legacy_version and MUST NOT send the "supported_versions"
 extension. A server which negotiates TLS 1.3 MUST respond by sending a
 "supported_versions" extension containing the selected version value
 (0x0304). It MUST set the ServerHello.legacy_version field to 0x0303 (TLS
