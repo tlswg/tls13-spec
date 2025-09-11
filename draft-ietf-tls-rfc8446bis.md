@@ -4111,8 +4111,7 @@ user_canceled:
 {:br }
 
 Either party MAY initiate a close of its write side of the connection by
-sending a "close_notify" alert. Any data received after a "close_notify" alert has
-been received MUST be ignored. If a transport-level close is received prior
+sending a "close_notify" alert. If a transport-level close is received prior
 to a "close_notify", the receiver cannot know that all the data that was sent
 has been received.
 
