@@ -1568,8 +1568,8 @@ cipher_suite:
   alert.
 
 legacy_compression_method:
-: A single byte which MUST have the value 0. If a TLS 1.3 ClientHello
-  is received with any other value in this field, the server MUST
+: A single byte which MUST have the value 0. If a TLS 1.3 ServerHello
+  is received with any other value in this field, the client MUST
   abort the handshake with an "illegal_parameter" alert.
 
 extensions:
