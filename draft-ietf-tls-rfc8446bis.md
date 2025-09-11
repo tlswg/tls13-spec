@@ -1651,7 +1651,7 @@ a distinct message.
 
 The server's extensions MUST contain "supported_versions".
 Additionally, it SHOULD contain the minimal set of extensions necessary for the
-client to generate a correct ClientHello pair. The ServerHello, a
+client to generate a correct ClientHello pair. A
 HelloRetryRequest MUST NOT contain any extensions that were not first
 offered by the client in its ClientHello, with the exception of
 optionally the "cookie" (see {{cookie}}) extension.
