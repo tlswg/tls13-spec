@@ -3550,7 +3550,8 @@ client MUST respond with the appropriate Authentication messages (see
 send Certificate, CertificateVerify, and Finished. If it declines, it MUST send
 a Certificate message containing no certificates followed by Finished.
 All of the client's messages for a given response
-MUST appear consecutively on the wire with no intervening messages of other types.
+MUST appear consecutively on the wire with no intervening messages of other type
+or from other responses.
 
 A client that receives a CertificateRequest message without having sent
 the "post_handshake_auth" extension MUST send an "unexpected_message" fatal
