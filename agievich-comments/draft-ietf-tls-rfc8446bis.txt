@@ -4,10 +4,10 @@
 
 Transport Layer Security                                     E. Rescorla
 Internet-Draft                                               Independent
-Obsoletes: 8446 (if approved)                               21 July 2025
+Obsoletes: 8446 (if approved)                          12 September 2025
 Updates: 5705, 6066, 7627, 8422 (if approved)                           
 Intended status: Standards Track                                        
-Expires: 22 January 2026
+Expires: 16 March 2026
 
 
         The Transport Layer Security (TLS) Protocol Version 1.3
@@ -39,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 22 January 2026.
+   This Internet-Draft will expire on 16 March 2026.
 
 Copyright Notice
 
@@ -1305,8 +1305,8 @@ Auth | {CertificateVerify*}
       "illegal_parameter" alert.
 
    legacy_compression_method:  A single byte which MUST have the value
-      0.  If a TLS 1.3 ClientHello is received with any other value in
-      this field, the server MUST abort the handshake with an
+      0.  If a TLS 1.3 ServerHello is received with any other value in
+      this field, the client MUST abort the handshake with an
       "illegal_parameter" alert.
 
    extensions:  A list of extensions.  The ServerHello MUST only include
@@ -1384,11 +1384,10 @@ Auth | {CertificateVerify*}
 
    The server's extensions MUST contain "supported_versions".
    Additionally, it SHOULD contain the minimal set of extensions
-   necessary for the client to generate a correct ClientHello pair.  As
-   with the ServerHello, a HelloRetryRequest MUST NOT contain any
-   extensions that were not first offered by the client in its
-   ClientHello, with the exception of optionally the "cookie" (see
-   Section 4.2.2) extension.
+   necessary for the client to generate a correct ClientHello pair.  A
+   HelloRetryRequest MUST NOT contain any extensions that were not first
+   offered by the client in its ClientHello, with the exception of
+   optionally the "cookie" (see Section 4.2.2) extension.
 
    Upon receipt of a HelloRetryRequest, the client MUST check the
    legacy_version, legacy_session_id_echo, cipher_suite, and
@@ -3279,8 +3278,8 @@ Auth | {CertificateVerify*}
    CertificateVerify, and Finished.  If it declines, it MUST send a
    Certificate message containing no certificates followed by Finished.
    All of the client's messages for a given response MUST appear
-   consecutively on the wire with no intervening messages of other
-   types.
+   consecutively on the wire with no intervening messages of other type
+   or from other responses.
 
    A client that receives a CertificateRequest message without having
    sent the "post_handshake_auth" extension MUST send an
@@ -3806,11 +3805,9 @@ Auth | {CertificateVerify*}
       otherwise record them.
 
    Either party MAY initiate a close of its write side of the connection
-   by sending a "close_notify" alert.  Any data received after a
-   "close_notify" alert has been received MUST be ignored.  If a
-   transport-level close is received prior to a "close_notify", the
-   receiver cannot know that all the data that was sent has been
-   received.
+   by sending a "close_notify" alert.  If a transport-level close is
+   received prior to a "close_notify", the receiver cannot know that all
+   the data that was sent has been received.
 
    Each party MUST send a "close_notify" alert before closing its write
    side of the connection, unless it has already sent some error alert.
@@ -5035,7 +5032,7 @@ Auth | {CertificateVerify*}
               DOI 10.6028/nist.sp.800-186, February 2023,
               <https://doi.org/10.6028/nist.sp.800-186>.
 
-   [FETCH]    WHATWG, "Fetch Standard", July 2025,
+   [FETCH]    WHATWG, "Fetch Standard", September 2025,
               <https://fetch.spec.whatwg.org/>.
 
    [FG17]     Fischlin, M. and F. Guenther, "Replay Attacks on Zero
