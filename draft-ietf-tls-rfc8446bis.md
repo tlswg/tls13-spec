@@ -4476,7 +4476,7 @@ been computed, that secret SHOULD be erased.
 ## Updating Traffic Secrets  {#updating-traffic-keys}
 
 Once the handshake is complete, it is possible for either side to
-update its sending traffic key using the KeyUpdate handshake message
+update its sending traffic keys using the KeyUpdate handshake message
 defined in {{key-update}}.  The next generation of traffic keys is computed by
 generating client_/server_application_traffic_secret_N+1 from
 client_/server_application_traffic_secret_N as described in
