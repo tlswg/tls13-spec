@@ -1568,8 +1568,8 @@ cipher_suite:
   alert.
 
 legacy_compression_method:
-: A single byte which MUST have the value 0. If a TLS 1.3 ClientHello
-  is received with any other value in this field, the server MUST
+: A single byte which MUST have the value 0. If a TLS 1.3 ServerHello
+  is received with any other value in this field, the client MUST
   abort the handshake with an "illegal_parameter" alert.
 
 extensions:
@@ -1651,7 +1651,7 @@ a distinct message.
 
 The server's extensions MUST contain "supported_versions".
 Additionally, it SHOULD contain the minimal set of extensions necessary for the
-client to generate a correct ClientHello pair. As with the ServerHello, a
+client to generate a correct ClientHello pair. A
 HelloRetryRequest MUST NOT contain any extensions that were not first
 offered by the client in its ClientHello, with the exception of
 optionally the "cookie" (see {{cookie}}) extension.
@@ -3550,7 +3550,8 @@ client MUST respond with the appropriate Authentication messages (see
 send Certificate, CertificateVerify, and Finished. If it declines, it MUST send
 a Certificate message containing no certificates followed by Finished.
 All of the client's messages for a given response
-MUST appear consecutively on the wire with no intervening messages of other types.
+MUST appear consecutively on the wire with no intervening messages of other type
+or from other responses.
 
 A client that receives a CertificateRequest message without having sent
 the "post_handshake_auth" extension MUST send an "unexpected_message" fatal
@@ -4111,8 +4112,7 @@ user_canceled:
 {:br }
 
 Either party MAY initiate a close of its write side of the connection by
-sending a "close_notify" alert. Any data received after a "close_notify" alert has
-been received MUST be ignored. If a transport-level close is received prior
+sending a "close_notify" alert. If a transport-level close is received prior
 to a "close_notify", the receiver cannot know that all the data that was sent
 has been received.
 
