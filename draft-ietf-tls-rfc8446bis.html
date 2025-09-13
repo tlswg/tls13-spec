@@ -15,21 +15,21 @@ tampering, and message forgery.
 RFCs 5077, 5246, 6961, 8422, and 8446. This document also specifies
 new requirements for TLS 1.2 implementations. 
     " name="description">
-<meta content="xml2rfc 3.30.0" name="generator">
+<meta content="xml2rfc 3.30.1" name="generator">
 <meta content="Internet-Draft" name="keyword">
 <meta content="draft-ietf-tls-rfc8446bis-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.30.0
+  xml2rfc 3.30.1
     Python 3.12.11
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
     intervaltree 3.1.0
     Jinja2 3.1.6
     lxml 5.3.1
-    platformdirs 4.3.8
+    platformdirs 4.4.0
     pycountry 24.6.1
     PyYAML 6.0.2
-    requests 2.32.4
+    requests 2.32.5
     setuptools 80.9.0
     wcwidth 0.2.13
 -->
@@ -1050,11 +1050,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">TLS</td>
-<td class="right">July 2025</td>
+<td class="right">September 2025</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Rescorla</td>
-<td class="center">Expires 22 January 2026</td>
+<td class="center">Expires 17 March 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1073,12 +1073,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <a href="https://www.rfc-editor.org/rfc/rfc5705" class="eref">5705</a>, <a href="https://www.rfc-editor.org/rfc/rfc6066" class="eref">6066</a>, <a href="https://www.rfc-editor.org/rfc/rfc7627" class="eref">7627</a>, <a href="https://www.rfc-editor.org/rfc/rfc8422" class="eref">8422</a> (if approved)</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-07-21" class="published">21 July 2025</time>
+<time datetime="2025-09-13" class="published">13 September 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2026-01-22">22 January 2026</time></dd>
+<dd class="expires"><time datetime="2026-03-17">17 March 2026</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1118,7 +1118,7 @@ new requirements for TLS 1.2 implementations.<a href="#section-abstract-2" class
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 22 January 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 17 March 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -3101,8 +3101,8 @@ alert.<a href="#section-4.1.3-4.8.1" class="pilcrow">¶</a></p>
             <dd class="break"></dd>
 <dt id="section-4.1.3-4.9">legacy_compression_method:</dt>
             <dd style="margin-left: 1.5em" id="section-4.1.3-4.10">
-              <p id="section-4.1.3-4.10.1">A single byte which MUST have the value 0. If a TLS 1.3 ClientHello
-is received with any other value in this field, the server MUST
+              <p id="section-4.1.3-4.10.1">A single byte which MUST have the value 0. If a TLS 1.3 ServerHello
+is received with any other value in this field, the client MUST
 abort the handshake with an "illegal_parameter" alert.<a href="#section-4.1.3-4.10.1" class="pilcrow">¶</a></p>
 </dd>
             <dd class="break"></dd>
@@ -3190,7 +3190,7 @@ discuss "HelloRetryRequest" throughout this document as if it were
 a distinct message.<a href="#section-4.1.4-1" class="pilcrow">¶</a></p>
 <p id="section-4.1.4-2">The server's extensions MUST contain "supported_versions".
 Additionally, it SHOULD contain the minimal set of extensions necessary for the
-client to generate a correct ClientHello pair. As with the ServerHello, a
+client to generate a correct ClientHello pair. A
 HelloRetryRequest MUST NOT contain any extensions that were not first
 offered by the client in its ClientHello, with the exception of
 optionally the "cookie" (see <a href="#cookie" class="auto internal xref">Section 4.2.2</a>) extension.<a href="#section-4.1.4-2" class="pilcrow">¶</a></p>
@@ -5440,7 +5440,8 @@ client MUST respond with the appropriate Authentication messages (see
 send Certificate, CertificateVerify, and Finished. If it declines, it MUST send
 a Certificate message containing no certificates followed by Finished.
 All of the client's messages for a given response
-MUST appear consecutively on the wire with no intervening messages of other types.<a href="#section-4.6.2-1" class="pilcrow">¶</a></p>
+MUST appear consecutively on the wire with no intervening messages of other type
+or from other responses.<a href="#section-4.6.2-1" class="pilcrow">¶</a></p>
 <p id="section-4.6.2-2">A client that receives a CertificateRequest message without having sent
 the "post_handshake_auth" extension MUST send an "unexpected_message" fatal
 alert.<a href="#section-4.6.2-2" class="pilcrow">¶</a></p>
@@ -6031,8 +6032,7 @@ though they MAY log or otherwise record them.<a href="#section-6.1-2.4.1" class=
         <dd class="break"></dd>
 </dl>
 <p id="section-6.1-3">Either party MAY initiate a close of its write side of the connection by
-sending a "close_notify" alert. Any data received after a "close_notify" alert has
-been received MUST be ignored. If a transport-level close is received prior
+sending a "close_notify" alert. If a transport-level close is received prior
 to a "close_notify", the receiver cannot know that all the data that was sent
 has been received.<a href="#section-6.1-3" class="pilcrow">¶</a></p>
 <p id="section-6.1-4">Each party MUST send a "close_notify" alert before closing its write side
@@ -7461,7 +7461,7 @@ alert in the TLS Alerts Registry with the value given in <a href="#alert-protoco
 <dd class="break"></dd>
 <dt id="FETCH">[FETCH]</dt>
         <dd>
-<span class="refAuthor">WHATWG</span>, <span class="refTitle">"Fetch Standard"</span>, <time datetime="2025-07" class="refDate">July 2025</time>, <span>&lt;<a href="https://fetch.spec.whatwg.org/">https://fetch.spec.whatwg.org/</a>&gt;</span>. </dd>
+<span class="refAuthor">WHATWG</span>, <span class="refTitle">"Fetch Standard"</span>, <time datetime="2025-09" class="refDate">September 2025</time>, <span>&lt;<a href="https://fetch.spec.whatwg.org/">https://fetch.spec.whatwg.org/</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="FG17">[FG17]</dt>
         <dd>
