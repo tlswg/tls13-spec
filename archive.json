@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-07-29T01:07:31.488729+00:00",
+  "timestamp": "2025-09-14T00:55:20.586761+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -22902,7 +22902,7 @@
       "labels": [],
       "body": "Change ticket_lifetime_hint to ticket_lifetime and add stricter requirements.\n",
       "createdAt": "2016-02-23T17:16:11Z",
-      "updatedAt": "2016-03-20T22:30:53Z",
+      "updatedAt": "2025-09-12T00:55:16Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "master",
       "baseRefOid": "332b1b9af5229d9b43de3f506686e1bf3493c0b0",
@@ -22948,6 +22948,13 @@
           "body": "Merging per WG discussion.\n\n@grittygrease please send me a PR adding yourself to acknowledgements :)\n",
           "createdAt": "2016-03-20T22:30:51Z",
           "updatedAt": "2016-03-20T22:30:51Z"
+        },
+        {
+          "author": "kaduk",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> Mailing list discussion here: https://www.ietf.org/mail-archive/web/tls/current/msg19283.html\r\n\r\nI guess that's https://mailarchive.ietf.org/arch/msg/tls/iW-jWAXFlyu04XIvTa0-OzhEdU8/ nowadays",
+          "createdAt": "2025-09-12T00:55:16Z",
+          "updatedAt": "2025-09-12T00:55:16Z"
         }
       ],
       "reviews": []
@@ -70447,6 +70454,397 @@
       "mergeCommit": null,
       "comments": [],
       "reviews": []
+    },
+    {
+      "number": 1396,
+      "id": "PR_kwDOASA0os6oGDLV",
+      "title": "Comments from Sergey Agievich review",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1396",
+      "state": "MERGED",
+      "author": "ekr",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-09-11T18:19:35Z",
+      "updatedAt": "2025-09-13T15:13:28Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "main",
+      "baseRefOid": "f4ea8c9ae6fc3e3b99a6bb7cfcf429981920d4b7",
+      "headRepository": "ekr/tls13-spec",
+      "headRefName": "agievich-comments",
+      "headRefOid": "1c910d223002e0e98b5d18963d23b32ff281e0ae",
+      "closedAt": "2025-09-13T15:13:28Z",
+      "mergedAt": "2025-09-13T15:13:28Z",
+      "mergedBy": "ekr",
+      "mergeCommit": {
+        "oid": "46b909e14516d81f0c841336d1aa68cbfdb5f2e6"
+      },
+      "comments": [
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@martinthomson @chris-wood PTAQL",
+          "createdAt": "2025-09-11T18:22:54Z",
+          "updatedAt": "2025-09-11T18:22:54Z"
+        },
+        {
+          "author": "agievich",
+          "authorAssociation": "NONE",
+          "body": "Again about `ServerHello.version` vs `ServerHello.legacy_version`.\r\n\r\nMaybe\r\n```\r\nA server which negotiates a version of TLS prior to TLS 1.3 MUST\r\nset ServerHello.legacy_version (formerly ServerHello.version) and \r\nMUST NOT send the \"supported_versions\"\r\n```",
+          "createdAt": "2025-09-12T10:48:00Z",
+          "updatedAt": "2025-09-12T10:48:00Z"
+        },
+        {
+          "author": "paulwouters",
+          "authorAssociation": "NONE",
+          "body": "As these comments are coming in at the last possible moment in the process, please limit changes to the absolute minimum required and avoid \"it would be nice\" items.",
+          "createdAt": "2025-09-12T13:40:58Z",
+          "updatedAt": "2025-09-12T13:40:58Z"
+        },
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> Again about `ServerHello.version` vs `ServerHello.legacy_version`.\r\n> \r\n> Maybe\r\n> \r\n> ```\r\n> A server which negotiates a version of TLS prior to TLS 1.3 MUST\r\n> set ServerHello.legacy_version (formerly ServerHello.version) and \r\n> MUST NOT send the \"supported_versions\"\r\n> ```\r\n\r\nThe point is that in the previous version (which is what is happening here) it is called \".version\"",
+          "createdAt": "2025-09-12T16:07:42Z",
+          "updatedAt": "2025-09-12T16:07:42Z"
+        },
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "OK, after doing the archaeology on this ticket_lifetime issue (thanks, Ben), the original PR from @grittygrease just seems to introduce this \"discarded immediately\" text with no explanation. I agree that this isn't great, but IMO the conservative thing here is to leave the text as it originally was:\r\n\r\n1. Because the lifetime is from receipt, if you just don't do anything special for 0 you'll mostly get the immediate discard semantics (so arguably this text is redundant).\r\n2. The \"at most once\" semantics are redundant, as suggested by MT.\r\n3. Any other new semantics would clearly be us trying to invent something new at this point.\r\n\r\nSo I suggest we just leave this text as it is in the draft, which I plan to do unless someone objects ASAP. Sorry for the false alarm.\r\n\r\n",
+          "createdAt": "2025-09-12T16:20:17Z",
+          "updatedAt": "2025-09-12T16:20:17Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOASA0os6_ha8i",
+          "commit": {
+            "abbreviatedOid": "60cefb1"
+          },
+          "author": "paulwouters",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-09-11T18:44:45Z",
+          "updatedAt": "2025-09-11T18:44:46Z",
+          "comments": [
+            {
+              "originalPosition": 34,
+              "body": "fater ?",
+              "createdAt": "2025-09-11T18:44:45Z",
+              "updatedAt": "2025-09-11T18:44:46Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6_hyD0",
+          "commit": {
+            "abbreviatedOid": "60cefb1"
+          },
+          "author": "kaduk",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-09-11T19:15:28Z",
+          "updatedAt": "2025-09-11T19:22:45Z",
+          "comments": [
+            {
+              "originalPosition": 34,
+              "body": "```suggestion\r\n  immediately after use. Clients MUST NOT use tickets for longer than\r\n```",
+              "createdAt": "2025-09-11T19:15:28Z",
+              "updatedAt": "2025-09-11T19:22:45Z"
+            },
+            {
+              "originalPosition": 16,
+              "body": "This seems backward, a HelloRetryRequest is a ServerHello but not the other way around.",
+              "createdAt": "2025-09-11T19:16:29Z",
+              "updatedAt": "2025-09-11T19:22:45Z"
+            },
+            {
+              "originalPosition": 25,
+              "body": "I actually remember thinking about proposing this change prior to the publication of RFC 8446.  My reasoning at the time was that once you've negotiated an older version of TLS you're using that version, so ServerHello.version is the proper description of that (no-longer-TLS 1.3) protocol field.  Without a reference to a corresponding reference for TLS 1.2 or similar, it's a bit confusing, I admit.  But I'd be more inclined to reference RFC 5246 and keep using ServerHello.version than to take this change.",
+              "createdAt": "2025-09-11T19:18:07Z",
+              "updatedAt": "2025-09-11T19:22:45Z"
+            },
+            {
+              "originalPosition": 34,
+              "body": "fixes the spelling, but I don't actually think this is a good change to take -- it seems to change the meaning, suggesting that a ticket received with lifetime of 0 can be held onto for some (unspecified) period of time and then used once, which is rather different from what the semantics of a non-zero-lifetime ticket would be.",
+              "createdAt": "2025-09-11T19:20:01Z",
+              "updatedAt": "2025-09-11T19:22:45Z"
+            },
+            {
+              "originalPosition": 54,
+              "body": "Why this change?  If you receive a close_notify and then more data from the peer, shouldn't you be ignoring that?",
+              "createdAt": "2025-09-11T19:21:31Z",
+              "updatedAt": "2025-09-11T19:22:45Z"
+            },
+            {
+              "originalPosition": 63,
+              "body": "We expand the secret into a traffic key and a traffic IV; I'd keep this one as plural.",
+              "createdAt": "2025-09-11T19:22:38Z",
+              "updatedAt": "2025-09-11T19:22:45Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6_kd7u",
+          "commit": {
+            "abbreviatedOid": "60cefb1"
+          },
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-09-11T23:34:11Z",
+          "updatedAt": "2025-09-11T23:34:12Z",
+          "comments": [
+            {
+              "originalPosition": 63,
+              "body": "An IV isn't a key.",
+              "createdAt": "2025-09-11T23:34:11Z",
+              "updatedAt": "2025-09-11T23:34:12Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6_keBR",
+          "commit": {
+            "abbreviatedOid": "60cefb1"
+          },
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-09-11T23:34:30Z",
+          "updatedAt": "2025-09-11T23:34:30Z",
+          "comments": [
+            {
+              "originalPosition": 34,
+              "body": "after.",
+              "createdAt": "2025-09-11T23:34:30Z",
+              "updatedAt": "2025-09-11T23:34:30Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6_kem7",
+          "commit": {
+            "abbreviatedOid": "60cefb1"
+          },
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-09-11T23:36:15Z",
+          "updatedAt": "2025-09-11T23:36:16Z",
+          "comments": [
+            {
+              "originalPosition": 34,
+              "body": "I have to admit I was trying to remember what we originally intended here. But I don't understand what it means to have a 0 lifetime otherwise. Do you think the implications are \"this ticket actually cannot be used\"?",
+              "createdAt": "2025-09-11T23:36:15Z",
+              "updatedAt": "2025-09-11T23:36:16Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6_ke6b",
+          "commit": {
+            "abbreviatedOid": "60cefb1"
+          },
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "OK so this PR could still use some work.... Thanks for catching some issues @kaduk. Responses below.",
+          "createdAt": "2025-09-11T23:37:00Z",
+          "updatedAt": "2025-09-11T23:39:26Z",
+          "comments": [
+            {
+              "originalPosition": 16,
+              "body": "I actually meant to delete this entire clause, so it should just read \"A HRR must not...\"",
+              "createdAt": "2025-09-11T23:37:00Z",
+              "updatedAt": "2025-09-11T23:38:05Z"
+            },
+            {
+              "originalPosition": 25,
+              "body": "Argh. You're right, this change is a mistake. I'll revert prior to landing",
+              "createdAt": "2025-09-11T23:37:20Z",
+              "updatedAt": "2025-09-11T23:38:05Z"
+            },
+            {
+              "originalPosition": 54,
+              "body": "It's already stated above.",
+              "createdAt": "2025-09-11T23:37:41Z",
+              "updatedAt": "2025-09-11T23:38:05Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6_kpPh",
+          "commit": {
+            "abbreviatedOid": "20108f4"
+          },
+          "author": "kaduk",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-09-12T00:03:43Z",
+          "updatedAt": "2025-09-12T00:04:34Z",
+          "comments": [
+            {
+              "originalPosition": 34,
+              "body": "I have a hazy recollection of something like \"might not be usable but you could try it if you open a new connection right away\".  Other theories would relate to if the server, whether by protocol or implementation, was locked into a codepath of issuing a ticket but later decided it did not want to do so, or if it somehow helped with middlebox compatibility or something similar.  But I don't see anything to suggest that either of those theories actually hold.  I suspect that trawling the git history and email history would yield something, but did not attempt that (yet?).",
+              "createdAt": "2025-09-12T00:03:43Z",
+              "updatedAt": "2025-09-12T00:04:34Z"
+            },
+            {
+              "originalPosition": 54,
+              "body": "Ah, didn't read enough context.  Thanks.",
+              "createdAt": "2025-09-12T00:04:02Z",
+              "updatedAt": "2025-09-12T00:04:34Z"
+            },
+            {
+              "originalPosition": 63,
+              "body": "That's fair.  Do you prefer \"key\" or \"key material\"?",
+              "createdAt": "2025-09-12T00:04:29Z",
+              "updatedAt": "2025-09-12T00:04:34Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6_kvfM",
+          "commit": {
+            "abbreviatedOid": "60cefb1"
+          },
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-09-12T00:23:13Z",
+          "updatedAt": "2025-09-12T00:23:14Z",
+          "comments": [
+            {
+              "originalPosition": 34,
+              "body": "OK. Let me pull this out and I'll take it to the WG list for resolution.",
+              "createdAt": "2025-09-12T00:23:14Z",
+              "updatedAt": "2025-09-12T00:23:14Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6_k47O",
+          "commit": {
+            "abbreviatedOid": "20108f4"
+          },
+          "author": "kaduk",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-09-12T00:50:44Z",
+          "updatedAt": "2025-09-12T00:50:48Z",
+          "comments": [
+            {
+              "originalPosition": 34,
+              "body": "I found https://github.com/tlswg/tls13-spec/pull/424 which should be a good place to start looking.",
+              "createdAt": "2025-09-12T00:50:44Z",
+              "updatedAt": "2025-09-12T00:50:48Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6_mlMe",
+          "commit": {
+            "abbreviatedOid": "20108f4"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-09-12T04:27:59Z",
+          "updatedAt": "2025-09-12T04:34:34Z",
+          "comments": [
+            {
+              "originalPosition": 16,
+              "body": "The original text was harmless, but this is fine.",
+              "createdAt": "2025-09-12T04:27:59Z",
+              "updatedAt": "2025-09-12T04:34:34Z"
+            },
+            {
+              "originalPosition": 34,
+              "body": "Yeah, there are two things bound up in this one:\r\n\r\n1. The time between when the ticket is issued and when it can be used.  Or maybe between when the original connection ends and when the tickets issued on it can be used.  My sense is that this is solidly ambiguous in that regard.  My sense is that there is a floor on the lifetime of tickets that might allow them to be used some time after a reference point, but that time is pretty short.  I don't know if the reference point is the issuance/receipt time or whether that time can extend while the connection remains active.\r\n2. Whether the ticket is single use.  That's a matter that we've resolved already: tickets should only be used once, otherwise they allow an observer to correlate activity, even where other signals do not.  So this is probably not relevant here.\r\n\r\nAdding \"after use\" is misleading for sure.  We already say that about tickets, though with a \"SHOULD\" (not a \"should\").  I don't know about the other thing.",
+              "createdAt": "2025-09-12T04:32:38Z",
+              "updatedAt": "2025-09-12T04:34:34Z"
+            },
+            {
+              "originalPosition": 63,
+              "body": "```suggestion\r\nupdate its sending traffic key and IV using the KeyUpdate handshake message\r\n```",
+              "createdAt": "2025-09-12T04:34:29Z",
+              "updatedAt": "2025-09-12T04:34:34Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6_qJeb",
+          "commit": {
+            "abbreviatedOid": "20108f4"
+          },
+          "author": "muhammad-usama-sardar",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-09-12T08:52:43Z",
+          "updatedAt": "2025-09-12T08:52:43Z",
+          "comments": [
+            {
+              "originalPosition": 63,
+              "body": "```suggestion\r\nupdate its application traffic secret using the KeyUpdate handshake message\r\n```",
+              "createdAt": "2025-09-12T08:52:43Z",
+              "updatedAt": "2025-09-12T08:52:43Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6_qdLv",
+          "commit": {
+            "abbreviatedOid": "20108f4"
+          },
+          "author": "muhammad-usama-sardar",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-09-12T09:08:58Z",
+          "updatedAt": "2025-09-12T09:08:58Z",
+          "comments": [
+            {
+              "originalPosition": 63,
+              "body": "I think it is important to be precise about `application traffic secret` vs. `handshake traffic secret`. Isn't the intention in this section to talk about the former?",
+              "createdAt": "2025-09-12T09:08:58Z",
+              "updatedAt": "2025-09-12T09:08:58Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os6_yOaS",
+          "commit": {
+            "abbreviatedOid": "60cefb1"
+          },
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-09-12T16:14:38Z",
+          "updatedAt": "2025-09-12T16:14:38Z",
+          "comments": [
+            {
+              "originalPosition": 63,
+              "body": "Per Paul's instructions to do the minimal changes I'm going to revert this change. We use \"keys\" plural all over the place in this section.",
+              "createdAt": "2025-09-12T16:14:38Z",
+              "updatedAt": "2025-09-12T16:15:20Z"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
