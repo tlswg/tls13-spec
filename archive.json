@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-09-14T00:55:20.586761+00:00",
+  "timestamp": "2025-09-18T00:50:56.117480+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -13975,6 +13975,22 @@
           "updatedAt": "2025-06-09T18:33:58Z"
         }
       ]
+    },
+    {
+      "number": 1397,
+      "id": "I_kwDOASA0os7MOZRf",
+      "title": "erratum: 8423",
+      "url": "https://github.com/tlswg/tls13-spec/issues/1397",
+      "state": "OPEN",
+      "author": "seanturner",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "See [erratum](https://www.rfc-editor.org/errata/eid8423).",
+      "createdAt": "2025-09-17T13:28:42Z",
+      "updatedAt": "2025-09-17T13:28:42Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
