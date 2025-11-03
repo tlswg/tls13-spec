@@ -3993,7 +3993,7 @@ when sending early data. Receiving implementations SHOULD NOT enforce
 these limits, as future analyses may result in updated values.
 
 For AES-GCM, up to 2^24.5 full-size records (about 24 million)
-may be encrypted on a given connection while keeping a safety
+may be encrypted under a given set of keys while keeping a safety
 margin of approximately 2^-57 for Authenticated Encryption (AE) security.
 For ChaCha20/Poly1305, the record sequence number would wrap before the
 safety limit is reached.
