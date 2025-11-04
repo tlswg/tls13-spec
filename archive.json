@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-09-18T00:50:56.117480+00:00",
+  "timestamp": "2025-11-04T00:55:19.791066+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -70861,6 +70861,32 @@
           ]
         }
       ]
+    },
+    {
+      "number": 1398,
+      "id": "PR_kwDOASA0os6xOc3T",
+      "title": "2^24.5 full-size records is a limit for keys not the connection",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1398",
+      "state": "OPEN",
+      "author": "emanjon",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "This seems like an error in the text. 2^24.5 full-size records is a limit for the set of keys, not the connection. My understanding is that you rekey inside a connection",
+      "createdAt": "2025-11-03T16:24:08Z",
+      "updatedAt": "2025-11-03T16:24:09Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "main",
+      "baseRefOid": "46b909e14516d81f0c841336d1aa68cbfdb5f2e6",
+      "headRepository": "emanjon/tls13-spec",
+      "headRefName": "patch-28",
+      "headRefOid": "e6f8ea11ea1b46a29c749c39e94ec1af1cff406e",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
