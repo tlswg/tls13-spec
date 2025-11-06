@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-11-04T00:55:19.791066+00:00",
+  "timestamp": "2025-11-06T00:56:04.164479+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -70874,7 +70874,7 @@
       "labels": [],
       "body": "This seems like an error in the text. 2^24.5 full-size records is a limit for the set of keys, not the connection. My understanding is that you rekey inside a connection",
       "createdAt": "2025-11-03T16:24:08Z",
-      "updatedAt": "2025-11-03T16:24:09Z",
+      "updatedAt": "2025-11-04T16:09:58Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "46b909e14516d81f0c841336d1aa68cbfdb5f2e6",
@@ -70886,7 +70886,21 @@
       "mergedBy": null,
       "mergeCommit": null,
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOASA0os7LsGtV",
+          "commit": {
+            "abbreviatedOid": "e6f8ea1"
+          },
+          "author": "tomato42",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-11-04T16:09:58Z",
+          "updatedAt": "2025-11-04T16:09:58Z",
+          "comments": []
+        }
+      ]
     }
   ]
 }
