@@ -3300,9 +3300,7 @@ MUST be one of those present in the supported_signature_algorithms
 field of the "signature_algorithms" extension in the CertificateRequest message.
 
 In addition, the signature algorithm MUST be compatible with the key
-in the sender's end-entity certificate. RSA signatures MUST use an
-RSASSA-PSS algorithm, regardless of whether RSASSA-PKCS1-v1_5 algorithms
-appear in "signature_algorithms". The SHA-1 algorithm MUST NOT be used
+in the sender's end-entity certificate. The SHA-1 algorithm MUST NOT be used
 in any signatures of CertificateVerify messages.
 All SHA-1 signature algorithms in this specification are defined solely
 for use in legacy certificates and are not valid for CertificateVerify
