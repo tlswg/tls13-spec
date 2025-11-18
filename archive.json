@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-11-06T00:56:04.164479+00:00",
+  "timestamp": "2025-11-18T00:55:53.982500+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -70898,6 +70898,67 @@
           "body": "",
           "createdAt": "2025-11-04T16:09:58Z",
           "updatedAt": "2025-11-04T16:09:58Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 1399,
+      "id": "PR_kwDOASA0os6z4Nl1",
+      "title": "Remove requirement to use PSS, consistent with suggestion from DavidBen",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1399",
+      "state": "OPEN",
+      "author": "ekr",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-11-17T15:11:07Z",
+      "updatedAt": "2025-11-17T17:10:58Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "main",
+      "baseRefOid": "46b909e14516d81f0c841336d1aa68cbfdb5f2e6",
+      "headRepository": "ekr/tls13-spec",
+      "headRefName": "remove_pkcs1_requirement",
+      "headRefOid": "bfc3ac8484530d8bbb7b0caa13f051de9570bd83",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Note that this document is with the RPC, so this PR is going to be held pending Auth48",
+          "createdAt": "2025-11-17T16:22:38Z",
+          "updatedAt": "2025-11-17T16:22:38Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOASA0os7PB5U4",
+          "commit": {
+            "abbreviatedOid": "bfc3ac8"
+          },
+          "author": "davidben",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "LGTM.\r\n\r\nFor posterity, what this does is make PSS's allowed status implicit from the semantics of the particular SignatureScheme codepoints which are active. For the codepoints defined in this document, the net effect of this PR is a no-op, because the PKCS1 algorithms are already defined as (_emphasis_ mine):\r\n\r\n> Indicates a signature algorithm using RSASSA-PKCS1-v1_5 [[RFC8017](https://tlswg.org/tls13-spec/draft-ietf-tls-rfc8446bis.html#RFC8017)] with the corresponding hash algorithm as defined in [[SHS](https://tlswg.org/tls13-spec/draft-ietf-tls-rfc8446bis.html#SHS)]. _These values refer solely to signatures which appear in certificates (see [Section 4.4.2.2](https://tlswg.org/tls13-spec/draft-ietf-tls-rfc8446bis.html#certificate-selection)) and are not defined for use in signed TLS handshake messages_, although they MAY appear in \"signature_algorithms\" and \"signature_algorithms_cert\" for backward compatibility with TLS 1.2.\r\n\r\nHowever, this opens the door for other SignatureSchemes to define other semantics, notably draft-ietf-tls-tls13-pkcs1.",
+          "createdAt": "2025-11-17T15:45:39Z",
+          "updatedAt": "2025-11-17T15:45:39Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOASA0os7PDXFN",
+          "commit": {
+            "abbreviatedOid": "bfc3ac8"
+          },
+          "author": "paulwouters",
+          "authorAssociation": "NONE",
+          "state": "CHANGES_REQUESTED",
+          "body": "Please note this change of behaviour in the \"Relationship to RFC 8446\" Section as well",
+          "createdAt": "2025-11-17T17:10:58Z",
+          "updatedAt": "2025-11-17T17:10:58Z",
           "comments": []
         }
       ]
