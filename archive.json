@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-11-18T00:55:53.982500+00:00",
+  "timestamp": "2025-11-23T01:03:32.795995+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -70914,7 +70914,7 @@
       "labels": [],
       "body": "",
       "createdAt": "2025-11-17T15:11:07Z",
-      "updatedAt": "2025-11-17T17:10:58Z",
+      "updatedAt": "2025-11-20T18:41:19Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "46b909e14516d81f0c841336d1aa68cbfdb5f2e6",
@@ -70959,6 +70959,32 @@
           "body": "Please note this change of behaviour in the \"Relationship to RFC 8446\" Section as well",
           "createdAt": "2025-11-17T17:10:58Z",
           "updatedAt": "2025-11-17T17:10:58Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOASA0os7P8g4V",
+          "commit": {
+            "abbreviatedOid": "bfc3ac8"
+          },
+          "author": "OR13",
+          "authorAssociation": "NONE",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-11-20T16:23:34Z",
+          "updatedAt": "2025-11-20T16:23:34Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOASA0os7P-0yj",
+          "commit": {
+            "abbreviatedOid": "bfc3ac8"
+          },
+          "author": "boucadair",
+          "authorAssociation": "NONE",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-11-20T18:41:19Z",
+          "updatedAt": "2025-11-20T18:41:19Z",
           "comments": []
         }
       ]
