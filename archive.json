@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-12-18T00:56:29.792254+00:00",
+  "timestamp": "2025-12-23T00:59:40.450970+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -71001,13 +71001,13 @@
       "labels": [],
       "body": "",
       "createdAt": "2025-12-17T00:52:55Z",
-      "updatedAt": "2025-12-17T00:52:55Z",
+      "updatedAt": "2025-12-22T23:41:00Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "auth48",
       "baseRefOid": "1e5ab62be8fe7bef7649d8bdab9319c3a07df8cb",
       "headRepository": "ekr/tls13-spec",
       "headRefName": "rpc1",
-      "headRefOid": "89f71ec81778171458945b470765abd4bd1fd9b8",
+      "headRefOid": "78ec1985647b9bb0999323a569e45e053eeac66b",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
