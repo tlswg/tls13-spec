@@ -685,13 +685,13 @@ TLS supports three basic key exchange modes:
        Client                                              Server
 
 Key  ^ ClientHello
-Exch | ＋ key_share＊
-     | ＋ signature_algorithms＊
-     | ＋ psk_key_exchange_modes＊
-     v ＋ pre_shared_key＊         -------->
+Exch |  - key_share*
+     |  - signature_algorithms*
+     |  - psk_key_exchange_modes*
+     v  - pre_shared_key*        -------->
                                                        ServerHello  ^ Key
-                                                      ＋ key_share＊  | Exch
-                                                 ＋ pre_shared_key＊  v
+                                                      - key_share*  | Exch
+                                                 - pre_shared_key*  v
                                              {EncryptedExtensions}  ⎤ Server
                                              {CertificateRequest*}  ⎦ Params
                                                     {Certificate*}  ^
@@ -707,9 +707,9 @@ Auth | {CertificateVerify＊}
 
 The annotations in {{tls-full}} are as follows:
 
-* "＋" Indicates noteworthy extensions sent in the
+* "-" Indicates noteworthy extensions sent in the
        previously noted message.
-* "＊" indicates optional or situation-dependent
+* "*" indicates optional or situation-dependent
        messages/extensions that are not always sent.
 * "{...}" Indicates messages protected using keys
           derived from a \[sender]_handshake_traffic_secret.
