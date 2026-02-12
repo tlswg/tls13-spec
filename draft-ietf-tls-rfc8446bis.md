@@ -2973,7 +2973,8 @@ for each scenario:
 
 Many of the cryptographic computations in TLS make use of a transcript
 hash. This value is computed by hashing the concatenation of
-each included handshake message, including the handshake
+each included handshake message ,
+including the handshake
 message header carrying the handshake message type and length fields,
 but not including record layer headers. I.e.,
 
@@ -2995,13 +2996,18 @@ stateless HelloRetryRequest by storing just the hash of ClientHello1
 in the cookie, rather than requiring it to export the entire intermediate
 hash state (see {{cookie}}).
 
-For concreteness, the transcript hash is always taken from the
+Unless specified otherwise, the transcript hash is always taken from the
 following sequence of handshake messages, starting at the first
 ClientHello and including only those messages that were sent:
 ClientHello, HelloRetryRequest, ClientHello, ServerHello,
 EncryptedExtensions, server CertificateRequest, server Certificate,
 server CertificateVerify, server Finished, EndOfEarlyData, client
 Certificate, client CertificateVerify, and client Finished.
+
+Unless specified otherwise, the messages in the transcript hash are
+always taken as sent or received by the endpoint without any processing.
+This helps to detect any modifications to ensure the integrity of
+messages.
 
 In general, implementations can implement the transcript by keeping a
 running transcript hash value based on the negotiated hash. Note,
