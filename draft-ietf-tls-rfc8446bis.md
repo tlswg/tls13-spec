@@ -2973,8 +2973,7 @@ for each scenario:
 
 Many of the cryptographic computations in TLS make use of a transcript
 hash. This value is computed by hashing the concatenation of
-each included handshake message ,
-including the handshake
+each included handshake message, including the handshake
 message header carrying the handshake message type and length fields,
 but not including record layer headers. I.e.,
 
