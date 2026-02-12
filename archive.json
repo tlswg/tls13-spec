@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-12-23T00:59:40.450970+00:00",
+  "timestamp": "2026-02-12T01:16:41.019018+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -71008,6 +71008,157 @@
       "headRepository": "ekr/tls13-spec",
       "headRefName": "rpc1",
       "headRefOid": "78ec1985647b9bb0999323a569e45e053eeac66b",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 1401,
+      "id": "PR_kwDOASA0os7DFnS0",
+      "title": "Clarify that the message sequence may change with extensions",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1401",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "As previously written, it suggests the message sequence does not change at all, but it is actually (as the text suggests), the transcript of everything sent or received.\r\n\r\nThis still doesn't quite make us robust to extensions. The CertificateVerify and Finished messages are defined in terms of this \"Handshake Context\" that is written using phrases like\r\n\r\n* \"later of EncryptedExtensions/CertificateRequest\"\r\n* \"later of server Finished/EndOfEarlyData\"\r\n* \"ClientHello ... client Finished + CertificateRequest\"\r\n\r\nAnd then sometimes Certificate and CertificateVerify are explicitly appended to it. Interestingly, that is also a bit goofy because we don't always account for those messages not existing in the prose.\r\n\r\nThis PR leaves all that alone for now, because I haven't quite written something down for that yet. (I think the right wording is to say \"hash all the messages up to but not including Finished/CertificateVerify.)",
+      "createdAt": "2026-02-11T18:52:45Z",
+      "updatedAt": "2026-02-11T19:21:07Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "main",
+      "baseRefOid": "46b909e14516d81f0c841336d1aa68cbfdb5f2e6",
+      "headRepository": "davidben/tls13-spec",
+      "headRefName": "transcript",
+      "headRefOid": "5ec5b23683b113705f42ab6c488e1d911c9d158b",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "davidben",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": ">  (I think the right wording is to say \"hash all the messages up to but not including Finished/CertificateVerify.)\r\n\r\nAh hmmf. Except we kinda made a mess of post-handshake messages. That's a little awkward to describe. (Not relevant for this PR.)",
+          "createdAt": "2026-02-11T19:20:54Z",
+          "updatedAt": "2026-02-11T19:21:07Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 1402,
+      "id": "PR_kwDOASA0os7DGQi8",
+      "title": "Clarify that extensions can modify the message sequence",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1402",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2026-02-11T19:33:54Z",
+      "updatedAt": "2026-02-11T19:33:55Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "main",
+      "baseRefOid": "46b909e14516d81f0c841336d1aa68cbfdb5f2e6",
+      "headRepository": "davidben/tls13-spec",
+      "headRefName": "transcript-2",
+      "headRefOid": "73ecb017859fe6f4d44cea51f8d2d9dfdab0f716",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 1403,
+      "id": "PR_kwDOASA0os7DGrv3",
+      "title": "Rewrite CertificateVerify and Finished transcript hash definitions",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1403",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "(This is a standalone PR because GitHub is bad at stacked PRs, but you probably want to look at https://github.com/tlswg/tls13-spec/pull/1401 first.)\r\n\r\nRather than trying to define in terms of a funky Handshake Context and then a set of messages that are appended throughout, define this the way it is actually implemented: you stop the transcript just before the message you are working on.\r\n\r\nOne cloud darkens this simple description: post-handshake authentication acts on a funny transcript where the main transcript is forked off and then we get extra messages appended to it.",
+      "createdAt": "2026-02-11T19:59:45Z",
+      "updatedAt": "2026-02-11T23:46:53Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "main",
+      "baseRefOid": "46b909e14516d81f0c841336d1aa68cbfdb5f2e6",
+      "headRepository": "davidben/tls13-spec",
+      "headRefName": "transcript-3",
+      "headRefOid": "633ac069ff296e9d842864a2f8f99b09cca312bf",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOASA0os7hyRu_",
+          "commit": {
+            "abbreviatedOid": "633ac06"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "Lots of changes, but I don't see a major problem.",
+          "createdAt": "2026-02-11T23:43:42Z",
+          "updatedAt": "2026-02-11T23:46:53Z",
+          "comments": [
+            {
+              "originalPosition": 131,
+              "body": "```suggestion\n* For client Finished, Previous will be server Finished, EndOfEarlyData,\n```",
+              "createdAt": "2026-02-11T23:43:42Z",
+              "updatedAt": "2026-02-11T23:46:53Z"
+            },
+            {
+              "originalPosition": 123,
+              "body": "Is \"Previous\" a good name?  \"Last\" might be better.  Or \"end_of_transcript\" or \"last_in_transcript\" (see, different casing to indicate it's a variable).  The title case word is too much like a real Handshake message.",
+              "createdAt": "2026-02-11T23:45:07Z",
+              "updatedAt": "2026-02-11T23:46:53Z"
+            },
+            {
+              "originalPosition": 122,
+              "body": "```suggestion\n~~~\nverify_data =\n```",
+              "createdAt": "2026-02-11T23:45:35Z",
+              "updatedAt": "2026-02-11T23:46:53Z"
+            },
+            {
+              "originalPosition": 123,
+              "body": "```suggestion\n    HMAC(finished_key, Transcript-Hash(ClientHello...Previous))\n~~~\n```",
+              "createdAt": "2026-02-11T23:45:49Z",
+              "updatedAt": "2026-02-11T23:46:53Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 1404,
+      "id": "PR_kwDOASA0os7DGuTv",
+      "title": "Move The Transcript Hash to earlier in the document",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1404",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "*Only look at the last commit in this stack. This PR includes https://github.com/tlswg/tls13-spec/pull/1401, https://github.com/tlswg/tls13-spec/pull/1402, and https://github.com/tlswg/tls13-spec/pull/1403. GitHub is bad at stacked PRs. I'll rebase this one once decisions on the other three PRs is made.*\r\n\r\nIt is a little strange that it is buried inside Authentication Messages, but then it's referenced all throughout the document. This seems enough of a core component of the handshake protocol to describe it first.\r\n\r\nNB: This will cause almost all the section numbers between RFC 8446 and rfc8446bis to be different. Folks will need to take some care when updating references.",
+      "createdAt": "2026-02-11T20:02:14Z",
+      "updatedAt": "2026-02-11T20:02:15Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "main",
+      "baseRefOid": "46b909e14516d81f0c841336d1aa68cbfdb5f2e6",
+      "headRepository": "davidben/tls13-spec",
+      "headRefName": "transcript-4",
+      "headRefOid": "4899b974054147bf3775ccbb66d9169b48d1f3ca",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
