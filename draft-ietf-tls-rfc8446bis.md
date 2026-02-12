@@ -685,37 +685,36 @@ TLS supports three basic key exchange modes:
        Client                                              Server
 
 Key  ^ ClientHello
-Exch | + key_share*
-     | + signature_algorithms*
-     | + psk_key_exchange_modes*
-     v + pre_shared_key*         -------->
+Exch | ＋ key_share＊
+     | ＋ signature_algorithms＊
+     | ＋ psk_key_exchange_modes＊
+     v ＋ pre_shared_key＊         -------->
                                                        ServerHello  ^ Key
-                                                      + key_share*  | Exch
-                                                 + pre_shared_key*  v
-                                             {EncryptedExtensions}  ^  Server
-                                             {CertificateRequest*}  v  Params
+                                                      ＋ key_share＊  | Exch
+                                                 ＋ pre_shared_key＊  v
+                                             {EncryptedExtensions}  ⎤ Server
+                                             {CertificateRequest*}  ⎦ Params
                                                     {Certificate*}  ^
                                               {CertificateVerify*}  | Auth
                                                         {Finished}  v
                                  <--------     [Application Data*]
-     ^ {Certificate*}
-Auth | {CertificateVerify*}
+     ^ {Certificate＊}
+Auth | {CertificateVerify＊}
      v {Finished}                -------->
-       [Application Data]        <------->      [Application Data]
-
-              +  Indicates noteworthy extensions sent in the
-                 previously noted message.
-
-              *  Indicates optional or situation-dependent
-                 messages/extensions that are not always sent.
-
-              {} Indicates messages protected using keys
-                 derived from a [sender]_handshake_traffic_secret.
-
-              [] Indicates messages protected using keys
-                 derived from [sender]_application_traffic_secret_N.
+       [Application Data]        <=======>      [Application Data]
 ~~~
 {: #tls-full title="Message Flow for Full TLS Handshake"}
+
+The annotations in {{tls-full}} are as follows:
+
+* "＋" Indicates noteworthy extensions sent in the
+       previously noted message.
+* "＊" indicates optional or situation-dependent
+       messages/extensions that are not always sent.
+* "{...}" Indicates messages protected using keys
+          derived from a \[sender]_handshake_traffic_secret.
+* "[...]" Indicates messages protected using keys
+          derived from \[sender]_application_traffic_secret_N.
 
 The handshake can be thought of as having three phases (indicated
 in the diagram above):
