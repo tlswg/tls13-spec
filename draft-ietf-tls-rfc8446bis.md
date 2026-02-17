@@ -3367,7 +3367,7 @@ transcript hash (see {{the-transcript-hash}}), ending at the message
 immediately preceding this Finished message:
 
        verify_data =
-           HMAC(finished_key, Transcript-Hash(ClientHello...Previous))
+    HMAC(finished_key, Transcript-Hash(ClientHello...Previous))
 
 In this document, the transcript hash will end at:
 
@@ -3375,7 +3375,7 @@ In this document, the transcript hash will end at:
   CertificateRequest, server Certificate, or server CertificateVerify,
   depending on which is present and comes last.
 
-* For client Finished, Previous will be server Finished, EndofEarlyData,
+* For client Finished, Previous will be server Finished, EndOfEarlyData,
   client Certificate, or client CertificateVerify, depending on which is
   present and comes last.
 
