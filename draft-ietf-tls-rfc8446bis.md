@@ -3368,16 +3368,16 @@ immediately preceding this Finished message:
 
 ~~~
 verify_data =
-    HMAC(finished_key, Transcript-Hash(ClientHello...Previous))
+    HMAC(finished_key, Transcript-Hash(ClientHello...previous))
 ~~~
 
 In this document, the transcript hash will end at:
 
-* For server Finished, Previous will be EncryptedExtensions, server
+* For server Finished, "previous" will be EncryptedExtensions, server
   CertificateRequest, server Certificate, or server CertificateVerify,
   depending on which is present and comes last.
 
-* For client Finished, Previous will be server Finished, EndOfEarlyData,
+* For client Finished, "previous" will be server Finished, EndOfEarlyData,
   client Certificate, or client CertificateVerify, depending on which is
   present and comes last.
 
