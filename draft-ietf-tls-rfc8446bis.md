@@ -3366,8 +3366,10 @@ During the handshake, the verify_data value is computed using the
 transcript hash (see {{the-transcript-hash}}), ending at the message
 immediately preceding this Finished message:
 
-       verify_data =
+~~~
+verify_data =
     HMAC(finished_key, Transcript-Hash(ClientHello...Previous))
+~~~
 
 In this document, the transcript hash will end at:
 
