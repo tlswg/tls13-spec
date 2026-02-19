@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-02-17T01:15:21.011421+00:00",
+  "timestamp": "2026-02-19T01:16:44.078057+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -71087,13 +71087,13 @@
       "labels": [],
       "body": "(This is a standalone PR because GitHub is bad at stacked PRs, but you probably want to look at https://github.com/tlswg/tls13-spec/pull/1401 first.)\r\n\r\nRather than trying to define in terms of a funky Handshake Context and then a set of messages that are appended throughout, define this the way it is actually implemented: you stop the transcript just before the message you are working on.\r\n\r\nOne cloud darkens this simple description: post-handshake authentication acts on a funny transcript where the main transcript is forked off and then we get extra messages appended to it.",
       "createdAt": "2026-02-11T19:59:45Z",
-      "updatedAt": "2026-02-16T21:03:59Z",
+      "updatedAt": "2026-02-17T17:33:56Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "46b909e14516d81f0c841336d1aa68cbfdb5f2e6",
       "headRepository": "davidben/tls13-spec",
       "headRefName": "transcript-3",
-      "headRefOid": "633ac069ff296e9d842864a2f8f99b09cca312bf",
+      "headRefOid": "4785e938e116574c12d06e1c250f7497fc878739",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -71105,6 +71105,20 @@
           "body": "This is an interesting suggestion and it might have been a better way to write things, but I don't think we should make it now, for two reasons:\r\n\r\n1. RFC 9261 (Exported Authenticators) explicitly uses the concept of Handshake Context (in fact, I think this may have been why we added it), so we'd be breaking that.\r\n2. It's just a big change at this point in the process, so it's an opportunity to break things.\r\n\r\nI think the most expedient thing to do is to take #1401, #1402, and #1404 but not #1403. This addresses the ambiguity while minimizing changes.\r\n\r\n@davidben I'm happy to take care of that, but I wanted to see if people wanted to argue differently before I made those changes.\r\n\r\n",
           "createdAt": "2026-02-16T21:03:59Z",
           "updatedAt": "2026-02-16T21:03:59Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> RFC 9261 (Exported Authenticators) explicitly uses the concept of Handshake Context (in fact, I think this may have been why we added it), so we'd be breaking that.\r\n\r\nI *think* that one is fine? From a brief skim, RFC 9261 already redefines the calculations anyway, to account for its \"authenticator request\" thing.\r\nhttps://www.rfc-editor.org/rfc/rfc9261.html#section-5.2.2-8\r\nhttps://www.rfc-editor.org/rfc/rfc9261.html#name-finished\r\n\r\nAside: this is a much, much better Handshake Context than post-handshake auth. Post-handshake auth forces you to retain the running hash, which contains a partial block. This one falls out of the exporter secret so we don't increase per-connection memory.\r\n\r\n> It's just a big change at this point in the process, so it's an opportunity to break things.\r\n\r\nTotally fair. I wasn't sure whether we wanted this much surgery myself. :-)",
+          "createdAt": "2026-02-17T17:13:11Z",
+          "updatedAt": "2026-02-17T17:13:11Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Addressed @martinthomson's comments.",
+          "createdAt": "2026-02-17T17:33:56Z",
+          "updatedAt": "2026-02-17T17:33:56Z"
         }
       ],
       "reviews": [
@@ -71143,6 +71157,46 @@
               "body": "```suggestion\n    HMAC(finished_key, Transcript-Hash(ClientHello...Previous))\n~~~\n```",
               "createdAt": "2026-02-11T23:45:49Z",
               "updatedAt": "2026-02-11T23:46:53Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os7jaQtx",
+          "commit": {
+            "abbreviatedOid": "633ac06"
+          },
+          "author": "davidben",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-02-17T17:31:56Z",
+          "updatedAt": "2026-02-17T17:31:56Z",
+          "comments": [
+            {
+              "originalPosition": 123,
+              "body": "\"Last\" is a bit ambiguous between \"the final message\" vs \"the message before the current one\". In this context, it seemed good to be precise. Good call about the title case. Will fix.",
+              "createdAt": "2026-02-17T17:31:56Z",
+              "updatedAt": "2026-02-17T17:31:56Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os7jaQ9-",
+          "commit": {
+            "abbreviatedOid": "633ac06"
+          },
+          "author": "davidben",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-02-17T17:32:07Z",
+          "updatedAt": "2026-02-17T17:32:07Z",
+          "comments": [
+            {
+              "originalPosition": 122,
+              "body": "(GH suggestions got a bit mangled, but applied.)",
+              "createdAt": "2026-02-17T17:32:07Z",
+              "updatedAt": "2026-02-17T17:32:07Z"
             }
           ]
         }
