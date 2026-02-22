@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-02-19T01:16:44.078057+00:00",
+  "timestamp": "2026-02-22T01:15:55.975414+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -71087,7 +71087,7 @@
       "labels": [],
       "body": "(This is a standalone PR because GitHub is bad at stacked PRs, but you probably want to look at https://github.com/tlswg/tls13-spec/pull/1401 first.)\r\n\r\nRather than trying to define in terms of a funky Handshake Context and then a set of messages that are appended throughout, define this the way it is actually implemented: you stop the transcript just before the message you are working on.\r\n\r\nOne cloud darkens this simple description: post-handshake authentication acts on a funny transcript where the main transcript is forked off and then we get extra messages appended to it.",
       "createdAt": "2026-02-11T19:59:45Z",
-      "updatedAt": "2026-02-17T17:33:56Z",
+      "updatedAt": "2026-02-19T09:48:39Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "46b909e14516d81f0c841336d1aa68cbfdb5f2e6",
@@ -71119,6 +71119,13 @@
           "body": "Addressed @martinthomson's comments.",
           "createdAt": "2026-02-17T17:33:56Z",
           "updatedAt": "2026-02-17T17:33:56Z"
+        },
+        {
+          "author": "muhammad-usama-sardar",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> Aside: this is a much, much better Handshake Context than post-handshake auth. \r\n\r\nI am not following the comparison you are trying to make here. Are you comparing the `Handshake Context` in RFC8446bis vs. `Handshake Context` in RFC9261? If so, I don't think the comparison is useful.\r\n> Post-handshake auth forces you to retain the running hash, which contains a partial block. This one falls out of the exporter secret so we don't increase per-connection memory.\r\n\r\nI don't understand this. Could you please explain? In particular, what exactly do you mean by \"partial block\"?",
+          "createdAt": "2026-02-19T09:48:39Z",
+          "updatedAt": "2026-02-19T09:48:39Z"
         }
       ],
       "reviews": [
