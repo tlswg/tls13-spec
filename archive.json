@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-02-22T01:15:55.975414+00:00",
+  "timestamp": "2026-02-24T01:13:55.541727+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -71247,7 +71247,7 @@
       "labels": [],
       "body": "...or similar phrasing, throughout.\r\n\r\nThe use of (EC)DHE throughout really doesn't reflect actual usage any more, with the use now of KEMs for a lot of TLS usage (all, if things work out).\r\n\r\nI know that DH is symmetric in a sense, but this seemed like the best phrasing to use. Happy to take suggestions for alternatives.\r\n\r\nLooking at those KEM drafts, this would be helpful for them.  Otherwise, they have to explain very carefully that their shared secret goes into the slot labeled \"(EC)DHE\" even though none of those letters applies to their thing.",
       "createdAt": "2026-02-12T04:36:33Z",
-      "updatedAt": "2026-02-16T22:16:51Z",
+      "updatedAt": "2026-02-22T08:00:58Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "46b909e14516d81f0c841336d1aa68cbfdb5f2e6",
@@ -71361,6 +71361,19 @@
               "updatedAt": "2026-02-16T22:14:35Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOASA0os7ks5b0",
+          "commit": {
+            "abbreviatedOid": "3cbff05"
+          },
+          "author": "thomwiggers",
+          "authorAssociation": "NONE",
+          "state": "APPROVED",
+          "body": "Seems like a great idea",
+          "createdAt": "2026-02-22T08:00:58Z",
+          "updatedAt": "2026-02-22T08:00:58Z",
+          "comments": []
         }
       ]
     },
