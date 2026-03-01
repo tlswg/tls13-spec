@@ -5394,6 +5394,8 @@ cache lookups in web browsers.
 Clients and Servers SHOULD NOT reuse a key share for multiple connections. Reuse
 of a key share allows passive observers to correlate different connections. Reuse
 of a client key share to the same server additionally allows the server to correlate different connections.
+Additionally, if a key is reused in multiple key-establishment operations, i.e., a static key, this
+undermines forward secrecy and makes exploitation of side-channel attacks and implementation flaws much easier.
 
 It is RECOMMENDED that the labels for external identities be selected so that they
 do not provide additional information about the identity of the
