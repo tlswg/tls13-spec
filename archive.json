@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-02-24T01:13:55.541727+00:00",
+  "timestamp": "2026-03-03T01:16:00.282564+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -13989,6 +13989,22 @@
       "body": "See [erratum](https://www.rfc-editor.org/errata/eid8423).",
       "createdAt": "2025-09-17T13:28:42Z",
       "updatedAt": "2025-09-17T13:28:42Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 1409,
+      "id": "I_kwDOASA0os7vKT-P",
+      "title": "erratum 8794: EOED optionality",
+      "url": "https://github.com/tlswg/tls13-spec/issues/1409",
+      "state": "OPEN",
+      "author": "martinthomson",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "https://www.rfc-editor.org/errata/eid8794 explains this.",
+      "createdAt": "2026-03-02T17:35:17Z",
+      "updatedAt": "2026-03-02T17:35:17Z",
       "closedAt": null,
       "comments": []
     }
@@ -71428,6 +71444,72 @@
       "mergeCommit": null,
       "comments": [],
       "reviews": []
+    },
+    {
+      "number": 1408,
+      "id": "PR_kwDOASA0os7HHjYT",
+      "title": "Security considerations for reusing keys in multiple key establishments",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1408",
+      "state": "OPEN",
+      "author": "emanjon",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "See https://mailarchive.ietf.org/arch/msg/tls/KepJCOX3F_ABti_JYDWrvQGx07U/\r\n\r\n---\r\n\r\n>RFC8446bis explicitly defines key reuse as a SHOULD NOT.\r\n\r\nIt would be good if RFC8446bis could clarify what this 'key reuse' means. As discussed earlier, this term can have at least three very different meanings. Many formal analysis experts have understood TLS 1.3 as specifying that keys should be used for only one execution of key establishment.\r\nhttps://mailarchive.ietf.org/arch/msg/tls/MOqSAplAYQuA6AwkKfHCphQUlKU/\r\n\r\nIf 'key reuse' includes using the same key in more than one execution of key establishment, RFC 8446bis should explain that such 'key reuse' undermines forward secrecy and makes exploitation of side-channel attacks and implementation flaws much easier.\r\n\r\nWhile RFC 8446 fails to define the term 'ephemeral', specifications using ML-KEM points normatively to FIPS 203, which in turn points normatively to SP 800-227, which has very precise definitions for 'ephemeral' and 'static'. Since X25519MLKEM768 is already the de facto standard for TLS key exchange, TLS specifications should avoid using the terms 'ephemeral' and 'static' in ways that conflict with FIPS 203.\r\n\r\nI do not oppose other people using static keys in TLS for visibility; I just strongly agree with SP 1800-37 that it is a bad solution for visibility, and if allowed in a TLS WG document, the security implications should be clearly described.\r\n\r\nI am not sure whether the current situation is the result of ideological fighting, privacy theater, or a combination of both. Beyond the existing uncertainty regarding whether static keys are permitted, the current approach of not explicitly negotiating static keys is strictly worse than the solutions in TLS 1.2 and in draft-rhrd-tls-tls13-visibility.\r\n\r\n---\r\n",
+      "createdAt": "2026-03-01T12:02:31Z",
+      "updatedAt": "2026-03-01T13:48:38Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "main",
+      "baseRefOid": "46b909e14516d81f0c841336d1aa68cbfdb5f2e6",
+      "headRepository": "emanjon/tls13-spec",
+      "headRefName": "patch-29",
+      "headRefOid": "8be22d3411cdad24319c853d340c05de58e8439a",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOASA0os7myzCb",
+          "commit": {
+            "abbreviatedOid": "8be22d3"
+          },
+          "author": "dconnolly",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-03-01T13:11:23Z",
+          "updatedAt": "2026-03-01T13:11:23Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOASA0os7mzBE4",
+          "commit": {
+            "abbreviatedOid": "8be22d3"
+          },
+          "author": "muhammad-usama-sardar",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "CHANGES_REQUESTED",
+          "body": "",
+          "createdAt": "2026-03-01T13:38:21Z",
+          "updatedAt": "2026-03-01T13:48:38Z",
+          "comments": [
+            {
+              "originalPosition": 4,
+              "body": "I propose to add a reference to static key.",
+              "createdAt": "2026-03-01T13:38:21Z",
+              "updatedAt": "2026-03-01T13:48:38Z"
+            },
+            {
+              "originalPosition": 1,
+              "body": "```suggestion\npublic-key based key exchange mechanisms generally provide forward secrecy.\n```",
+              "createdAt": "2026-03-01T13:47:27Z",
+              "updatedAt": "2026-03-01T13:48:38Z"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
