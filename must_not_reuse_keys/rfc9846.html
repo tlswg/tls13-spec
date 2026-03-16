@@ -1715,39 +1715,42 @@ names where no term was necessary. This document makes the following
 specific technical changes:<a href="#section-1.2-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-1.2-2.1">
-            <p id="section-1.2-2.1.1">Forbid negotiating TLS 1.0 and 1.1 as they are now deprecated by <span>[<a href="#RFC8996" class="cite xref">RFC8996</a>]</span>.<a href="#section-1.2-2.1.1" class="pilcrow">¶</a></p>
+            <p id="section-1.2-2.1.1">Forbid the reuse of KeyShare values between connections.<a href="#section-1.2-2.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.2-2.2">
-            <p id="section-1.2-2.2.1">Removes ambiguity around which hash is used with PreSharedKeys and
-HelloRetryRequest.<a href="#section-1.2-2.2.1" class="pilcrow">¶</a></p>
+            <p id="section-1.2-2.2.1">Forbid negotiating TLS 1.0 and 1.1 as they are now deprecated by <span>[<a href="#RFC8996" class="cite xref">RFC8996</a>]</span>.<a href="#section-1.2-2.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.2-2.3">
-            <p id="section-1.2-2.3.1">Require that clients ignore NewSessionTicket if they do not
-support resumption.<a href="#section-1.2-2.3.1" class="pilcrow">¶</a></p>
+            <p id="section-1.2-2.3.1">Removes ambiguity around which hash is used with PreSharedKeys and
+HelloRetryRequest.<a href="#section-1.2-2.3.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.2-2.4">
-            <p id="section-1.2-2.4.1">Upgrade the requirement to initiate key update before exceeding
-key usage limits to MUST.<a href="#section-1.2-2.4.1" class="pilcrow">¶</a></p>
+            <p id="section-1.2-2.4.1">Require that clients ignore NewSessionTicket if they do not
+support resumption.<a href="#section-1.2-2.4.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.2-2.5">
-            <p id="section-1.2-2.5.1">Limit the number of permitted KeyUpdate messages.<a href="#section-1.2-2.5.1" class="pilcrow">¶</a></p>
+            <p id="section-1.2-2.5.1">Upgrade the requirement to initiate key update before exceeding
+key usage limits to MUST.<a href="#section-1.2-2.5.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.2-2.6">
-            <p id="section-1.2-2.6.1">Restore text defining the level of "close_notify" to "warning".<a href="#section-1.2-2.6.1" class="pilcrow">¶</a></p>
+            <p id="section-1.2-2.6.1">Limit the number of permitted KeyUpdate messages.<a href="#section-1.2-2.6.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.2-2.7">
-            <p id="section-1.2-2.7.1">Clarify behavior around "user_canceled", requiring that
-"close_notify" be sent and that "user_canceled" should
-be ignored.<a href="#section-1.2-2.7.1" class="pilcrow">¶</a></p>
+            <p id="section-1.2-2.7.1">Restore text defining the level of "close_notify" to "warning".<a href="#section-1.2-2.7.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.2-2.8">
-            <p id="section-1.2-2.8.1">Add a "general_error" generic alert.<a href="#section-1.2-2.8.1" class="pilcrow">¶</a></p>
+            <p id="section-1.2-2.8.1">Clarify behavior around "user_canceled", requiring that
+"close_notify" be sent and that "user_canceled" should
+be ignored.<a href="#section-1.2-2.8.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.2-2.9">
-            <p id="section-1.2-2.9.1">Corrected the lower bound on CertificateRequest.extensions
+            <p id="section-1.2-2.9.1">Add a "general_error" generic alert.<a href="#section-1.2-2.9.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-1.2-2.10">
+            <p id="section-1.2-2.10.1">Corrected the lower bound on CertificateRequest.extensions
 to be 0 bytes. This was an error in the syntax as it
 is possible to send no extensions, which results in
-length 0.<a href="#section-1.2-2.9.1" class="pilcrow">¶</a></p>
+length 0.<a href="#section-1.2-2.10.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <p id="section-1.2-3">In addition, there have been some improvements to the
