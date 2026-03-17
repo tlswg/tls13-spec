@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-03-05T01:14:29.181309+00:00",
+  "timestamp": "2026-03-17T01:14:58.640140+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -71520,6 +71520,94 @@
           "body": "LGTM",
           "createdAt": "2026-03-04T17:23:34Z",
           "updatedAt": "2026-03-04T17:23:34Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 1410,
+      "id": "PR_kwDOASA0os7K-NFK",
+      "title": "Forbid key share reuse",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1410",
+      "state": "OPEN",
+      "author": "ekr",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Per discussion on the list. Note that I put this in the section on KeyShares and then removed the text about the impact of reuse on tracking, as it is no longer applicable.",
+      "createdAt": "2026-03-16T16:14:22Z",
+      "updatedAt": "2026-03-17T00:37:33Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "main",
+      "baseRefOid": "46b909e14516d81f0c841336d1aa68cbfdb5f2e6",
+      "headRepository": "tlswg/tls13-spec",
+      "headRefName": "must_not_reuse_keys",
+      "headRefOid": "a505cd1af1ae547b98743b29f3e7c151bda9f640",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "muhammad-usama-sardar",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "[Thread](https://mailarchive.ietf.org/arch/msg/tls/jpSC_G9chvSpL34X7pH3oCKh6cE/) for reference and easier finding in future",
+          "createdAt": "2026-03-16T21:07:41Z",
+          "updatedAt": "2026-03-16T21:07:41Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOASA0os7r1f4W",
+          "commit": {
+            "abbreviatedOid": "a505cd1"
+          },
+          "author": "muhammad-usama-sardar",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-03-16T21:07:27Z",
+          "updatedAt": "2026-03-16T21:07:28Z",
+          "comments": [
+            {
+              "originalPosition": 14,
+              "body": "What exactly do you mean by receiving implementations?",
+              "createdAt": "2026-03-16T21:07:28Z",
+              "updatedAt": "2026-03-16T21:07:28Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os7r2VME",
+          "commit": {
+            "abbreviatedOid": "a505cd1"
+          },
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-03-16T21:56:22Z",
+          "updatedAt": "2026-03-16T21:56:22Z",
+          "comments": [
+            {
+              "originalPosition": 14,
+              "body": "Implementations that receive key shares. I believe this to be adequately clear.",
+              "createdAt": "2026-03-16T21:56:22Z",
+              "updatedAt": "2026-03-16T21:56:23Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os7r40DX",
+          "commit": {
+            "abbreviatedOid": "a505cd1"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "Very good.  Ship it.",
+          "createdAt": "2026-03-17T00:37:33Z",
+          "updatedAt": "2026-03-17T00:37:33Z",
           "comments": []
         }
       ]
