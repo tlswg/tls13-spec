@@ -4,10 +4,10 @@
 
 Transport Layer Security                                     E. Rescorla
 Internet-Draft                                               Independent
-Obsoletes: 8446 (if approved)                          13 September 2025
+Obsoletes: 8446 (if approved)                               9 April 2026
 Updates: 5705, 6066, 7627, 8422 (if approved)                           
 Intended status: Standards Track                                        
-Expires: 17 March 2026
+Expires: 11 October 2026
 
 
         The Transport Layer Security (TLS) Protocol Version 1.3
@@ -39,11 +39,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 17 March 2026.
+   This Internet-Draft will expire on 11 October 2026.
 
 Copyright Notice
 
-   Copyright (c) 2025 IETF Trust and the persons identified as the
+   Copyright (c) 2026 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -313,6 +313,8 @@ Table of Contents
    "master" as applied to secrets in favor of the term "main" or shorter
    names where no term was necessary.  This document makes the following
    specific technical changes:
+
+   *  Forbid the reuse of KeyShare values between connections.
 
    *  Forbid negotiating TLS 1.0 and 1.1 as they are now deprecated by
       [RFC8996].
@@ -2107,6 +2109,11 @@ Auth | {CertificateVerify*}
    for groups not listed in the client's "supported_groups" extension.
    Servers MAY check for violations of these rules and abort the
    handshake with an "illegal_parameter" alert if one is violated.
+
+   Clients and Servers MUST NOT reuse a key share for multiple
+   connections.  Because [RFC8446] permitted reuse, receiving
+   implementations MUST permit reuse by the peer in order to prevent
+   interoperability issues.
 
    In a HelloRetryRequest message, the "extension_data" field of this
    extension contains a KeyShareHelloRetryRequest value:
@@ -4905,7 +4912,7 @@ Auth | {CertificateVerify*}
    [BBFGKZ16] Bhargavan, K., Brzuska, C., Fournet, C., Green, M.,
               Kohlweiss, M., and S. Zanella-Beguelin, "Downgrade
               Resilience in Key-Exchange Protocols", IEEE, 2016 IEEE
-              Symposium on Security and Privacy (SP),
+              Symposium on Security and Privacy (SP) pp. 506-525,
               DOI 10.1109/sp.2016.37, May 2016,
               <https://doi.org/10.1109/sp.2016.37>.
 
@@ -5032,7 +5039,7 @@ Auth | {CertificateVerify*}
               DOI 10.6028/nist.sp.800-186, February 2023,
               <https://doi.org/10.6028/nist.sp.800-186>.
 
-   [FETCH]    WHATWG, "Fetch Standard", September 2025,
+   [FETCH]    WHATWG, "Fetch Standard", April 2026,
               <https://fetch.spec.whatwg.org/>.
 
    [FG17]     Fischlin, M. and F. Guenther, "Replay Attacks on Zero
@@ -6106,12 +6113,6 @@ C.4.  Client and Server Tracking Prevention
    connections that are meant to be uncorrelated.  For example, [FETCH]
    defines network partition keys to separate cache lookups in web
    browsers.
-
-   Clients and Servers SHOULD NOT reuse a key share for multiple
-   connections.  Reuse of a key share allows passive observers to
-   correlate different connections.  Reuse of a client key share to the
-   same server additionally allows the server to correlate different
-   connections.
 
    It is RECOMMENDED that the labels for external identities be selected
    so that they do not provide additional information about the identity
