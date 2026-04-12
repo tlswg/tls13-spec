@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-03-31T01:23:58.708253+00:00",
+  "timestamp": "2026-04-12T01:43:36.712457+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -14021,6 +14021,46 @@
       "body": "The current draft states both\n\n> A client which receives a TLS 1.3 Server Hello with a legacy_version value not equal to 0x0303 MUST abort the handshake with an \"illegal_parameter\" alert.\n\nand\n\n> Any endpoint receiving a Hello message with ClientHello.legacy_version or ServerHello.legacy_version set to 0x0300 MUST abort the handshake with a \"protocol_version\" alert.\n\nWhich would seem to require sending two different alerts if 0x0300 is sent in a `ServerHello.legacy_version`. This seems unlikely to be intentional. If it is intentional it probably deserves more text. If it's not intentional the alerts should be the same for both cases. Given that RFC 8446 already required `protocol_version` be sent (for the second requirement) I'd suggest the first requirement (which does not appear in 8446) be modified to also require sending `protocol_version`.",
       "createdAt": "2026-03-30T22:34:59Z",
       "updatedAt": "2026-03-30T22:34:59Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 1413,
+      "id": "I_kwDOASA0os78Mjn7",
+      "title": "Clarify use of ChangeCipherSpec",
+      "url": "https://github.com/tlswg/tls13-spec/issues/1413",
+      "state": "CLOSED",
+      "author": "muhammad-usama-sardar",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "[-14](https://www.ietf.org/archive/id/draft-ietf-tls-rfc8446bis-14.html#section-1.3-2.6.1) states:\n\n> The handshake state machine has been significantly restructured to be more consistent and to remove superfluous messages such as ChangeCipherSpec (except when needed for middlebox compatibility).\n\nThere is no other mention of ChangeCipherSpec. I think there is a need to explain how to use this message correctly for \"middlebox compatibility\". I am particularly curious about:\n\n1.  the placement of this message in the handshake and\n2.  how this message will be handled in the TranscriptHash.",
+      "createdAt": "2026-04-09T09:39:15Z",
+      "updatedAt": "2026-04-09T18:24:15Z",
+      "closedAt": "2026-04-09T18:24:15Z",
+      "comments": [
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "See S 5 and Appendix E.4. https://www.ietf.org/archive/id/draft-ietf-tls-rfc8446bis-14.html#middlebox\n\nchange_cipher_spec is not a handshake message and therefore is not in the transcript hash.\n",
+          "createdAt": "2026-04-09T18:24:15Z",
+          "updatedAt": "2026-04-09T18:24:15Z"
+        }
+      ]
+    },
+    {
+      "number": 1414,
+      "id": "I_kwDOASA0os78dBCp",
+      "title": "Clarification on server-side validation of second ClientHello after HelloRetryRequest",
+      "url": "https://github.com/tlswg/tls13-spec/issues/1414",
+      "state": "OPEN",
+      "author": "jouho",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Hello! We are maintainers of [s2n-tls](https://github.com/aws/s2n-tls), an open-source TLS implementation. We recently encountered an interoperability issue that led us to question how servers should handle the second ClientHello after a HelloRetryRequest.\n\n[RFC 8446 \u00a74.1.2](https://www.rfc-editor.org/rfc/rfc8446.html#section-4.1.2) requires that clients send the same ClientHello without modification after receiving a HelloRetryRequest, except for the explicitly allowed changes (key_share, early_data, cookie, pre_shared_key, and padding). However, the RFC does not specify whether servers should validate this consistency.\n\nIn practice, TLS implementations diverge on this:\n\nOpenSSL and rustls do not validate CH1 vs CH2 consistency on the server side\ns2n-tls and LibreSSL do validate and will reject a non-conformant second ClientHello\nThis divergence recently caused an interoperability issue between s2n-tls and a client (NanoSSL) that trims its cipher suites, supported groups, and supported versions in the second ClientHello: https://github.com/digicert/trustcore/issues/60#\n\nThe client behavior is non-compliant, but the fact that some servers accept it means client implementers may not discover the issue until they encounter a server that enforces the check.\n\nWe'd like to get the working group's perspective on a few questions:\n\n1. Should the RFC include guidance on whether servers should (or must) validate the second ClientHello for consistency with the first?\n2. If server-side validation is not required, how is a server expected to know whether it is communicating with a compliant client? Without server enforcement, the client-side MUST in \u00a74.1.2 is effectively unverifiable.\n3. For implementations that currently enforce this check, are there security implications to relaxing it?\n\nThank you in advance for any guidance on this.",
+      "createdAt": "2026-04-09T23:20:00Z",
+      "updatedAt": "2026-04-09T23:20:00Z",
       "closedAt": null,
       "comments": []
     }
@@ -71466,25 +71506,40 @@
       "id": "PR_kwDOASA0os7HHjYT",
       "title": "Security considerations for reusing keys in multiple key establishments",
       "url": "https://github.com/tlswg/tls13-spec/pull/1408",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "emanjon",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "See https://mailarchive.ietf.org/arch/msg/tls/KepJCOX3F_ABti_JYDWrvQGx07U/\r\n\r\n---\r\n\r\n>RFC8446bis explicitly defines key reuse as a SHOULD NOT.\r\n\r\nIt would be good if RFC8446bis could clarify what this 'key reuse' means. As discussed earlier, this term can have at least three very different meanings. Many formal analysis experts have understood TLS 1.3 as specifying that keys should be used for only one execution of key establishment.\r\nhttps://mailarchive.ietf.org/arch/msg/tls/MOqSAplAYQuA6AwkKfHCphQUlKU/\r\n\r\nIf 'key reuse' includes using the same key in more than one execution of key establishment, RFC 8446bis should explain that such 'key reuse' undermines forward secrecy and makes exploitation of side-channel attacks and implementation flaws much easier.\r\n\r\nWhile RFC 8446 fails to define the term 'ephemeral', specifications using ML-KEM points normatively to FIPS 203, which in turn points normatively to SP 800-227, which has very precise definitions for 'ephemeral' and 'static'. Since X25519MLKEM768 is already the de facto standard for TLS key exchange, TLS specifications should avoid using the terms 'ephemeral' and 'static' in ways that conflict with FIPS 203.\r\n\r\nI do not oppose other people using static keys in TLS for visibility; I just strongly agree with SP 1800-37 that it is a bad solution for visibility, and if allowed in a TLS WG document, the security implications should be clearly described.\r\n\r\nI am not sure whether the current situation is the result of ideological fighting, privacy theater, or a combination of both. Beyond the existing uncertainty regarding whether static keys are permitted, the current approach of not explicitly negotiating static keys is strictly worse than the solutions in TLS 1.2 and in draft-rhrd-tls-tls13-visibility.\r\n\r\n---\r\n",
       "createdAt": "2026-03-01T12:02:31Z",
-      "updatedAt": "2026-03-04T17:23:34Z",
+      "updatedAt": "2026-04-09T19:53:36Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "46b909e14516d81f0c841336d1aa68cbfdb5f2e6",
       "headRepository": "emanjon/tls13-spec",
       "headRefName": "patch-29",
       "headRefOid": "8be22d3411cdad24319c853d340c05de58e8439a",
-      "closedAt": null,
+      "closedAt": "2026-04-09T17:51:58Z",
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
+      "comments": [
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Overtaken by events because we now forbid reuse.",
+          "createdAt": "2026-04-09T17:51:58Z",
+          "updatedAt": "2026-04-09T17:51:58Z"
+        },
+        {
+          "author": "muhammad-usama-sardar",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> we now forbid reuse.\r\n\r\nFor future reference:\r\n- #1410 \r\n- https://mailarchive.ietf.org/arch/msg/tls/0CVVIw9nR9NE0Ua_4HFwtoi48eE/",
+          "createdAt": "2026-04-09T19:53:36Z",
+          "updatedAt": "2026-04-09T19:53:36Z"
+        }
+      ],
       "reviews": [
         {
           "id": "PRR_kwDOASA0os7myzCb",
@@ -71545,24 +71600,26 @@
       "id": "PR_kwDOASA0os7K-NFK",
       "title": "Forbid key share reuse",
       "url": "https://github.com/tlswg/tls13-spec/pull/1410",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "ekr",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "Per discussion on the list. Note that I put this in the section on KeyShares and then removed the text about the impact of reuse on tracking, as it is no longer applicable.",
       "createdAt": "2026-03-16T16:14:22Z",
-      "updatedAt": "2026-03-26T15:25:59Z",
+      "updatedAt": "2026-04-09T17:51:16Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "46b909e14516d81f0c841336d1aa68cbfdb5f2e6",
       "headRepository": "tlswg/tls13-spec",
       "headRefName": "must_not_reuse_keys",
       "headRefOid": "a505cd1af1ae547b98743b29f3e7c151bda9f640",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2026-04-09T17:51:16Z",
+      "mergedAt": "2026-04-09T17:51:16Z",
+      "mergedBy": "ekr",
+      "mergeCommit": {
+        "oid": "c6ef13d3c28aae5935900f967fc8a8a97ac70025"
+      },
       "comments": [
         {
           "author": "muhammad-usama-sardar",
@@ -71605,6 +71662,13 @@
           "body": "> On the other hand maybe it's better to not have \"this doesn't actually mean you need to do ephemeral key exchange\" in the document at all, to avoid giving people ideas.\r\n\r\n@thomwiggers I don't find the text you quote anywhere in 8446bis or on the [list](https://mailarchive.ietf.org/arch/browse/tls/?q=%22this%20doesn%27t%20actually%20mean%20you%20need%20to%20do%20ephemeral%20key%20exchange%22). Could you please clarify which document and section you are referring to?",
           "createdAt": "2026-03-18T22:17:46Z",
           "updatedAt": "2026-03-18T22:17:46Z"
+        },
+        {
+          "author": "seanturner",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "There is consensus to make this change; see [email](https://mailarchive.ietf.org/arch/msg/tls/0CVVIw9nR9NE0Ua_4HFwtoi48eE/).",
+          "createdAt": "2026-04-09T17:39:08Z",
+          "updatedAt": "2026-04-09T17:39:08Z"
         }
       ],
       "reviews": [
