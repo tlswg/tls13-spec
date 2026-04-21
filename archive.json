@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-04-12T01:43:36.712457+00:00",
+  "timestamp": "2026-04-21T01:44:16.508529+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -14060,9 +14060,17 @@
       "labels": [],
       "body": "Hello! We are maintainers of [s2n-tls](https://github.com/aws/s2n-tls), an open-source TLS implementation. We recently encountered an interoperability issue that led us to question how servers should handle the second ClientHello after a HelloRetryRequest.\n\n[RFC 8446 \u00a74.1.2](https://www.rfc-editor.org/rfc/rfc8446.html#section-4.1.2) requires that clients send the same ClientHello without modification after receiving a HelloRetryRequest, except for the explicitly allowed changes (key_share, early_data, cookie, pre_shared_key, and padding). However, the RFC does not specify whether servers should validate this consistency.\n\nIn practice, TLS implementations diverge on this:\n\nOpenSSL and rustls do not validate CH1 vs CH2 consistency on the server side\ns2n-tls and LibreSSL do validate and will reject a non-conformant second ClientHello\nThis divergence recently caused an interoperability issue between s2n-tls and a client (NanoSSL) that trims its cipher suites, supported groups, and supported versions in the second ClientHello: https://github.com/digicert/trustcore/issues/60#\n\nThe client behavior is non-compliant, but the fact that some servers accept it means client implementers may not discover the issue until they encounter a server that enforces the check.\n\nWe'd like to get the working group's perspective on a few questions:\n\n1. Should the RFC include guidance on whether servers should (or must) validate the second ClientHello for consistency with the first?\n2. If server-side validation is not required, how is a server expected to know whether it is communicating with a compliant client? Without server enforcement, the client-side MUST in \u00a74.1.2 is effectively unverifiable.\n3. For implementations that currently enforce this check, are there security implications to relaxing it?\n\nThank you in advance for any guidance on this.",
       "createdAt": "2026-04-09T23:20:00Z",
-      "updatedAt": "2026-04-09T23:20:00Z",
+      "updatedAt": "2026-04-20T20:21:06Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "As a general matter, we don't require that the receiving party enforce all MUSTs in the specification and in fact some of them are not remotely verifiable at all. For example you can't really verify that ClientHello.random and ServerHello.random are randomly generated. So, I don't think that point (2) is really an issue.\n\nI'm not aware of any security implications to relaxing the check -- as distinct from whether there are implications from being non-conformant -- but it seems like it would be better for the ecosystem if servers checked. Barring a requirement not to validate it, I think it's reasonable for a server to either do so or not do so. I probably wouldn't be opposed to requiring or at least encouraging them to do so as a general matter, but this late in the process I think you'd need a good reason and in any case you'd need to bring it to the list.\n\n",
+          "createdAt": "2026-04-20T20:21:06Z",
+          "updatedAt": "2026-04-20T20:21:06Z"
+        }
+      ]
     }
   ],
   "pulls": [
@@ -70946,7 +70954,7 @@
       "labels": [],
       "body": "This seems like an error in the text. 2^24.5 full-size records is a limit for the set of keys, not the connection. My understanding is that you rekey inside a connection",
       "createdAt": "2025-11-03T16:24:08Z",
-      "updatedAt": "2025-11-04T16:09:58Z",
+      "updatedAt": "2026-04-20T21:14:05Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "46b909e14516d81f0c841336d1aa68cbfdb5f2e6",
@@ -70957,7 +70965,15 @@
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
+      "comments": [
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I agree with this but tagging @martinthomson for double check.",
+          "createdAt": "2026-04-20T21:14:05Z",
+          "updatedAt": "2026-04-20T21:14:05Z"
+        }
+      ],
       "reviews": [
         {
           "id": "PRR_kwDOASA0os7LsGtV",
@@ -70979,21 +70995,21 @@
       "id": "PR_kwDOASA0os6z4Nl1",
       "title": "Remove requirement to use PSS, consistent with suggestion from DavidBen",
       "url": "https://github.com/tlswg/tls13-spec/pull/1399",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "ekr",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "",
       "createdAt": "2025-11-17T15:11:07Z",
-      "updatedAt": "2025-11-20T18:41:19Z",
+      "updatedAt": "2026-04-20T21:16:00Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "46b909e14516d81f0c841336d1aa68cbfdb5f2e6",
       "headRepository": "ekr/tls13-spec",
       "headRefName": "remove_pkcs1_requirement",
       "headRefOid": "bfc3ac8484530d8bbb7b0caa13f051de9570bd83",
-      "closedAt": null,
+      "closedAt": "2026-04-20T21:16:00Z",
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
@@ -71066,21 +71082,21 @@
       "id": "PR_kwDOASA0os65Q3bz",
       "title": "RPC's first version",
       "url": "https://github.com/tlswg/tls13-spec/pull/1400",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "ekr",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "",
       "createdAt": "2025-12-17T00:52:55Z",
-      "updatedAt": "2025-12-22T23:41:00Z",
+      "updatedAt": "2026-04-20T21:13:08Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "auth48",
       "baseRefOid": "1e5ab62be8fe7bef7649d8bdab9319c3a07df8cb",
       "headRepository": "ekr/tls13-spec",
       "headRefName": "rpc1",
       "headRefOid": "78ec1985647b9bb0999323a569e45e053eeac66b",
-      "closedAt": null,
+      "closedAt": "2026-04-20T21:13:08Z",
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
@@ -71813,6 +71829,68 @@
           "body": "",
           "createdAt": "2026-03-30T01:20:11Z",
           "updatedAt": "2026-03-30T01:20:11Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 1415,
+      "id": "PR_kwDOASA0os7UF4mg",
+      "title": "Harmonize the requirements for legacy_version. Fixes #1412",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1415",
+      "state": "OPEN",
+      "author": "ekr",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "RFC 8446 required implementations to send a `protocol_version` alert for `legacy_version=0x0300` and allowed TLS 1.0 and TLS 1.1. This draft forbids those and locks down the `legacy_version` to 0x0303, but then required `illegal_parameter`. This change harmonizes the text and requires `protocol_version` to avoid requiring implementations to change.\r\n\r\nI see an argument for `illegal_parameter`, but I think avoiding change is better.",
+      "createdAt": "2026-04-20T20:34:50Z",
+      "updatedAt": "2026-04-20T22:13:49Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "auth48",
+      "baseRefOid": "29f26caf35712e9dd140442c005506d2a21513b1",
+      "headRepository": "tlswg/tls13-spec",
+      "headRefName": "issue1412_protocol_version",
+      "headRefOid": "2aba615afa5eb0d74aa2ee82cc72cb64c2a138b0",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": " @debcooley for approval.\r\n\r\n@martinthomson @davidben for awareness.",
+          "createdAt": "2026-04-20T20:35:18Z",
+          "updatedAt": "2026-04-20T20:35:18Z"
+        },
+        {
+          "author": "debcooley",
+          "authorAssociation": "NONE",
+          "body": "I approve....  (I'm sure there is some fancy way to do that, but this is quicker).",
+          "createdAt": "2026-04-20T21:11:23Z",
+          "updatedAt": "2026-04-20T21:11:37Z"
+        },
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Note that this doesn't change whether you reject them, just the alert you send.",
+          "createdAt": "2026-04-20T22:13:49Z",
+          "updatedAt": "2026-04-20T22:13:49Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOASA0os72_YY_",
+          "commit": {
+            "abbreviatedOid": "2aba615"
+          },
+          "author": "kaduk",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "I kind of remember some discussions about only rejecting 0x300 (vs rejecting everything other than 0x0303 as we now do) back in the RFC 8446 days, but I am pretty sure that any points that were raised then have since been overtaken by events.",
+          "createdAt": "2026-04-20T22:04:02Z",
+          "updatedAt": "2026-04-20T22:04:02Z",
           "comments": []
         }
       ]
