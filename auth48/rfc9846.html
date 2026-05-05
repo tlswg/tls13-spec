@@ -1369,7 +1369,7 @@ new requirements for TLS 1.2 implementations.<a href="#section-abstract-2" class
                 <p id="section-toc.1-1.7.2.3.1"><a href="#section-7.3" class="auto internal xref">7.3</a>.  <a href="#name-traffic-key-calculation" class="internal xref">Traffic Key Calculation</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.4">
-                <p id="section-toc.1-1.7.2.4.1"><a href="#section-7.4" class="auto internal xref">7.4</a>.  <a href="#name-ecdhe-shared-secret-calcula" class="internal xref">(EC)DHE Shared Secret Calculation</a></p>
+                <p id="section-toc.1-1.7.2.4.1"><a href="#section-7.4" class="auto internal xref">7.4</a>.  <a href="#name-asymmetric-shared-secret-ca" class="internal xref">Asymmetric Shared Secret Calculation</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.4.2.1">
                     <p id="section-toc.1-1.7.2.4.2.1.1"><a href="#section-7.4.1" class="auto internal xref">7.4.1</a>.  <a href="#name-finite-field-diffie-hellman" class="internal xref">Finite Field Diffie-Hellman</a></p>
@@ -1752,6 +1752,11 @@ to be 0 bytes. This was an error in the syntax as it
 is possible to send no extensions, which results in
 length 0.<a href="#section-1.2-2.10.1" class="pilcrow">¶</a></p>
 </li>
+          <li class="normal" id="section-1.2-2.11">
+            <p id="section-1.2-2.11.1">Used more generic language for the asymmetric key exchange,
+which was previously exclusively (EC)DHE,
+to reflect the use of KEM-based key exchange.<a href="#section-1.2-2.11.1" class="pilcrow">¶</a></p>
+</li>
         </ul>
 <p id="section-1.2-3">In addition, there have been some improvements to the
 security considerations, especially around privacy.<a href="#section-1.2-3" class="pilcrow">¶</a></p>
@@ -1883,20 +1888,23 @@ termination of the connection, optionally preceded by an alert message
 <p id="section-2-3">TLS supports three basic key exchange modes:<a href="#section-2-3" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-2-4.1">
-          <p id="section-2-4.1.1">(EC)DHE (Diffie-Hellman over either finite fields or elliptic curves)<a href="#section-2-4.1.1" class="pilcrow">¶</a></p>
+          <p id="section-2-4.1.1">asymmetric key exchange<a href="#section-2-4.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-2-4.2">
-          <p id="section-2-4.2.1">PSK-only<a href="#section-2-4.2.1" class="pilcrow">¶</a></p>
+          <p id="section-2-4.2.1">PSK<a href="#section-2-4.2.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-2-4.3">
-          <p id="section-2-4.3.1">PSK with (EC)DHE<a href="#section-2-4.3.1" class="pilcrow">¶</a></p>
+          <p id="section-2-4.3.1">combined PSK and asymmetric key exchange<a href="#section-2-4.3.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-2-5"><a href="#tls-full" class="auto internal xref">Figure 1</a> below shows the basic full TLS handshake:<a href="#section-2-5" class="pilcrow">¶</a></p>
+<p id="section-2-5">In this document, asymmetric key exchange includes Diffie-Hellman
+over either finite fields or elliptic curves.
+Other extensions define the use of key-encapsulation mechanisms (KEMs).<a href="#section-2-5" class="pilcrow">¶</a></p>
+<p id="section-2-6"><a href="#tls-full" class="auto internal xref">Figure 1</a> below shows the basic full TLS handshake:<a href="#section-2-6" class="pilcrow">¶</a></p>
 <span id="name-message-flow-for-full-tls-h"></span><div id="tls-full">
 <figure id="figure-1">
-        <div id="section-2-6.1">
-          <div class="alignLeft art-svg artwork" id="section-2-6.1.1">
+        <div id="section-2-7.1">
+          <div class="alignLeft art-svg artwork" id="section-2-7.1.1">
 <svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="544" width="624" viewBox="0 0 624 544" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round">
               <path d="M 48,64 L 48,128" fill="none" stroke="black"></path>
               <path d="M 48,288 L 48,320" fill="none" stroke="black"></path>
@@ -1998,77 +2006,77 @@ termination of the connection, optionally preceded by an alert message
                 <text x="220" y="532">from</text>
                 <text x="396" y="532">[sender]_application_traffic_secret_N.</text>
               </g>
-            </svg><a href="#section-2-6.1.1" class="pilcrow">¶</a>
+            </svg><a href="#section-2-7.1.1" class="pilcrow">¶</a>
 </div>
 </div>
 <figcaption><a href="#figure-1" class="selfRef">Figure 1</a>:
 <a href="#name-message-flow-for-full-tls-h" class="selfRef">Message Flow for Full TLS Handshake</a>
         </figcaption></figure>
 </div>
-<p id="section-2-7">The handshake can be thought of as having three phases (indicated
-in the diagram above):<a href="#section-2-7" class="pilcrow">¶</a></p>
+<p id="section-2-8">The handshake can be thought of as having three phases (indicated
+in the diagram above):<a href="#section-2-8" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-2-8.1">
-          <p id="section-2-8.1.1">Key Exchange: Establish shared keying material and select the
+<li class="normal" id="section-2-9.1">
+          <p id="section-2-9.1.1">Key Exchange: Establish shared keying material and select the
  cryptographic parameters. Everything after this phase is
- encrypted.<a href="#section-2-8.1.1" class="pilcrow">¶</a></p>
+ encrypted.<a href="#section-2-9.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-2-8.2">
-          <p id="section-2-8.2.1">Server Parameters: Establish other handshake parameters
- (whether the client is authenticated, application-layer protocol support, etc.).<a href="#section-2-8.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-2-9.2">
+          <p id="section-2-9.2.1">Server Parameters: Establish other handshake parameters
+ (whether the client is authenticated, application-layer protocol support, etc.).<a href="#section-2-9.2.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-2-8.3">
-          <p id="section-2-8.3.1">Authentication: Authenticate the server (and, optionally, the client)
- and provide key confirmation and handshake integrity.<a href="#section-2-8.3.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-2-9.3">
+          <p id="section-2-9.3.1">Authentication: Authenticate the server (and, optionally, the client)
+ and provide key confirmation and handshake integrity.<a href="#section-2-9.3.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-2-9">In the Key Exchange phase, the client sends the ClientHello
+<p id="section-2-10">In the Key Exchange phase, the client sends the ClientHello
 (<a href="#client-hello" class="auto internal xref">Section 4.1.2</a>) message, which contains a random nonce
 (ClientHello.random); its offered protocol versions; a list of
 symmetric cipher/hash pairs; either a list of Diffie-Hellman key shares (in the
 "key_share" (<a href="#key-share" class="auto internal xref">Section 4.2.8</a>) extension), a list of pre-shared key labels (in the
 "pre_shared_key" (<a href="#pre-shared-key-extension" class="auto internal xref">Section 4.2.11</a>) extension), or both; and
 potentially additional extensions.  Additional fields and/or messages
-may also be present for middlebox compatibility.<a href="#section-2-9" class="pilcrow">¶</a></p>
-<p id="section-2-10">The server processes the ClientHello and determines the appropriate
+may also be present for middlebox compatibility.<a href="#section-2-10" class="pilcrow">¶</a></p>
+<p id="section-2-11">The server processes the ClientHello and determines the appropriate
 cryptographic parameters for the connection. It then responds with its
 own ServerHello (<a href="#server-hello" class="auto internal xref">Section 4.1.3</a>), which indicates the negotiated connection
 parameters. The combination of the ClientHello
-and the ServerHello determines the shared keys. If (EC)DHE
+and the ServerHello determines the shared keys. If asymmetric
 key establishment is in use, then the ServerHello
 contains a "key_share" extension with the server's ephemeral
 Diffie-Hellman share; the server's share MUST be in the same group as one of the
 client's shares. If PSK key establishment is
 in use, then the ServerHello contains a "pre_shared_key"
 extension indicating which of the client's offered PSKs was selected.
-Note that implementations can use (EC)DHE and PSK together, in which
-case both extensions will be supplied.<a href="#section-2-10" class="pilcrow">¶</a></p>
-<p id="section-2-11">The server then sends two messages to establish the Server Parameters:<a href="#section-2-11" class="pilcrow">¶</a></p>
-<span class="break"></span><dl class="dlParallel" id="section-2-12">
-        <dt id="section-2-12.1">EncryptedExtensions:</dt>
-        <dd style="margin-left: 1.5em" id="section-2-12.2">
-          <p id="section-2-12.2.1">responses to ClientHello extensions that are not required to
+Note that implementations can use asymmetric key exchange and PSK together, in which
+case both extensions will be supplied.<a href="#section-2-11" class="pilcrow">¶</a></p>
+<p id="section-2-12">The server then sends two messages to establish the Server Parameters:<a href="#section-2-12" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlParallel" id="section-2-13">
+        <dt id="section-2-13.1">EncryptedExtensions:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-13.2">
+          <p id="section-2-13.2.1">responses to ClientHello extensions that are not required to
 determine the cryptographic parameters, other than those
-that are specific to individual certificates. [<a href="#encrypted-extensions" class="auto internal xref">Section 4.3.1</a>]<a href="#section-2-12.2.1" class="pilcrow">¶</a></p>
+that are specific to individual certificates. [<a href="#encrypted-extensions" class="auto internal xref">Section 4.3.1</a>]<a href="#section-2-13.2.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="section-2-12.3">CertificateRequest:</dt>
-        <dd style="margin-left: 1.5em" id="section-2-12.4">
-          <p id="section-2-12.4.1">if certificate-based client authentication is desired, the
+<dt id="section-2-13.3">CertificateRequest:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-13.4">
+          <p id="section-2-13.4.1">if certificate-based client authentication is desired, the
 desired parameters for that certificate. This message is
-omitted if client authentication is not desired. [<a href="#certificate-request" class="auto internal xref">Section 4.3.2</a>]<a href="#section-2-12.4.1" class="pilcrow">¶</a></p>
+omitted if client authentication is not desired. [<a href="#certificate-request" class="auto internal xref">Section 4.3.2</a>]<a href="#section-2-13.4.1" class="pilcrow">¶</a></p>
 </dd>
       <dd class="break"></dd>
 </dl>
-<p id="section-2-13">Finally, the client and server exchange Authentication messages. TLS
+<p id="section-2-14">Finally, the client and server exchange Authentication messages. TLS
 uses the same set of messages every time that certificate-based
 authentication is needed.  (PSK-based authentication happens as a side
 effect of key exchange.)
-Specifically:<a href="#section-2-13" class="pilcrow">¶</a></p>
-<span class="break"></span><dl class="dlParallel" id="section-2-14">
-        <dt id="section-2-14.1">Certificate:</dt>
-        <dd style="margin-left: 1.5em" id="section-2-14.2">
-          <p id="section-2-14.2.1">The certificate of the endpoint and any per-certificate extensions.
+Specifically:<a href="#section-2-14" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlParallel" id="section-2-15">
+        <dt id="section-2-15.1">Certificate:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-15.2">
+          <p id="section-2-15.2.1">The certificate of the endpoint and any per-certificate extensions.
 This message is omitted by the server if not authenticating with a
 certificate and by the client if the server did not send
 CertificateRequest (thus indicating that the client should not
@@ -2076,29 +2084,29 @@ authenticate with a certificate). Note that if raw
 public keys <span>[<a href="#RFC7250" class="cite xref">RFC7250</a>]</span> or the cached information extension
 <span>[<a href="#RFC7924" class="cite xref">RFC7924</a>]</span> are in use, then this message will not
 contain a certificate but rather some other value corresponding to
-the server's long-term key.  [<a href="#certificate" class="auto internal xref">Section 4.4.2</a>]<a href="#section-2-14.2.1" class="pilcrow">¶</a></p>
+the server's long-term key.  [<a href="#certificate" class="auto internal xref">Section 4.4.2</a>]<a href="#section-2-15.2.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="section-2-14.3">CertificateVerify:</dt>
-        <dd style="margin-left: 1.5em" id="section-2-14.4">
-          <p id="section-2-14.4.1">A signature over the entire handshake using the private key
+<dt id="section-2-15.3">CertificateVerify:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-15.4">
+          <p id="section-2-15.4.1">A signature over the entire handshake using the private key
 corresponding to the public key in the Certificate message. This
 message is omitted if the endpoint is not authenticating via a
-certificate. [<a href="#certificate-verify" class="auto internal xref">Section 4.4.3</a>]<a href="#section-2-14.4.1" class="pilcrow">¶</a></p>
+certificate. [<a href="#certificate-verify" class="auto internal xref">Section 4.4.3</a>]<a href="#section-2-15.4.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="section-2-14.5">Finished:</dt>
-        <dd style="margin-left: 1.5em" id="section-2-14.6">
-          <p id="section-2-14.6.1">A MAC (Message Authentication Code) over the entire handshake.
+<dt id="section-2-15.5">Finished:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-15.6">
+          <p id="section-2-15.6.1">A MAC (Message Authentication Code) over the entire handshake.
 This message provides key confirmation for the shared secrets established in the handshake
 binds the endpoint's identity to the exchanged keys, and in PSK mode
-also authenticates the handshake. [<a href="#finished" class="auto internal xref">Section 4.4.4</a>]<a href="#section-2-14.6.1" class="pilcrow">¶</a></p>
+also authenticates the handshake. [<a href="#finished" class="auto internal xref">Section 4.4.4</a>]<a href="#section-2-15.6.1" class="pilcrow">¶</a></p>
 </dd>
       <dd class="break"></dd>
 </dl>
-<p id="section-2-15">Upon receiving the server's messages, the client responds with its Authentication
-messages, namely Certificate and CertificateVerify (if requested), and Finished.<a href="#section-2-15" class="pilcrow">¶</a></p>
-<p id="section-2-16">At this point, the handshake is complete, and the client and server
+<p id="section-2-16">Upon receiving the server's messages, the client responds with its Authentication
+messages, namely Certificate and CertificateVerify (if requested), and Finished.<a href="#section-2-16" class="pilcrow">¶</a></p>
+<p id="section-2-17">At this point, the handshake is complete, and the client and server
 derive the keying material required by the record layer to exchange
 application-layer data protected through authenticated encryption.
 Application Data MUST NOT be sent prior to sending the Finished message,
@@ -2106,7 +2114,7 @@ except as specified
 in <a href="#zero-rtt-data" class="auto internal xref">Section 2.3</a>.
 Note that while the server may send Application Data prior to receiving
 the client's Authentication messages, any data sent at that point is,
-of course, being sent to an unauthenticated peer.<a href="#section-2-16" class="pilcrow">¶</a></p>
+of course, being sent to an unauthenticated peer.<a href="#section-2-17" class="pilcrow">¶</a></p>
 <div id="incorrect-dhe-share">
 <section id="section-2.1">
         <h3 id="name-incorrect-dhe-share">
@@ -2199,7 +2207,7 @@ from the initial handshake is used to bootstrap the cryptographic state
 instead of a full handshake.
 In TLS 1.2 and below, this functionality was provided by "session IDs" and
 "session tickets" <span>[<a href="#RFC5077" class="cite xref">RFC5077</a>]</span>. Both mechanisms are obsoleted in TLS 1.3.<a href="#section-2.2-1" class="pilcrow">¶</a></p>
-<p id="section-2.2-2">PSKs can be used with (EC)DHE key exchange to provide forward
+<p id="section-2.2-2">PSKs can be used with asymmetric key exchange to provide forward
 secrecy in combination with shared keys, or can be used alone, at the
 cost of losing forward secrecy for the application data.<a href="#section-2.2-2" class="pilcrow">¶</a></p>
 <p id="section-2.2-3"><a href="#tls-resumption-psk" class="auto internal xref">Figure 3</a> shows a pair of handshakes in which the first handshake establishes
@@ -2289,7 +2297,7 @@ via a PSK, it SHOULD also supply a "key_share" extension to the server to
 allow the server to decline resumption and fall back
 to a full handshake, if needed. The server responds with a "pre_shared_key"
 extension to negotiate the use of PSK key establishment and can (as shown here)
-respond with a "key_share" extension to do (EC)DHE key establishment, thus
+respond with a "key_share" extension to do asymmetric key establishment, thus
 providing forward secrecy.<a href="#section-2.2-5" class="pilcrow">¶</a></p>
 <p id="section-2.2-6">When PSKs are provisioned externally, the PSK identity and the KDF hash
 algorithm to
@@ -2802,9 +2810,11 @@ following four sets of options in its ClientHello:<a href="#section-4.1.1-1" cla
 pairs which the client supports.<a href="#section-4.1.1-2.1.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-4.1.1-2.2">
-              <p id="section-4.1.1-2.2.1">A "supported_groups" (<a href="#supported-groups" class="auto internal xref">Section 4.2.7</a>) extension which indicates the (EC)DHE groups
+              <p id="section-4.1.1-2.2.1">A "supported_groups" (<a href="#supported-groups" class="auto internal xref">Section 4.2.7</a>) extension which indicates the key exchange groups
 which the client supports and a "key_share" (<a href="#key-share" class="auto internal xref">Section 4.2.8</a>) extension which contains
-(EC)DHE shares for some or all of these groups.<a href="#section-4.1.1-2.2.1" class="pilcrow">¶</a></p>
+key exchange shares for some or all of these groups. The term
+"groups" is historical, dating from the original version of TLS 1.3,
+which did not support non-DHE key key establishment algorithms).<a href="#section-4.1.1-2.2.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-4.1.1-2.3">
               <p id="section-4.1.1-2.3.1">A "signature_algorithms" (<a href="#signature-algorithms" class="auto internal xref">Section 4.2.3</a>) extension which indicates the signature
@@ -2821,18 +2831,18 @@ with PSKs.<a href="#section-4.1.1-2.4.1" class="pilcrow">¶</a></p>
           </ul>
 <p id="section-4.1.1-3">If the server does not select a PSK, then the first three of these
 options are entirely orthogonal: the server independently selects a
-cipher suite, an (EC)DHE group and key share for key establishment,
+cipher suite, an asymmetric key exchange group and key share for key establishment,
 and a signature algorithm/certificate pair to authenticate itself to
 the client. If there is no overlap between the received "supported_groups"
 and the groups supported by the server, then the server MUST abort the
 handshake with a "handshake_failure" or an "insufficient_security" alert.<a href="#section-4.1.1-3" class="pilcrow">¶</a></p>
 <p id="section-4.1.1-4">If the server selects a PSK, then it MUST also select a key
 establishment mode from the list indicated by the client's
-"psk_key_exchange_modes" extension (at present, PSK alone or with (EC)DHE). Note
-that if the PSK can be used without (EC)DHE, then non-overlap in the
+"psk_key_exchange_modes" extension (at present, PSK alone or with asymmetric key exchange). Note
+that if the PSK can be used without asymmetric key exchange, then non-overlap in the
 "supported_groups" parameters need not be fatal, as it is in the
 non-PSK case discussed in the previous paragraph.<a href="#section-4.1.1-4" class="pilcrow">¶</a></p>
-<p id="section-4.1.1-5">If the server selects an (EC)DHE group and the client did not offer a
+<p id="section-4.1.1-5">If the server selects an asymmetric key exchange group and the client did not offer a
 compatible "key_share" extension in the initial ClientHello, the server MUST
 respond with a HelloRetryRequest (<a href="#hello-retry-request" class="auto internal xref">Section 4.1.4</a>) message.<a href="#section-4.1.1-5" class="pilcrow">¶</a></p>
 <p id="section-4.1.1-6">If the server successfully selects parameters and does not require a
@@ -2844,8 +2854,8 @@ follows:<a href="#section-4.1.1-6" class="pilcrow">¶</a></p>
 "pre_shared_key" extension indicating the selected key.<a href="#section-4.1.1-7.1.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-4.1.1-7.2">
-              <p id="section-4.1.1-7.2.1">When (EC)DHE is in use, the server will also provide a "key_share"
-extension. If PSK is not being used, then (EC)DHE and certificate-based
+              <p id="section-4.1.1-7.2.1">When asymmetric key exchange is in use, the server will also provide a "key_share"
+extension. If PSK is not being used, then asymmetric key exchange and certificate-based
 authentication are always used.<a href="#section-4.1.1-7.2.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-4.1.1-7.3">
@@ -3117,7 +3127,7 @@ which are required to establish the cryptographic context and negotiate
 the protocol version. All TLS 1.3 ServerHello messages MUST contain the
 "supported_versions" extension.  Current ServerHello messages additionally contain
 either the "pre_shared_key" extension or the "key_share" extension, or both (when using
-a PSK with (EC)DHE key establishment). Other extensions
+a PSK with asymmetric key establishment). Other extensions
 (see <a href="#extensions" class="auto internal xref">Section 4.2</a>) are sent
 separately in the EncryptedExtensions message.<a href="#section-4.1.3-4.12.1" class="pilcrow">¶</a></p>
 </dd>
@@ -4145,14 +4155,14 @@ client's shares.<a href="#section-4.2.8-18.2.1" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
 </dl>
-<p id="section-4.2.8-19">If using (EC)DHE key establishment, servers offer exactly one
+<p id="section-4.2.8-19">If using asymmetric key establishment, servers offer exactly one
 KeyShareEntry in the ServerHello. This value MUST be in the same group
 as the KeyShareEntry value offered
 by the client that the server has selected for the negotiated key exchange.
 Servers MUST NOT send a KeyShareEntry for any group not
 indicated in the client's "supported_groups" extension and
 MUST NOT send a KeyShareEntry when using the "psk_ke" PskKeyExchangeMode.
-If using (EC)DHE key establishment and a HelloRetryRequest containing a
+If using asymmetric key establishment and a HelloRetryRequest containing a
 "key_share" extension was received by the client, the client MUST verify that the
 selected NamedGroup in the ServerHello is the same as that in the HelloRetryRequest.
 If this check fails, the client MUST abort the handshake with an "illegal_parameter"
@@ -4258,7 +4268,7 @@ supply a "key_share" value.<a href="#section-4.2.9-5.2.1" class="pilcrow">¶</a>
             <dd class="break"></dd>
 <dt id="section-4.2.9-5.3">psk_dhe_ke:</dt>
             <dd style="margin-left: 1.5em" id="section-4.2.9-5.4">
-              <p id="section-4.2.9-5.4.1">PSK with (EC)DHE key establishment. In this mode,
+              <p id="section-4.2.9-5.4.1">PSK with asymmetric key establishment (the label "dhe" is historical, dating from the original version of TLS 1.3, which did not support non-DHE key key establishment algorithms). In this mode,
 the client and server MUST supply "key_share" values as described
 in <a href="#key-share" class="auto internal xref">Section 4.2.8</a>.<a href="#section-4.2.9-5.4.1" class="pilcrow">¶</a></p>
 </dd>
@@ -5921,7 +5931,7 @@ and therefore implementations MUST NOT exceed the limits
 when sending early data. Receiving implementations SHOULD NOT enforce
 these limits, as future analyses may result in updated values.<a href="#section-5.5-1" class="pilcrow">¶</a></p>
 <p id="section-5.5-2">For AES-GCM, up to 2^24.5 full-size records (about 24 million)
-may be encrypted on a given connection while keeping a safety
+may be encrypted under a given set of keys while keeping a safety
 margin of approximately 2^-57 for Authenticated Encryption (AE) security.
 For ChaCha20/Poly1305, the record sequence number would wrap before the
 safety limit is reached.<a href="#section-5.5-2" class="pilcrow">¶</a></p>
@@ -6348,7 +6358,7 @@ input secrets are:<a href="#section-7.1-6" class="pilcrow">¶</a></p>
 the resumption_secret value from a previous connection)<a href="#section-7.1-7.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-7.1-7.2">
-            <p id="section-7.1-7.2.1">(EC)DHE shared secret (<a href="#ecdhe-shared-secret-calculation" class="auto internal xref">Section 7.4</a>)<a href="#section-7.1-7.2.1" class="pilcrow">¶</a></p>
+            <p id="section-7.1-7.2.1">Asymmetric shared secret resulting from the asymmetric key establishment (see <a href="#ecdhe-shared-secret-calculation" class="auto internal xref">Section 7.4</a>)<a href="#section-7.1-7.2.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <p id="section-7.1-8">This produces the key schedule shown in the diagram below
@@ -6447,11 +6457,13 @@ from the handshake.<a href="#section-7.1-11" class="pilcrow">¶</a></p>
                   <text x="148" y="340">Derive-Secret(.,</text>
                   <text x="260" y="340">"derived",</text>
                   <text x="320" y="340">"")</text>
-                  <text x="32" y="388">(EC)DHE</text>
+                  <text x="44" y="372">asymmetric</text>
+                  <text x="36" y="388">shared</text>
                   <text x="148" y="388">HKDF-Extract</text>
                   <text x="208" y="388">=</text>
                   <text x="256" y="388">Handshake</text>
                   <text x="324" y="388">Secret</text>
+                  <text x="36" y="404">secret</text>
                   <text x="252" y="420">Derive-Secret(.,</text>
                   <text x="332" y="420">"c</text>
                   <text x="356" y="420">hs</text>
@@ -6625,8 +6637,8 @@ Application Data keys or upon a key update).<a href="#section-7.3-7" class="pilc
 </div>
 <div id="ecdhe-shared-secret-calculation">
 <section id="section-7.4">
-        <h3 id="name-ecdhe-shared-secret-calcula">
-<a href="#section-7.4" class="section-number selfRef">7.4. </a><a href="#name-ecdhe-shared-secret-calcula" class="section-name selfRef">(EC)DHE Shared Secret Calculation</a>
+        <h3 id="name-asymmetric-shared-secret-ca">
+<a href="#section-7.4" class="section-number selfRef">7.4. </a><a href="#name-asymmetric-shared-secret-ca" class="section-name selfRef">Asymmetric Shared Secret Calculation</a>
         </h3>
 <div id="finite-field-diffie-hellman">
 <section id="section-7.4.1">
@@ -6790,7 +6802,7 @@ and the corresponding PSKs are deleted upon use, then connections established
 using PSKs enjoy not only anti-replay protection, but also forward secrecy once
 all copies of the PSK from the database entry have been deleted.
 This mechanism also improves security for PSK usage when PSK is used without
-(EC)DHE.<a href="#section-8.1-2" class="pilcrow">¶</a></p>
+an asymmetric key exchange.<a href="#section-8.1-2" class="pilcrow">¶</a></p>
 <p id="section-8.1-3">Because this mechanism requires sharing the session database between
 server nodes in environments with multiple distributed servers,
 it may be hard to achieve high rates of successful PSK 0-RTT
@@ -8749,7 +8761,7 @@ ClientHello?<a href="#appendix-C.3-3.7.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="appendix-C.3-3.8">
             <p id="appendix-C.3-3.8.1">As a server, do you send a HelloRetryRequest to clients which
-support a compatible (EC)DHE group but do not predict it in the
+support a compatible asymmetric key exchange group but do not predict it in the
 "key_share" extension? As a client, do you correctly handle a
 HelloRetryRequest from the server?<a href="#appendix-C.3-3.8.1" class="pilcrow">¶</a></p>
 </li>
@@ -9143,7 +9155,7 @@ absence of an attack (see <span>[<a href="#BBFGKZ16" class="cite xref">BBFGKZ16<
           <dd style="margin-left: 1.5em" id="appendix-F.1-4.12">
             <p id="appendix-F.1-4.12.1">If the long-term keying material (in this case the signature keys in
 certificate-based authentication modes or the external/resumption
-PSK in PSK with (EC)DHE modes) is compromised after the handshake is
+PSK in PSK with asymmetric key exchange modes) is compromised after the handshake is
 complete, this does not compromise the security of the session key
 (see <span>[<a href="#DOW92" class="cite xref">DOW92</a>]</span>), as long as the session key
 itself (and all material that could be used to recreate the session
@@ -9180,17 +9192,17 @@ other documents may do so.<a href="#appendix-F.1-4.16.1" class="pilcrow">¶</a><
 </dl>
 <p id="appendix-F.1-5">Informally, the signature-based modes of TLS 1.3 provide for the
 establishment of a unique, secret, shared key established by an
-(EC)DHE key exchange and authenticated by the server's signature over
+asymmetric key exchange and authenticated by the server's signature over
 the handshake transcript, as well as tied to the server's identity by
 a MAC. If the client is authenticated by a certificate, it also signs
 over the handshake transcript and provides a MAC tied to both
 identities. <span>[<a href="#SIGMA" class="cite xref">SIGMA</a>]</span> describes the design and analysis of this type of key
-exchange protocol. If fresh (EC)DHE keys are used for each connection,
+exchange protocol. If fresh asymmetric keys are used for each connection,
 then the output keys are forward secret.<a href="#appendix-F.1-5" class="pilcrow">¶</a></p>
 <p id="appendix-F.1-6">The external PSK and resumption PSK bootstrap from a long-term shared
 secret into a unique per-connection set of short-term session keys. This
 secret may have been established in a previous handshake. If
-PSK with (EC)DHE key establishment is used, these session keys will also be forward
+PSK with asymmetric key establishment is used, these session keys will also be forward
 secret. The resumption PSK has been designed so that the
 resumption secret computed by connection N and needed to form
 connection N+1 is separate from the traffic keys used by connection N,
@@ -9205,20 +9217,20 @@ This property is most interesting if tickets are stored in a database
 (compromise of a key at time T2 does not compromise some key at time
 T1 where T1 &lt; T2). Protection in the other direction (compromise at
 time T1 does not compromise keys at time T2) can be achieved by
-rerunning (EC)DHE. If a long-term authentication key has been
-compromised, a full handshake with (EC)DHE gives protection against
+rerunning an asymmetric key establishment. If a long-term authentication key has been
+compromised, a full handshake with asymmetric key establishment gives protection against
 passive attackers. If the resumption_secret has been
-compromised, a resumption handshake with (EC)DHE gives protection
-against passive attackers and a full handshake with (EC)DHE gives
+compromised, a resumption handshake with asymmetric key establishment gives protection
+against passive attackers and a full handshake with asymmetric key establishment gives
 protection against active attackers. If a traffic secret has been
-compromised, any handshake with (EC)DHE gives protection against
+compromised, any handshake with asymmetric key establishment gives protection against
 active attackers. Using the terms in <span>[<a href="#RFC7624" class="cite xref">RFC7624</a>]</span>, forward secrecy
-without rerunning (EC)DHE does not stop an attacker from doing static
+without rerunning asymmetric key establishment does not stop an attacker from doing static
 key exfiltration. After key exfiltration of
 application_traffic_secret_N, an attacker can e.g., passively
 eavesdrop on all future data sent on the connection including data
 encrypted with application_traffic_secret_N+1,
-application_traffic_secret_N+2, etc. Frequently rerunning (EC)DHE
+application_traffic_secret_N+2, etc. Frequently rerunning asymmetric key establishment
 forces an attacker to do dynamic key exfiltration (or content
 exfiltration).<a href="#appendix-F.1-7" class="pilcrow">¶</a></p>
 <p id="appendix-F.1-8">The PSK binder value forms a binding between a PSK
@@ -9451,7 +9463,7 @@ provide post-compromise security/future secrecy/backward secrecy with respect
 to the traffic secret. Indeed, an attacker who learns a traffic secret can
 compute all future traffic secrets on that connection.  Systems which want such
 guarantees need to do a fresh handshake and establish a new connection with an
-(EC)DHE exchange.<a href="#appendix-F.2-5" class="pilcrow">¶</a></p>
+asymmetric key exchange.<a href="#appendix-F.2-5" class="pilcrow">¶</a></p>
 <div id="external-references-1">
 <section id="appendix-F.2.1">
           <h4 id="name-external-references-2">
