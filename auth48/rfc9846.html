@@ -2934,7 +2934,7 @@ previous protocol version. In particular, it MUST NOT negotiate TLS 1.3.<a href=
        opaque legacy_session_id&lt;0..32&gt;;
        CipherSuite cipher_suites&lt;2..2^16-2&gt;;
        opaque legacy_compression_methods&lt;1..2^8-1&gt;;
-       Extension extensions&lt;8..2^16-1&gt;;
+       Extension extensions&lt;7..2^16-1&gt;;
    } ClientHello;
 </pre><a href="#section-4.1.2-6" class="pilcrow">¶</a>
 </div>
@@ -8195,7 +8195,7 @@ might receive them from older TLS implementations.<a href="#appendix-B-1" class=
        opaque legacy_session_id&lt;0..32&gt;;
        CipherSuite cipher_suites&lt;2..2^16-2&gt;;
        opaque legacy_compression_methods&lt;1..2^8-1&gt;;
-       Extension extensions&lt;8..2^16-1&gt;;
+       Extension extensions&lt;7..2^16-1&gt;;
    } ClientHello;
 
    struct {
