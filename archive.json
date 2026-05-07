@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-04-26T01:49:37.261197+00:00",
+  "timestamp": "2026-05-07T01:59:30.368714+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -13981,48 +13981,72 @@
       "id": "I_kwDOASA0os7MOZRf",
       "title": "erratum: 8423",
       "url": "https://github.com/tlswg/tls13-spec/issues/1397",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "seanturner",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "See [erratum](https://www.rfc-editor.org/errata/eid8423).",
       "createdAt": "2025-09-17T13:28:42Z",
-      "updatedAt": "2025-09-17T13:28:42Z",
-      "closedAt": null,
-      "comments": []
+      "updatedAt": "2026-05-06T17:56:23Z",
+      "closedAt": "2026-05-06T17:56:23Z",
+      "comments": [
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Fixed in #1420 ",
+          "createdAt": "2026-05-05T23:30:44Z",
+          "updatedAt": "2026-05-05T23:30:44Z"
+        }
+      ]
     },
     {
       "number": 1409,
       "id": "I_kwDOASA0os7vKT-P",
       "title": "erratum 8794: EOED optionality",
       "url": "https://github.com/tlswg/tls13-spec/issues/1409",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "martinthomson",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "https://www.rfc-editor.org/errata/eid8794 explains this.",
       "createdAt": "2026-03-02T17:35:17Z",
-      "updatedAt": "2026-03-02T17:35:17Z",
-      "closedAt": null,
-      "comments": []
+      "updatedAt": "2026-05-06T17:56:23Z",
+      "closedAt": "2026-05-06T17:56:23Z",
+      "comments": [
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "See PR #1419",
+          "createdAt": "2026-05-05T23:06:02Z",
+          "updatedAt": "2026-05-05T23:06:02Z"
+        }
+      ]
     },
     {
       "number": 1412,
       "id": "I_kwDOASA0os740Zn6",
       "title": "Inconsistent requirement on client regarding ServerHello.legacy_version",
       "url": "https://github.com/tlswg/tls13-spec/issues/1412",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "randombit",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "The current draft states both\n\n> A client which receives a TLS 1.3 Server Hello with a legacy_version value not equal to 0x0303 MUST abort the handshake with an \"illegal_parameter\" alert.\n\nand\n\n> Any endpoint receiving a Hello message with ClientHello.legacy_version or ServerHello.legacy_version set to 0x0300 MUST abort the handshake with a \"protocol_version\" alert.\n\nWhich would seem to require sending two different alerts if 0x0300 is sent in a `ServerHello.legacy_version`. This seems unlikely to be intentional. If it is intentional it probably deserves more text. If it's not intentional the alerts should be the same for both cases. Given that RFC 8446 already required `protocol_version` be sent (for the second requirement) I'd suggest the first requirement (which does not appear in 8446) be modified to also require sending `protocol_version`.",
       "createdAt": "2026-03-30T22:34:59Z",
-      "updatedAt": "2026-03-30T22:34:59Z",
-      "closedAt": null,
-      "comments": []
+      "updatedAt": "2026-05-05T23:03:20Z",
+      "closedAt": "2026-05-05T23:03:20Z",
+      "comments": [
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Fixed.",
+          "createdAt": "2026-05-05T23:03:20Z",
+          "updatedAt": "2026-05-05T23:03:20Z"
+        }
+      ]
     },
     {
       "number": 1413,
@@ -14053,15 +14077,15 @@
       "id": "I_kwDOASA0os78dBCp",
       "title": "Clarification on server-side validation of second ClientHello after HelloRetryRequest",
       "url": "https://github.com/tlswg/tls13-spec/issues/1414",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "jouho",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "Hello! We are maintainers of [s2n-tls](https://github.com/aws/s2n-tls), an open-source TLS implementation. We recently encountered an interoperability issue that led us to question how servers should handle the second ClientHello after a HelloRetryRequest.\n\n[RFC 8446 \u00a74.1.2](https://www.rfc-editor.org/rfc/rfc8446.html#section-4.1.2) requires that clients send the same ClientHello without modification after receiving a HelloRetryRequest, except for the explicitly allowed changes (key_share, early_data, cookie, pre_shared_key, and padding). However, the RFC does not specify whether servers should validate this consistency.\n\nIn practice, TLS implementations diverge on this:\n\nOpenSSL and rustls do not validate CH1 vs CH2 consistency on the server side\ns2n-tls and LibreSSL do validate and will reject a non-conformant second ClientHello\nThis divergence recently caused an interoperability issue between s2n-tls and a client (NanoSSL) that trims its cipher suites, supported groups, and supported versions in the second ClientHello: https://github.com/digicert/trustcore/issues/60#\n\nThe client behavior is non-compliant, but the fact that some servers accept it means client implementers may not discover the issue until they encounter a server that enforces the check.\n\nWe'd like to get the working group's perspective on a few questions:\n\n1. Should the RFC include guidance on whether servers should (or must) validate the second ClientHello for consistency with the first?\n2. If server-side validation is not required, how is a server expected to know whether it is communicating with a compliant client? Without server enforcement, the client-side MUST in \u00a74.1.2 is effectively unverifiable.\n3. For implementations that currently enforce this check, are there security implications to relaxing it?\n\nThank you in advance for any guidance on this.",
       "createdAt": "2026-04-09T23:20:00Z",
-      "updatedAt": "2026-04-20T20:21:06Z",
-      "closedAt": null,
+      "updatedAt": "2026-05-05T23:03:27Z",
+      "closedAt": "2026-05-05T23:03:27Z",
       "comments": [
         {
           "author": "ekr",
@@ -14069,6 +14093,30 @@
           "body": "As a general matter, we don't require that the receiving party enforce all MUSTs in the specification and in fact some of them are not remotely verifiable at all. For example you can't really verify that ClientHello.random and ServerHello.random are randomly generated. So, I don't think that point (2) is really an issue.\n\nI'm not aware of any security implications to relaxing the check -- as distinct from whether there are implications from being non-conformant -- but it seems like it would be better for the ecosystem if servers checked. Barring a requirement not to validate it, I think it's reasonable for a server to either do so or not do so. I probably wouldn't be opposed to requiring or at least encouraging them to do so as a general matter, but this late in the process I think you'd need a good reason and in any case you'd need to bring it to the list.\n\n",
           "createdAt": "2026-04-20T20:21:06Z",
           "updatedAt": "2026-04-20T20:21:06Z"
+        }
+      ]
+    },
+    {
+      "number": 1417,
+      "id": "I_kwDOASA0os8AAAABBUTQxA",
+      "title": "Incorrect reference to RFC8449 in Table 1",
+      "url": "https://github.com/tlswg/tls13-spec/issues/1417",
+      "state": "CLOSED",
+      "author": "agievich",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "In Table 1, the `record_size_limit` line should refer RFC8449, not RFC8849.",
+      "createdAt": "2026-05-05T10:33:46Z",
+      "updatedAt": "2026-05-05T13:34:18Z",
+      "closedAt": "2026-05-05T13:34:18Z",
+      "comments": [
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "This is already fixed in the auth48 branch",
+          "createdAt": "2026-05-05T13:34:18Z",
+          "updatedAt": "2026-05-05T13:34:18Z"
         }
       ]
     }
@@ -70534,10 +70582,12 @@
       "author": "muhammad-usama-sardar",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "propose-close"
+      ],
       "body": "(Follow-up of #1392) This should be correct now. \r\nIt is helpful at least as a reference key schedule for formal analysis. \r\nAdded text for similarity with Finished message, so that it is not misleading. ",
       "createdAt": "2025-07-28T20:10:44Z",
-      "updatedAt": "2025-07-28T20:10:45Z",
+      "updatedAt": "2026-05-05T23:35:23Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "f4ea8c9ae6fc3e3b99a6bb7cfcf429981920d4b7",
@@ -70947,21 +70997,21 @@
       "id": "PR_kwDOASA0os6xOc3T",
       "title": "2^24.5 full-size records is a limit for keys not the connection",
       "url": "https://github.com/tlswg/tls13-spec/pull/1398",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "emanjon",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "This seems like an error in the text. 2^24.5 full-size records is a limit for the set of keys, not the connection. My understanding is that you rekey inside a connection",
       "createdAt": "2025-11-03T16:24:08Z",
-      "updatedAt": "2026-04-23T17:29:54Z",
+      "updatedAt": "2026-05-05T22:15:25Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "46b909e14516d81f0c841336d1aa68cbfdb5f2e6",
       "headRepository": "emanjon/tls13-spec",
       "headRefName": "patch-28",
       "headRefOid": "e6f8ea11ea1b46a29c749c39e94ec1af1cff406e",
-      "closedAt": null,
+      "closedAt": "2026-05-05T22:15:24Z",
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
@@ -70972,6 +71022,13 @@
           "body": "I agree with this but tagging @martinthomson for double check.",
           "createdAt": "2026-04-20T21:14:05Z",
           "updatedAt": "2026-04-20T21:14:05Z"
+        },
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Merged by hand",
+          "createdAt": "2026-05-05T22:15:01Z",
+          "updatedAt": "2026-05-05T22:15:01Z"
         }
       ],
       "reviews": [
@@ -71125,10 +71182,12 @@
       "author": "davidben",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "propose-close"
+      ],
       "body": "As previously written, it suggests the message sequence does not change at all, but it is actually (as the text suggests), the transcript of everything sent or received.\r\n\r\nThis still doesn't quite make us robust to extensions. The CertificateVerify and Finished messages are defined in terms of this \"Handshake Context\" that is written using phrases like\r\n\r\n* \"later of EncryptedExtensions/CertificateRequest\"\r\n* \"later of server Finished/EndOfEarlyData\"\r\n* \"ClientHello ... client Finished + CertificateRequest\"\r\n\r\nAnd then sometimes Certificate and CertificateVerify are explicitly appended to it. Interestingly, that is also a bit goofy because we don't always account for those messages not existing in the prose.\r\n\r\nThis PR leaves all that alone for now, because I haven't quite written something down for that yet. (I think the right wording is to say \"hash all the messages up to but not including Finished/CertificateVerify.)",
       "createdAt": "2026-02-11T18:52:45Z",
-      "updatedAt": "2026-02-11T19:21:07Z",
+      "updatedAt": "2026-05-05T23:35:24Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "46b909e14516d81f0c841336d1aa68cbfdb5f2e6",
@@ -71159,10 +71218,12 @@
       "author": "davidben",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "propose-close"
+      ],
       "body": "",
       "createdAt": "2026-02-11T19:33:54Z",
-      "updatedAt": "2026-02-11T19:33:55Z",
+      "updatedAt": "2026-05-05T23:35:25Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "46b909e14516d81f0c841336d1aa68cbfdb5f2e6",
@@ -71185,10 +71246,12 @@
       "author": "davidben",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "propose-close"
+      ],
       "body": "(This is a standalone PR because GitHub is bad at stacked PRs, but you probably want to look at https://github.com/tlswg/tls13-spec/pull/1401 first.)\r\n\r\nRather than trying to define in terms of a funky Handshake Context and then a set of messages that are appended throughout, define this the way it is actually implemented: you stop the transcript just before the message you are working on.\r\n\r\nOne cloud darkens this simple description: post-handshake authentication acts on a funny transcript where the main transcript is forked off and then we get extra messages appended to it.",
       "createdAt": "2026-02-11T19:59:45Z",
-      "updatedAt": "2026-02-19T09:48:39Z",
+      "updatedAt": "2026-05-05T23:35:25Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "46b909e14516d81f0c841336d1aa68cbfdb5f2e6",
@@ -71319,10 +71382,12 @@
       "author": "davidben",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "propose-close"
+      ],
       "body": "*Only look at the last commit in this stack. This PR includes https://github.com/tlswg/tls13-spec/pull/1401, https://github.com/tlswg/tls13-spec/pull/1402, and https://github.com/tlswg/tls13-spec/pull/1403. GitHub is bad at stacked PRs. I'll rebase this one once decisions on the other three PRs is made.*\r\n\r\nIt is a little strange that it is buried inside Authentication Messages, but then it's referenced all throughout the document. This seems enough of a core component of the handshake protocol to describe it first.\r\n\r\nNB: This will cause almost all the section numbers between RFC 8446 and rfc8446bis to be different. Folks will need to take some care when updating references.",
       "createdAt": "2026-02-11T20:02:14Z",
-      "updatedAt": "2026-02-11T20:02:15Z",
+      "updatedAt": "2026-05-05T23:35:26Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "46b909e14516d81f0c841336d1aa68cbfdb5f2e6",
@@ -71341,21 +71406,21 @@
       "id": "PR_kwDOASA0os7DLH-d",
       "title": "\"(EC)DHE\" -> \"asymmetric key exchange\"",
       "url": "https://github.com/tlswg/tls13-spec/pull/1405",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "martinthomson",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "...or similar phrasing, throughout.\r\n\r\nThe use of (EC)DHE throughout really doesn't reflect actual usage any more, with the use now of KEMs for a lot of TLS usage (all, if things work out).\r\n\r\nI know that DH is symmetric in a sense, but this seemed like the best phrasing to use. Happy to take suggestions for alternatives.\r\n\r\nLooking at those KEM drafts, this would be helpful for them.  Otherwise, they have to explain very carefully that their shared secret goes into the slot labeled \"(EC)DHE\" even though none of those letters applies to their thing.",
       "createdAt": "2026-02-12T04:36:33Z",
-      "updatedAt": "2026-02-22T08:00:58Z",
+      "updatedAt": "2026-05-05T22:21:20Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "46b909e14516d81f0c841336d1aa68cbfdb5f2e6",
       "headRepository": "martinthomson/tls13-spec",
       "headRefName": "ake-mt",
       "headRefOid": "3cbff055e264773367cc5c9e9e73032c88749754",
-      "closedAt": null,
+      "closedAt": "2026-05-05T22:21:20Z",
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
@@ -71394,6 +71459,13 @@
           "body": "> I think removing an already existing \"ephemeral\" is a much smaller change than removing it, but I can live with \"asymmetric key exchange\".\r\n> \r\n> Removing \"ephemeral\" in RFC 8446 is maybe even an improvement. The problem today is that static keys are common in visibility solutions, while RFC 8446 only talks about ephemeral keys and do not have any security considerations about static keys. I think it make sense to allow people to register key exchange with static keys, as long as they describe the security considerations.\r\n\r\nHistorically, in TLS, the distinction between static and ephemeral is whether the key is in a credential versus explicitly carried in the handshake (often signed by some key which is in a credential). That's what the E in DHE conveys, i.e., that it's potentially ephemeral, not that it's a one-time key [0]. This is of course a distinct question from whether key reuse is a good idea, whether it's allowed, etc, and TLS never took a position on how long you could reuse the keys. For example, you may recall that RFC 2246 contains an RSA_EXPORT mode in which the server supplied a temporary RSA key (explicitly described as \"ephemeral RSA key\" in RFC 2246), and these were often reused [1].\r\n\r\nNow that we don't support static modes (in the sense above) at all, it's not clear to me how much the E is doing for us (and I don't think people say ML-KEME), so I favor keeping the text short, lest we have to mint a new acronym like \"EAKE\".\r\n\r\nIn agreement with Martin, I would be in favor of simply forbidding key reuse in TLS 1.3, but it seems we don't have WG consensus for that. However, I don't think whether the term \"ephemeral\" appears here changes things much one way or the other.\r\n\r\n\r\n[0] Note that RFC 4949 defines ephemeral thus: \"I) /adjective/ Refers to a cryptographic key or other cryptographic parameter or data object that is short-lived, temporary, or used one time. (See: session key. Compare: static.)\"\r\n[1] https://web.archive.org/web/20150304000214/http://blog.cryptographyengineering.com/2015/03/attack-of-week-freak-or-factoring-nsa.html \"You see, it turns out that generating fresh RSA keys is a bit costly. So modern web servers don't do it for every single connection. In fact, Apache mod_ssl by default will generate a single export-grade RSA key when the server starts up, and will simply re-use that key for the lifetime of that server.\"",
           "createdAt": "2026-02-16T21:31:33Z",
           "updatedAt": "2026-02-16T21:32:24Z"
+        },
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Merged by hand.",
+          "createdAt": "2026-05-05T22:21:20Z",
+          "updatedAt": "2026-05-05T22:21:20Z"
         }
       ],
       "reviews": [
@@ -71513,10 +71585,12 @@
       "author": "muhammad-usama-sardar",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "propose-close"
+      ],
       "body": "1. Reduce the focus of \"always\" by adding \"unless specified otherwise\"\r\n2. Clarify Transcript Hash uses messages as sent or received\r\n\r\nBased on discussion in the thread: https://mailarchive.ietf.org/arch/msg/tls/uUf3dIfjlZCpLD0ZTd6a_ehOosc/\r\n\r\nI think \"always\" can even be removed, but feel free to play around with this initial proposal.",
       "createdAt": "2026-02-12T09:01:53Z",
-      "updatedAt": "2026-02-12T09:01:54Z",
+      "updatedAt": "2026-05-05T23:35:26Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "46b909e14516d81f0c841336d1aa68cbfdb5f2e6",
@@ -71851,24 +71925,26 @@
       "id": "PR_kwDOASA0os7UF4mg",
       "title": "Harmonize the requirements for legacy_version. Fixes #1412",
       "url": "https://github.com/tlswg/tls13-spec/pull/1415",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "ekr",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "RFC 8446 required implementations to send a `protocol_version` alert for `legacy_version=0x0300` and allowed TLS 1.0 and TLS 1.1. This draft forbids those and locks down the `legacy_version` to 0x0303, but then required `illegal_parameter`. This change harmonizes the text and requires `protocol_version` to avoid requiring implementations to change.\r\n\r\nI see an argument for `illegal_parameter`, but I think avoiding change is better.",
       "createdAt": "2026-04-20T20:34:50Z",
-      "updatedAt": "2026-04-20T22:13:49Z",
+      "updatedAt": "2026-05-05T22:13:57Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "auth48",
       "baseRefOid": "29f26caf35712e9dd140442c005506d2a21513b1",
       "headRepository": "tlswg/tls13-spec",
       "headRefName": "issue1412_protocol_version",
       "headRefOid": "2aba615afa5eb0d74aa2ee82cc72cb64c2a138b0",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2026-05-05T22:13:57Z",
+      "mergedAt": "2026-05-05T22:13:57Z",
+      "mergedBy": "ekr",
+      "mergeCommit": {
+        "oid": "40dc29a32c7f6d4aad8b3db10e8c889e0b2cdab9"
+      },
       "comments": [
         {
           "author": "ekr",
@@ -71907,6 +71983,286 @@
           "comments": []
         }
       ]
+    },
+    {
+      "number": 1416,
+      "id": "PR_kwDOASA0os7YS3Bh",
+      "title": "Editorial corrections",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1416",
+      "state": "CLOSED",
+      "author": "emanjon",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2026-05-05T06:57:38Z",
+      "updatedAt": "2026-05-05T22:13:29Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "main",
+      "baseRefOid": "c6ef13d3c28aae5935900f967fc8a8a97ac70025",
+      "headRepository": "emanjon/tls13-spec",
+      "headRefName": "patch-30",
+      "headRefOid": "5b1d7901df187cf1c31d693e3d3d5a20683161e5",
+      "closedAt": "2026-05-05T22:13:28Z",
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "This changes are already present in the auth48 branch/",
+          "createdAt": "2026-05-05T22:13:28Z",
+          "updatedAt": "2026-05-05T22:13:28Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOASA0os78Ej1X",
+          "commit": {
+            "abbreviatedOid": "5b1d790"
+          },
+          "author": "paulwouters",
+          "authorAssociation": "NONE",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-05-05T14:39:45Z",
+          "updatedAt": "2026-05-05T14:39:45Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 1418,
+      "id": "PR_kwDOASA0os7YkkON",
+      "title": "Clarify transcript hash",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1418",
+      "state": "OPEN",
+      "author": "ekr",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "This adopts some of  @davidben's clarifications about the transcript but not the redefinition.",
+      "createdAt": "2026-05-05T22:51:38Z",
+      "updatedAt": "2026-05-06T00:33:18Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "auth48",
+      "baseRefOid": "bab26f6fc7321c5c958de9dbbaae24d014254570",
+      "headRepository": "ekr/tls13-spec",
+      "headRefName": "message_sequence_clarify",
+      "headRefOid": "34581f0ec4306a5a374e0f9792584666ece9f910",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@martinthomson @davidben for final check.",
+          "createdAt": "2026-05-05T22:51:55Z",
+          "updatedAt": "2026-05-05T22:51:55Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOASA0os78RfKz",
+          "commit": {
+            "abbreviatedOid": "34581f0"
+          },
+          "author": "davidben",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-05-06T00:33:18Z",
+          "updatedAt": "2026-05-06T00:33:18Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 1419,
+      "id": "PR_kwDOASA0os7YktrW",
+      "title": "EOED is optional. Fixes #1409. Erratum 8794",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1419",
+      "state": "MERGED",
+      "author": "ekr",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "@martinthomson ",
+      "createdAt": "2026-05-05T23:05:37Z",
+      "updatedAt": "2026-05-06T17:55:25Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "auth48",
+      "baseRefOid": "bab26f6fc7321c5c958de9dbbaae24d014254570",
+      "headRepository": "ekr/tls13-spec",
+      "headRefName": "erratum8794_eoed",
+      "headRefOid": "8754bd68fd022faf6567600664e99a51140a98bd",
+      "closedAt": "2026-05-06T17:02:46Z",
+      "mergedAt": "2026-05-06T17:02:46Z",
+      "mergedBy": "ekr",
+      "mergeCommit": {
+        "oid": "1cac954d5380e1b8b514696992ee9d1dbb85c79d"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 1420,
+      "id": "PR_kwDOASA0os7YkwZJ",
+      "title": "Fix minimum length of CH.extensions. Fixes #1397. Erratum 8423",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1420",
+      "state": "MERGED",
+      "author": "ekr",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2026-05-05T23:09:33Z",
+      "updatedAt": "2026-05-06T16:59:55Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "auth48",
+      "baseRefOid": "bab26f6fc7321c5c958de9dbbaae24d014254570",
+      "headRepository": "ekr/tls13-spec",
+      "headRefName": "erratum8423_ch_len",
+      "headRefOid": "dee86beb29484ddafe9821a73f6994a2d5e9b187",
+      "closedAt": "2026-05-06T16:59:55Z",
+      "mergedAt": "2026-05-06T16:59:55Z",
+      "mergedBy": "ekr",
+      "mergeCommit": {
+        "oid": "fc949384f3bd86de10649cbf9b4e1436d0543506"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 1421,
+      "id": "PR_kwDOASA0os7Yk_PM",
+      "title": "You don't need to support GREASE",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1421",
+      "state": "MERGED",
+      "author": "ekr",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "@emanjon @davidben ",
+      "createdAt": "2026-05-05T23:29:04Z",
+      "updatedAt": "2026-05-06T16:57:14Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "auth48",
+      "baseRefOid": "bab26f6fc7321c5c958de9dbbaae24d014254570",
+      "headRepository": "ekr/tls13-spec",
+      "headRefName": "know_non_grease",
+      "headRefOid": "9dd719e09c87206a4e02a5a559c2ff6b475f493c",
+      "closedAt": "2026-05-06T16:57:14Z",
+      "mergedAt": "2026-05-06T16:57:14Z",
+      "mergedBy": "ekr",
+      "mergeCommit": {
+        "oid": "7c30399594f90884964a9c041140f7036a4b912a"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOASA0os78RSWp",
+          "commit": {
+            "abbreviatedOid": "9dd719e"
+          },
+          "author": "davidben",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "Fair enough. I would say that the GREASE codepoints are defined to be vacuously supported by RFC 8701, but also no objections to saying it explicitly. :-)",
+          "createdAt": "2026-05-06T00:14:37Z",
+          "updatedAt": "2026-05-06T00:14:37Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 1422,
+      "id": "PR_kwDOASA0os7Yusx3",
+      "title": "Editorial changes",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1422",
+      "state": "OPEN",
+      "author": "emanjon",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "- Fixing the inconsistencies between abstract and header:\r\n  - adding all obsolete drafts from the abstract to the heading \r\n  - fixing that 8422 is not both updated and obsoleted\r\n- Changed \"Negotiated Groups\" to \"Supported Groups\". The term \"Negotiated Groups\" is only used once and never again.\r\n\r\nEric Rescorla wrote:\r\n>I'm now trying to recall why we did this. ISTM that given that we are\r\n>obsoleting 5246 (already done in 8446), we should obsolete all the\r\n>other specs that only meaningfully apply to 5246. Here's the\r\n>list:\r\n>\r\n> * RFC 5077: Transport Layer Security (TLS) Session Resumption without\r\n>Server-Side State\r\n> * RFC 5246: The Transport Layer Security (TLS) Protocol Version 1.2\r\n> * RFC 5705: Keying Material Exporters for Transport Layer Security (TLS)\r\n> * RFC 6066: Transport Layer Security (TLS) Extensions: Extension\r\n>Definitions\r\n> * RFC 6961: The Transport Layer Security (TLS) Multiple Certificate Status\r\n>Request Extension\r\n> * RFC 7627: Transport Layer Security (TLS) Session Hash and Extended\r\n>Master Secret Extension\r\n> * RFC 8422: Elliptic Curve Cryptography (ECC) Cipher Suites for Transport\r\n>Layer Security (TLS)\r\n>   Versions 1.2 and Earlier\r\n\r\nNote that 5705, 6066, and 7627 are still listed as updated and not obsoleted. My understanding from your answer above is that they should all be obsoleted.",
+      "createdAt": "2026-05-06T10:39:50Z",
+      "updatedAt": "2026-05-06T10:39:50Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "main",
+      "baseRefOid": "c6ef13d3c28aae5935900f967fc8a8a97ac70025",
+      "headRepository": "emanjon/tls13-spec",
+      "headRefName": "patch-31",
+      "headRefOid": "3d1e0030a6d687bedcfd971392f07537615e84b3",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 1423,
+      "id": "PR_kwDOASA0os7Y3Zqq",
+      "title": "Clarify PSK binding. Fixes Errata 8803",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1423",
+      "state": "OPEN",
+      "author": "ekr",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2026-05-06T17:43:37Z",
+      "updatedAt": "2026-05-06T17:44:03Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "auth48",
+      "baseRefOid": "1cac954d5380e1b8b514696992ee9d1dbb85c79d",
+      "headRepository": "ekr/tls13-spec",
+      "headRefName": "eid8803_psk_binding",
+      "headRefOid": "1c596cdcb990dc97b1d28bbe7f9098d88325f5b8",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@seanturner ",
+          "createdAt": "2026-05-06T17:44:03Z",
+          "updatedAt": "2026-05-06T17:44:03Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 1424,
+      "id": "PR_kwDOASA0os7Y3cdb",
+      "title": "Qualify error. Fixes erratum 8795",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1424",
+      "state": "OPEN",
+      "author": "ekr",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "@seanturner ",
+      "createdAt": "2026-05-06T17:46:14Z",
+      "updatedAt": "2026-05-06T17:46:14Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "auth48",
+      "baseRefOid": "1cac954d5380e1b8b514696992ee9d1dbb85c79d",
+      "headRepository": "ekr/tls13-spec",
+      "headRefName": "eid8795_post_handshake",
+      "headRefOid": "b6d137e972895710785700c473db44a4cc48aecd",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
