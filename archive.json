@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-05-07T01:59:30.368714+00:00",
+  "timestamp": "2026-05-10T01:59:09.364842+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -13861,7 +13861,7 @@
       ],
       "body": "<details>\r\n<summary>Some of the figures are a touch too wide.</summary>\r\n\r\n```\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(418): Warning: Too long line found (L459), 1 characters longer than 72 characters:\r\n                                                       ServerHello  ^ Key\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(418): Warning: Too long line found (L460), 2 characters longer than 72 characters:\r\n                                                      + key_share*  | Exch\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(418): Warning: Too long line found (L462), 5 characters longer than 72 characters:\r\n                                             {EncryptedExtensions}  ^  Server\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(418): Warning: Too long line found (L463), 5 characters longer than 72 characters:\r\n                                             {CertificateRequest*}  v  Params\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(418): Warning: Too long line found (L465), 2 characters longer than 72 characters:\r\n                                              {CertificateVerify*}  | Auth\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2674), 1 characters longer than 72 characters:\r\n   +=========+====================+=====================================+\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2675), 1 characters longer than 72 characters:\r\n   |Mode     |Handshake Context   |Base Key                             |\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2676), 1 characters longer than 72 characters:\r\n   +=========+====================+=====================================+\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2677), 1 characters longer than 72 characters:\r\n   |Server   |ClientHello ...     |server_handshake_traffic_secret      |\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2678), 1 characters longer than 72 characters:\r\n   |         |later of            |                                     |\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2679), 1 characters longer than 72 characters:\r\n   |         |EncryptedExtensions/|                                     |\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2680), 1 characters longer than 72 characters:\r\n   |         |CertificateRequest  |                                     |\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2681), 1 characters longer than 72 characters:\r\n   +---------+--------------------+-------------------------------------+\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2682), 1 characters longer than 72 characters:\r\n   |Client   |ClientHello ...     |client_handshake_traffic_secret      |\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2683), 1 characters longer than 72 characters:\r\n   |         |later of server     |                                     |\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2684), 1 characters longer than 72 characters:\r\n   |         |Finished/           |                                     |\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2685), 1 characters longer than 72 characters:\r\n   |         |EndOfEarlyData      |                                     |\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2686), 1 characters longer than 72 characters:\r\n   +---------+--------------------+-------------------------------------+\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2687), 1 characters longer than 72 characters:\r\n   |Post-    |ClientHello ...     |[sender]_application_traffic_secret_N|\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2688), 1 characters longer than 72 characters:\r\n   |Handshake|client Finished +   |                                     |\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2689), 1 characters longer than 72 characters:\r\n   |         |CertificateRequest  |                                     |\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(2971): Warning: Too long line found (L2690), 1 characters longer than 72 characters:\r\n   +---------+--------------------+-------------------------------------+\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(3885): Warning: Too long line found (L3591), 2 characters longer than 72 characters:\r\n       AEAD-Decrypt(peer_write_key, nonce, additional_data, AEADEncrypted)\r\n.../tls13/draft-ietf-tls-rfc8446bis.xml(4624): Warning: Too long line found (L4166), 1 characters longer than 72 characters:\r\n    [sender]_write_key = HKDF-Expand-Label(Secret, \"key\", \"\", key_length)\r\n```\r\n\r\n</details>\r\n",
       "createdAt": "2024-11-24T22:19:59Z",
-      "updatedAt": "2025-07-21T23:19:36Z",
+      "updatedAt": "2026-05-09T06:20:51Z",
       "closedAt": null,
       "comments": [
         {
@@ -13870,6 +13870,13 @@
           "body": "We can fix this in auth 48",
           "createdAt": "2025-02-09T19:37:01Z",
           "updatedAt": "2025-02-09T19:37:01Z"
+        },
+        {
+          "author": "estanpendejos1984-dywtf",
+          "authorAssociation": "NONE",
+          "body": "Should be fixed soon",
+          "createdAt": "2026-05-09T06:20:51Z",
+          "updatedAt": "2026-05-09T06:20:51Z"
         }
       ]
     },
@@ -14119,6 +14126,22 @@
           "updatedAt": "2026-05-05T13:34:18Z"
         }
       ]
+    },
+    {
+      "number": 1427,
+      "id": "I_kwDOASA0os8AAAABBvF_Bw",
+      "title": "The shoe doesn't fit in the file",
+      "url": "https://github.com/tlswg/tls13-spec/issues/1427",
+      "state": "OPEN",
+      "author": "estanpendejos1984-dywtf",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Trying to set up a new file and somehow I keep getting an error code stating I'm over the protocol limitation? ",
+      "createdAt": "2026-05-09T06:23:36Z",
+      "updatedAt": "2026-05-09T06:23:36Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
@@ -72044,7 +72067,7 @@
       "labels": [],
       "body": "This adopts some of  @davidben's clarifications about the transcript but not the redefinition.",
       "createdAt": "2026-05-05T22:51:38Z",
-      "updatedAt": "2026-05-06T00:33:18Z",
+      "updatedAt": "2026-05-07T17:29:28Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "auth48",
       "baseRefOid": "bab26f6fc7321c5c958de9dbbaae24d014254570",
@@ -72077,6 +72100,50 @@
           "createdAt": "2026-05-06T00:33:18Z",
           "updatedAt": "2026-05-06T00:33:18Z",
           "comments": []
+        },
+        {
+          "id": "PRR_kwDOASA0os79GH8_",
+          "commit": {
+            "abbreviatedOid": "34581f0"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "I know you are just moving this, but...",
+          "createdAt": "2026-05-07T17:24:40Z",
+          "updatedAt": "2026-05-07T17:29:28Z",
+          "comments": [
+            {
+              "originalPosition": 26,
+              "body": "It might pay to include the codepoint of \"message_hash\" here.",
+              "createdAt": "2026-05-07T17:24:40Z",
+              "updatedAt": "2026-05-07T17:29:28Z"
+            },
+            {
+              "originalPosition": 30,
+              "body": "```suggestion\n              00 00 Hash.length  ||  /* Handshake message length (bytes) */\n```",
+              "createdAt": "2026-05-07T17:25:01Z",
+              "updatedAt": "2026-05-07T17:29:29Z"
+            },
+            {
+              "originalPosition": 43,
+              "body": "Do you want to add:\n\n\n```suggestion\nmessages (some of which might be omitted): ClientHello, HelloRetryRequest, ClientHello, ServerHello,\n```",
+              "createdAt": "2026-05-07T17:26:28Z",
+              "updatedAt": "2026-05-07T17:29:29Z"
+            },
+            {
+              "originalPosition": 51,
+              "body": "```suggestion\nIn general, implementations can implement the transcript by keeping a\nrunning transcript hash value based on the negotiated hash, once\nthe hash has been selected in the ServerHello. Note,\n```",
+              "createdAt": "2026-05-07T17:28:37Z",
+              "updatedAt": "2026-05-07T17:29:29Z"
+            },
+            {
+              "originalPosition": 53,
+              "body": "This last sentence seems like it might be worth breaking out into its own paragraph.",
+              "createdAt": "2026-05-07T17:28:59Z",
+              "updatedAt": "2026-05-07T17:29:29Z"
+            }
+          ]
         }
       ]
     },
@@ -72183,25 +72250,40 @@
       "id": "PR_kwDOASA0os7Yusx3",
       "title": "Editorial changes",
       "url": "https://github.com/tlswg/tls13-spec/pull/1422",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "emanjon",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "- Fixing the inconsistencies between abstract and header:\r\n  - adding all obsolete drafts from the abstract to the heading \r\n  - fixing that 8422 is not both updated and obsoleted\r\n- Changed \"Negotiated Groups\" to \"Supported Groups\". The term \"Negotiated Groups\" is only used once and never again.\r\n\r\nEric Rescorla wrote:\r\n>I'm now trying to recall why we did this. ISTM that given that we are\r\n>obsoleting 5246 (already done in 8446), we should obsolete all the\r\n>other specs that only meaningfully apply to 5246. Here's the\r\n>list:\r\n>\r\n> * RFC 5077: Transport Layer Security (TLS) Session Resumption without\r\n>Server-Side State\r\n> * RFC 5246: The Transport Layer Security (TLS) Protocol Version 1.2\r\n> * RFC 5705: Keying Material Exporters for Transport Layer Security (TLS)\r\n> * RFC 6066: Transport Layer Security (TLS) Extensions: Extension\r\n>Definitions\r\n> * RFC 6961: The Transport Layer Security (TLS) Multiple Certificate Status\r\n>Request Extension\r\n> * RFC 7627: Transport Layer Security (TLS) Session Hash and Extended\r\n>Master Secret Extension\r\n> * RFC 8422: Elliptic Curve Cryptography (ECC) Cipher Suites for Transport\r\n>Layer Security (TLS)\r\n>   Versions 1.2 and Earlier\r\n\r\nNote that 5705, 6066, and 7627 are still listed as updated and not obsoleted. My understanding from your answer above is that they should all be obsoleted.",
       "createdAt": "2026-05-06T10:39:50Z",
-      "updatedAt": "2026-05-06T10:39:50Z",
+      "updatedAt": "2026-05-07T22:33:04Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "c6ef13d3c28aae5935900f967fc8a8a97ac70025",
       "headRepository": "emanjon/tls13-spec",
       "headRefName": "patch-31",
       "headRefOid": "3d1e0030a6d687bedcfd971392f07537615e84b3",
-      "closedAt": null,
+      "closedAt": "2026-05-07T22:33:04Z",
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
+      "comments": [
+        {
+          "author": "seanturner",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Please also add something to the last paragraph in s1 to indicate how/why RFC 8442 is obsoleted.",
+          "createdAt": "2026-05-07T14:26:45Z",
+          "updatedAt": "2026-05-07T14:26:45Z"
+        },
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Superseded by PR #1426 ",
+          "createdAt": "2026-05-07T22:33:04Z",
+          "updatedAt": "2026-05-07T22:33:04Z"
+        }
+      ],
       "reviews": []
     },
     {
@@ -72263,6 +72345,133 @@
       "mergeCommit": null,
       "comments": [],
       "reviews": []
+    },
+    {
+      "number": 1425,
+      "id": "PR_kwDOASA0os7ZTNq9",
+      "title": "Clarify text around replay and 0-RTT",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1425",
+      "state": "OPEN",
+      "author": "ekr",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2026-05-07T20:37:22Z",
+      "updatedAt": "2026-05-07T20:37:32Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "auth48",
+      "baseRefOid": "1cac954d5380e1b8b514696992ee9d1dbb85c79d",
+      "headRepository": "ekr/tls13-spec",
+      "headRefName": "0rtt_rewrite",
+      "headRefOid": "4bd938ed3fe6a9ddc178237a8608ba0a2773b28e",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@martinthomson @bifurcation PTAL",
+          "createdAt": "2026-05-07T20:37:32Z",
+          "updatedAt": "2026-05-07T20:37:32Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 1426,
+      "id": "PR_kwDOASA0os7ZVA7X",
+      "title": "Update obsoletes/updates and fixes negotiated groups",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1426",
+      "state": "OPEN",
+      "author": "ekr",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2026-05-07T22:30:48Z",
+      "updatedAt": "2026-05-08T17:38:16Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "auth48",
+      "baseRefOid": "1cac954d5380e1b8b514696992ee9d1dbb85c79d",
+      "headRepository": "ekr/tls13-spec",
+      "headRefName": "obsoletes_headers",
+      "headRefOid": "93efc70d03eab585d92e08e21d9e098329910c6f",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOASA0os79aYWi",
+          "commit": {
+            "abbreviatedOid": "93efc70"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "Some very minor suggestions, but this is a good change.",
+          "createdAt": "2026-05-08T10:28:26Z",
+          "updatedAt": "2026-05-08T10:29:38Z",
+          "comments": [
+            {
+              "originalPosition": 22,
+              "body": "I might put the 8446 thing first, because the two 1.2 mentions are split either side of this middle sentence.",
+              "createdAt": "2026-05-08T10:28:26Z",
+              "updatedAt": "2026-05-08T10:29:38Z"
+            },
+            {
+              "originalPosition": 37,
+              "body": "Is it worth noting here that the interface to exporters is subtly changed?  The null vs. zero length distinction trips a ton of people up.",
+              "createdAt": "2026-05-08T10:29:16Z",
+              "updatedAt": "2026-05-08T10:29:38Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os79kWiV",
+          "commit": {
+            "abbreviatedOid": "93efc70"
+          },
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-05-08T17:38:06Z",
+          "updatedAt": "2026-05-08T17:38:07Z",
+          "comments": [
+            {
+              "originalPosition": 22,
+              "body": "I can do that. ",
+              "createdAt": "2026-05-08T17:38:06Z",
+              "updatedAt": "2026-05-08T17:38:07Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os79kW0T",
+          "commit": {
+            "abbreviatedOid": "93efc70"
+          },
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-05-08T17:38:16Z",
+          "updatedAt": "2026-05-08T17:38:16Z",
+          "comments": [
+            {
+              "originalPosition": 37,
+              "body": "I would welcome some text.",
+              "createdAt": "2026-05-08T17:38:16Z",
+              "updatedAt": "2026-05-08T17:38:16Z"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
