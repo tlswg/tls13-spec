@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-05-12T02:04:47.120865+00:00",
+  "timestamp": "2026-05-17T02:06:05.831544+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -102,6 +102,11 @@
       "name": "propose-close",
       "description": "",
       "color": "bfdadc"
+    },
+    {
+      "name": "rfced",
+      "description": "",
+      "color": "c8cc22"
     }
   ],
   "issues": [
@@ -14142,6 +14147,366 @@
       "updatedAt": "2026-05-11T14:30:41Z",
       "closedAt": "2026-05-11T14:30:41Z",
       "comments": []
+    },
+    {
+      "number": 1428,
+      "id": "I_kwDOASA0os8AAAABCbUgRA",
+      "title": "[rfced] Please insert any keywords (beyond those that appear in",
+      "url": "https://github.com/tlswg/tls13-spec/issues/1428",
+      "state": "CLOSED",
+      "author": "ekr-aibot",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "[rfced] Please insert any keywords (beyond those that appear in\nthe title) for use on https://www.rfc-editor.org/search.",
+      "createdAt": "2026-05-16T00:25:56Z",
+      "updatedAt": "2026-05-17T02:05:15Z",
+      "closedAt": "2026-05-17T02:05:15Z",
+      "comments": [
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "N/A.",
+          "createdAt": "2026-05-17T02:05:15Z",
+          "updatedAt": "2026-05-17T02:05:15Z"
+        }
+      ]
+    },
+    {
+      "number": 1429,
+      "id": "I_kwDOASA0os8AAAABCbUg_g",
+      "title": "[rfced] The document header indicates it obsoletes and updates the following RFCs:",
+      "url": "https://github.com/tlswg/tls13-spec/issues/1429",
+      "state": "OPEN",
+      "author": "ekr-aibot",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "[rfced] The document header indicates it obsoletes and updates the following RFCs:\n\nObsoletes: 8446\nUpdates: 5705, 6066, 7627, 8422\n\nIn the body of the document, we see the text below.  Note that the mentions of updates seem consistent with the document header.  However, the text specifies that it obsoletes more than just RFC 8446, likely because RFC 8446 obsoleted those documents.  Please review and let us know how/if the header can be consistent with the body of the document.\n\na) Abstract: Note that we removed 8422 from the obsoletes list because this doc seemingly updates it.\n\n   This document updates RFCs 5705, 6066, 7627, and 8422 and obsoletes\n   RFCs 5077, 5246, 6961, 8422, and 8446.\n\n\nb) Introduction:\n\n   This document supersedes and obsoletes previous versions of TLS,\n   including version 1.2 [RFC5246].  It also obsoletes the TLS ticket\n   mechanism defined in [RFC5077] and replaces it with the mechanism\n   defined in Section 2.2.  Because TLS 1.3 changes the way keys are\n   derived, it updates [RFC5705] as described in Section 7.5.  It also\n   changes how Online Certificate Status Protocol (OCSP) messages are\n   carried and therefore updates [RFC6066] and obsoletes [RFC6961] as\n   described in Section 4.4.2.1.",
+      "createdAt": "2026-05-16T00:25:57Z",
+      "updatedAt": "2026-05-16T00:25:57Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 1430,
+      "id": "I_kwDOASA0os8AAAABCbUhtA",
+      "title": "[rfced] The following RFCs have been obsoleted as follows. May they be",
+      "url": "https://github.com/tlswg/tls13-spec/issues/1430",
+      "state": "OPEN",
+      "author": "ekr-aibot",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "[rfced] The following RFCs have been obsoleted as follows. May they be\nreplaced with the obsoleting RFC?\n\n   RFC 6347 has been obsoleted by RFC 9147\n   RFC 6962 has been obsoleted by RFC 9162\n   RFC 7507 has been obsoleted by RFC 8996",
+      "createdAt": "2026-05-16T00:25:58Z",
+      "updatedAt": "2026-05-16T00:25:58Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 1431,
+      "id": "I_kwDOASA0os8AAAABCbUiHg",
+      "title": "[rfced] This reference appears to match the information for the following",
+      "url": "https://github.com/tlswg/tls13-spec/issues/1431",
+      "state": "OPEN",
+      "author": "ekr-aibot",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "[rfced] This reference appears to match the information for the following\nInternet-Draft: https://datatracker.ietf.org/doc/draft-hickman-netscape-ssl/\n\nMay we update this reference to point to this I-D?\n\nCurrent:\n   [SSL2]     Hickman, K., \"The SSL Protocol\", 9 February 1995.\n\nPerhaps:\n   [SSL2]     Elgamal, T. and K. E. Hickman, \"The SSL Protocol\", Work in\n              Progress, Internet-Draft, draft-hickman-netscape-ssl-00,\n              19 April 1995, <https://datatracker.ietf.org/doc/html/\n              draft-hickman-netscape-ssl-00>.",
+      "createdAt": "2026-05-16T00:25:59Z",
+      "updatedAt": "2026-05-16T00:25:59Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 1432,
+      "id": "I_kwDOASA0os8AAAABCbUiVg",
+      "title": "[rfced] We updated [I-D.ietf-tls-esni] to [PRE-RFC9849] for now.  We will make the final updates in RFCXML.",
+      "url": "https://github.com/tlswg/tls13-spec/issues/1432",
+      "state": "CLOSED",
+      "author": "ekr-aibot",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "[rfced] We updated [I-D.ietf-tls-esni] to [PRE-RFC9849] for now.  We will make the final updates in RFCXML.",
+      "createdAt": "2026-05-16T00:26:00Z",
+      "updatedAt": "2026-05-17T02:04:46Z",
+      "closedAt": "2026-05-17T02:04:46Z",
+      "comments": [
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "OK",
+          "createdAt": "2026-05-17T02:04:46Z",
+          "updatedAt": "2026-05-17T02:04:46Z"
+        }
+      ]
+    },
+    {
+      "number": 1433,
+      "id": "I_kwDOASA0os8AAAABCbUifQ",
+      "title": "[rfced] As \"requiring\" and \"should\" seem to contradict in this",
+      "url": "https://github.com/tlswg/tls13-spec/issues/1433",
+      "state": "OPEN",
+      "author": "ekr-aibot",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "[rfced] As \"requiring\" and \"should\" seem to contradict in this\nstatement, may we remove \"should\" from the text below?\n\nOriginal:\n   *  Clarify behavior around \"user_canceled\", requiring that\n      \"close_notify\" be sent and that \"user_canceled\" should be ignored.\n\nPerhaps:\n   *  Clarify behavior around \"user_canceled\", requiring that\n      \"close_notify\" be sent and that \"user_canceled\" be ignored.",
+      "createdAt": "2026-05-16T00:26:02Z",
+      "updatedAt": "2026-05-16T00:26:02Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 1434,
+      "id": "I_kwDOASA0os8AAAABCbUisQ",
+      "title": "[rfced] FYI - We have updated Figure 1 to fit the 72-character limit.",
+      "url": "https://github.com/tlswg/tls13-spec/issues/1434",
+      "state": "OPEN",
+      "author": "ekr-aibot",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "[rfced] FYI - We have updated Figure 1 to fit the 72-character limit.\nPlease review and let us know if any further updates are needed.",
+      "createdAt": "2026-05-16T00:26:03Z",
+      "updatedAt": "2026-05-16T00:26:03Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 1435,
+      "id": "I_kwDOASA0os8AAAABCbUi6A",
+      "title": "[rfced] Table 1",
+      "url": "https://github.com/tlswg/tls13-spec/issues/1435",
+      "state": "OPEN",
+      "author": "ekr-aibot",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "[rfced] Table 1\n\na) FYI - We have updated the citation for \"record_size_limit\" from [RFC8849]\nto [RFC8449], as [RFC8449] defines the extension and [RFC8849] does not\nhave any mention of it.\n\nOriginal:\n   record_size_limit [RFC8849]\n\nCurrent:\n   record_size_limit [RFC8449]\n\n\nb) We note that RFC 9345 uses \"delegated_credential\" rather than\n\"delegated_credentials\" (no \"s\"). May we update the extension to reflect RFC 9345?\n\nCurrent:\n   delegated_credentials {{RFC9345}}",
+      "createdAt": "2026-05-16T00:26:04Z",
+      "updatedAt": "2026-05-16T00:26:04Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 1436,
+      "id": "I_kwDOASA0os8AAAABCbUjIQ",
+      "title": "[rfced] Table 2 extends one character line beyond the width limit.  We will play with this in the RFCXML file, but please let us know if you see a good way to break the lines differently.",
+      "url": "https://github.com/tlswg/tls13-spec/issues/1436",
+      "state": "OPEN",
+      "author": "ekr-aibot",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "[rfced] Table 2 extends one character line beyond the width limit.  We will play with this in the RFCXML file, but please let us know if you see a good way to break the lines differently.",
+      "createdAt": "2026-05-16T00:26:05Z",
+      "updatedAt": "2026-05-16T00:26:05Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 1437,
+      "id": "I_kwDOASA0os8AAAABCbUjVQ",
+      "title": "[rfced] We believe the intention of this line is to note that the asterisk",
+      "url": "https://github.com/tlswg/tls13-spec/issues/1437",
+      "state": "OPEN",
+      "author": "ekr-aibot",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "[rfced] We believe the intention of this line is to note that the asterisk\nhas a specific meaning when present.  Please note that we will update the XML to treat this as <dl>.  Currently, kramdown treats this as a bulleted list item:\n\n   * Only included if present.\n\n\nA definition list will yield the following:\n\n   *: Only included if present.",
+      "createdAt": "2026-05-16T00:26:06Z",
+      "updatedAt": "2026-05-16T00:26:06Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 1438,
+      "id": "I_kwDOASA0os8AAAABCbUjfw",
+      "title": "[rfced] May we rephrase the definition of this error alert to improve",
+      "url": "https://github.com/tlswg/tls13-spec/issues/1438",
+      "state": "OPEN",
+      "author": "ekr-aibot",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "[rfced] May we rephrase the definition of this error alert to improve\nreadability and provide clarity?\n\nOriginal:\n   unrecognized_name:  Sent by servers when no server exists identified\n      by the name provided by the client via the \"server_name\" extension\n      (see [RFC6066]).\n\nPerhaps:\n   unrecognized_name:  Sent by servers when no server that can be identified\n      by the name provided by the client via the \"server_name\" extension\n      (see [RFC6066]) exists.",
+      "createdAt": "2026-05-16T00:26:07Z",
+      "updatedAt": "2026-05-16T00:26:07Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 1439,
+      "id": "I_kwDOASA0os8AAAABCbUjpA",
+      "title": "[rfced] In Section 9.1, may we format these two items into an",
+      "url": "https://github.com/tlswg/tls13-spec/issues/1439",
+      "state": "OPEN",
+      "author": "ekr-aibot",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "[rfced] In Section 9.1, may we format these two items into an\nunordered list?\n\nOriginal:\n   In the absence of an application profile standard specifying\n   otherwise:\n\n   A TLS-compliant application MUST implement the TLS_AES_128_GCM_SHA256\n   [GCM] cipher suite and SHOULD implement the TLS_AES_256_GCM_SHA384\n   [GCM] and TLS_CHACHA20_POLY1305_SHA256 [RFC8439] cipher suites (see\n   Appendix B.4).\n\n   A TLS-compliant application MUST support digital signatures with\n   rsa_pkcs1_sha256 (for certificates), rsa_pss_rsae_sha256 (for\n   CertificateVerify and certificates), and ecdsa_secp256r1_sha256.  A\n   TLS-compliant application MUST support key exchange with secp256r1\n   (NIST P-256) and SHOULD support key exchange with X25519 [RFC7748].\n\nPerhaps:\n   In the absence of an application profile standard specifying\n   otherwise:\n\n   *  A TLS-compliant application MUST implement the TLS_AES_128_GCM_SHA256\n      [GCM] cipher suite and SHOULD implement the TLS_AES_256_GCM_SHA384\n      [GCM] and TLS_CHACHA20_POLY1305_SHA256 [RFC8439] cipher suites (see\n      Appendix B.4).\n\n   *  A TLS-compliant application MUST support digital signatures with\n      rsa_pkcs1_sha256 (for certificates), rsa_pss_rsae_sha256 (for\n      CertificateVerify and certificates), and ecdsa_secp256r1_sha256.  A\n      TLS-compliant application MUST support key exchange with secp256r1\n      (NIST P-256) and SHOULD support key exchange with X25519 [RFC7748].",
+      "createdAt": "2026-05-16T00:26:09Z",
+      "updatedAt": "2026-05-16T00:26:09Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 1440,
+      "id": "I_kwDOASA0os8AAAABCbUj3A",
+      "title": "[rfced] FYI, we have updated the parenthetical text as follows to",
+      "url": "https://github.com/tlswg/tls13-spec/issues/1440",
+      "state": "CLOSED",
+      "author": "ekr-aibot",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "[rfced] FYI, we have updated the parenthetical text as follows to\nbetter describe the TLS Supported Groups registry. Please review and\nlet us know of any objections.\n\nOriginal:\n   This document updates two entries in the TLS Supported Groups\n   registry (created under a different name by [RFC4492]; now maintained\n   by [RFC8422]) and updated by [RFC7919] and [RFC8447].\n\nCurrent:\n   This document updates two entries in the TLS Supported Groups\n   registry (created under a different name by [RFC4492]; now maintained\n   by [RFC8422] and updated by [RFC7919] and [RFC8447]).",
+      "createdAt": "2026-05-16T00:26:10Z",
+      "updatedAt": "2026-05-17T02:04:25Z",
+      "closedAt": "2026-05-17T02:04:25Z",
+      "comments": [
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "OK",
+          "createdAt": "2026-05-17T02:04:25Z",
+          "updatedAt": "2026-05-17T02:04:25Z"
+        }
+      ]
+    },
+    {
+      "number": 1441,
+      "id": "I_kwDOASA0os8AAAABCbUkEw",
+      "title": "[rfced] We note that some author comments are present in the markdown file.",
+      "url": "https://github.com/tlswg/tls13-spec/issues/1441",
+      "state": "OPEN",
+      "author": "ekr-aibot",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "[rfced] We note that some author comments are present in the markdown file.\nPlease confirm that no updates related to these comments are outstanding. Note\nthat the comments will be deleted prior to publication.\n\n   {::comment}Cite IND-CPA?{:/comment}\n\n   {::comment}Cite INT-CTXT?{:/comment}",
+      "createdAt": "2026-05-16T00:26:11Z",
+      "updatedAt": "2026-05-16T00:26:11Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 1442,
+      "id": "I_kwDOASA0os8AAAABCbUkMg",
+      "title": "[rfced] FYI - We have updated some artwork to sourcecode. Please review",
+      "url": "https://github.com/tlswg/tls13-spec/issues/1442",
+      "state": "OPEN",
+      "author": "ekr-aibot",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "[rfced] FYI - We have updated some artwork to sourcecode. Please review\nand let us know if further updates are necessary.",
+      "createdAt": "2026-05-16T00:26:12Z",
+      "updatedAt": "2026-05-16T00:26:12Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 1443,
+      "id": "I_kwDOASA0os8AAAABCbUkWA",
+      "title": "[rfced] Please review whether any of the notes in this document",
+      "url": "https://github.com/tlswg/tls13-spec/issues/1443",
+      "state": "CLOSED",
+      "author": "ekr-aibot",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "[rfced] Please review whether any of the notes in this document\nshould be in the <aside> element. It is defined as \"a container for\ncontent that is semantically less important or tangential to the\ncontent that surrounds it\" (https://authors.ietf.org/en/rfcxml-vocabulary#aside).",
+      "createdAt": "2026-05-16T00:26:13Z",
+      "updatedAt": "2026-05-17T02:03:53Z",
+      "closedAt": "2026-05-17T02:03:53Z",
+      "comments": [
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "No.",
+          "createdAt": "2026-05-17T02:03:53Z",
+          "updatedAt": "2026-05-17T02:03:53Z"
+        }
+      ]
+    },
+    {
+      "number": 1444,
+      "id": "I_kwDOASA0os8AAAABCbUkhA",
+      "title": "[rfced] FYI - We have added expansions for the following abbreviations",
+      "url": "https://github.com/tlswg/tls13-spec/issues/1444",
+      "state": "CLOSED",
+      "author": "ekr-aibot",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "[rfced] FYI - We have added expansions for the following abbreviations\nper Section 3.6 of RFC 7322 (\"RFC Style Guide\"). Please review each\nexpansion in the document carefully to ensure correctness.\n\n Elliptic Curve Cryptography (ECC)\n Internet of Things (IoT)",
+      "createdAt": "2026-05-16T00:26:14Z",
+      "updatedAt": "2026-05-17T02:03:42Z",
+      "closedAt": "2026-05-17T02:03:42Z",
+      "comments": [
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "OK.",
+          "createdAt": "2026-05-17T02:03:35Z",
+          "updatedAt": "2026-05-17T02:03:35Z"
+        }
+      ]
+    },
+    {
+      "number": 1445,
+      "id": "I_kwDOASA0os8AAAABCbUlAw",
+      "title": "[rfced] Please review the \"Inclusive Language\" portion of the online",
+      "url": "https://github.com/tlswg/tls13-spec/issues/1445",
+      "state": "CLOSED",
+      "author": "ekr-aibot",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "[rfced] Please review the \"Inclusive Language\" portion of the online\nStyle Guide <https://www.rfc-editor.org/styleguide/part2/#inclusive_language>\nand let us know if any changes are needed.  Updates of this nature typically\nresult in more precise language, which is helpful for readers.\n\nFor example, please consider whether the following should be updated:\n dummy\n man-in-the-middle\n\nIn addition, please consider whether \"traditionally\" should be updated for clarity.\nWhile the NIST website\n<https://web.archive.org/web/20250203031433/https://nvlpubs.nist.gov/nistpubs/ir/2021/NIST.IR.8366.pdf>\nindicates that this term is potentially biased, it is also ambiguous.\n\"Tradition\" is a subjective term, as it is not the same for everyone.",
+      "createdAt": "2026-05-16T00:26:15Z",
+      "updatedAt": "2026-05-16T00:26:57Z",
+      "closedAt": "2026-05-16T00:26:57Z",
+      "comments": [
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I believe the document is fine as presently written.",
+          "createdAt": "2026-05-16T00:26:57Z",
+          "updatedAt": "2026-05-16T00:26:57Z"
+        }
+      ]
+    },
+    {
+      "number": 1446,
+      "id": "I_kwDOASA0os8AAAABCbUlbg",
+      "title": "[rfced] FYI - we will convert the list of Contributors contained within <artwork> to be listed with the <contact> element once the file is converted to RFCXML.",
+      "url": "https://github.com/tlswg/tls13-spec/issues/1446",
+      "state": "CLOSED",
+      "author": "ekr-aibot",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "[rfced] FYI - we will convert the list of Contributors contained within <artwork> to be listed with the <contact> element once the file is converted to RFCXML.\n\nIn addition, we will update the following reference entries that were a challenge to update in markdown.\n\n[BBFGKZ16]\n[BBK17]\n[CCG16]\n[CHECKOWAY]\n[CHSV16]\n[JSS15]\n[LXZFH16]\n[SLOTH]\n[CK01]\n[CLINIC]\n[DH76]\n[DOW92]\n[HCJC16]\n[RSA]\n[SIGMA]\n[FETCH]\n[SHS]\n[DSS]\n[ECDP]\n[KEYAGREEMENT]",
+      "createdAt": "2026-05-16T00:26:16Z",
+      "updatedAt": "2026-05-17T02:03:06Z",
+      "closedAt": "2026-05-17T02:03:06Z",
+      "comments": [
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "OK.",
+          "createdAt": "2026-05-17T02:03:06Z",
+          "updatedAt": "2026-05-17T02:03:06Z"
+        }
+      ]
     }
   ],
   "pulls": [
@@ -72064,16 +72429,18 @@
       "author": "ekr",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "chair action needed"
+      ],
       "body": "This adopts some of  @davidben's clarifications about the transcript but not the redefinition.",
       "createdAt": "2026-05-05T22:51:38Z",
-      "updatedAt": "2026-05-07T17:29:28Z",
+      "updatedAt": "2026-05-15T23:43:17Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "auth48",
       "baseRefOid": "bab26f6fc7321c5c958de9dbbaae24d014254570",
       "headRepository": "ekr/tls13-spec",
       "headRefName": "message_sequence_clarify",
-      "headRefOid": "34581f0ec4306a5a374e0f9792584666ece9f910",
+      "headRefOid": "f69d7ae848ad3779ea9d98634f72b3b5aee437be",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -72295,10 +72662,12 @@
       "author": "ekr",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "chair action needed"
+      ],
       "body": "",
       "createdAt": "2026-05-06T17:43:37Z",
-      "updatedAt": "2026-05-06T17:44:03Z",
+      "updatedAt": "2026-05-15T23:43:59Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "auth48",
       "baseRefOid": "1cac954d5380e1b8b514696992ee9d1dbb85c79d",
@@ -72329,10 +72698,12 @@
       "author": "ekr",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "chair action needed"
+      ],
       "body": "@seanturner ",
       "createdAt": "2026-05-06T17:46:14Z",
-      "updatedAt": "2026-05-06T17:46:14Z",
+      "updatedAt": "2026-05-15T23:43:48Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "auth48",
       "baseRefOid": "1cac954d5380e1b8b514696992ee9d1dbb85c79d",
@@ -72358,7 +72729,7 @@
       "labels": [],
       "body": "",
       "createdAt": "2026-05-07T20:37:22Z",
-      "updatedAt": "2026-05-07T20:37:32Z",
+      "updatedAt": "2026-05-16T00:27:44Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "auth48",
       "baseRefOid": "1cac954d5380e1b8b514696992ee9d1dbb85c79d",
@@ -72376,9 +72747,30 @@
           "body": "@martinthomson @bifurcation PTAL",
           "createdAt": "2026-05-07T20:37:32Z",
           "updatedAt": "2026-05-07T20:37:32Z"
+        },
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@martinthomson  ping?",
+          "createdAt": "2026-05-15T23:43:32Z",
+          "updatedAt": "2026-05-15T23:43:32Z"
         }
       ],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOASA0os8AAAABAG5dIg",
+          "commit": {
+            "abbreviatedOid": "4bd938e"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-05-16T00:27:44Z",
+          "updatedAt": "2026-05-16T00:27:44Z",
+          "comments": []
+        }
+      ]
     },
     {
       "number": 1426,
@@ -72389,21 +72781,31 @@
       "author": "ekr",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "chair action needed"
+      ],
       "body": "",
       "createdAt": "2026-05-07T22:30:48Z",
-      "updatedAt": "2026-05-10T09:38:07Z",
+      "updatedAt": "2026-05-15T23:43:18Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "auth48",
       "baseRefOid": "1cac954d5380e1b8b514696992ee9d1dbb85c79d",
       "headRepository": "ekr/tls13-spec",
       "headRefName": "obsoletes_headers",
-      "headRefOid": "93efc70d03eab585d92e08e21d9e098329910c6f",
+      "headRefOid": "a44aa54a74e9a56bce3714a8e7a4d389d54ef59b",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
+      "comments": [
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@seanturner any objections to merging?",
+          "createdAt": "2026-05-15T23:32:35Z",
+          "updatedAt": "2026-05-15T23:32:35Z"
+        }
+      ],
       "reviews": [
         {
           "id": "PRR_kwDOASA0os79aYWi",
