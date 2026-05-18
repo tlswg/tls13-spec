@@ -5344,9 +5344,9 @@ a Certificate message containing no certificates followed by Finished.
 All of the client's messages for a given response
 <span class="bcp14">MUST</span> appear consecutively on the wire with no intervening messages of other type
 or from other responses.<a href="#section-5.6.2-1" class="pilcrow">¶</a></p>
-<p id="section-5.6.2-2">A client that receives a CertificateRequest message without having sent
-the "post_handshake_auth" extension <span class="bcp14">MUST</span> send an "unexpected_message" fatal
-alert.<a href="#section-5.6.2-2" class="pilcrow">¶</a></p>
+<p id="section-5.6.2-2">A client that receives a post-handshake CertificateRequest message
+without having sent the "post_handshake_auth" extension <span class="bcp14">MUST</span> send an
+"unexpected_message" fatal alert.<a href="#section-5.6.2-2" class="pilcrow">¶</a></p>
 <p id="section-5.6.2-3">Note: Because certificate-based client authentication could involve prompting the user, servers
 <span class="bcp14">MUST</span> be prepared for some delay, including receiving an arbitrary number of
 other messages between sending the CertificateRequest and receiving a
