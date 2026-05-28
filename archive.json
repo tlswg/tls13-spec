@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-05-24T02:14:12.612285+00:00",
+  "timestamp": "2026-05-28T02:07:53.540753+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -73197,7 +73197,7 @@
       "labels": [],
       "body": "@martinthomson ",
       "createdAt": "2026-05-21T22:56:18Z",
-      "updatedAt": "2026-05-21T22:56:18Z",
+      "updatedAt": "2026-05-27T00:59:05Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "4a48fe38dea89bd94462e23b319f0fc1a9abe075",
@@ -73208,7 +73208,110 @@
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
+      "comments": [
+        {
+          "author": "seanturner",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Do you also need to add NewSessionTicket.extension here because the upper bounds went from 2^16-2 to 2^16-1?",
+          "createdAt": "2026-05-26T16:52:42Z",
+          "updatedAt": "2026-05-26T16:52:42Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOASA0os8AAAABBGQNCw",
+          "commit": {
+            "abbreviatedOid": "a3a2c1e"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-05-27T00:59:05Z",
+          "updatedAt": "2026-05-27T00:59:05Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 1451,
+      "id": "PR_kwDOASA0os7f2n_R",
+      "title": "IANA alignment",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1451",
+      "state": "OPEN",
+      "author": "seanturner",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Not entirely sure about all of these.\r\n\r\n- ExtensionType presentation language (front and back):\r\n    - `server_name`: RFC 9261 adds \"CR\" to the TLS 1.3 column. - Added Informative reference to RFC 9261?\r\n    - `max_fragment_length`: IANA also references 8449.\r\n    - `status_request`: RFC 9846 updates how to do it so we should add a reference to IANA entry.\r\n    - `supported_algorithms`: RFC 9846 updates how to do it so we should add a reference to IANA entry.\r\n- TLS Extensions table:\r\n    - `supported_versions` & `psk_key_exchange_modes`: swapped order to match IANA registry order.\r\n    - `ech_outer_extensions`: added as it is now marked Recommended.\r\n    - `renegotiation_info`: added because it is marked as Recommended - maybe it shouldn\u2019t be Recommended=Y?\r\n- IANA Considerations\r\n    - To avoid different rules for the SignatureScheme and PskKeyExchangeMode registries refer (informatively?) to RFC 9847.\r\n    - This documents updates `status_request` and `supported_groups` so asked IANA to add a reference to this RFC.\r\n    - In the IANA registry, the `cached_info` TLS 1.3 column is currently \"-\". This document makes it \"CH, EE\".\r\n    - Added \u201cCH, SH\" to `renegotiation_info` TLS 1.3 column, *BUT* see earlier comment.",
+      "createdAt": "2026-05-27T14:08:47Z",
+      "updatedAt": "2026-05-27T17:57:54Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "main",
+      "baseRefOid": "4a48fe38dea89bd94462e23b319f0fc1a9abe075",
+      "headRepository": "tlswg/tls13-spec",
+      "headRefName": "seanturner-IANA-alignment",
+      "headRefOid": "d963c36d775a99658e0641a765a57bd36834e264",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
       "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOASA0os8AAAABBMHQwA",
+          "commit": {
+            "abbreviatedOid": "d963c36"
+          },
+          "author": "davidben",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-05-27T17:57:54Z",
+          "updatedAt": "2026-05-27T17:57:54Z",
+          "comments": [
+            {
+              "originalPosition": 146,
+              "body": "I think `renegotiation_info` was correct as-is. `renegotiation_info` is a bugfix extension for TLS 1.2 (and below) renegotiation. It's not applicable to TLS 1.3 because we don't have renegotiation in the first place. (And if we did, I sure hope we'd include the bugfix from day 1!) That means:\n\n* A TLS-1.3-_only_ client would not send it in ClientHello\n* A TLS-1.2-or-1.3 client would send it, but only for the benefit of TLS 1.2 servers\n* A TLS 1.3 server would never send it in ServerHello (or any other message)\n* A TLS 1.3 server would ignore it in ClientHello, because it might be talking to a TLS-1.2-or-1.3 client\n\nI think either `-` or `CH` are defensible in that case, depending on how we want to handle the 1.2-or-1.3 thing, but probably `-` is fine?",
+              "createdAt": "2026-05-27T17:57:54Z",
+              "updatedAt": "2026-05-27T17:57:54Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 1452,
+      "id": "PR_kwDOASA0os7f2-4N",
+      "title": "Nits",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1452",
+      "state": "OPEN",
+      "author": "seanturner",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Nits to:\r\n\r\n- Fix space in s1\r\n- Add comma in Finished message description\r\n- replace \"in order to ...\" with \"to ...\"\r\n- more replaces for EDH/ECDHE with asymmetric\r\n    - Wasn't sure about also converting [s9.2 \"supported_groups\" and \"key_share\" text](https://tlswg.org/tls13-spec/rfc9846.html#name-mandatory-to-implement-exte) \"using DHE or ECDHE key exchange\" to \"using DHE or ECDHE key exchange\"\r\n- Consistency WRT referring to messages and quotes around fields",
+      "createdAt": "2026-05-27T14:23:13Z",
+      "updatedAt": "2026-05-27T14:42:06Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "main",
+      "baseRefOid": "4a48fe38dea89bd94462e23b319f0fc1a9abe075",
+      "headRepository": "tlswg/tls13-spec",
+      "headRefName": "seanturner-more-nits-1",
+      "headRefOid": "2fd965d1af78b021dcb41469bf7a5358c67c5c2d",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "debcooley",
+          "authorAssociation": "NONE",
+          "body": "these seem reasonable...  I like the ECDHE/DHE swap for asymmetric....\r\n",
+          "createdAt": "2026-05-27T14:42:06Z",
+          "updatedAt": "2026-05-27T14:42:06Z"
+        }
+      ],
       "reviews": []
     }
   ]
