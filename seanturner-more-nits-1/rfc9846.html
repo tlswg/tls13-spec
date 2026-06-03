@@ -3034,7 +3034,7 @@ Random set to the special value of the SHA-256 of
   C2 A2 11 16 7A BB 8C 5E 07 9E 09 E2 C8 A8 33 9C
 </pre><a href="#section-4.2.3-6" class="pilcrow">¶</a>
 </div>
-<p id="section-4.2.3-7">Upon receiving a ServerHello message, implementations
+<p id="section-4.2.3-7">Upon receiving a message with type server_hello, implementations
 <span class="bcp14">MUST</span> first examine the Random value and, if it matches
 this value, process it as described in <a href="#hello-retry-request" class="auto internal xref">Section 4.2.4</a>.<a href="#section-4.2.3-7" class="pilcrow">¶</a></p>
 <p id="section-4.2.3-8">TLS 1.3 has a downgrade protection mechanism embedded in the server's
