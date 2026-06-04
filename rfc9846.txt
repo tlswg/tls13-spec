@@ -323,7 +323,8 @@ Table of Contents
       support resumption.
 
    *  Upgrade the requirement to initiate key update before exceeding
-      key usage limits to MUST.
+      key usage limits to MUST and clarified the scope of key usage
+      limits.
 
    *  Limit the number of permitted KeyUpdate messages.
 
@@ -338,9 +339,20 @@ Table of Contents
       bytes.  This was an error in the syntax as it is possible to send
       no extensions, which results in length 0.
 
+   *  Corrected the lower bound on ClientHello.extensions.  This was a
+      calculation error.
+
+   *  Corrected the upper bound on NewSessionTicket.extensions.  This
+      was a calculation error.
+
    *  Used more generic language for the asymmetric key exchange, which
       was previously exclusively (EC)DHE, to reflect the use of KEM-
       based key exchange.
+
+   *  Clarified the interaction of the transcript hash with future
+      specifications.
+
+   *  Removed text requiring RSA PSS, matching [RFC9963].
 
    In addition, there have been some improvements to the security
    considerations, especially around privacy.
@@ -5378,6 +5390,10 @@ Auth | {CertificateVerify*}
    [RFC9849]  Rescorla, E., Oku, K., Sullivan, N., and C. A. Wood, "TLS
               Encrypted Client Hello", RFC 9849, DOI 10.17487/RFC9849,
               March 2026, <https://www.rfc-editor.org/rfc/rfc9849>.
+
+   [RFC9963]  Benjamin, D. and A. Popov, "Legacy RSASSA-PKCS1-v1_5 Code
+              Points for TLS 1.3", RFC 9963, DOI 10.17487/RFC9963, April
+              2026, <https://www.rfc-editor.org/rfc/rfc9963>.
 
    [RSA]      Rivest, R., Shamir, A., and L. Adleman, "A method for
               obtaining digital signatures and public-key
