@@ -1372,11 +1372,11 @@ Auth | {CertificateVerify*}
       extensions which are required to establish the cryptographic
       context and negotiate the protocol version.  All TLS 1.3
       ServerHello messages MUST contain the "supported_versions"
-      extension.  Current ServerHello messages additionally contain the
-      "pre_shared_key" extension or the "key_share" extension, or both
-      (when using a PSK with asymmetric key establishment).  Other
-      extensions (see Section 4.3) are sent separately in the
-      EncryptedExtensions message.
+      extension.  Current ServerHello messages additionally contain
+      either the "pre_shared_key" extension or the "key_share"
+      extension, or both (when using a PSK with asymmetric key
+      establishment).  Other extensions (see Section 4.3) are sent
+      separately in the EncryptedExtensions message.
 
    For reasons of backward compatibility with middleboxes (see
    Appendix E.4), the HelloRetryRequest message uses the same structure
@@ -3172,10 +3172,11 @@ Auth | {CertificateVerify*}
 4.7.1.  New Session Ticket Message
 
    If the client's hello contained a suitable "psk_key_exchange_modes"
-   extension at any time after the server has received the client
-   Finished message, it MAY send a NewSessionTicket message.  This
-   message creates a unique association between the ticket value and a
-   secret PSK derived from the resumption secret (see Section 7).
+   extension, the server MAY send a NewSessionTicket message at any time
+   after it has received the client Finished message.  The
+   NewSessionTicket message creates a unique association between the
+   ticket value and a secret PSK derived from the resumption secret (see
+   Section 7).
 
    The client MAY use this PSK for future handshakes by including the
    ticket value in the "pre_shared_key" extension in its ClientHello
