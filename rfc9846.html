@@ -298,16 +298,19 @@ h1, h2, h3, h4, h5, h6 {
   font-size-adjust: 0.5;
   color: var(--title-color);
 }
-h1#title {
-  font-size: 32px;
-  line-height: 40px;
-  clear: both;
-}
-h1#title, h1#rfcnum {
-  margin: 1.5em 0 0.2em;
-}
-h1#rfcnum + h1#title {
-  margin: 0.2em 0;
+h1 {
+  &#title {
+    font-size: 32px;
+    line-height: 40px;
+    clear: both;
+    margin: 1.5em 0 0.2em;
+  }
+  &#rfcnum {
+    margin: 1.5em 0 0.2em;
+    & + h1#title {
+      margin: 0.2em 0;
+    }
+  }
 }
 
 h1, h2, h3 {
@@ -327,10 +330,10 @@ h4, h5, h6 {
 #abstract+p {
   font-size: 18px;
   line-height: 24px;
-}
-#abstract+p code, #abstract+p samp, #abstract+p tt {
-  font-size: 16px;
-  line-height: 0;
+  & code, & samp, & tt {
+    font-size: 16px;
+    line-height: 0;
+  }
 }
 
 p {
@@ -341,59 +344,59 @@ p {
 div {
   margin: 0;
 }
-.alignRight.art-text {
-  background-color: var(--highlight-color);
-  border: 1px solid var(--line-color);
-  border-radius: 3px;
-  padding: 0.5em 1em 0;
-  margin-bottom: 0.5em;
-}
-.alignRight.art-text pre {
-  padding: 0;
-  width: auto;
-}
 .alignRight {
   margin: 1em 0;
-}
-.alignRight > *:first-child {
-  border: none;
-  margin: 0;
-  float: right;
-  clear: both;
-}
-.alignRight > *:nth-child(2) {
-  clear: both;
-  display: block;
-  border: none;
+  &.art-text {
+    background-color: var(--highlight-color);
+    border: 1px solid var(--line-color);
+    border-radius: 3px;
+    padding: 0.5em 1em 0;
+    margin-bottom: 0.5em;
+    & pre {
+      padding: 0;
+      width: auto;
+    }
+  }
+  & > *:first-child {
+    border: none;
+    margin: 0;
+    float: right;
+    clear: both;
+  }
+  & > *:nth-child(2) {
+    clear: both;
+    display: block;
+    border: none;
+  }
 }
 svg {
   display: block;
-}
-/* font-family isn't space-separated, but =~ will have to do */
-svg[font-family~="monospace" i], svg [font-family~="monospace" i] {
-  font-family: var(--font-mono);
-}
-.alignCenter.art-text {
-  background-color: var(--highlight-color);
-  border: 1px solid var(--line-color);
-  border-radius: 3px;
-  padding: 0.5em 1em 0;
-  margin-bottom: 0.5em;
-}
-.alignCenter.art-text pre {
-  padding: 0;
-  width: auto;
+  /* font-family isn't space-separated, but =~ will have to do */
+  &[font-family~="monospace" i], & [font-family~="monospace" i] {
+    font-family: var(--font-mono);
+  }
 }
 .alignCenter {
   margin: 1em 0;
-}
-.alignCenter > *:first-child {
-  border: none;
-  /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
-     support flexbox yet.
-  */
-  display: table;
-  margin: 0 auto;
+  &.art-text {
+    background-color: var(--highlight-color);
+    border: 1px solid var(--line-color);
+    border-radius: 3px;
+    padding: 0.5em 1em 0;
+    margin-bottom: 0.5em;
+    & pre {
+      padding: 0;
+      width: auto;
+    }
+  }
+  & > *:first-child {
+    border: none;
+    /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
+       support flexbox yet.
+    */
+    display: table;
+    margin: 0 auto;
+  }
 }
 
 /* lists */
@@ -431,26 +434,25 @@ dl {
     --indent: 5ch;
     & > dt {
       min-width: calc(var(--indent) - 2ch);
+      float: none;
     }
-  }
-  &.olPercent > dt {
-    float: none;
   }
 
   dl > dd > & {
     margin-top: 0.5em;
     margin-bottom: 0;
   }
-}
-dl:not(.dlNewline) > dt {
-  float: left;
-  margin-right: 2ch;
-  min-width: 8ch;
-}
-dl > dd {
-  margin-bottom: .8em;
-  margin-left: var(--indent) !important; /* stupid element overrides */
-  min-height: 2ex;
+
+  &:not(.dlNewline) > dt {
+    float: left;
+    margin-right: 2ch;
+    min-width: 8ch;
+  }
+  & > dd {
+    margin-bottom: .8em;
+    margin-left: var(--indent) !important; /* stupid element overrides */
+    min-height: 2ex;
+  }
 }
 :is(dl.compact, .dlCompact) > dd {
   margin-bottom: 0;
@@ -466,20 +468,22 @@ dl > dd {
 }
 
 /* links */
-a, a[href].selfRef:hover {
+a {
   text-decoration: none;
+  &[href] {
+    color: var(--link-color);
+    &:hover { text-decoration: underline; }
+    &.selfRef {
+      color: var(--text-color);
+      &:hover {
+        text-decoration: none;
+        background-color: var(--highlight-color);
+      }
+    }
+  }
 }
-a[href] {
-  color: var(--link-color);
-}
-a[href].selfRef, .iref + a[href].internal {
+.iref + a[href].internal {
   color: var(--text-color);
-}
-a[href]:hover {
-  text-decoration: underline;
-}
-a[href].selfRef:hover {
-  background-color: var(--highlight-color);
 }
 a.xref:is(.cite, .auto), :is(#status-of-memo, #copyright) a {
   white-space: nowrap;
@@ -515,9 +519,9 @@ img {
 figure {
   margin: 0.5em 0;
   padding: 0;
-}
-figure blockquote {
-  margin: 0.8em 0.4em 0.4em;
+  & blockquote {
+    margin: 0.8em 0.4em 0.4em;
+  }
 }
 figcaption, caption {
   font-style: italic;
@@ -527,17 +531,19 @@ figcaption, caption {
 }
 @media screen {
   /* Auto-collapse boilerplate. */
-  :is(#status-of-memo, #copyright) p {
-    margin: -2px 0;
-    max-height: 0;
-    transition: max-height 2s ease, margin 0.5s ease 0.5s;
-    overflow: hidden;
-  }
-  :is(#status-of-memo, #copyright):hover p,
-  :is(#status-of-memo, #copyright) h2:target ~ p {
-    margin: 0.5em 0;
-    max-height: 500px;
-    overflow: auto;
+  :is(#status-of-memo, #copyright) {
+    & p {
+      margin: -2px 0;
+      max-height: 0;
+      transition: max-height 2s ease, margin 0.5s ease 0.5s;
+      overflow: hidden;
+    }
+    &:hover p,
+    & h2:target ~ p {
+      margin: 0.5em 0;
+      max-height: 500px;
+      overflow: auto;
+    }
   }
   pre, svg {
     display: inline-block;
@@ -587,25 +593,17 @@ table {
   max-width: 100%;
   margin: 0 0 1em;
   border-collapse: collapse;
-}
-table.right {
-  margin-left: auto;
-}
-table.center {
-  margin-left: auto;
-  margin-right: auto;
-}
-table.left {
-  margin-right: auto;
-}
-table .text-left {
-  text-align: left;
-}
-table .text-center {
-  text-align: center;
-}
-table .text-right {
-  text-align: right;
+  &.right { margin-left: auto; }
+  &.center { margin-left: auto; margin-right: auto; }
+  &.left { margin-right: auto; }
+  & .text-left { text-align: left; }
+  & .text-center { text-align: center; }
+  & .text-right { text-align: right; }
+  & caption {
+    margin: 0;
+    padding: 3px 0 3px 1em;
+  }
+  & p { margin: 0; }
 }
 
 thead, tbody {
@@ -625,13 +623,6 @@ th {
 :is(tr:nth-child(2n+1), thead+tbody > tr:nth-child(2n)) > td {
   background-color: var(--highlight-color);
 }
-table caption {
-  margin: 0;
-  padding: 3px 0 3px 1em;
-}
-table p {
-  margin: 0;
-}
 
 /* pilcrow */
 a.pilcrow {
@@ -642,18 +633,16 @@ a.pilcrow {
     color: var(--pilcrow-weak);
     &:hover { text-decoration: none; }
   }
-}
-@media not print {
-  :hover > a.pilcrow, a.pilcrow:focus {
-    opacity: 1;
+  @media not print {
+    :hover > &, &:focus {
+      opacity: 1;
+    }
+    &[href]:hover {
+      color: var(--pilcrow-strong);
+      background-color: transparent;
+    }
   }
-  a.pilcrow[href]:hover {
-    color: var(--pilcrow-strong);
-    background-color: transparent;
-  }
-}
-@media print {
-  a.pilcrow {
+  @media print {
     display: none;
   }
 }
@@ -712,9 +701,9 @@ sub, sup {
   font-size: 0.9em;
   font-style: italic;
   margin-top: 2em;
-}
-.docInfo .prepared {
-  float: right;
+  & .prepared {
+    float: right;
+  }
 }
 
 /* table of contents */
@@ -804,23 +793,27 @@ hr.addr {
   max-width: calc(100% - 16px);
 }
 @media (min-width: 500px) {
-  #authors-addresses > section {
-    column-count: 2;
-    column-gap: 20px;
-  }
-  #authors-addresses > section > h2 {
-    column-span: all;
-  }
-  /* hack for break-inside: avoid-column */
-  #authors-addresses address {
-    display: inline-block;
-    break-inside: avoid-column;
+  #authors-addresses {
+    & > section {
+      column-count: 2;
+      column-gap: 20px;
+    }
+    & > section > h2 {
+      column-span: all;
+    }
+    /* hack for break-inside: avoid-column */
+    & address {
+      display: inline-block;
+      break-inside: avoid-column;
+    }
   }
 }
 
 /* Comments */
-.rfcEditorRemove p:first-of-type {
-  font-style: italic;
+.rfcEditorRemove {
+  & p:first-of-type {
+    font-style: italic;
+  }
 }
 .cref {
   background-color: rgba(249, 232, 105, 0.3);
@@ -831,19 +824,21 @@ hr.addr {
 }
 
 @media screen {
-  #toc nav {
-    font-family: var(--font-title);
-    font-weight: 360;
-    & > ul { margin-bottom: 2em; }
-    & ul {
-      margin: 0 0 0 4px;
-      & :is(p, li) {
-        margin: 2px 0;
+  #toc {
+    & nav {
+      font-family: var(--font-title);
+      font-weight: 360;
+      & > ul { margin-bottom: 2em; }
+      & ul {
+        margin: 0 0 0 4px;
+        & :is(p, li) {
+          margin: 2px 0;
+        }
       }
     }
-  }
-  #toc a.toplink {
-    float: right;
+    & a.toplink {
+      float: right;
+    }
   }
 }
 @media not screen {
@@ -864,54 +859,54 @@ hr.addr {
     margin: 0;
     border-bottom: 1px solid #ccc;
     opacity: 0.6;
-  }
-  #toc h2 {
-    margin: 0;
-    padding: 2px 0 2px 6px;
-    padding-right: 1em;
-    font-size: 18px;
-    line-height: 24px;
-    min-width: 190px;
-    text-align: right;
-    background-color: #444;
-    color: white;
-    cursor: pointer;
-    &::before { /* css hamburger */
-      float: right;
-      position: relative;
-      width: 1em;
-      height: 1px;
-      left: -164px;
-      margin: 8px 0 0 0;
-      background: white none repeat scroll 0 0;
-      box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
-      content: "";
+    & h2 {
+      margin: 0;
+      padding: 2px 0 2px 6px;
+      padding-right: 1em;
+      font-size: 18px;
+      line-height: 24px;
+      min-width: 190px;
+      text-align: right;
+      background-color: #444;
+      color: white;
+      cursor: pointer;
+      &::before { /* css hamburger */
+        float: right;
+        position: relative;
+        width: 1em;
+        height: 1px;
+        left: -164px;
+        margin: 8px 0 0 0;
+        background: white none repeat scroll 0 0;
+        box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
+        content: "";
+      }
     }
-  }
-  #toc nav {
-    display: none;
-    background-color: var(--background-color);
-    padding: 0.5em 1em 1em;
-    overflow: auto;
-    overscroll-behavior: contain;
-    height: calc(100vh - 48px);
-    border-left: 1px solid #ddd;
-  }
-  #toc.active {
-    opacity: 1;
-    & nav { display: block; }
-  }
-  /* Make the collapsed ToC header render white on gray also when it's a link */
-  #toc h2 a,
-  #toc h2 a:is(:link, :focus, :hover),
-  #toc a.toplink,
-  #toc a.toplink:hover {
-    color: white;
-    background-color: #444;
-    text-decoration: none;
-  }
-  #toc a.toplink {
-    margin: 2px 0.5em 0;
+    & nav {
+      display: none;
+      background-color: var(--background-color);
+      padding: 0.5em 1em 1em;
+      overflow: auto;
+      overscroll-behavior: contain;
+      height: calc(100vh - 48px);
+      border-left: 1px solid #ddd;
+    }
+    &.active {
+      opacity: 1;
+      & nav { display: block; }
+    }
+    /* Make the collapsed ToC header render white on gray also when it's a link */
+    & h2 a,
+    & h2 a:is(:link, :focus, :hover),
+    & a.toplink,
+    & a.toplink:hover {
+      color: white;
+      background-color: #444;
+      text-decoration: none;
+    }
+    & a.toplink {
+      margin: 2px 0.5em 0;
+    }
   }
 }
 
@@ -930,26 +925,26 @@ hr.addr {
     margin: 0;
     padding: 0;
     z-index: 1;
-  }
-  #toc h2 {
-    margin: 0;
-    padding: 0.25em 1em 1em 0;
-  }
-  #toc nav {
-    display: block;
-    height: calc(90vh - 84px);
-    bottom: 0;
-    padding: 0.5em 0 2em;
-    overflow: auto;
-    overscroll-behavior: contain;
-    scrollbar-width: thin;
+    & h2 {
+      margin: 0;
+      padding: 0.25em 1em 1em 0;
+    }
+    & nav {
+      display: block;
+      height: calc(90vh - 84px);
+      bottom: 0;
+      padding: 0.5em 0 2em;
+      overflow: auto;
+      overscroll-behavior: contain;
+      scrollbar-width: thin;
+    }
+    & a.toplink {
+      margin: 8px 0.5em 0;
+    }
   }
   img { /* future proofing */
     max-width: 100%;
     height: auto;
-  }
-  #toc a.toplink {
-    margin: 8px 0.5em 0;
   }
 }
 
@@ -965,12 +960,13 @@ hr.addr {
   #n-copyright-notice {
     border-bottom: none;
   }
-  #toc, #n-introduction {
-    page-break-before: always;
-  }
   #toc {
+    page-break-before: always;
     border-top: none;
     padding-top: 0;
+  }
+  #n-introduction {
+    page-break-before: always;
   }
   figure, pre, .vcard {
     page-break-inside: avoid;
@@ -1032,17 +1028,19 @@ hr.addr {
 }
 
 /* SVG Trick: a prefix match works because only black and white are allowed */
-svg :is([stroke="black"], [stroke^="#000"]) {
-  stroke: var(--text-color);
-}
-svg :is([stroke="white"], [stroke^="#fff"]) {
-  stroke: var(--background-color);
-}
-svg :is([fill="black"], [fill^="#000"], :not([fill])) {
-  fill: var(--text-color);
-}
-svg :is([fill="white"], [fill^="#fff"]) {
-  fill: var(--background-color);
+svg {
+  & :is([stroke="black"], [stroke^="#000"]) {
+    stroke: var(--text-color);
+  }
+  & :is([stroke="white"], [stroke^="#fff"]) {
+    stroke: var(--background-color);
+  }
+  & :is([fill="black"], [fill^="#000"], :not([fill])) {
+    fill: var(--text-color);
+  }
+  & :is([fill="white"], [fill^="#fff"]) {
+    fill: var(--background-color);
+  }
 }
 </style>
 
@@ -1676,7 +1674,7 @@ extension <span>[<a href="#RFC7627" class="cite xref">RFC7627</a>]</span>, and e
 It also obsoletes the TLS ticket mechanism defined in <span>[<a href="#RFC5077" class="cite xref">RFC5077</a>]</span> and replaces it with the mechanism
 defined in <a href="#resumption-and-psk" class="auto internal xref">Section 2.2</a>. Because TLS 1.3 changes the way keys are derived, it
 updates <span>[<a href="#RFC5705" class="cite xref">RFC5705</a>]</span> as described in <a href="#exporters" class="auto internal xref">Section 7.5</a>;
-exporters no longer distinguish between having no context and having an empty context.It also changes
+exporters no longer distinguish between having no context and having an empty context. It also changes
 how Online Certificate Status Protocol (OCSP) messages are carried and therefore updates <span>[<a href="#RFC6066" class="cite xref">RFC6066</a>]</span>
 and obsoletes <span>[<a href="#RFC6961" class="cite xref">RFC6961</a>]</span> as described in <a href="#ocsp-and-sct" class="auto internal xref">Section 4.5.1.1</a>.<a href="#section-1-8" class="pilcrow">¶</a></p>
 <div id="conventions-and-terminology">
@@ -1996,7 +1994,7 @@ in the diagram above):<a href="#section-2-8" class="pilcrow">¶</a></p>
 <p id="section-2-10">In the Key Exchange phase, the client sends the ClientHello
 (<a href="#client-hello" class="auto internal xref">Section 4.2.2</a>) message, which contains a random nonce
 (ClientHello.random); its offered protocol versions; a list of
-symmetric cipher/hash pairs; either a list of Diffie-Hellman key shares (in the
+symmetric cipher/hash pairs; either a list of asymmetric key exchange shares (in the
 "key_share" (<a href="#key-share" class="auto internal xref">Section 4.3.8</a>) extension), a list of pre-shared key labels (in the
 "pre_shared_key" (<a href="#pre-shared-key-extension" class="auto internal xref">Section 4.3.11</a>) extension), or both; and
 potentially additional extensions.  Additional fields and/or messages
@@ -2008,7 +2006,7 @@ parameters. The combination of the ClientHello
 and the ServerHello determines the shared keys. If asymmetric
 key establishment is in use, then the ServerHello
 contains a "key_share" extension with the server's ephemeral
-Diffie-Hellman share; the server's share <span class="bcp14">MUST</span> be in the same group as one of the
+asymmetric key exchange share; the server's share <span class="bcp14">MUST</span> be in the same group as one of the
 client's shares. If PSK key establishment is
 in use, then the ServerHello contains a "pre_shared_key"
 extension indicating which of the client's offered PSKs was selected.
@@ -2062,7 +2060,7 @@ certificate. [<a href="#certificate-verify" class="auto internal xref">Section 4
         <dd style="margin-left: 1.5em" id="section-2-15.6">
           <p id="section-2-15.6.1">A MAC (Message Authentication Code) over the entire handshake.
 This message provides key confirmation for the shared secrets established in
-the handshake
+the handshake,
 binds the endpoint's identity to the exchanged keys, and in PSK mode
 also authenticates the handshake. [<a href="#finished" class="auto internal xref">Section 4.5.3</a>]<a href="#section-2-15.6.1" class="pilcrow">¶</a></p>
 </dd>
@@ -2211,7 +2209,7 @@ discussed in <span>[<a href="#RFC4086" class="cite xref">RFC4086</a>]</span>. De
 low-entropy sources is not secure. A low-entropy secret, or password, is
 subject to dictionary attacks based on the PSK binder.  The specified PSK
 authentication is not a strong password-based authenticated key exchange even
-when used with Diffie-Hellman key establishment.  Specifically, it does not
+when used with asymmetric key establishment.  Specifically, it does not
 prevent an attacker that can observe the handshake from performing
 a brute-force attack on the password/pre-shared key.<a href="#section-2.2-7" class="pilcrow">¶</a></p>
 </section>
@@ -3654,7 +3652,7 @@ digest used in MGF1 and the digest being signed are
 both the corresponding hash algorithm as defined in <span>[<a href="#SHS" class="cite xref">SHS</a>]</span>.
 The length of the Salt <span class="bcp14">MUST</span> be equal to the length of the output of the
 digest algorithm. If the public key is carried
-in an X.509 certificate, it <span class="bcp14">MUST</span> use the rsaEncryption OID <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>.<a href="#section-4.3.3-7.6.1" class="pilcrow">¶</a></p>
+in an X.509 certificate, it <span class="bcp14">MUST</span> use the rsaEncryption OID <span>[<a href="#RFC3279" class="cite xref">RFC3279</a>]</span>.<a href="#section-4.3.3-7.6.1" class="pilcrow">¶</a></p>
 </dd>
             <dd class="break"></dd>
 <dt id="section-4.3.3-7.7">EdDSA algorithms:</dt>
@@ -3907,7 +3905,7 @@ Values 0x01FC through 0x01FF are reserved for Private Use.<a href="#section-4.3.
 <p id="section-4.3.7-6">Items in "named_group_list" are ordered according to the sender's
 preferences (most preferred choice first). The "named_group_list"
 <span class="bcp14">MUST NOT</span> contain any duplicate entries.  A recipient <span class="bcp14">MAY</span> abort a connection
-with a fatal illegal_parameter alert if it detects a duplicate entry.<a href="#section-4.3.7-6" class="pilcrow">¶</a></p>
+with a fatal "illegal_parameter" alert if it detects a duplicate entry.<a href="#section-4.3.7-6" class="pilcrow">¶</a></p>
 <p id="section-4.3.7-7">As of TLS 1.3, servers are permitted to send the "supported_groups"
 extension to the client. Clients <span class="bcp14">MUST NOT</span> act upon any information
 found in "supported_groups" prior to successful completion of the
@@ -4499,7 +4497,7 @@ of the handshake.<a href="#section-4.3.11.2-8" class="pilcrow">¶</a></p>
 <p id="section-4.3.11.3-1">Clients are permitted to "stream" 0-RTT data until they
 receive the server's Finished, only then sending the EndOfEarlyData
 message, followed by the rest of the handshake.
-In order to avoid deadlocks, when accepting "early_data",
+To avoid deadlocks, when accepting "early_data",
 servers <span class="bcp14">MUST</span> process the client's ClientHello and then immediately
 send their flight of messages, rather than waiting for the client's
 EndOfEarlyData message before sending its ServerHello.<a href="#section-4.3.11.3-1" class="pilcrow">¶</a></p>
@@ -5384,7 +5382,7 @@ probability of key reuse within a given connection.  Note that even
 if the key repeats, the IV is also independently generated, so the
 chance of a joint key/IV collision is much lower.
 To provide an extra margin of security, sending implementations <span class="bcp14">MUST NOT</span> allow the epoch -- and hence the number of key updates --
-to exceed 2<sup>48</sup>-1.  In order to allow this value to be changed later
+to exceed 2<sup>48</sup>-1. In order to allow this value to be changed later
 -- for instance for ciphers with more than 128-bit keys --
 receiving implementations <span class="bcp14">MUST NOT</span> enforce this
 rule.  If a sending implementation receives a KeyUpdate with
@@ -5910,11 +5908,11 @@ requirement could cause truncation in the read side. Both parties need not
 wait to receive a "close_notify" alert before closing their read side of the
 connection, though doing so would introduce the possibility of truncation.<a href="#section-6.1-4" class="pilcrow">¶</a></p>
 <p id="section-6.1-5">Application protocols <span class="bcp14">MAY</span> choose to flush their send buffers and immediately
-send a close_notify upon receiving a close_notify, but this allows an attacker
-to influence the data that the peer receives by delaying the close_notify or
+send a "close_notify" upon receiving a "close_notify", but this allows an attacker
+to influence the data that the peer receives by delaying the "close_notify" or
 by delaying the transport-level delivery of the application's packets. These
 issues can be addressed at the application layer, for instance by ignoring
-packets received after transmitting the close_notify.<a href="#section-6.1-5" class="pilcrow">¶</a></p>
+packets received after transmitting the "close_notify".<a href="#section-6.1-5" class="pilcrow">¶</a></p>
 <p id="section-6.1-6">If the application protocol using TLS provides that any data may be carried
 over the underlying transport after the TLS connection is closed, the TLS
 implementation <span class="bcp14">MUST</span> receive a "close_notify" alert before indicating
@@ -7057,6 +7055,10 @@ alert in the TLS Alerts registry with the value given in <a href="#alert-protoco
 <dt id="RFC2119">[RFC2119]</dt>
         <dd>
 <span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC3279">[RFC3279]</dt>
+        <dd>
+<span class="refAuthor">Bassham, L.</span>, <span class="refAuthor">Polk, W.</span>, and <span class="refAuthor">R. Housley</span>, <span class="refTitle">"Algorithms and Identifiers for the Internet X.509 Public Key Infrastructure Certificate and Certificate Revocation List (CRL) Profile"</span>, <span class="seriesInfo">RFC 3279</span>, <span class="seriesInfo">DOI 10.17487/RFC3279</span>, <time datetime="2002-05" class="refDate">May 2002</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc3279">https://www.rfc-editor.org/rfc/rfc3279</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC5116">[RFC5116]</dt>
         <dd>
@@ -8314,7 +8316,7 @@ otherwise subverted random number generators.<a href="#appendix-C.1-4" class="pi
 <a href="#appendix-C.2" class="section-number selfRef">C.2. </a><a href="#name-certificates-and-authentica" class="section-name selfRef">Certificates and Authentication</a>
         </h3>
 <p id="appendix-C.2-1">Implementations are responsible for verifying the integrity of certificates and
-should generally support certificate revocation messages. Absent a specific
+should generally support certificate revocation messages; see <a href="#ocsp-and-sct" class="auto internal xref">Section 4.5.1.1</a>. Absent a specific
 indication from an application profile, certificates should
 always be verified to ensure proper signing by a trusted certificate authority
 (CA). The selection and addition of trust anchors should be done very carefully.
@@ -8450,11 +8452,11 @@ this trivially identifies the user to a passive attacker,
 unlike the client's Certificate, which is encrypted. There are a number of potential
 ways to avoid this risk, including (1) using random identity labels,
 (2) pre-encrypting the identity under a key known to the server, or (3)
-using the Encrypted Client Hello extension <span>[<a href="#RFC9849" class="cite xref">RFC9849</a>]</span>.<a href="#appendix-C.4-3" class="pilcrow">¶</a></p>
+using Encrypted Client Hello <span>[<a href="#RFC9849" class="cite xref">RFC9849</a>]</span>.<a href="#appendix-C.4-3" class="pilcrow">¶</a></p>
 <p id="appendix-C.4-4">If an external PSK identity is used for multiple connections, then it
 will generally be possible for an external observer to track
-clients and/or servers across connections. Use of the
-Encrypted Client Hello extension <span>[<a href="#RFC9849" class="cite xref">RFC9849</a>]</span> can
+clients and/or servers across connections. Use of
+Encrypted Client Hello <span>[<a href="#RFC9849" class="cite xref">RFC9849</a>]</span> can
 mitigate this risk, as can mechanisms external to TLS that
 rotate or encrypt the PSK identity.<a href="#appendix-C.4-4" class="pilcrow">¶</a></p>
 </section>
@@ -8870,7 +8872,7 @@ resumption secret and the MAC used to compute the binder be collision
 resistant. See <a href="#key-derivation-and-hkdf" class="auto internal xref">Appendix F.1.1</a> for more on this.
 Note: The binder does not cover the binder values from other
 PSKs, though they are included in the Finished MAC.<a href="#appendix-F.1-8" class="pilcrow">¶</a></p>
-<p id="appendix-F.1-9">Note: This specification does not currently permit the server to send a certificate_request
+<p id="appendix-F.1-9">Note: This specification does not currently permit the server to send a CertificateRequest
 message in non-certificate-based handshakes (e.g., PSK).
 If this restriction were to be relaxed in future, the
 client's signature would not cover the server's certificate directly.
