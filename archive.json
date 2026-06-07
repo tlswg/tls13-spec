@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-06-04T02:44:31.668677+00:00",
+  "timestamp": "2026-06-07T02:37:05.793194+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -73138,24 +73138,26 @@
       "id": "PR_kwDOASA0os7eIddh",
       "title": "Post merge editorial",
       "url": "https://github.com/tlswg/tls13-spec/pull/1448",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "ekr",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "",
       "createdAt": "2026-05-21T22:53:22Z",
-      "updatedAt": "2026-05-21T22:53:22Z",
+      "updatedAt": "2026-06-04T22:03:55Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "4a48fe38dea89bd94462e23b319f0fc1a9abe075",
       "headRepository": "ekr/tls13-spec",
       "headRefName": "post_merge_editorial",
       "headRefOid": "0c5e067da7a96e591a187e1e6c762cea3b58fa01",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2026-06-04T22:03:55Z",
+      "mergedAt": "2026-06-04T22:03:55Z",
+      "mergedBy": "ekr",
+      "mergeCommit": {
+        "oid": "56efce805bd411c34a799848baf30f1ea5430c77"
+      },
       "comments": [],
       "reviews": []
     },
@@ -73190,24 +73192,26 @@
       "id": "PR_kwDOASA0os7eIgSB",
       "title": "Update changelog to be more complete.",
       "url": "https://github.com/tlswg/tls13-spec/pull/1450",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "ekr",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "@martinthomson ",
       "createdAt": "2026-05-21T22:56:18Z",
-      "updatedAt": "2026-05-27T00:59:05Z",
+      "updatedAt": "2026-06-04T22:16:30Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "4a48fe38dea89bd94462e23b319f0fc1a9abe075",
       "headRepository": "ekr/tls13-spec",
       "headRefName": "update_changelog",
-      "headRefOid": "a3a2c1e80f0035f02d147e955d8f539032084fd7",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "457e4e26b1d20de45824d4abd59da4a9a769d9f1",
+      "closedAt": "2026-06-04T22:16:30Z",
+      "mergedAt": "2026-06-04T22:16:30Z",
+      "mergedBy": "ekr",
+      "mergeCommit": {
+        "oid": "e6a7f0ed622fdf56ff54ce6db01b6530e26714cc"
+      },
       "comments": [
         {
           "author": "seanturner",
@@ -73245,7 +73249,7 @@
       "labels": [],
       "body": "Not entirely sure about all of these.\r\n\r\n- ExtensionType presentation language (front and back):\r\n    - `server_name`: RFC 9261 adds \"CR\" to the TLS 1.3 column. - Added Informative reference to RFC 9261?\r\n    - `max_fragment_length`: IANA also references 8449.\r\n    - `status_request`: RFC 9846 updates how to do it so we should add a reference to IANA entry.\r\n    - `supported_algorithms`: RFC 9846 updates how to do it so we should add a reference to IANA entry.\r\n- TLS Extensions table:\r\n    - `supported_versions` & `psk_key_exchange_modes`: swapped order to match IANA registry order.\r\n    - `ech_outer_extensions`: added as it is now marked Recommended.\r\n    - `renegotiation_info`: added because it is marked as Recommended - maybe it shouldn\u2019t be Recommended=Y?\r\n- IANA Considerations\r\n    - To avoid different rules for the SignatureScheme and PskKeyExchangeMode registries refer (informatively?) to RFC 9847.\r\n    - This documents updates `status_request` and `supported_groups` so asked IANA to add a reference to this RFC.\r\n    - In the IANA registry, the `cached_info` TLS 1.3 column is currently \"-\". This document makes it \"CH, EE\".\r\n    - Added \u201cCH, SH\" to `renegotiation_info` TLS 1.3 column, *BUT* see earlier comment.",
       "createdAt": "2026-05-27T14:08:47Z",
-      "updatedAt": "2026-06-03T01:06:25Z",
+      "updatedAt": "2026-06-04T21:53:57Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "4a48fe38dea89bd94462e23b319f0fc1a9abe075",
@@ -73256,7 +73260,15 @@
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
+      "comments": [
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@seanturner I'm still confused about the cites to 9846. Is that really the convention?",
+          "createdAt": "2026-06-04T21:53:57Z",
+          "updatedAt": "2026-06-04T21:53:57Z"
+        }
+      ],
       "reviews": [
         {
           "id": "PRR_kwDOASA0os8AAAABBMHQwA",
@@ -73377,24 +73389,26 @@
       "id": "PR_kwDOASA0os7f2-4N",
       "title": "Nits",
       "url": "https://github.com/tlswg/tls13-spec/pull/1452",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "seanturner",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "Nits to:\r\n\r\n- Fix space in s1\r\n- Add comma in Finished message description\r\n- replace \"in order to ...\" with \"to ...\"\r\n- more replaces for EDH/ECDHE with asymmetric\r\n    - Wasn't sure about also converting [s9.2 \"supported_groups\" and \"key_share\" text](https://tlswg.org/tls13-spec/rfc9846.html#name-mandatory-to-implement-exte) \"using DHE or ECDHE key exchange\" to \"using DHE or ECDHE key exchange\"\r\n- Consistency WRT referring to messages and quotes around fields",
       "createdAt": "2026-05-27T14:23:13Z",
-      "updatedAt": "2026-06-03T00:22:25Z",
+      "updatedAt": "2026-06-04T22:01:31Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "4a48fe38dea89bd94462e23b319f0fc1a9abe075",
       "headRepository": "tlswg/tls13-spec",
       "headRefName": "seanturner-more-nits-1",
       "headRefOid": "f1c30f00e851ba0fad354a1c072488d25c5c1461",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2026-06-04T22:01:31Z",
+      "mergedAt": "2026-06-04T22:01:31Z",
+      "mergedBy": "ekr",
+      "mergeCommit": {
+        "oid": "f1c30f00e851ba0fad354a1c072488d25c5c1461"
+      },
       "comments": [
         {
           "author": "debcooley",
@@ -73517,6 +73531,32 @@
           ]
         }
       ]
+    },
+    {
+      "number": 1453,
+      "id": "PR_kwDOASA0os7i3_ot",
+      "title": "Change changelog to present tense",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1453",
+      "state": "OPEN",
+      "author": "ekr",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "@seanturner r?",
+      "createdAt": "2026-06-04T22:18:19Z",
+      "updatedAt": "2026-06-04T22:18:19Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "main",
+      "baseRefOid": "e6a7f0ed622fdf56ff54ce6db01b6530e26714cc",
+      "headRepository": "ekr/tls13-spec",
+      "headRefName": "changelog_tense",
+      "headRefOid": "e6ab347e69620a7db0986e8e39e0cbf584e7d41b",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
