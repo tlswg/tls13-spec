@@ -1752,7 +1752,7 @@ specific technical changes:<a href="#section-1.2-1" class="pilcrow">¶</a></p>
             <p id="section-1.2-2.2.1">Forbid negotiating TLS 1.0 and 1.1 as they are now deprecated by <span>[<a href="#RFC8996" class="cite xref">RFC8996</a>]</span>.<a href="#section-1.2-2.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.2-2.3">
-            <p id="section-1.2-2.3.1">Removes ambiguity around which hash is used with PreSharedKeys and
+            <p id="section-1.2-2.3.1">Remove ambiguity around which hash is used with PreSharedKeys and
 HelloRetryRequest.<a href="#section-1.2-2.3.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.2-2.4">
@@ -1778,30 +1778,30 @@ be ignored.<a href="#section-1.2-2.8.1" class="pilcrow">¶</a></p>
             <p id="section-1.2-2.9.1">Add a "general_error" generic alert.<a href="#section-1.2-2.9.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.2-2.10">
-            <p id="section-1.2-2.10.1">Corrected the lower bound on CertificateRequest.extensions
+            <p id="section-1.2-2.10.1">Correct the lower bound on CertificateRequest.extensions
 to be 0 bytes. This was an error in the syntax as it
 is possible to send no extensions, which results in
 length 0.<a href="#section-1.2-2.10.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.2-2.11">
-            <p id="section-1.2-2.11.1">Corrected the lower bound on ClientHello.extensions. This
+            <p id="section-1.2-2.11.1">Correct the lower bound on ClientHello.extensions. This
 was a calculation error.<a href="#section-1.2-2.11.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.2-2.12">
-            <p id="section-1.2-2.12.1">Corrected the upper bound on NewSessionTicket.extensions.
+            <p id="section-1.2-2.12.1">Correct the upper bound on NewSessionTicket.extensions.
 This was a calculation error.<a href="#section-1.2-2.12.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.2-2.13">
-            <p id="section-1.2-2.13.1">Used more generic language for the asymmetric key exchange,
+            <p id="section-1.2-2.13.1">Use more generic language for the asymmetric key exchange,
 which was previously exclusively (EC)DHE,
 to reflect the use of KEM-based key exchange.<a href="#section-1.2-2.13.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.2-2.14">
-            <p id="section-1.2-2.14.1">Clarified the interaction of the transcript hash with
+            <p id="section-1.2-2.14.1">Clarify the interaction of the transcript hash with
 future specifications.<a href="#section-1.2-2.14.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.2-2.15">
-            <p id="section-1.2-2.15.1">Removed text requiring RSA PSS, matching <span>[<a href="#RFC9963" class="cite xref">RFC9963</a>]</span>.<a href="#section-1.2-2.15.1" class="pilcrow">¶</a></p>
+            <p id="section-1.2-2.15.1">Remove text requiring RSA PSS, matching <span>[<a href="#RFC9963" class="cite xref">RFC9963</a>]</span>.<a href="#section-1.2-2.15.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <p id="section-1.2-3">In addition, there have been some improvements to the
