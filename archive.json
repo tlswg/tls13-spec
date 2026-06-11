@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-06-07T02:37:05.793194+00:00",
+  "timestamp": "2026-06-11T02:41:38.735635+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -73537,26 +73537,42 @@
       "id": "PR_kwDOASA0os7i3_ot",
       "title": "Change changelog to present tense",
       "url": "https://github.com/tlswg/tls13-spec/pull/1453",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "ekr",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "@seanturner r?",
       "createdAt": "2026-06-04T22:18:19Z",
-      "updatedAt": "2026-06-04T22:18:19Z",
+      "updatedAt": "2026-06-10T16:03:20Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "e6a7f0ed622fdf56ff54ce6db01b6530e26714cc",
       "headRepository": "ekr/tls13-spec",
       "headRefName": "changelog_tense",
       "headRefOid": "e6ab347e69620a7db0986e8e39e0cbf584e7d41b",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2026-06-10T16:03:20Z",
+      "mergedAt": "2026-06-10T16:03:20Z",
+      "mergedBy": "ekr",
+      "mergeCommit": {
+        "oid": "523b9e0dcc0e2c0bcfa7e44c178d80cc0fca9a97"
+      },
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOASA0os8AAAABCmJAiw",
+          "commit": {
+            "abbreviatedOid": "e6ab347"
+          },
+          "author": "seanturner",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-06-10T15:13:00Z",
+          "updatedAt": "2026-06-10T15:13:00Z",
+          "comments": []
+        }
+      ]
     }
   ]
 }
