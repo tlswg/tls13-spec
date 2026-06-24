@@ -17,21 +17,22 @@ which specified TLS 1.3. This document obsoletes RFC 5246 (specifying TLS 1.2) a
 and updates RFCs 5705 and 6066. This document also specifies new requirements
 for TLS 1.2 implementations. 
     " name="description">
-<meta content="xml2rfc 3.33.0" name="generator">
+<meta content="xml2rfc 3.34.0" name="generator">
 <meta content="9846" name="rfc.number">
 <!-- Generator version information:
-  xml2rfc 3.33.0
-    Python 3.12.13
-    ConfigArgParse 1.7
+  xml2rfc 3.34.0
+    Python 3.14.5
+    ConfigArgParse 1.7.5
     google-i18n-address 3.1.1
     intervaltree 3.2.1
     Jinja2 3.1.6
-    lxml 6.0.2
-    platformdirs 4.9.6
+    lxml 6.1.1
+    natsort 8.4.0
+    platformdirs 4.10.0
     pycountry 24.6.1
     PyYAML 6.0.3
     requests 2.33.1
-    wcwidth 0.7.0
+    wcwidth 0.8.1
 -->
 <link href="rfc9846.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
@@ -3172,53 +3173,64 @@ handshake with an "illegal_parameter" alert if the value changes.<a href="#secti
    } Extension;
 
    enum {
-       server_name(0),                             /* RFC 6066 */
-       max_fragment_length(1),                     /* RFC 6066 */
-       status_request(5),                          /* RFC 6066 */
-       supported_groups(10),                       /* RFC 8422, 7919 */
-       signature_algorithms(13),                   /* RFC 8446 */
+       server_name(0),                             /* RFC 6066, 9261 */
+       status_request(5),                          /* RFC 6066, 9846 */
+       supported_groups(10),                       /* RFC 7919, 9846 */
+       signature_algorithms(13),                   /* RFC 9846 */
        use_srtp(14),                               /* RFC 5764 */
        heartbeat(15),                              /* RFC 6520 */
        application_layer_protocol_negotiation(16), /* RFC 7301 */
-       signed_certificate_timestamp(18),           /* RFC 6962 */
        client_certificate_type(19),                /* RFC 7250 */
        server_certificate_type(20),                /* RFC 7250 */
        padding(21),                                /* RFC 7685 */
-       pre_shared_key(41),                         /* RFC 8446 */
-       early_data(42),                             /* RFC 8446 */
-       supported_versions(43),                     /* RFC 8446 */
-       cookie(44),                                 /* RFC 8446 */
-       psk_key_exchange_modes(45),                 /* RFC 8446 */
-       certificate_authorities(47),                /* RFC 8446 */
-       oid_filters(48),                            /* RFC 8446 */
-       post_handshake_auth(49),                    /* RFC 8446 */
-       signature_algorithms_cert(50),              /* RFC 8446 */
-       key_share(51),                              /* RFC 8446 */
+       compress_certificate(27),                   /* RFC 8879 */
+       record_size_limit(28),                      /* RFC 8449 */
+       delegated_credential(34),                   /* RFC 9345 */
+       supported_ekt_ciphers(39),                  /* RFC 8870 */
+       pre_shared_key(41),                         /* RFC 9846 */
+       early_data(42),                             /* RFC 9846 */
+       supported_versions(43),                     /* RFC 9846 */
+       cookie(44),                                 /* RFC 9846 */
+       psk_key_exchange_modes(45),                 /* RFC 9846 */
+       certificate_authorities(47),                /* RFC 9846 */
+       oid_filters(48),                            /* RFC 9846 */
+       post_handshake_auth(49),                    /* RFC 9846 */
+       signature_algorithms_cert(50),              /* RFC 9846 */
+       key_share(51),                              /* RFC 9846 */
+       transparency_info(52),                      /* RFC 9162 */
+       external_id_hash(55),                       /* RFC 8844 */
+       external_session_id(56),                    /* RFC 8844 */
+       quic_transport_parameters(57),              /* RFC 9001 */
+       ticket_request(58),                         /* RFC 9149 */
+       ech_outer_extensions(64768),                /* RFC 9849 */
+       encrypted_client_hello(65037),              /* RFC 9849 */
        (65535)
    } ExtensionType;
 </pre><a href="#section-4.3-2" class="pilcrow">¶</a>
 </div>
-<p id="section-4.3-3">Here:<a href="#section-4.3-3" class="pilcrow">¶</a></p>
+<p id="section-4.3-3">Note: This list includes only extensions marked
+"Recommended" and allowed for TLS 1.3 at the time of this writing.<a href="#section-4.3-3" class="pilcrow">¶</a></p>
+<p id="section-4.3-4">Here:<a href="#section-4.3-4" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-4.3-4.1">
-            <p id="section-4.3-4.1.1">"extension_type" identifies the particular extension type.<a href="#section-4.3-4.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-4.3-5.1">
+            <p id="section-4.3-5.1.1">"extension_type" identifies the particular extension type.<a href="#section-4.3-5.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-4.3-4.2">
-            <p id="section-4.3-4.2.1">"extension_data" contains information specific to the particular
-extension type.<a href="#section-4.3-4.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-4.3-5.2">
+            <p id="section-4.3-5.2.1">"extension_data" contains information specific to the particular
+extension type.<a href="#section-4.3-5.2.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-4.3-5">The contents of the "extension_data" field are typically defined by an
+<p id="section-4.3-6">The contents of the "extension_data" field are typically defined by an
 extension-specific structure defined in the TLS presentation language. Unless
 otherwise specified, trailing data is forbidden. That is, senders <span class="bcp14">MUST NOT</span>
 include data after the structure in the "extension_data" field. When
 processing an extension, receivers <span class="bcp14">MUST</span> abort the handshake with a
 "decode_error" alert if there is data left over after parsing the structure.
 This does not apply if the receiver does not implement or is configured to
-ignore an extension.<a href="#section-4.3-5" class="pilcrow">¶</a></p>
-<p id="section-4.3-6">The list of extension types is maintained by IANA as described in
-<a href="#iana-considerations" class="auto internal xref">Section 11</a>.<a href="#section-4.3-6" class="pilcrow">¶</a></p>
-<p id="section-4.3-7">Extensions are generally structured in a request/response fashion,
+ignore an extension.<a href="#section-4.3-6" class="pilcrow">¶</a></p>
+<p id="section-4.3-7">The list of extension types is maintained by IANA as described in
+<a href="#iana-considerations" class="auto internal xref">Section 11</a>.<a href="#section-4.3-7" class="pilcrow">¶</a></p>
+<p id="section-4.3-8">Extensions are generally structured in a request/response fashion,
 though some extensions are just requests with no corresponding
 response (i.e., indications). The client sends its extension requests
 in the ClientHello message, and the server sends its extension
@@ -3227,21 +3239,21 @@ and Certificate messages. The server sends extension requests in the
 CertificateRequest message which a client <span class="bcp14">MAY</span> respond to with a
 Certificate message. The server <span class="bcp14">MAY</span> also send unsolicited extensions
 in the NewSessionTicket, though the client does not respond directly
-to these.<a href="#section-4.3-7" class="pilcrow">¶</a></p>
-<p id="section-4.3-8">Implementations <span class="bcp14">MUST NOT</span> send extension responses
+to these.<a href="#section-4.3-8" class="pilcrow">¶</a></p>
+<p id="section-4.3-9">Implementations <span class="bcp14">MUST NOT</span> send extension responses
 (i.e., in the ServerHello, EncryptedExtensions, HelloRetryRequest,
 and Certificate messages)
 if the remote endpoint did not send the corresponding extension requests,
 with the exception of the "cookie" extension in the HelloRetryRequest.
 Upon receiving such an extension, an endpoint <span class="bcp14">MUST</span> abort the handshake with an
-"unsupported_extension" alert.<a href="#section-4.3-8" class="pilcrow">¶</a></p>
-<p id="section-4.3-9">The table below indicates the messages where a given extension may
+"unsupported_extension" alert.<a href="#section-4.3-9" class="pilcrow">¶</a></p>
+<p id="section-4.3-10">The table below indicates the messages where a given extension may
 appear, using the following notation: CH (ClientHello), SH
 (ServerHello), EE (EncryptedExtensions), CT (Certificate), CR
 (CertificateRequest), NST (NewSessionTicket), and HRR
 (HelloRetryRequest). If an implementation receives an extension which
 it recognizes and which is not specified for the message in which it
-appears, it <span class="bcp14">MUST</span> abort the handshake with an "illegal_parameter" alert.<a href="#section-4.3-9" class="pilcrow">¶</a></p>
+appears, it <span class="bcp14">MUST</span> abort the handshake with an "illegal_parameter" alert.<a href="#section-4.3-10" class="pilcrow">¶</a></p>
 <span id="name-tls-extensions"></span><div id="extensions-list">
 <table class="center" id="table-1">
           <caption>
@@ -3256,27 +3268,22 @@ appears, it <span class="bcp14">MUST</span> abort the handshake with an "illegal
           </thead>
           <tbody>
             <tr>
-              <td class="text-left" rowspan="1" colspan="1">server_name <span>[<a href="#RFC6066" class="cite xref">RFC6066</a>]</span>
+              <td class="text-left" rowspan="1" colspan="1">server_name <span>[<a href="#RFC6066" class="cite xref">RFC6066</a>]</span> <span>[<a href="#RFC9261" class="cite xref">RFC9261</a>]</span>
 </td>
-              <td class="text-right" rowspan="1" colspan="1">CH, EE</td>
+              <td class="text-right" rowspan="1" colspan="1">CH, EE, CR</td>
             </tr>
             <tr>
-              <td class="text-left" rowspan="1" colspan="1">max_fragment_length <span>[<a href="#RFC6066" class="cite xref">RFC6066</a>]</span>
-</td>
-              <td class="text-right" rowspan="1" colspan="1">CH, EE</td>
-            </tr>
-            <tr>
-              <td class="text-left" rowspan="1" colspan="1">status_request <span>[<a href="#RFC6066" class="cite xref">RFC6066</a>]</span>
+              <td class="text-left" rowspan="1" colspan="1">status_request <span>[<a href="#RFC6066" class="cite xref">RFC6066</a>]</span> <span>[<a href="#RFC9846" class="cite xref">RFC9846</a>]</span>
 </td>
               <td class="text-right" rowspan="1" colspan="1">CH, CR, CT</td>
             </tr>
             <tr>
-              <td class="text-left" rowspan="1" colspan="1">supported_groups <span>[<a href="#RFC7919" class="cite xref">RFC7919</a>]</span>
+              <td class="text-left" rowspan="1" colspan="1">supported_groups <span>[<a href="#RFC7919" class="cite xref">RFC7919</a>]</span> <span>[<a href="#RFC9846" class="cite xref">RFC9846</a>]</span>
 </td>
               <td class="text-right" rowspan="1" colspan="1">CH, EE</td>
             </tr>
             <tr>
-              <td class="text-left" rowspan="1" colspan="1">signature_algorithms <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>
+              <td class="text-left" rowspan="1" colspan="1">signature_algorithms <span>[<a href="#RFC9846" class="cite xref">RFC9846</a>]</span>
 </td>
               <td class="text-right" rowspan="1" colspan="1">CH, CR</td>
             </tr>
@@ -3296,11 +3303,6 @@ appears, it <span class="bcp14">MUST</span> abort the handshake with an "illegal
               <td class="text-right" rowspan="1" colspan="1">CH, EE</td>
             </tr>
             <tr>
-              <td class="text-left" rowspan="1" colspan="1">signed_certificate_timestamp <span>[<a href="#RFC6962" class="cite xref">RFC6962</a>]</span>
-</td>
-              <td class="text-right" rowspan="1" colspan="1">CH, CR, CT</td>
-            </tr>
-            <tr>
               <td class="text-left" rowspan="1" colspan="1">client_certificate_type <span>[<a href="#RFC7250" class="cite xref">RFC7250</a>]</span>
 </td>
               <td class="text-right" rowspan="1" colspan="1">CH, EE</td>
@@ -3314,11 +3316,6 @@ appears, it <span class="bcp14">MUST</span> abort the handshake with an "illegal
               <td class="text-left" rowspan="1" colspan="1">padding <span>[<a href="#RFC7685" class="cite xref">RFC7685</a>]</span>
 </td>
               <td class="text-right" rowspan="1" colspan="1">CH</td>
-            </tr>
-            <tr>
-              <td class="text-left" rowspan="1" colspan="1">cached_info <span>[<a href="#RFC7924" class="cite xref">RFC7924</a>]</span>
-</td>
-              <td class="text-right" rowspan="1" colspan="1">CH, EE</td>
             </tr>
             <tr>
               <td class="text-left" rowspan="1" colspan="1">compress_certificate <span>[<a href="#RFC8879" class="cite xref">RFC8879</a>]</span>
@@ -3341,52 +3338,52 @@ appears, it <span class="bcp14">MUST</span> abort the handshake with an "illegal
               <td class="text-right" rowspan="1" colspan="1">CH, EE</td>
             </tr>
             <tr>
-              <td class="text-left" rowspan="1" colspan="1">pre_shared_key <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>
+              <td class="text-left" rowspan="1" colspan="1">pre_shared_key <span>[<a href="#RFC9846" class="cite xref">RFC9846</a>]</span>
 </td>
               <td class="text-right" rowspan="1" colspan="1">CH, SH</td>
             </tr>
             <tr>
-              <td class="text-left" rowspan="1" colspan="1">early_data <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>
+              <td class="text-left" rowspan="1" colspan="1">early_data <span>[<a href="#RFC9846" class="cite xref">RFC9846</a>]</span>
 </td>
               <td class="text-right" rowspan="1" colspan="1">CH, EE, NST</td>
             </tr>
             <tr>
-              <td class="text-left" rowspan="1" colspan="1">psk_key_exchange_modes <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>
-</td>
-              <td class="text-right" rowspan="1" colspan="1">CH</td>
-            </tr>
-            <tr>
-              <td class="text-left" rowspan="1" colspan="1">cookie <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>
-</td>
-              <td class="text-right" rowspan="1" colspan="1">CH, HRR</td>
-            </tr>
-            <tr>
-              <td class="text-left" rowspan="1" colspan="1">supported_versions <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>
+              <td class="text-left" rowspan="1" colspan="1">supported_versions <span>[<a href="#RFC9846" class="cite xref">RFC9846</a>]</span>
 </td>
               <td class="text-right" rowspan="1" colspan="1">CH, SH, HRR</td>
             </tr>
             <tr>
-              <td class="text-left" rowspan="1" colspan="1">certificate_authorities <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>
+              <td class="text-left" rowspan="1" colspan="1">cookie <span>[<a href="#RFC9846" class="cite xref">RFC9846</a>]</span>
 </td>
-              <td class="text-right" rowspan="1" colspan="1">CH, CR</td>
+              <td class="text-right" rowspan="1" colspan="1">CH, HRR</td>
             </tr>
             <tr>
-              <td class="text-left" rowspan="1" colspan="1">oid_filters <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>
-</td>
-              <td class="text-right" rowspan="1" colspan="1">CR</td>
-            </tr>
-            <tr>
-              <td class="text-left" rowspan="1" colspan="1">post_handshake_auth <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>
+              <td class="text-left" rowspan="1" colspan="1">psk_key_exchange_modes <span>[<a href="#RFC9846" class="cite xref">RFC9846</a>]</span>
 </td>
               <td class="text-right" rowspan="1" colspan="1">CH</td>
             </tr>
             <tr>
-              <td class="text-left" rowspan="1" colspan="1">signature_algorithms_cert <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>
+              <td class="text-left" rowspan="1" colspan="1">certificate_authorities <span>[<a href="#RFC9846" class="cite xref">RFC9846</a>]</span>
 </td>
               <td class="text-right" rowspan="1" colspan="1">CH, CR</td>
             </tr>
             <tr>
-              <td class="text-left" rowspan="1" colspan="1">key_share <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>
+              <td class="text-left" rowspan="1" colspan="1">oid_filters <span>[<a href="#RFC9846" class="cite xref">RFC9846</a>]</span>
+</td>
+              <td class="text-right" rowspan="1" colspan="1">CR</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">post_handshake_auth <span>[<a href="#RFC9846" class="cite xref">RFC9846</a>]</span>
+</td>
+              <td class="text-right" rowspan="1" colspan="1">CH</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">signature_algorithms_cert <span>[<a href="#RFC9846" class="cite xref">RFC9846</a>]</span>
+</td>
+              <td class="text-right" rowspan="1" colspan="1">CH, CR</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">key_share <span>[<a href="#RFC9846" class="cite xref">RFC9846</a>]</span>
 </td>
               <td class="text-right" rowspan="1" colspan="1">CH, SH, HRR</td>
             </tr>
@@ -3394,11 +3391,6 @@ appears, it <span class="bcp14">MUST</span> abort the handshake with an "illegal
               <td class="text-left" rowspan="1" colspan="1">transparency_info <span>[<a href="#RFC9162" class="cite xref">RFC9162</a>]</span>
 </td>
               <td class="text-right" rowspan="1" colspan="1">CH, CR, CT</td>
-            </tr>
-            <tr>
-              <td class="text-left" rowspan="1" colspan="1">connection_id <span>[<a href="#RFC9146" class="cite xref">RFC9146</a>]</span>
-</td>
-              <td class="text-right" rowspan="1" colspan="1">CH, SH</td>
             </tr>
             <tr>
               <td class="text-left" rowspan="1" colspan="1">external_id_hash <span>[<a href="#RFC8844" class="cite xref">RFC8844</a>]</span>
@@ -3420,36 +3412,46 @@ appears, it <span class="bcp14">MUST</span> abort the handshake with an "illegal
 </td>
               <td class="text-right" rowspan="1" colspan="1">CH, EE</td>
             </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">ech_outer_extensions <span>[<a href="#RFC9849" class="cite xref">RFC9849</a>]</span>
+</td>
+              <td class="text-right" rowspan="1" colspan="1">CH</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">encrypted_client_hello <span>[<a href="#RFC9849" class="cite xref">RFC9849</a>]</span>
+</td>
+              <td class="text-right" rowspan="1" colspan="1">CH, HRR, EE</td>
+            </tr>
           </tbody>
         </table>
 </div>
-<p id="section-4.3-11">Note: This table includes only extensions marked
-"Recommended" at the time of this writing.<a href="#section-4.3-11" class="pilcrow">¶</a></p>
-<p id="section-4.3-12">When multiple extensions of different types are present, the
+<p id="section-4.3-12">Note: This table includes only extensions marked
+"Recommended" and allowed for TLS 1.3 at the time of this writing.<a href="#section-4.3-12" class="pilcrow">¶</a></p>
+<p id="section-4.3-13">When multiple extensions of different types are present, the
 extensions <span class="bcp14">MAY</span> appear in any order, with the exception of
 "pre_shared_key" (<a href="#pre-shared-key-extension" class="auto internal xref">Section 4.3.11</a>) which <span class="bcp14">MUST</span> be
 the last extension in the ClientHello (but can appear anywhere in
 the ServerHello extensions block).
 There <span class="bcp14">MUST NOT</span> be more than one extension of the same type in a given
-extension block.<a href="#section-4.3-12" class="pilcrow">¶</a></p>
-<p id="section-4.3-13">In TLS 1.3, unlike TLS 1.2, extensions are negotiated for each
+extension block.<a href="#section-4.3-13" class="pilcrow">¶</a></p>
+<p id="section-4.3-14">In TLS 1.3, unlike TLS 1.2, extensions are negotiated for each
 handshake even when in resumption-PSK mode. However, 0-RTT parameters are
 those negotiated in the previous handshake; mismatches may require
-rejecting 0-RTT (see <a href="#early-data-indication" class="auto internal xref">Section 4.3.10</a>).<a href="#section-4.3-13" class="pilcrow">¶</a></p>
-<p id="section-4.3-14">There are subtle (and not so subtle) interactions that may occur in this
+rejecting 0-RTT (see <a href="#early-data-indication" class="auto internal xref">Section 4.3.10</a>).<a href="#section-4.3-14" class="pilcrow">¶</a></p>
+<p id="section-4.3-15">There are subtle (and not so subtle) interactions that may occur in this
 protocol between new features and existing features which may result in a
 significant reduction in overall security. The following considerations should
-be taken into account when designing new extensions:<a href="#section-4.3-14" class="pilcrow">¶</a></p>
+be taken into account when designing new extensions:<a href="#section-4.3-15" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-4.3-15.1">
-            <p id="section-4.3-15.1.1">Some cases where a server does not agree to an extension are error
+<li class="normal" id="section-4.3-16.1">
+            <p id="section-4.3-16.1.1">Some cases where a server does not agree to an extension are error
 conditions (e.g., the handshake cannot continue), and some are
 simply refusals to support particular features. In general, error
 alerts should be used for the former and a field in the server
-extension response for the latter.<a href="#section-4.3-15.1.1" class="pilcrow">¶</a></p>
+extension response for the latter.<a href="#section-4.3-16.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-4.3-15.2">
-            <p id="section-4.3-15.2.1">Extensions should, as far as possible, be designed to prevent any attack that
+          <li class="normal" id="section-4.3-16.2">
+            <p id="section-4.3-16.2.1">Extensions should, as far as possible, be designed to prevent any attack that
 forces use (or non-use) of a particular feature by manipulation of handshake
 messages. This principle should be followed regardless of whether the feature
 is believed to cause a security problem.
@@ -3458,7 +3460,7 @@ Finished message hashes will be sufficient, but extreme care is needed when
 the extension changes the meaning of messages sent in the handshake phase.
 Designers and implementors should be aware of the fact that until the
 handshake has been authenticated, active attackers can modify messages and
-insert, remove, or replace extensions.<a href="#section-4.3-15.2.1" class="pilcrow">¶</a></p>
+insert, remove, or replace extensions.<a href="#section-4.3-16.2.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <div id="supported-versions">
@@ -7012,9 +7014,8 @@ rsa_pss_rsae_sha256, rsa_pss_rsae_sha384, rsa_pss_rsae_sha512,
 rsa_pss_pss_sha256, rsa_pss_pss_sha384, rsa_pss_pss_sha512, and ed25519.
 The
 "Recommended" column is assigned a value of "N" unless explicitly
- requested, and adding a value with a "Recommended" value of "Y"
- requires Standards Action <span>[<a href="#RFC8126" class="cite xref">RFC8126</a>]</span>.  IESG Approval is <span class="bcp14">REQUIRED</span>
- for a Y-&gt;N transition.<a href="#section-11-9.1.1" class="pilcrow">¶</a></p>
+requested. See <span>[<a href="#RFC9847" class="cite xref">RFC9847</a>]</span> for additional information about "Recommended"
+column values and settings.<a href="#section-11-9.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-11-9.2">
           <p id="section-11-9.2.1">TLS PskKeyExchangeMode registry: Values in the
@@ -7025,9 +7026,8 @@ reserved for Private Use <span>[<a href="#RFC8126" class="cite xref">RFC8126</a>
 populated with psk_ke (0) and psk_dhe_ke (1).  Both are marked as
 "Recommended".  The
 "Recommended" column is assigned a value of "N" unless explicitly
-requested, and adding a value with a "Recommended" value of "Y"
-requires Standards Action <span>[<a href="#RFC8126" class="cite xref">RFC8126</a>]</span>.  IESG Approval is <span class="bcp14">REQUIRED</span>
-for a Y-&gt;N transition.<a href="#section-11-9.2.1" class="pilcrow">¶</a></p>
+requested. See <span>[<a href="#RFC9847" class="cite xref">RFC9847</a>]</span> for additional information about "Recommended"
+column values and settings.<a href="#section-11-9.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 <div id="bis-changes">
@@ -7037,10 +7037,16 @@ for a Y-&gt;N transition.<a href="#section-11-9.2.1" class="pilcrow">¶</a></p>
         </h3>
 <p id="section-11.1-1">IANA has updated all references to <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>]</span> in the IANA
 registries with references to this document.<a href="#section-11.1-1" class="pilcrow">¶</a></p>
-<p id="section-11.1-2">IANA has renamed the "extended_master_secret" value
-in the TLS ExtensionType Values registry to "extended_main_secret".<a href="#section-11.1-2" class="pilcrow">¶</a></p>
-<p id="section-11.1-3">IANA has created  a value for the "general_error"
-alert in the TLS Alerts registry with the value given in <a href="#alert-protocol" class="auto internal xref">Section 6</a>.<a href="#section-11.1-3" class="pilcrow">¶</a></p>
+<p id="section-11.1-2">IANA has updated the "Recommended" column procedures to match <span>[<a href="#RFC9847" class="cite xref">RFC9847</a>]</span> for
+the TLS SignatureScheme and PskKeyExchangeMode registries.<a href="#section-11.1-2" class="pilcrow">¶</a></p>
+<p id="section-11.1-3">IANA has renamed the "extended_master_secret" value
+in the TLS ExtensionType Values registry to "extended_main_secret".<a href="#section-11.1-3" class="pilcrow">¶</a></p>
+<p id="section-11.1-4">IANA has created  a value for the "general_error"
+alert in the TLS Alerts registry with the value given in <a href="#alert-protocol" class="auto internal xref">Section 6</a>.<a href="#section-11.1-4" class="pilcrow">¶</a></p>
+<p id="section-11.1-5">IANA has updated added references to this document for the status_request and
+supported_groups entries in the TLS ExtensionType Values registry.<a href="#section-11.1-5" class="pilcrow">¶</a></p>
+<p id="section-11.1-6">IANA has updated the TLS ExtensionType value in the "TLS 1.3" column for
+cached_info to "CH, EE".<a href="#section-11.1-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -7167,6 +7173,10 @@ alert in the TLS Alerts registry with the value given in <a href="#alert-protoco
 <dt id="RFC8996">[RFC8996]</dt>
         <dd>
 <span class="refAuthor">Moriarty, K.</span> and <span class="refAuthor">S. Farrell</span>, <span class="refTitle">"Deprecating TLS 1.0 and TLS 1.1"</span>, <span class="seriesInfo">BCP 195</span>, <span class="seriesInfo">RFC 8996</span>, <span class="seriesInfo">DOI 10.17487/RFC8996</span>, <time datetime="2021-03" class="refDate">March 2021</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8996">https://www.rfc-editor.org/rfc/rfc8996</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9846">[RFC9846]</dt>
+        <dd>
+<span class="refAuthor">Rescorla, E.</span>, <span class="refTitle">"The Transport Layer Security (TLS) Protocol Version 1.3 (PLACEHOLDER)"</span>, <span class="seriesInfo">RFC 9846</span>, <time datetime="2026-05" class="refDate">May 2026</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc9846">https://www.rfc-editor.org/info/rfc9846</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="SHS">[SHS]</dt>
         <dd>
@@ -7510,6 +7520,10 @@ alert in the TLS Alerts registry with the value given in <a href="#alert-protoco
         <dd>
 <span class="refAuthor">Benjamin, D.</span> and <span class="refAuthor">C. A. Wood</span>, <span class="refTitle">"Importing External Pre-Shared Keys (PSKs) for TLS 1.3"</span>, <span class="seriesInfo">RFC 9258</span>, <span class="seriesInfo">DOI 10.17487/RFC9258</span>, <time datetime="2022-07" class="refDate">July 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9258">https://www.rfc-editor.org/rfc/rfc9258</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="RFC9261">[RFC9261]</dt>
+        <dd>
+<span class="refAuthor">Sullivan, N.</span>, <span class="refTitle">"Exported Authenticators in TLS"</span>, <span class="seriesInfo">RFC 9261</span>, <span class="seriesInfo">DOI 10.17487/RFC9261</span>, <time datetime="2022-07" class="refDate">July 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9261">https://www.rfc-editor.org/rfc/rfc9261</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="RFC9345">[RFC9345]</dt>
         <dd>
 <span class="refAuthor">Barnes, R.</span>, <span class="refAuthor">Iyengar, S.</span>, <span class="refAuthor">Sullivan, N.</span>, and <span class="refAuthor">E. Rescorla</span>, <span class="refTitle">"Delegated Credentials for TLS and DTLS"</span>, <span class="seriesInfo">RFC 9345</span>, <span class="seriesInfo">DOI 10.17487/RFC9345</span>, <time datetime="2023-07" class="refDate">July 2023</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9345">https://www.rfc-editor.org/rfc/rfc9345</a>&gt;</span>. </dd>
@@ -7517,6 +7531,10 @@ alert in the TLS Alerts registry with the value given in <a href="#alert-protoco
 <dt id="RFC9525">[RFC9525]</dt>
         <dd>
 <span class="refAuthor">Saint-Andre, P.</span> and <span class="refAuthor">R. Salz</span>, <span class="refTitle">"Service Identity in TLS"</span>, <span class="seriesInfo">RFC 9525</span>, <span class="seriesInfo">DOI 10.17487/RFC9525</span>, <time datetime="2023-11" class="refDate">November 2023</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9525">https://www.rfc-editor.org/rfc/rfc9525</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9847">[RFC9847]</dt>
+        <dd>
+<span class="refAuthor">Salowey, J.</span> and <span class="refAuthor">S. Turner</span>, <span class="refTitle">"IANA Registry Updates for TLS and DTLS"</span>, <span class="seriesInfo">RFC 9847</span>, <span class="seriesInfo">DOI 10.17487/RFC9847</span>, <time datetime="2025-12" class="refDate">December 2025</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9847">https://www.rfc-editor.org/rfc/rfc9847</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC9849">[RFC9849]</dt>
         <dd>
@@ -7858,28 +7876,37 @@ might receive them from older TLS implementations.<a href="#appendix-B-1" class=
    } Extension;
 
    enum {
-       server_name(0),                             /* RFC 6066 */
-       max_fragment_length(1),                     /* RFC 6066 */
-       status_request(5),                          /* RFC 6066 */
-       supported_groups(10),                       /* RFC 8422, 7919 */
-       signature_algorithms(13),                   /* RFC 8446 */
+       server_name(0),                             /* RFC 6066, 9261 */
+       status_request(5),                          /* RFC 6066, 9846 */
+       supported_groups(10),                       /* RFC 7919, 9846 */
+       signature_algorithms(13),                   /* RFC 9846 */
        use_srtp(14),                               /* RFC 5764 */
        heartbeat(15),                              /* RFC 6520 */
        application_layer_protocol_negotiation(16), /* RFC 7301 */
-       signed_certificate_timestamp(18),           /* RFC 6962 */
        client_certificate_type(19),                /* RFC 7250 */
        server_certificate_type(20),                /* RFC 7250 */
        padding(21),                                /* RFC 7685 */
-       pre_shared_key(41),                         /* RFC 8446 */
-       early_data(42),                             /* RFC 8446 */
-       supported_versions(43),                     /* RFC 8446 */
-       cookie(44),                                 /* RFC 8446 */
-       psk_key_exchange_modes(45),                 /* RFC 8446 */
-       certificate_authorities(47),                /* RFC 8446 */
-       oid_filters(48),                            /* RFC 8446 */
-       post_handshake_auth(49),                    /* RFC 8446 */
-       signature_algorithms_cert(50),              /* RFC 8446 */
-       key_share(51),                              /* RFC 8446 */
+       compress_certificate(27),                   /* RFC 8879 */
+       record_size_limit(28),                      /* RFC 8449 */
+       delegated_credential(34),                   /* RFC 9345 */
+       supported_ekt_ciphers(39),                  /* RFC 8870 */
+       pre_shared_key(41),                         /* RFC 9846 */
+       early_data(42),                             /* RFC 9846 */
+       supported_versions(43),                     /* RFC 9846 */
+       cookie(44),                                 /* RFC 9846 */
+       psk_key_exchange_modes(45),                 /* RFC 9846 */
+       certificate_authorities(47),                /* RFC 9846 */
+       oid_filters(48),                            /* RFC 9846 */
+       post_handshake_auth(49),                    /* RFC 9846 */
+       signature_algorithms_cert(50),              /* RFC 9846 */
+       key_share(51),                              /* RFC 9846 */
+       transparency_info(52),                      /* RFC 9162 */
+       external_id_hash(55),                       /* RFC 8844 */
+       external_session_id(56),                    /* RFC 8844 */
+       quic_transport_parameters(57),              /* RFC 9001 */
+       ticket_request(58),                         /* RFC 9149 */
+       ech_outer_extensions(64768),                /* RFC 9849 */
+       encrypted_client_hello(65037),              /* RFC 9849 */
        (65535)
    } ExtensionType;
 

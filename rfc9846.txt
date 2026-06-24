@@ -1512,30 +1512,42 @@ Auth | {CertificateVerify*}
     } Extension;
 
     enum {
-        server_name(0),                             /* RFC 6066 */
-        max_fragment_length(1),                     /* RFC 6066 */
-        status_request(5),                          /* RFC 6066 */
-        supported_groups(10),                       /* RFC 8422, 7919 */
-        signature_algorithms(13),                   /* RFC 8446 */
+        server_name(0),                             /* RFC 6066, 9261 */
+        status_request(5),                          /* RFC 6066, 9846 */
+        supported_groups(10),                       /* RFC 7919, 9846 */
+        signature_algorithms(13),                   /* RFC 9846 */
         use_srtp(14),                               /* RFC 5764 */
         heartbeat(15),                              /* RFC 6520 */
         application_layer_protocol_negotiation(16), /* RFC 7301 */
-        signed_certificate_timestamp(18),           /* RFC 6962 */
         client_certificate_type(19),                /* RFC 7250 */
         server_certificate_type(20),                /* RFC 7250 */
         padding(21),                                /* RFC 7685 */
-        pre_shared_key(41),                         /* RFC 8446 */
-        early_data(42),                             /* RFC 8446 */
-        supported_versions(43),                     /* RFC 8446 */
-        cookie(44),                                 /* RFC 8446 */
-        psk_key_exchange_modes(45),                 /* RFC 8446 */
-        certificate_authorities(47),                /* RFC 8446 */
-        oid_filters(48),                            /* RFC 8446 */
-        post_handshake_auth(49),                    /* RFC 8446 */
-        signature_algorithms_cert(50),              /* RFC 8446 */
-        key_share(51),                              /* RFC 8446 */
+        compress_certificate(27),                   /* RFC 8879 */
+        record_size_limit(28),                      /* RFC 8449 */
+        delegated_credential(34),                   /* RFC 9345 */
+        supported_ekt_ciphers(39),                  /* RFC 8870 */
+        pre_shared_key(41),                         /* RFC 9846 */
+        early_data(42),                             /* RFC 9846 */
+        supported_versions(43),                     /* RFC 9846 */
+        cookie(44),                                 /* RFC 9846 */
+        psk_key_exchange_modes(45),                 /* RFC 9846 */
+        certificate_authorities(47),                /* RFC 9846 */
+        oid_filters(48),                            /* RFC 9846 */
+        post_handshake_auth(49),                    /* RFC 9846 */
+        signature_algorithms_cert(50),              /* RFC 9846 */
+        key_share(51),                              /* RFC 9846 */
+        transparency_info(52),                      /* RFC 9162 */
+        external_id_hash(55),                       /* RFC 8844 */
+        external_session_id(56),                    /* RFC 8844 */
+        quic_transport_parameters(57),              /* RFC 9001 */
+        ticket_request(58),                         /* RFC 9149 */
+        ech_outer_extensions(64768),                /* RFC 9849 */
+        encrypted_client_hello(65037),              /* RFC 9849 */
         (65535)
     } ExtensionType;
+
+   Note: This list includes only extensions marked "Recommended" and
+   allowed for TLS 1.3 at the time of this writing.
 
    Here:
 
@@ -1586,15 +1598,13 @@ Auth | {CertificateVerify*}
     +==================================================+=============+
     | Extension                                        |     TLS 1.3 |
     +==================================================+=============+
-    | server_name [RFC6066]                            |      CH, EE |
+    | server_name [RFC6066] [RFC9261]                  |  CH, EE, CR |
     +--------------------------------------------------+-------------+
-    | max_fragment_length [RFC6066]                    |      CH, EE |
+    | status_request [RFC6066] [RFC9846]               |  CH, CR, CT |
     +--------------------------------------------------+-------------+
-    | status_request [RFC6066]                         |  CH, CR, CT |
+    | supported_groups [RFC7919] [RFC9846]             |      CH, EE |
     +--------------------------------------------------+-------------+
-    | supported_groups [RFC7919]                       |      CH, EE |
-    +--------------------------------------------------+-------------+
-    | signature_algorithms [RFC8446]                   |      CH, CR |
+    | signature_algorithms [RFC9846]                   |      CH, CR |
     +--------------------------------------------------+-------------+
     | use_srtp [RFC5764]                               |      CH, EE |
     +--------------------------------------------------+-------------+
@@ -1602,15 +1612,11 @@ Auth | {CertificateVerify*}
     +--------------------------------------------------+-------------+
     | application_layer_protocol_negotiation [RFC7301] |      CH, EE |
     +--------------------------------------------------+-------------+
-    | signed_certificate_timestamp [RFC6962]           |  CH, CR, CT |
-    +--------------------------------------------------+-------------+
     | client_certificate_type [RFC7250]                |      CH, EE |
     +--------------------------------------------------+-------------+
     | server_certificate_type [RFC7250]                |      CH, EE |
     +--------------------------------------------------+-------------+
     | padding [RFC7685]                                |          CH |
-    +--------------------------------------------------+-------------+
-    | cached_info [RFC7924]                            |      CH, EE |
     +--------------------------------------------------+-------------+
     | compress_certificate [RFC8879]                   |      CH, CR |
     +--------------------------------------------------+-------------+
@@ -1620,29 +1626,27 @@ Auth | {CertificateVerify*}
     +--------------------------------------------------+-------------+
     | supported_ekt_ciphers [RFC8870]                  |      CH, EE |
     +--------------------------------------------------+-------------+
-    | pre_shared_key [RFC8446]                         |      CH, SH |
+    | pre_shared_key [RFC9846]                         |      CH, SH |
     +--------------------------------------------------+-------------+
-    | early_data [RFC8446]                             | CH, EE, NST |
+    | early_data [RFC9846]                             | CH, EE, NST |
     +--------------------------------------------------+-------------+
-    | psk_key_exchange_modes [RFC8446]                 |          CH |
+    | supported_versions [RFC9846]                     | CH, SH, HRR |
     +--------------------------------------------------+-------------+
-    | cookie [RFC8446]                                 |     CH, HRR |
+    | cookie [RFC9846]                                 |     CH, HRR |
     +--------------------------------------------------+-------------+
-    | supported_versions [RFC8446]                     | CH, SH, HRR |
+    | psk_key_exchange_modes [RFC9846]                 |          CH |
     +--------------------------------------------------+-------------+
-    | certificate_authorities [RFC8446]                |      CH, CR |
+    | certificate_authorities [RFC9846]                |      CH, CR |
     +--------------------------------------------------+-------------+
-    | oid_filters [RFC8446]                            |          CR |
+    | oid_filters [RFC9846]                            |          CR |
     +--------------------------------------------------+-------------+
-    | post_handshake_auth [RFC8446]                    |          CH |
+    | post_handshake_auth [RFC9846]                    |          CH |
     +--------------------------------------------------+-------------+
-    | signature_algorithms_cert [RFC8446]              |      CH, CR |
+    | signature_algorithms_cert [RFC9846]              |      CH, CR |
     +--------------------------------------------------+-------------+
-    | key_share [RFC8446]                              | CH, SH, HRR |
+    | key_share [RFC9846]                              | CH, SH, HRR |
     +--------------------------------------------------+-------------+
     | transparency_info [RFC9162]                      |  CH, CR, CT |
-    +--------------------------------------------------+-------------+
-    | connection_id [RFC9146]                          |      CH, SH |
     +--------------------------------------------------+-------------+
     | external_id_hash [RFC8844]                       |      CH, EE |
     +--------------------------------------------------+-------------+
@@ -1652,11 +1656,15 @@ Auth | {CertificateVerify*}
     +--------------------------------------------------+-------------+
     | ticket_request [RFC9149]                         |      CH, EE |
     +--------------------------------------------------+-------------+
+    | ech_outer_extensions [RFC9849]                   |          CH |
+    +--------------------------------------------------+-------------+
+    | encrypted_client_hello [RFC9849]                 | CH, HRR, EE |
+    +--------------------------------------------------+-------------+
 
                          Table 1: TLS Extensions
 
-   Note: This table includes only extensions marked "Recommended" at the
-   time of this writing.
+   Note: This table includes only extensions marked "Recommended" and
+   allowed for TLS 1.3 at the time of this writing.
 
    When multiple extensions of different types are present, the
    extensions MAY appear in any order, with the exception of
@@ -4762,9 +4770,8 @@ Auth | {CertificateVerify*}
       rsa_pss_rsae_sha256, rsa_pss_rsae_sha384, rsa_pss_rsae_sha512,
       rsa_pss_pss_sha256, rsa_pss_pss_sha384, rsa_pss_pss_sha512, and
       ed25519.  The "Recommended" column is assigned a value of "N"
-      unless explicitly requested, and adding a value with a
-      "Recommended" value of "Y" requires Standards Action [RFC8126].
-      IESG Approval is REQUIRED for a Y->N transition.
+      unless explicitly requested.  See [RFC9847] for additional
+      information about "Recommended" column values and settings.
 
    *  TLS PskKeyExchangeMode registry: Values in the range 0-253
       (decimal) are assigned via Specification Required [RFC8126].  The
@@ -4773,20 +4780,30 @@ Auth | {CertificateVerify*}
       registry has been initially populated with psk_ke (0) and
       psk_dhe_ke (1).  Both are marked as "Recommended".  The
       "Recommended" column is assigned a value of "N" unless explicitly
-      requested, and adding a value with a "Recommended" value of "Y"
-      requires Standards Action [RFC8126].  IESG Approval is REQUIRED
-      for a Y->N transition.
+      requested.  See [RFC9847] for additional information about
+      "Recommended" column values and settings.
 
 11.1.  Changes for this RFC
 
    IANA has updated all references to [RFC8446] in the IANA registries
    with references to this document.
 
+   IANA has updated the "Recommended" column procedures to match
+   [RFC9847] for the TLS SignatureScheme and PskKeyExchangeMode
+   registries.
+
    IANA has renamed the "extended_master_secret" value in the TLS
    ExtensionType Values registry to "extended_main_secret".
 
    IANA has created a value for the "general_error" alert in the TLS
    Alerts registry with the value given in Section 6.
+
+   IANA has updated added references to this document for the
+   status_request and supported_groups entries in the TLS ExtensionType
+   Values registry.
+
+   IANA has updated the TLS ExtensionType value in the "TLS 1.3" column
+   for cached_info to "CH, EE".
 
 12.  References
 
@@ -4931,6 +4948,10 @@ Auth | {CertificateVerify*}
    [RFC8996]  Moriarty, K. and S. Farrell, "Deprecating TLS 1.0 and TLS
               1.1", BCP 195, RFC 8996, DOI 10.17487/RFC8996, March 2021,
               <https://www.rfc-editor.org/rfc/rfc8996>.
+
+   [RFC9846]  Rescorla, E., "The Transport Layer Security (TLS) Protocol
+              Version 1.3 (PLACEHOLDER)", RFC 9846, May 2026,
+              <https://www.rfc-editor.org/info/rfc9846>.
 
    [SHS]      "Secure hash standard", National Institute of Standards
               and Technology (U.S.), DOI 10.6028/nist.fips.180-4, 2015,
@@ -5378,6 +5399,10 @@ Auth | {CertificateVerify*}
               DOI 10.17487/RFC9258, July 2022,
               <https://www.rfc-editor.org/rfc/rfc9258>.
 
+   [RFC9261]  Sullivan, N., "Exported Authenticators in TLS", RFC 9261,
+              DOI 10.17487/RFC9261, July 2022,
+              <https://www.rfc-editor.org/rfc/rfc9261>.
+
    [RFC9345]  Barnes, R., Iyengar, S., Sullivan, N., and E. Rescorla,
               "Delegated Credentials for TLS and DTLS", RFC 9345,
               DOI 10.17487/RFC9345, July 2023,
@@ -5386,6 +5411,10 @@ Auth | {CertificateVerify*}
    [RFC9525]  Saint-Andre, P. and R. Salz, "Service Identity in TLS",
               RFC 9525, DOI 10.17487/RFC9525, November 2023,
               <https://www.rfc-editor.org/rfc/rfc9525>.
+
+   [RFC9847]  Salowey, J. and S. Turner, "IANA Registry Updates for TLS
+              and DTLS", RFC 9847, DOI 10.17487/RFC9847, December 2025,
+              <https://www.rfc-editor.org/rfc/rfc9847>.
 
    [RFC9849]  Rescorla, E., Oku, K., Sullivan, N., and C. A. Wood, "TLS
               Encrypted Client Hello", RFC 9849, DOI 10.17487/RFC9849,
@@ -5685,28 +5714,37 @@ B.3.1.  Key Exchange Messages
     } Extension;
 
     enum {
-        server_name(0),                             /* RFC 6066 */
-        max_fragment_length(1),                     /* RFC 6066 */
-        status_request(5),                          /* RFC 6066 */
-        supported_groups(10),                       /* RFC 8422, 7919 */
-        signature_algorithms(13),                   /* RFC 8446 */
+        server_name(0),                             /* RFC 6066, 9261 */
+        status_request(5),                          /* RFC 6066, 9846 */
+        supported_groups(10),                       /* RFC 7919, 9846 */
+        signature_algorithms(13),                   /* RFC 9846 */
         use_srtp(14),                               /* RFC 5764 */
         heartbeat(15),                              /* RFC 6520 */
         application_layer_protocol_negotiation(16), /* RFC 7301 */
-        signed_certificate_timestamp(18),           /* RFC 6962 */
         client_certificate_type(19),                /* RFC 7250 */
         server_certificate_type(20),                /* RFC 7250 */
         padding(21),                                /* RFC 7685 */
-        pre_shared_key(41),                         /* RFC 8446 */
-        early_data(42),                             /* RFC 8446 */
-        supported_versions(43),                     /* RFC 8446 */
-        cookie(44),                                 /* RFC 8446 */
-        psk_key_exchange_modes(45),                 /* RFC 8446 */
-        certificate_authorities(47),                /* RFC 8446 */
-        oid_filters(48),                            /* RFC 8446 */
-        post_handshake_auth(49),                    /* RFC 8446 */
-        signature_algorithms_cert(50),              /* RFC 8446 */
-        key_share(51),                              /* RFC 8446 */
+        compress_certificate(27),                   /* RFC 8879 */
+        record_size_limit(28),                      /* RFC 8449 */
+        delegated_credential(34),                   /* RFC 9345 */
+        supported_ekt_ciphers(39),                  /* RFC 8870 */
+        pre_shared_key(41),                         /* RFC 9846 */
+        early_data(42),                             /* RFC 9846 */
+        supported_versions(43),                     /* RFC 9846 */
+        cookie(44),                                 /* RFC 9846 */
+        psk_key_exchange_modes(45),                 /* RFC 9846 */
+        certificate_authorities(47),                /* RFC 9846 */
+        oid_filters(48),                            /* RFC 9846 */
+        post_handshake_auth(49),                    /* RFC 9846 */
+        signature_algorithms_cert(50),              /* RFC 9846 */
+        key_share(51),                              /* RFC 9846 */
+        transparency_info(52),                      /* RFC 9162 */
+        external_id_hash(55),                       /* RFC 8844 */
+        external_session_id(56),                    /* RFC 8844 */
+        quic_transport_parameters(57),              /* RFC 9001 */
+        ticket_request(58),                         /* RFC 9149 */
+        ech_outer_extensions(64768),                /* RFC 9849 */
+        encrypted_client_hello(65037),              /* RFC 9849 */
         (65535)
     } ExtensionType;
 
