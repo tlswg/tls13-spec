@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-06-14T02:41:38.800513+00:00",
+  "timestamp": "2026-06-25T02:26:42.136766+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -73166,26 +73166,50 @@
       "id": "PR_kwDOASA0os7eIfcY",
       "title": "Update extensions list",
       "url": "https://github.com/tlswg/tls13-spec/pull/1449",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "ekr",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "This PR updates the extension list to match the now-current extensions that are Recommended=Y.\r\n\r\nI note that this includes a bunch of non-core extensions, but those were also in 8846, so I just followed the same nominal policy. \r\n\r\n@martinthomson  thoughts?",
       "createdAt": "2026-05-21T22:55:33Z",
-      "updatedAt": "2026-05-21T22:55:33Z",
+      "updatedAt": "2026-06-24T16:18:36Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "4a48fe38dea89bd94462e23b319f0fc1a9abe075",
       "headRepository": "ekr/tls13-spec",
       "headRefName": "update_extensions",
-      "headRefOid": "33dfa2fefa7df0e2be19bd87d625391e48cdb060",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
-      "comments": [],
-      "reviews": []
+      "headRefOid": "b53f59ed0a01edac2b404e10344a9d4071bb527a",
+      "closedAt": "2026-06-24T16:18:36Z",
+      "mergedAt": "2026-06-24T16:18:35Z",
+      "mergedBy": "ekr",
+      "mergeCommit": {
+        "oid": "30a8dfda0148e1bd45d6196ee3a0ad9e23537167"
+      },
+      "comments": [
+        {
+          "author": "ekr",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@seanturner I think I successfully pulled in most of your proposed changes. Here are the ones I did not pull in that I know if:\r\n\r\n- The citations to 8422 and 8449 as I think they are superfluous\r\n- The addition of renegotiation_info. Instead I clarified things were TLS 1.3 only\r\n\r\nI also fixed the build by adding a placeholder citation. PTAL.",
+          "createdAt": "2026-06-23T20:31:49Z",
+          "updatedAt": "2026-06-23T20:31:49Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOASA0os8AAAABD7jiKw",
+          "commit": {
+            "abbreviatedOid": "b53f59e"
+          },
+          "author": "seanturner",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "Thanks!",
+          "createdAt": "2026-06-24T03:12:44Z",
+          "updatedAt": "2026-06-24T03:12:44Z",
+          "comments": []
+        }
+      ]
     },
     {
       "number": 1450,
@@ -73242,21 +73266,21 @@
       "id": "PR_kwDOASA0os7f2n_R",
       "title": "IANA alignment",
       "url": "https://github.com/tlswg/tls13-spec/pull/1451",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "seanturner",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "Not entirely sure about all of these.\r\n\r\n- ExtensionType presentation language (front and back):\r\n    - `server_name`: RFC 9261 adds \"CR\" to the TLS 1.3 column. - Added Informative reference to RFC 9261?\r\n    - `max_fragment_length`: IANA also references 8449.\r\n    - `status_request`: RFC 9846 updates how to do it so we should add a reference to IANA entry.\r\n    - `supported_algorithms`: RFC 9846 updates how to do it so we should add a reference to IANA entry.\r\n- TLS Extensions table:\r\n    - `supported_versions` & `psk_key_exchange_modes`: swapped order to match IANA registry order.\r\n    - `ech_outer_extensions`: added as it is now marked Recommended.\r\n    - `renegotiation_info`: added because it is marked as Recommended - maybe it shouldn\u2019t be Recommended=Y?\r\n- IANA Considerations\r\n    - To avoid different rules for the SignatureScheme and PskKeyExchangeMode registries refer (informatively?) to RFC 9847.\r\n    - This documents updates `status_request` and `supported_groups` so asked IANA to add a reference to this RFC.\r\n    - In the IANA registry, the `cached_info` TLS 1.3 column is currently \"-\". This document makes it \"CH, EE\".\r\n    - Added \u201cCH, SH\" to `renegotiation_info` TLS 1.3 column, *BUT* see earlier comment.",
       "createdAt": "2026-05-27T14:08:47Z",
-      "updatedAt": "2026-06-12T14:42:26Z",
+      "updatedAt": "2026-06-24T03:13:19Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "4a48fe38dea89bd94462e23b319f0fc1a9abe075",
       "headRepository": "tlswg/tls13-spec",
       "headRefName": "seanturner-IANA-alignment",
       "headRefOid": "664e5d7104cb38d4cb25d9c969dca36ad4a0056b",
-      "closedAt": null,
+      "closedAt": "2026-06-24T03:13:19Z",
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
@@ -73281,6 +73305,13 @@
           "body": "Not sure it's a convention per se, but I seem to remember that RFC 8446 was supposed to be kind of a one stop shop for implementers. If RFC 9846 obsoletes RFC 8446, then RFC 9846 becomes that one stop shop and there's no need to refer to RFC 8446 in the presentation syntax ([here](https://tlswg.org/tls13-spec/rfc9846.html#name-extensions) and [here](https://tlswg.org/tls13-spec/rfc9846.html#name-key-exchange-messages-2)) or the [table of extensions](https://tlswg.org/tls13-spec/rfc9846.html#table-1).\r\n\r\nFurther, if somebody, albeit oddly, comes at TLS 1.3 via the [IANA tables](https://www.iana.org/assignments/tls-extensiontype-values/tls-extensiontype-values.xhtml#tls-extensiontype-values-1) and then jumps into the RFC what they will see is that the \"references\" do not match. In the IANA tables they will see RFC 9846 and in the RFC they will see RFC 8446 - and that could be confusing (and will invite silly errata).\r\n\r\nMy thinking follows for the other extension references:\r\n- Adding `9261` to `server_name(0)`: The IANA tables include the reference. We could make this an informative reference.\r\n- Adding `8449` to `max_fragment_length(1)`: The IANA tables include the reference. No need for a new reference RFC 9846 already refers to RFC 8449.\r\n- Adding `9846` to `status_request(5)`: When I read the following in the text, I think it says \"read this RFC for information about `status_request(5)` for TLS 1.3\":\r\n\r\n>It also changes how Online Certificate Status Protocol (OCSP) messages are carried and therefore updates [[RFC6066](https://tlswg.org/tls13-spec/rfc9846.html#RFC6066)] and obsoletes [[RFC6961](https://tlswg.org/tls13-spec/rfc9846.html#RFC6961)] as described in [Section 4.5.1.1](https://tlswg.org/tls13-spec/rfc9846.html#ocsp-and-sct).\r\n\r\n- Adding `9846` to `support_groups(2)`: When I read the following in the text, I also think it says \"read this RFC for information about `support_groups(2)`\":\r\n\r\n> This document supersedes and obsoletes previous versions of TLS, including version 1.2 [[RFC5246](https://tlswg.org/tls13-spec/rfc9846.html#RFC5246)], the extended master secret extension [[RFC7627](https://tlswg.org/tls13-spec/rfc9846.html#RFC7627)], and elliptic curve definitions for TLS 1.2 [[RFC8422](https://tlswg.org/tls13-spec/rfc9846.html#RFC8422)].\r\n\r\nIf you buy the last two points, then I also think we should update the IANA considerations sections to add instructions to add a reference to RFC 9846 for the `status_request(5)` and `support_groups(2)` entries.",
           "createdAt": "2026-06-12T14:42:26Z",
           "updatedAt": "2026-06-12T14:42:26Z"
+        },
+        {
+          "author": "seanturner",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Addressed by #1449.",
+          "createdAt": "2026-06-24T03:13:19Z",
+          "updatedAt": "2026-06-24T03:13:19Z"
         }
       ],
       "reviews": [
