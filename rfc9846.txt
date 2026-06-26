@@ -4347,7 +4347,7 @@ Auth | {CertificateVerify*}
       attempting to retry requests, but 0-RTT adds an additional
       dimension if clients automatically retransmit rejected 0-RTT data
       after the completion of a handshake, as an attacker may be able to
-      cause the data to be processed as 0-RTT data as connection 1 and
+      cause the data to be processed as 0-RTT data on connection 1 and
       as 1-RTT data on connection 2.
 
    The first class of attack can be prevented by sharing state to
