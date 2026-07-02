@@ -4,7 +4,7 @@
 
 Internet Engineering Task Force (IETF)                       E. Rescorla
 Request for Comments: 9846                                   Independent
-Obsoletes: 5077, 5246, 6961, 7627, 8422, 8446                   May 2026
+Obsoletes: 5077, 5246, 6961, 7627, 8422, 8446                  July 2026
 Updates: 5705, 6066                                                     
 Category: Standards Track                                               
 ISSN: 2070-1721
@@ -1600,11 +1600,11 @@ Auth | {CertificateVerify*}
     +==================================================+=============+
     | server_name [RFC6066] [RFC9261]                  |  CH, EE, CR |
     +--------------------------------------------------+-------------+
-    | status_request [RFC6066] [PRE-RFC9846]           |  CH, CR, CT |
+    | status_request [RFC6066] [RFC9846]               |  CH, CR, CT |
     +--------------------------------------------------+-------------+
-    | supported_groups [RFC7919] [PRE-RFC9846]         |      CH, EE |
+    | supported_groups [RFC7919] [RFC9846]             |      CH, EE |
     +--------------------------------------------------+-------------+
-    | signature_algorithms [PRE-RFC9846]               |      CH, CR |
+    | signature_algorithms [RFC9846]                   |      CH, CR |
     +--------------------------------------------------+-------------+
     | use_srtp [RFC5764]                               |      CH, EE |
     +--------------------------------------------------+-------------+
@@ -1626,25 +1626,25 @@ Auth | {CertificateVerify*}
     +--------------------------------------------------+-------------+
     | supported_ekt_ciphers [RFC8870]                  |      CH, EE |
     +--------------------------------------------------+-------------+
-    | pre_shared_key [PRE-RFC9846]                     |      CH, SH |
+    | pre_shared_key [RFC9846]                         |      CH, SH |
     +--------------------------------------------------+-------------+
-    | early_data [PRE-RFC9846]                         | CH, EE, NST |
+    | early_data [RFC9846]                             | CH, EE, NST |
     +--------------------------------------------------+-------------+
-    | supported_versions [PRE-RFC9846]                 | CH, SH, HRR |
+    | supported_versions [RFC9846]                     | CH, SH, HRR |
     +--------------------------------------------------+-------------+
-    | cookie [PRE-RFC9846]                             |     CH, HRR |
+    | cookie [RFC9846]                                 |     CH, HRR |
     +--------------------------------------------------+-------------+
-    | psk_key_exchange_modes [PRE-RFC9846]             |          CH |
+    | psk_key_exchange_modes [RFC9846]                 |          CH |
     +--------------------------------------------------+-------------+
-    | certificate_authorities [PRE-RFC9846]            |      CH, CR |
+    | certificate_authorities [RFC9846]                |      CH, CR |
     +--------------------------------------------------+-------------+
-    | oid_filters [PRE-RFC9846]                        |          CR |
+    | oid_filters [RFC9846]                            |          CR |
     +--------------------------------------------------+-------------+
-    | post_handshake_auth [PRE-RFC9846]                |          CH |
+    | post_handshake_auth [RFC9846]                    |          CH |
     +--------------------------------------------------+-------------+
-    | signature_algorithms_cert [PRE-RFC9846]          |      CH, CR |
+    | signature_algorithms_cert [RFC9846]              |      CH, CR |
     +--------------------------------------------------+-------------+
-    | key_share [PRE-RFC9846]                          | CH, SH, HRR |
+    | key_share [RFC9846]                              | CH, SH, HRR |
     +--------------------------------------------------+-------------+
     | transparency_info [RFC9162]                      |  CH, CR, CT |
     +--------------------------------------------------+-------------+
@@ -4789,17 +4789,17 @@ Auth | {CertificateVerify*}
    with references to this document.
 
    IANA has updated the "Recommended" column procedures to match
-   [RFC9847] for the "TLS SignatureScheme" and "PskKeyExchangeMode"
+   [RFC9847] for the TLS SignatureScheme and PskKeyExchangeMode
    registries.
 
-   IANA has renamed the "extended_master_secret" value in the "TLS
-   ExtensionType Values" registry to "extended_main_secret".
+   IANA has renamed the "extended_master_secret" value in the TLS
+   ExtensionType Values registry to "extended_main_secret".
 
-   IANA has created a value for the "general_error" alert in the "TLS
-   Alerts" registry with the value given in Section 6.
+   IANA has created a value for the "general_error" alert in the TLS
+   Alerts registry with the value given in Section 6.
 
    IANA has added references to this document for the status_request and
-   supported_groups entries in the "TLS ExtensionType Values" registry.
+   supported_groups entries in the TLS ExtensionType Values registry.
 
    IANA has updated the TLS ExtensionType value in the "TLS 1.3" column
    for cached_info to "CH, EE".
@@ -4820,11 +4820,6 @@ Auth | {CertificateVerify*}
               Institute of Standards and Technology,
               DOI 10.6028/nist.sp.800-56ar3, April 2018,
               <https://doi.org/10.6028/nist.sp.800-56ar3>.
-
-   [PRE-RFC9846]
-              Rescorla, E., "The Transport Layer Security (TLS) Protocol
-              Version 1.3 (PLACEHOLDER)", RFC PRE-9846, May 2026,
-              <https://www.rfc-editor.org/info/PRE-RFC9846>.
 
    [RFC2104]  Krawczyk, H., Bellare, M., and R. Canetti, "HMAC: Keyed-
               Hashing for Message Authentication", RFC 2104,
@@ -5370,11 +5365,6 @@ Auth | {CertificateVerify*}
    [RFC9112]  Fielding, R., Ed., Nottingham, M., Ed., and J. Reschke,
               Ed., "HTTP/1.1", STD 99, RFC 9112, DOI 10.17487/RFC9112,
               June 2022, <https://www.rfc-editor.org/rfc/rfc9112>.
-
-   [RFC9146]  Rescorla, E., Ed., Tschofenig, H., Ed., Fossati, T., and
-              A. Kraus, "Connection Identifier for DTLS 1.2", RFC 9146,
-              DOI 10.17487/RFC9146, March 2022,
-              <https://www.rfc-editor.org/rfc/rfc9146>.
 
    [RFC9147]  Rescorla, E., Tschofenig, H., and N. Modadugu, "The
               Datagram Transport Layer Security (DTLS) Protocol Version
