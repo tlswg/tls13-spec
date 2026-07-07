@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-06-25T02:26:42.136766+00:00",
+  "timestamp": "2026-07-07T02:06:21.447339+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -73616,6 +73616,73 @@
           "createdAt": "2026-06-10T15:13:00Z",
           "updatedAt": "2026-06-10T15:13:00Z",
           "comments": []
+        }
+      ]
+    },
+    {
+      "number": 1454,
+      "id": "PR_kwDOASA0os7ul4ux",
+      "title": "Remove duplication in IANA Considerations",
+      "url": "https://github.com/tlswg/tls13-spec/pull/1454",
+      "state": "OPEN",
+      "author": "ekr",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2026-07-06T23:52:01Z",
+      "updatedAt": "2026-07-07T01:16:40Z",
+      "baseRepository": "tlswg/tls13-spec",
+      "baseRefName": "main",
+      "baseRefOid": "e5528fe6f0f8f0a29450cc6bd2417ab7bef1c40e",
+      "headRepository": "ekr/tls13-spec",
+      "headRefName": "iana_dedup",
+      "headRefOid": "a57db72daa8c954a35ab91f6e52a3844eeb62d24",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOASA0os8AAAABFJmIMA",
+          "commit": {
+            "abbreviatedOid": "a57db72"
+          },
+          "author": "copilot-pull-request-reviewer",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "## Pull request overview\n\nThis PR simplifies the **IANA Considerations** section in `rfc9846.md` by removing repeated explanatory text and consolidating guidance about the `\"Recommended\"` column into a single note.\n\n**Changes:**\n- Removes duplicated narrative about adding cipher suites and setting `\"DTLS-OK\"`/`\"Recommended\"` flags.\n- Removes repeated `\"Recommended\"`-column defaulting guidance from individual registry bullets.\n- Adds a consolidated paragraph describing which registries have a `\"Recommended\"` column and pointing to `{{?RFC9847}}`.\n\n\n\n\n\n\n---\n\n\ud83d\udca1 <a href=\"/tlswg/tls13-spec/new/main?filename=.github/instructions/*.instructions.md\" class=\"Link--inTextBlock\" target=\"_blank\" rel=\"noopener noreferrer\">Add Copilot custom instructions</a> for smarter, more guided reviews. <a href=\"https://docs.github.com/en/copilot/customizing-copilot/adding-repository-custom-instructions-for-github-copilot\" class=\"Link--inTextBlock\" target=\"_blank\" rel=\"noopener noreferrer\">Learn how to get started</a>.",
+          "createdAt": "2026-07-06T23:54:49Z",
+          "updatedAt": "2026-07-06T23:54:50Z",
+          "comments": [
+            {
+              "originalPosition": 54,
+              "body": "The consolidated note about the \"Recommended\" column has inconsistent/likely incorrect registry names (e.g., missing space in \"TLSPskKeyExchangeMode\", and \"TLS ExtensionType\"/\"TLS CertificateType\" don\u2019t match the registry names used elsewhere in this section). This can confuse IANA actions and readers; please keep the names exact and consistent with the earlier bullets.",
+              "createdAt": "2026-07-06T23:54:50Z",
+              "updatedAt": "2026-07-06T23:54:50Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os8AAAABFJ4TBw",
+          "commit": {
+            "abbreviatedOid": "a57db72"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-07T01:16:40Z",
+          "updatedAt": "2026-07-07T01:16:40Z",
+          "comments": [
+            {
+              "originalPosition": 53,
+              "body": "```suggestion\n\"Recommended\" column.  See {{Section 3 of ?RFC9847}} for additional information\n```",
+              "createdAt": "2026-07-07T01:16:40Z",
+              "updatedAt": "2026-07-07T01:16:40Z"
+            }
+          ]
         }
       ]
     }
