@@ -32,7 +32,7 @@ for TLS 1.2 implementations.
     pycountry 24.6.1
     PyYAML 6.0.3
     requests 2.33.1
-    wcwidth 0.8.1
+    wcwidth 0.8.2
 -->
 <link href="rfc9846.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
@@ -6913,12 +6913,11 @@ IANA has replaced references to these RFCs with references to this document. The
           <p id="section-11-2.1.1">TLS Cipher Suites registry: Values with the first byte in the range
 0-254 (decimal) are assigned via Specification Required <span>[<a href="#RFC8126" class="cite xref">RFC8126</a>]</span>.
 Values with the first byte 255 (decimal) are reserved for Private
-Use <span>[<a href="#RFC8126" class="cite xref">RFC8126</a>]</span>.<a href="#section-11-2.1.1" class="pilcrow">¶</a></p>
-<p id="section-11-2.1.2">
+Use <span>[<a href="#RFC8126" class="cite xref">RFC8126</a>]</span>.
 IANA has added the cipher suites listed in <a href="#cipher-suites" class="auto internal xref">Appendix B.4</a> to
 the registry. The "Value" and "Description" columns are taken from the table.
-The "DTLS-OK" and "Recommended" columns are both marked as "Y" for each new
-cipher suite.<a href="#section-11-2.1.2" class="pilcrow">¶</a></p>
+The "DTLS-OK" and "Recommended" columns are both marked as "Y" for
+these cipher suites.<a href="#section-11-2.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-11-2.2">
           <p id="section-11-2.2.1">TLS ContentType registry: Future values are allocated via
@@ -6947,11 +6946,10 @@ temporary usage.<a href="#section-11-2.4.1" class="pilcrow">¶</a></p>
 registry follow:<a href="#section-11-3" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-11-4.1">
-          <p id="section-11-4.1.1">IANA has updated the registration policy as follows:<a href="#section-11-4.1.1" class="pilcrow">¶</a></p>
-<p id="section-11-4.1.2">
+          <p id="section-11-4.1.1">IANA has updated the registration policy as follows:
 Values with the first byte in the range 0-254 (decimal) are assigned
 via Specification Required <span>[<a href="#RFC8126" class="cite xref">RFC8126</a>]</span>.  Values with the first byte
-255 (decimal) are reserved for Private Use <span>[<a href="#RFC8126" class="cite xref">RFC8126</a>]</span>.<a href="#section-11-4.1.2" class="pilcrow">¶</a></p>
+255 (decimal) are reserved for Private Use <span>[<a href="#RFC8126" class="cite xref">RFC8126</a>]</span>.<a href="#section-11-4.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-11-4.2">
           <p id="section-11-4.2.1">IANA has updated this registry to include the
@@ -6998,11 +6996,7 @@ The registry has been initially populated with the values described in
 <a href="#signature-algorithms" class="auto internal xref">Section 4.3.3</a>. The following values are marked as
 "Recommended": ecdsa_secp256r1_sha256, ecdsa_secp384r1_sha384,
 rsa_pss_rsae_sha256, rsa_pss_rsae_sha384, rsa_pss_rsae_sha512,
-rsa_pss_pss_sha256, rsa_pss_pss_sha384, rsa_pss_pss_sha512, and ed25519.
-The
-"Recommended" column is assigned a value of "N" unless explicitly
-requested. See <span>[<a href="#RFC9847" class="cite xref">RFC9847</a>]</span> for additional information about "Recommended"
-column values and settings.<a href="#section-11-9.1.1" class="pilcrow">¶</a></p>
+rsa_pss_pss_sha256, rsa_pss_pss_sha384, rsa_pss_pss_sha512, and ed25519.<a href="#section-11-9.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-11-9.2">
           <p id="section-11-9.2.1">TLS PskKeyExchangeMode registry: Values in the
@@ -7011,12 +7005,14 @@ range 0-253 (decimal) are assigned via Specification Required
 reserved for Private Use <span>[<a href="#RFC8126" class="cite xref">RFC8126</a>]</span>.  This registry has a
 "Recommended" column.  The registry has been initially
 populated with psk_ke (0) and psk_dhe_ke (1).  Both are marked as
-"Recommended".  The
-"Recommended" column is assigned a value of "N" unless explicitly
-requested. See <span>[<a href="#RFC9847" class="cite xref">RFC9847</a>]</span> for additional information about "Recommended"
-column values and settings.<a href="#section-11-9.2.1" class="pilcrow">¶</a></p>
+"Recommended".<a href="#section-11-9.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
+<p id="section-11-10">The TLS ExtensionType Values, TLS Cipher Suites, TLS Supported Groups, TLS
+Exporter Labels, TLS HashAlgorithm, TLS Certificate Types,
+TLSPskKeyExchangeMode, and TLS SignatureScheme registries have a
+"Recommended" column.  See <span><a href="https://rfc-editor.org/rfc/rfc9847#section-3" class="relref">Section 3</a> of [<a href="#RFC9847" class="cite xref">RFC9847</a>]</span> for additional information
+about "Recommended" column values and settings.<a href="#section-11-10" class="pilcrow">¶</a></p>
 <div id="bis-changes">
 <section id="section-11.1">
         <h3 id="name-changes-for-this-rfc">
