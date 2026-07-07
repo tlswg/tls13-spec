@@ -4,7 +4,7 @@
 
 Internet Engineering Task Force (IETF)                       E. Rescorla
 Request for Comments: 9846                                   Independent
-Obsoletes: 5077, 5246, 6961, 7627, 8422, 8446                   May 2026
+Obsoletes: 5077, 5246, 6961, 7627, 8422, 8446                  July 2026
 Updates: 5705, 6066                                                     
 Category: Standards Track                                               
 ISSN: 2070-1721
@@ -316,14 +316,15 @@ Table of Contents
    *  Forbid negotiating TLS 1.0 and 1.1 as they are now deprecated by
       [RFC8996].
 
-   *  Removes ambiguity around which hash is used with PreSharedKeys and
+   *  Remove ambiguity around which hash is used with PreSharedKeys and
       HelloRetryRequest.
 
    *  Require that clients ignore NewSessionTicket if they do not
       support resumption.
 
    *  Upgrade the requirement to initiate key update before exceeding
-      key usage limits to MUST.
+      key usage limits to MUST and clarified the scope of key usage
+      limits.
 
    *  Limit the number of permitted KeyUpdate messages.
 
@@ -334,13 +335,24 @@ Table of Contents
 
    *  Add a "general_error" generic alert.
 
-   *  Corrected the lower bound on CertificateRequest.extensions to be 0
+   *  Correct the lower bound on CertificateRequest.extensions to be 0
       bytes.  This was an error in the syntax as it is possible to send
       no extensions, which results in length 0.
 
-   *  Used more generic language for the asymmetric key exchange, which
+   *  Correct the lower bound on ClientHello.extensions.  This was a
+      calculation error.
+
+   *  Correct the upper bound on NewSessionTicket.extensions.  This was
+      a calculation error.
+
+   *  Use more generic language for the asymmetric key exchange, which
       was previously exclusively (EC)DHE, to reflect the use of KEM-
       based key exchange.
+
+   *  Clarify the interaction of the transcript hash with future
+      specifications.
+
+   *  Remove text requiring RSA PSS, matching [RFC9963].
 
    In addition, there have been some improvements to the security
    considerations, especially around privacy.
@@ -567,7 +579,7 @@ Auth | {CertificateVerify*}
 
    Finished:  A MAC (Message Authentication Code) over the entire
       handshake.  This message provides key confirmation for the shared
-      secrets established in the handshake , binds the endpoint's
+      secrets established in the handshake, binds the endpoint's
       identity to the exchanged keys, and in PSK mode also authenticates
       the handshake.  [Section 4.5.3]
 
@@ -1372,11 +1384,11 @@ Auth | {CertificateVerify*}
       extensions which are required to establish the cryptographic
       context and negotiate the protocol version.  All TLS 1.3
       ServerHello messages MUST contain the "supported_versions"
-      extension.  Current ServerHello messages additionally contain the
-      "pre_shared_key" extension or the "key_share" extension, or both
-      (when using a PSK with asymmetric key establishment).  Other
-      extensions (see Section 4.3) are sent separately in the
-      EncryptedExtensions message.
+      extension.  Current ServerHello messages additionally contain
+      either the "pre_shared_key" extension or the "key_share"
+      extension, or both (when using a PSK with asymmetric key
+      establishment).  Other extensions (see Section 4.3) are sent
+      separately in the EncryptedExtensions message.
 
    For reasons of backward compatibility with middleboxes (see
    Appendix E.4), the HelloRetryRequest message uses the same structure
@@ -1386,9 +1398,9 @@ Auth | {CertificateVerify*}
      CF 21 AD 74 E5 9A 61 11 BE 1D 8C 02 1E 65 B8 91
      C2 A2 11 16 7A BB 8C 5E 07 9E 09 E2 C8 A8 33 9C
 
-   Upon receiving a ServerHello message, implementations MUST first
-   examine the Random value and, if it matches this value, process it as
-   described in Section 4.2.4.
+   Upon receiving a message with type server_hello, implementations MUST
+   first examine the Random value and, if it matches this value, process
+   it as described in Section 4.2.4.
 
    TLS 1.3 has a downgrade protection mechanism embedded in the server's
    random value.  TLS 1.3 servers which negotiate TLS 1.2 or below in
@@ -1500,30 +1512,42 @@ Auth | {CertificateVerify*}
     } Extension;
 
     enum {
-        server_name(0),                             /* RFC 6066 */
-        max_fragment_length(1),                     /* RFC 6066 */
-        status_request(5),                          /* RFC 6066 */
-        supported_groups(10),                       /* RFC 8422, 7919 */
-        signature_algorithms(13),                   /* RFC 8446 */
+        server_name(0),                             /* RFC 6066, 9261 */
+        status_request(5),                          /* RFC 6066, 9846 */
+        supported_groups(10),                       /* RFC 7919, 9846 */
+        signature_algorithms(13),                   /* RFC 9846 */
         use_srtp(14),                               /* RFC 5764 */
         heartbeat(15),                              /* RFC 6520 */
         application_layer_protocol_negotiation(16), /* RFC 7301 */
-        signed_certificate_timestamp(18),           /* RFC 6962 */
         client_certificate_type(19),                /* RFC 7250 */
         server_certificate_type(20),                /* RFC 7250 */
         padding(21),                                /* RFC 7685 */
-        pre_shared_key(41),                         /* RFC 8446 */
-        early_data(42),                             /* RFC 8446 */
-        supported_versions(43),                     /* RFC 8446 */
-        cookie(44),                                 /* RFC 8446 */
-        psk_key_exchange_modes(45),                 /* RFC 8446 */
-        certificate_authorities(47),                /* RFC 8446 */
-        oid_filters(48),                            /* RFC 8446 */
-        post_handshake_auth(49),                    /* RFC 8446 */
-        signature_algorithms_cert(50),              /* RFC 8446 */
-        key_share(51),                              /* RFC 8446 */
+        compress_certificate(27),                   /* RFC 8879 */
+        record_size_limit(28),                      /* RFC 8449 */
+        delegated_credential(34),                   /* RFC 9345 */
+        supported_ekt_ciphers(39),                  /* RFC 8870 */
+        pre_shared_key(41),                         /* RFC 9846 */
+        early_data(42),                             /* RFC 9846 */
+        supported_versions(43),                     /* RFC 9846 */
+        cookie(44),                                 /* RFC 9846 */
+        psk_key_exchange_modes(45),                 /* RFC 9846 */
+        certificate_authorities(47),                /* RFC 9846 */
+        oid_filters(48),                            /* RFC 9846 */
+        post_handshake_auth(49),                    /* RFC 9846 */
+        signature_algorithms_cert(50),              /* RFC 9846 */
+        key_share(51),                              /* RFC 9846 */
+        transparency_info(52),                      /* RFC 9162 */
+        external_id_hash(55),                       /* RFC 8844 */
+        external_session_id(56),                    /* RFC 8844 */
+        quic_transport_parameters(57),              /* RFC 9001 */
+        ticket_request(58),                         /* RFC 9149 */
+        ech_outer_extensions(64768),                /* RFC 9849 */
+        encrypted_client_hello(65037),              /* RFC 9849 */
         (65535)
     } ExtensionType;
+
+   Note: This list includes only extensions marked "Recommended" and
+   allowed for TLS 1.3 at the time of this writing.
 
    Here:
 
@@ -1574,15 +1598,13 @@ Auth | {CertificateVerify*}
     +==================================================+=============+
     | Extension                                        |     TLS 1.3 |
     +==================================================+=============+
-    | server_name [RFC6066]                            |      CH, EE |
+    | server_name [RFC6066] [RFC9261]                  |  CH, EE, CR |
     +--------------------------------------------------+-------------+
-    | max_fragment_length [RFC6066]                    |      CH, EE |
+    | status_request [RFC6066] [RFC9846]               |  CH, CR, CT |
     +--------------------------------------------------+-------------+
-    | status_request [RFC6066]                         |  CH, CR, CT |
+    | supported_groups [RFC7919] [RFC9846]             |      CH, EE |
     +--------------------------------------------------+-------------+
-    | supported_groups [RFC7919]                       |      CH, EE |
-    +--------------------------------------------------+-------------+
-    | signature_algorithms [RFC8446]                   |      CH, CR |
+    | signature_algorithms [RFC9846]                   |      CH, CR |
     +--------------------------------------------------+-------------+
     | use_srtp [RFC5764]                               |      CH, EE |
     +--------------------------------------------------+-------------+
@@ -1590,15 +1612,11 @@ Auth | {CertificateVerify*}
     +--------------------------------------------------+-------------+
     | application_layer_protocol_negotiation [RFC7301] |      CH, EE |
     +--------------------------------------------------+-------------+
-    | signed_certificate_timestamp [RFC6962]           |  CH, CR, CT |
-    +--------------------------------------------------+-------------+
     | client_certificate_type [RFC7250]                |      CH, EE |
     +--------------------------------------------------+-------------+
     | server_certificate_type [RFC7250]                |      CH, EE |
     +--------------------------------------------------+-------------+
     | padding [RFC7685]                                |          CH |
-    +--------------------------------------------------+-------------+
-    | cached_info [RFC7924]                            |      CH, EE |
     +--------------------------------------------------+-------------+
     | compress_certificate [RFC8879]                   |      CH, CR |
     +--------------------------------------------------+-------------+
@@ -1608,29 +1626,27 @@ Auth | {CertificateVerify*}
     +--------------------------------------------------+-------------+
     | supported_ekt_ciphers [RFC8870]                  |      CH, EE |
     +--------------------------------------------------+-------------+
-    | pre_shared_key [RFC8446]                         |      CH, SH |
+    | pre_shared_key [RFC9846]                         |      CH, SH |
     +--------------------------------------------------+-------------+
-    | early_data [RFC8446]                             | CH, EE, NST |
+    | early_data [RFC9846]                             | CH, EE, NST |
     +--------------------------------------------------+-------------+
-    | psk_key_exchange_modes [RFC8446]                 |          CH |
+    | supported_versions [RFC9846]                     | CH, SH, HRR |
     +--------------------------------------------------+-------------+
-    | cookie [RFC8446]                                 |     CH, HRR |
+    | cookie [RFC9846]                                 |     CH, HRR |
     +--------------------------------------------------+-------------+
-    | supported_versions [RFC8446]                     | CH, SH, HRR |
+    | psk_key_exchange_modes [RFC9846]                 |          CH |
     +--------------------------------------------------+-------------+
-    | certificate_authorities [RFC8446]                |      CH, CR |
+    | certificate_authorities [RFC9846]                |      CH, CR |
     +--------------------------------------------------+-------------+
-    | oid_filters [RFC8446]                            |          CR |
+    | oid_filters [RFC9846]                            |          CR |
     +--------------------------------------------------+-------------+
-    | post_handshake_auth [RFC8446]                    |          CH |
+    | post_handshake_auth [RFC9846]                    |          CH |
     +--------------------------------------------------+-------------+
-    | signature_algorithms_cert [RFC8446]              |      CH, CR |
+    | signature_algorithms_cert [RFC9846]              |      CH, CR |
     +--------------------------------------------------+-------------+
-    | key_share [RFC8446]                              | CH, SH, HRR |
+    | key_share [RFC9846]                              | CH, SH, HRR |
     +--------------------------------------------------+-------------+
     | transparency_info [RFC9162]                      |  CH, CR, CT |
-    +--------------------------------------------------+-------------+
-    | connection_id [RFC9146]                          |      CH, SH |
     +--------------------------------------------------+-------------+
     | external_id_hash [RFC8844]                       |      CH, EE |
     +--------------------------------------------------+-------------+
@@ -1640,11 +1656,15 @@ Auth | {CertificateVerify*}
     +--------------------------------------------------+-------------+
     | ticket_request [RFC9149]                         |      CH, EE |
     +--------------------------------------------------+-------------+
+    | ech_outer_extensions [RFC9849]                   |          CH |
+    +--------------------------------------------------+-------------+
+    | encrypted_client_hello [RFC9849]                 | CH, HRR, EE |
+    +--------------------------------------------------+-------------+
 
                          Table 1: TLS Extensions
 
-   Note: This table includes only extensions marked "Recommended" at the
-   time of this writing.
+   Note: This table includes only extensions marked "Recommended" and
+   allowed for TLS 1.3 at the time of this writing.
 
    When multiple extensions of different types are present, the
    extensions MAY appear in any order, with the exception of
@@ -2169,7 +2189,7 @@ Auth | {CertificateVerify*}
 
    Clients and Servers MUST NOT reuse a key share for multiple
    connections.  Because [RFC8446] permitted reuse, receiving
-   implementations MUST permit reuse by the peer to prevent
+   implementations MUST permit reuse by the peer in order to prevent
    interoperability issues.
 
    In a HelloRetryRequest message, the "extension_data" field of this
@@ -2387,10 +2407,10 @@ Auth | {CertificateVerify*}
       data, the actual early data itself may already be in flight by the
       time the server generates this message.
 
-   To accept early data, the server MUST have selected the first key
-   offered in the client's "pre_shared_key" extension.  In addition, it
-   MUST verify that the following values are the same as those
-   associated with the selected PSK:
+   In order to accept early data, the server MUST have selected the
+   first key offered in the client's "pre_shared_key" extension.  In
+   addition, it MUST verify that the following values are the same as
+   those associated with the selected PSK:
 
    *  The selected TLS version number
 
@@ -3172,10 +3192,11 @@ Auth | {CertificateVerify*}
 4.7.1.  New Session Ticket Message
 
    If the client's hello contained a suitable "psk_key_exchange_modes"
-   extension at any time after the server has received the client
-   Finished message, it MAY send a NewSessionTicket message.  This
-   message creates a unique association between the ticket value and a
-   secret PSK derived from the resumption secret (see Section 7).
+   extension, the server MAY send a NewSessionTicket message at any time
+   after it has received the client Finished message.  The
+   NewSessionTicket message creates a unique association between the
+   ticket value and a secret PSK derived from the resumption secret (see
+   Section 7).
 
    The client MAY use this PSK for future handshakes by including the
    ticket value in the "pre_shared_key" extension in its ClientHello
@@ -3378,15 +3399,15 @@ Auth | {CertificateVerify*}
    if the key repeats, the IV is also independently generated, so the
    chance of a joint key/IV collision is much lower.  To provide an
    extra margin of security, sending implementations MUST NOT allow the
-   epoch -- and hence the number of key updates -- to exceed 2^48-1.  To
-   allow this value to be changed later -- for instance for ciphers with
-   more than 128-bit keys -- receiving implementations MUST NOT enforce
-   this rule.  If a sending implementation receives a KeyUpdate with
-   request_update set to "update_requested", it MUST NOT send its own
-   KeyUpdate if that would cause it to exceed these limits and SHOULD
-   instead ignore the "update_requested" flag.  This may result in an
-   eventual need to terminate the connection when the limits in
-   Section 5.5 are reached.
+   epoch -- and hence the number of key updates -- to exceed 2^48-1.  In
+   order to allow this value to be changed later -- for instance for
+   ciphers with more than 128-bit keys -- receiving implementations MUST
+   NOT enforce this rule.  If a sending implementation receives a
+   KeyUpdate with request_update set to "update_requested", it MUST NOT
+   send its own KeyUpdate if that would cause it to exceed these limits
+   and SHOULD instead ignore the "update_requested" flag.  This may
+   result in an eventual need to terminate the connection when the
+   limits in Section 5.5 are reached.
 
 5.  Record Protocol
 
@@ -4326,7 +4347,7 @@ Auth | {CertificateVerify*}
       attempting to retry requests, but 0-RTT adds an additional
       dimension if clients automatically retransmit rejected 0-RTT data
       after the completion of a handshake, as an attacker may be able to
-      cause the data to be processed as 0-RTT data as connection 1 and
+      cause the data to be processed as 0-RTT data on connection 1 and
       as 1-RTT data on connection 2.
 
    The first class of attack can be prevented by sharing state to
@@ -4667,12 +4688,9 @@ Auth | {CertificateVerify*}
    *  TLS Cipher Suites registry: Values with the first byte in the
       range 0-254 (decimal) are assigned via Specification Required
       [RFC8126].  Values with the first byte 255 (decimal) are reserved
-      for Private Use [RFC8126].
-
-      IANA has added the cipher suites listed in Appendix B.4 to the
-      registry.  The "Value" and "Description" columns are taken from
-      the table.  The "DTLS-OK" and "Recommended" columns are both
-      marked as "Y" for each new cipher suite.
+      for Private Use [RFC8126].  IANA has added the cipher suites
+      listed in Appendix B.4 to the registry.  The "Value" and
+      "Description" columns are taken from the table.
 
    *  TLS ContentType registry: Future values are allocated via
       Standards Action [RFC8126].
@@ -4695,11 +4713,10 @@ Auth | {CertificateVerify*}
    originally created in [RFC4366].  IANA has updated it to reference
    this document.  Changes to the registry follow:
 
-   *  IANA has updated the registration policy as follows:
-
-      Values with the first byte in the range 0-254 (decimal) are
-      assigned via Specification Required [RFC8126].  Values with the
-      first byte 255 (decimal) are reserved for Private Use [RFC8126].
+   *  IANA has updated the registration policy as follows: Values with
+      the first byte in the range 0-254 (decimal) are assigned via
+      Specification Required [RFC8126].  Values with the first byte 255
+      (decimal) are reserved for Private Use [RFC8126].
 
    *  IANA has updated this registry to include the "key_share",
       "pre_shared_key", "psk_key_exchange_modes", "early_data",
@@ -4748,32 +4765,41 @@ Auth | {CertificateVerify*}
       ecdsa_secp256r1_sha256, ecdsa_secp384r1_sha384,
       rsa_pss_rsae_sha256, rsa_pss_rsae_sha384, rsa_pss_rsae_sha512,
       rsa_pss_pss_sha256, rsa_pss_pss_sha384, rsa_pss_pss_sha512, and
-      ed25519.  The "Recommended" column is assigned a value of "N"
-      unless explicitly requested, and adding a value with a
-      "Recommended" value of "Y" requires Standards Action [RFC8126].
-      IESG Approval is REQUIRED for a Y->N transition.
+      ed25519.
 
    *  TLS PskKeyExchangeMode registry: Values in the range 0-253
       (decimal) are assigned via Specification Required [RFC8126].  The
       values 254 and 255 (decimal) are reserved for Private Use
       [RFC8126].  This registry has a "Recommended" column.  The
       registry has been initially populated with psk_ke (0) and
-      psk_dhe_ke (1).  Both are marked as "Recommended".  The
-      "Recommended" column is assigned a value of "N" unless explicitly
-      requested, and adding a value with a "Recommended" value of "Y"
-      requires Standards Action [RFC8126].  IESG Approval is REQUIRED
-      for a Y->N transition.
+      psk_dhe_ke (1).  Both are marked as "Recommended".
+
+   The TLS ExtensionType, TLS Cipher Suites, TLS Supported Groups, TLS
+   Exporter Labels, TLS HashAlgorithm, TLS CertificateType,
+   TLSPskKeyExchangeMode, and TLS SignatureScheme registries have a
+   "Recommended" column.  See [RFC9847] for additional information about
+   "Recommended" column values and settings.
 
 11.1.  Changes for this RFC
 
    IANA has updated all references to [RFC8446] in the IANA registries
    with references to this document.
 
+   IANA has updated the "Recommended" column procedures to match
+   [RFC9847] for the TLS SignatureScheme and PskKeyExchangeMode
+   registries.
+
    IANA has renamed the "extended_master_secret" value in the TLS
    ExtensionType Values registry to "extended_main_secret".
 
    IANA has created a value for the "general_error" alert in the TLS
    Alerts registry with the value given in Section 6.
+
+   IANA has added references to this document for the status_request and
+   supported_groups entries in the TLS ExtensionType Values registry.
+
+   IANA has updated the TLS ExtensionType value in the "TLS 1.3" column
+   for cached_info to "CH, EE".
 
 12.  References
 
@@ -5337,11 +5363,6 @@ Auth | {CertificateVerify*}
               Ed., "HTTP/1.1", STD 99, RFC 9112, DOI 10.17487/RFC9112,
               June 2022, <https://www.rfc-editor.org/rfc/rfc9112>.
 
-   [RFC9146]  Rescorla, E., Ed., Tschofenig, H., Ed., Fossati, T., and
-              A. Kraus, "Connection Identifier for DTLS 1.2", RFC 9146,
-              DOI 10.17487/RFC9146, March 2022,
-              <https://www.rfc-editor.org/rfc/rfc9146>.
-
    [RFC9147]  Rescorla, E., Tschofenig, H., and N. Modadugu, "The
               Datagram Transport Layer Security (DTLS) Protocol Version
               1.3", RFC 9147, DOI 10.17487/RFC9147, April 2022,
@@ -5365,6 +5386,10 @@ Auth | {CertificateVerify*}
               DOI 10.17487/RFC9258, July 2022,
               <https://www.rfc-editor.org/rfc/rfc9258>.
 
+   [RFC9261]  Sullivan, N., "Exported Authenticators in TLS", RFC 9261,
+              DOI 10.17487/RFC9261, July 2022,
+              <https://www.rfc-editor.org/rfc/rfc9261>.
+
    [RFC9345]  Barnes, R., Iyengar, S., Sullivan, N., and E. Rescorla,
               "Delegated Credentials for TLS and DTLS", RFC 9345,
               DOI 10.17487/RFC9345, July 2023,
@@ -5374,9 +5399,17 @@ Auth | {CertificateVerify*}
               RFC 9525, DOI 10.17487/RFC9525, November 2023,
               <https://www.rfc-editor.org/rfc/rfc9525>.
 
+   [RFC9847]  Salowey, J. and S. Turner, "IANA Registry Updates for TLS
+              and DTLS", RFC 9847, DOI 10.17487/RFC9847, December 2025,
+              <https://www.rfc-editor.org/rfc/rfc9847>.
+
    [RFC9849]  Rescorla, E., Oku, K., Sullivan, N., and C. A. Wood, "TLS
               Encrypted Client Hello", RFC 9849, DOI 10.17487/RFC9849,
               March 2026, <https://www.rfc-editor.org/rfc/rfc9849>.
+
+   [RFC9963]  Benjamin, D. and A. Popov, "Legacy RSASSA-PKCS1-v1_5 Code
+              Points for TLS 1.3", RFC 9963, DOI 10.17487/RFC9963, April
+              2026, <https://www.rfc-editor.org/rfc/rfc9963>.
 
    [RSA]      Rivest, R., Shamir, A., and L. Adleman, "A method for
               obtaining digital signatures and public-key
@@ -5668,28 +5701,37 @@ B.3.1.  Key Exchange Messages
     } Extension;
 
     enum {
-        server_name(0),                             /* RFC 6066 */
-        max_fragment_length(1),                     /* RFC 6066 */
-        status_request(5),                          /* RFC 6066 */
-        supported_groups(10),                       /* RFC 8422, 7919 */
-        signature_algorithms(13),                   /* RFC 8446 */
+        server_name(0),                             /* RFC 6066, 9261 */
+        status_request(5),                          /* RFC 6066, 9846 */
+        supported_groups(10),                       /* RFC 7919, 9846 */
+        signature_algorithms(13),                   /* RFC 9846 */
         use_srtp(14),                               /* RFC 5764 */
         heartbeat(15),                              /* RFC 6520 */
         application_layer_protocol_negotiation(16), /* RFC 7301 */
-        signed_certificate_timestamp(18),           /* RFC 6962 */
         client_certificate_type(19),                /* RFC 7250 */
         server_certificate_type(20),                /* RFC 7250 */
         padding(21),                                /* RFC 7685 */
-        pre_shared_key(41),                         /* RFC 8446 */
-        early_data(42),                             /* RFC 8446 */
-        supported_versions(43),                     /* RFC 8446 */
-        cookie(44),                                 /* RFC 8446 */
-        psk_key_exchange_modes(45),                 /* RFC 8446 */
-        certificate_authorities(47),                /* RFC 8446 */
-        oid_filters(48),                            /* RFC 8446 */
-        post_handshake_auth(49),                    /* RFC 8446 */
-        signature_algorithms_cert(50),              /* RFC 8446 */
-        key_share(51),                              /* RFC 8446 */
+        compress_certificate(27),                   /* RFC 8879 */
+        record_size_limit(28),                      /* RFC 8449 */
+        delegated_credential(34),                   /* RFC 9345 */
+        supported_ekt_ciphers(39),                  /* RFC 8870 */
+        pre_shared_key(41),                         /* RFC 9846 */
+        early_data(42),                             /* RFC 9846 */
+        supported_versions(43),                     /* RFC 9846 */
+        cookie(44),                                 /* RFC 9846 */
+        psk_key_exchange_modes(45),                 /* RFC 9846 */
+        certificate_authorities(47),                /* RFC 9846 */
+        oid_filters(48),                            /* RFC 9846 */
+        post_handshake_auth(49),                    /* RFC 9846 */
+        signature_algorithms_cert(50),              /* RFC 9846 */
+        key_share(51),                              /* RFC 9846 */
+        transparency_info(52),                      /* RFC 9162 */
+        external_id_hash(55),                       /* RFC 8844 */
+        external_session_id(56),                    /* RFC 8844 */
+        quic_transport_parameters(57),              /* RFC 9001 */
+        ticket_request(58),                         /* RFC 9149 */
+        ech_outer_extensions(64768),                /* RFC 9849 */
+        encrypted_client_hello(65037),              /* RFC 9849 */
         (65535)
     } ExtensionType;
 
@@ -6157,14 +6199,13 @@ C.4.  Client and Server Tracking Prevention
    the client's Certificate, which is encrypted.  There are a number of
    potential ways to avoid this risk, including (1) using random
    identity labels, (2) pre-encrypting the identity under a key known to
-   the server, or (3) using the "Encrypted Client Hello" extension
-   [RFC9849].
+   the server, or (3) using Encrypted Client Hello [RFC9849].
 
    If an external PSK identity is used for multiple connections, then it
    will generally be possible for an external observer to track clients
-   and/or servers across connections.  Use of the "Encrypted Client
-   Hello" extension [RFC9849] can mitigate this risk, as can mechanisms
-   external to TLS that rotate or encrypt the PSK identity.
+   and/or servers across connections.  Use of Encrypted Client Hello
+   [RFC9849] can mitigate this risk, as can mechanisms external to TLS
+   that rotate or encrypt the PSK identity.
 
 C.5.  Unauthenticated Operation
 
@@ -6714,12 +6755,12 @@ F.2.  Record Layer
    being derived from the record sequence number (Section 5.3), with the
    sequence number being maintained independently at both sides; thus,
    records which are delivered out of order result in AEAD deprotection
-   failures.  To prevent mass cryptanalysis when the same plaintext is
-   repeatedly encrypted by different users under the same key (as is
-   commonly the case for HTTP), the nonce is formed by mixing the
-   sequence number with a secret per-connection initialization vector
-   derived along with the traffic keys.  See [BT16] for analysis of this
-   construction.
+   failures.  In order to prevent mass cryptanalysis when the same
+   plaintext is repeatedly encrypted by different users under the same
+   key (as is commonly the case for HTTP), the nonce is formed by mixing
+   the sequence number with a secret per-connection initialization
+   vector derived along with the traffic keys.  See [BT16] for analysis
+   of this construction.
 
    The rekeying technique in TLS 1.3 (see Section 7.2) follows the
    construction of the serial generator as discussed in [REKEY], which
@@ -6878,7 +6919,7 @@ F.5.  Replay Attacks on 0-RTT
    processing for 0-RTT data for some kinds of application traffic
    (e.g., abort the connection, request that data be resent at the
    application layer, or delay processing until the handshake
-   completes).  To allow applications to implement this kind of
+   completes).  In order to allow applications to implement this kind of
    processing, TLS implementations MUST provide a way for the
    application to determine if the handshake has completed.
 
