@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-07-07T02:06:21.447339+00:00",
+  "timestamp": "2026-07-09T01:59:21.996150+00:00",
   "repo": "tlswg/tls13-spec",
   "labels": [
     {
@@ -73624,24 +73624,26 @@
       "id": "PR_kwDOASA0os7ul4ux",
       "title": "Remove duplication in IANA Considerations",
       "url": "https://github.com/tlswg/tls13-spec/pull/1454",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "ekr",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "",
       "createdAt": "2026-07-06T23:52:01Z",
-      "updatedAt": "2026-07-07T01:16:40Z",
+      "updatedAt": "2026-07-07T18:28:57Z",
       "baseRepository": "tlswg/tls13-spec",
       "baseRefName": "main",
       "baseRefOid": "e5528fe6f0f8f0a29450cc6bd2417ab7bef1c40e",
       "headRepository": "ekr/tls13-spec",
       "headRefName": "iana_dedup",
-      "headRefOid": "a57db72daa8c954a35ab91f6e52a3844eeb62d24",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "f70841d414575c486d5f6b0117649719e27c35a7",
+      "closedAt": "2026-07-07T18:28:57Z",
+      "mergedAt": "2026-07-07T18:28:57Z",
+      "mergedBy": "ekr",
+      "mergeCommit": {
+        "oid": "c728b4efb4c12159371279227df6464541eafb58"
+      },
       "comments": [],
       "reviews": [
         {
@@ -73683,6 +73685,39 @@
               "updatedAt": "2026-07-07T01:16:40Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOASA0os8AAAABFPqlNg",
+          "commit": {
+            "abbreviatedOid": "264d947"
+          },
+          "author": "seanturner",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-07T16:11:46Z",
+          "updatedAt": "2026-07-07T16:11:46Z",
+          "comments": [
+            {
+              "originalPosition": 7,
+              "body": "I don't think B.4 says how they are to be set some maybe just remove \"each new\":\n\nare both marked as \"Y\" for each both marked as \"Y\" for these",
+              "createdAt": "2026-07-07T16:11:46Z",
+              "updatedAt": "2026-07-07T16:11:46Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOASA0os8AAAABFPvUNg",
+          "commit": {
+            "abbreviatedOid": "f70841d"
+          },
+          "author": "seanturner",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "merge when ready",
+          "createdAt": "2026-07-07T16:22:25Z",
+          "updatedAt": "2026-07-07T16:22:25Z",
+          "comments": []
         }
       ]
     }
